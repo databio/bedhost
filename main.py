@@ -51,9 +51,9 @@ def getElasticDocs(es_client, idx):
         if '_shards' in res and int(res['_shards']['total']) > 0:
             return res['hits']['hits']
         else:
-            return {}
+            return None
     except Exception as e:
-        return {}
+        return None
 
 # get the yaml config first
 # pick up base path for the json out of bedstat pipeline and generated PNG images
@@ -106,8 +106,11 @@ async def root(request:Request):
     """
     # pick a random ID from whatever is stored in the database
     # and pass it onto the main page so that the user can choose to click a link to it
-    vars = {"request":request, "num_files": doc_num, "docs": all_elastic_docs}
-    return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
+    if all_elastic_docs is not None:
+        vars = {"request":request, "num_files": doc_num, "docs": all_elastic_docs}
+        return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
+    else:
+        return {"error": "no data available from database"}
 
 @router.get("/bedstat/{bed_id}")
 async def bedstat_serve(request:Request, bed_id):
@@ -117,7 +120,6 @@ async def bedstat_serve(request:Request, bed_id):
     js = elasticIDSearch(es_client, "bedstat_bedfiles", bed_id)
     if 'hits' in js and int(js['hits']['total']) > 0:
         # we have a hit
-        print(js['hits']['hits'][0]['_source'])
         vars = {"request": request, "bed_id":bed_id, "js":js['hits']['hits'][0]['_source']}
         return templates.TemplateResponse("gccontent.html", dict(vars, **ALL_VERSIONS))
     else:
