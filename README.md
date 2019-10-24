@@ -34,4 +34,4 @@ python3 main.py
 
 This will start the server, which will listen on [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
-To try it out, use an API point such as: http://127.0.0.1:8000/bedstat/{{ id }} - where *id* is the ID of one of the bed files processed by the pipeline.
+To try it out, use an API point such as: http://127.0.0.1:8000/bedstat/{{id}} - where *id* is the ID of one of the bed files processed by the pipeline.
