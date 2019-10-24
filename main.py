@@ -41,6 +41,20 @@ def elasticIDSearch(es_client, idx, q):
     res = es_client.search(index=idx, doc_type="doc", body={"query": {"match": {"id": q}}})
     return res
 
+# below function will ask for ALL docs stored in elastic but elastic returns only the first 10
+def getElasticDocs(es_client, idx):
+    try:
+        res = es_client.search(index=idx, doc_type="doc", body = {
+            'query': {
+                'match_all' : {}
+            }})
+        if '_shards' in res and int(res['_shards']['total']) > 0:
+            return res['hits']['hits']
+        else:
+            return {}
+    except Exception as e:
+        return {}
+
 # get the yaml config first
 # pick up base path for the json out of bedstat pipeline and generated PNG images
 with open("config.yaml", 'r') as ymlfile:
@@ -62,6 +76,9 @@ if doc_num == -1:
     # quit the server since we cannot connect to database backend
     print("Cannot connect to database back end. Aborting startup.")
     sys.exit(-1)
+
+# get all elastic docs here, do it once
+all_elastic_docs = getElasticDocs(es_client, 'bedstat_bedfiles')
 
 # FASTAPI code starts
 app = FastAPI(
@@ -87,7 +104,9 @@ async def root(request:Request):
     Offers a search dialog for the bed files (by fraction of name),
     Also offers a link to a sample file
     """
-    vars = {"request": request, "num_files": doc_num}
+    # pick a random ID from whatever is stored in the database
+    # and pass it onto the main page so that the user can choose to click a link to it
+    vars = {"request":request, "num_files": doc_num, "docs": all_elastic_docs}
     return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
 
 @router.get("/bedstat/{bed_id}")
