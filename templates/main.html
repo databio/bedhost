@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Main page{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script>
+        $(document).ready(function(){
+          $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <script>
+        window.onload = function() {
+            var welcome_txt = "</i>. Here we provide a web interface and a RESTful API to various statistics calculated on" +
+                "BED files, as well as images produced from the same files. This server is running " +
+                "<a href='https://github.com/databio/bedstat-rest-api'><i>bedstat-rest-api</i></a>, " +
+                "which uses <a href='https://github.com/databio/bestat'><i>bedstat pipeline tool</i></a> "
+                "to process the bed files." + 
+            what();
+            function what(){
+                try {
+                    var current_url = window.location.hostname
+                } catch(err) {
+                    var current_url = "bedstat-rest-api.databio.org"
+                }
+                document.getElementById("welcome").innerHTML = "Welcome to <i> " + current_url + welcome_txt;
+            };
+        }
+    </script>
+{% endblock %}
+{% block content %}
+{% macro safe_show_asset_attr(x) %}
+    {% if x is none or not x|length %}
+        NA
+    {% else %}
+        {{ x }}
+    {% endif %}
+{% endmacro %}
+<p>We currently have {{ num_files }} bed files stored and processed.</p>
+{% endblock %}

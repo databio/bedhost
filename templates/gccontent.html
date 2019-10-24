@@ -3,6 +3,48 @@
 {% block content %}
 <div class="container">
     <div class="row">
-      <img src="{{base_path}}/{{bed_metadata.ID}}/{{bed_metadata.ID}}_gccontent.png">
+      <div class="col-12">
+        <img src="{{ url_for('bedfiles', path='')}}{{ bed_id }}/{{ bed_id }}_gccontent.png" width=20%>GC content</img>
+        <img src="{{ url_for('bedfiles', path='')}}{{ bed_id }}/{{ bed_id }}_chrombins.png" width=20%>Chrombins</img>
+        <img src="{{ url_for('bedfiles', path='')}}{{ bed_id }}/{{ bed_id }}_partitions.png" width=20%>Partitions</img>
+        <img src="{{ url_for('bedfiles', path='')}}{{ bed_id }}/{{ bed_id }}_tssdist.png" width=20%>Distance</img>
+      </div>
+    </div>
+    <div class="row">
+        Number of regions: {{ js.num_regions[0] }}
+    </div>
+    <div class="row">
+        GC Content: {{ js.gc_content[0] }}
+    </div>
+    <div class="row">
+        Mean absolute TSS distance: {{ js.mean_abs_tss_dist[0] }}
+    </div>
+    <p>
+    <b>Partitions:</b>
+    <div class="row">
+      <div class="col">
+        Partition
+      </div>
+      <div class="col">
+        Freq
+      </div>
+      <div class="col">
+        Perc
+      </div>
+    </div>
+    {% for partition in js.genomic_partitions %}
+      <div class="row">
+        <div class="col">
+          {{ partition.partition }}
+        </div>
+        <div class="col">
+          {{ partition.Freq }}
+        </div>
+        <div class="col">
+          {{ partition.Perc }}
+        </div>
+      </div>
+    {% endfor %}
+    </p>
 </div>
 {% endblock %}
