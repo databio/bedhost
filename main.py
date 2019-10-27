@@ -112,15 +112,15 @@ async def root(request:Request):
     else:
         return {"error": "no data available from database"}
 
-@router.get("/bedstat/{bed_id}")
-async def bedstat_serve(request:Request, bed_id):
+@router.get("/regionset/")
+async def bedstat_serve(request:Request, id):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
-    js = elasticIDSearch(es_client, "bedstat_bedfiles", bed_id)
+    js = elasticIDSearch(es_client, "bedstat_bedfiles", id)
     if 'hits' in js and int(js['hits']['total']) > 0:
         # we have a hit
-        vars = {"request": request, "bed_id":bed_id, "js":js['hits']['hits'][0]['_source']}
+        vars = {"request": request, "bed_id":id, "js":js['hits']['hits'][0]['_source']}
         return templates.TemplateResponse("gccontent.html", dict(vars, **ALL_VERSIONS))
     else:
         return {'error': 'no data found'}
