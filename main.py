@@ -6,7 +6,9 @@ from starlette.staticfiles import StaticFiles
 import uvicorn
 
 import json, yaml
-import os, sys
+import os, sys, os.path
+
+import gzip, shutil
 
 #import tempfile
 #from datetime import datetime
@@ -60,8 +62,8 @@ def getElasticDocs(es_client, idx):
 with open("config.yaml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
 
-if 'path_config' in cfg and 'bed_base_path' in cfg['path_config']:
-    bedstat_base_path = cfg['path_config']['bed_base_path']
+if 'path_config' in cfg and 'bedstat_pipeline_output_path' in cfg['path_config']:
+    bedstat_base_path = cfg['path_config']['bedstat_pipeline_output_path']
 else:
     bedstat_base_path = os.getcwd()
 
@@ -89,7 +91,7 @@ app = FastAPI(
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # since we have a bunch of images to serve, that are already pre-made...
-app.mount(bedstat_base_path, StaticFiles(directory=bedstat_base_path), name="bedfiles")
+app.mount(bedstat_base_path, StaticFiles(directory=bedstat_base_path), name="bedfile_stats")
 
 templates = Jinja2Templates(directory="templates")
 
@@ -113,7 +115,7 @@ async def root(request:Request):
         return {"error": "no data available from database"}
 
 @router.get("/regionset/")
-async def bedstat_serve(request:Request, id):
+async def bedstat_serve(request:Request, id, format):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
@@ -121,7 +123,36 @@ async def bedstat_serve(request:Request, id):
     if 'hits' in js and int(js['hits']['total']) > 0:
         # we have a hit
         vars = {"request": request, "bed_id":id, "js":js['hits']['hits'][0]['_source']}
-        return templates.TemplateResponse("gccontent.html", dict(vars, **ALL_VERSIONS))
+        if format == 'html':
+            return templates.TemplateResponse("gccontent.html", dict(vars, **ALL_VERSIONS))
+        elif format == 'json':
+            # serve the json retrieved from database
+            return js['hits']['hits']
+        elif format == 'bed':
+            # serve raw bed file
+            # construct the path for the file holding the path of the raw bed file
+            try:
+                bedpathfile = os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), id + ".path"))
+                # get the path to the original .bed file
+                with open(bedpathfile, 'r') as f: bedpath = f.read()
+                # copy the bed file to /tmp, in order to compress it
+                # get the filename+extension portion of the file first
+                fname = os.path.split(bedpath)[1]
+                tmp_fname = os.path.abspath(os.path.join('/tmp', fname))
+                dst = shutil.copyfile(bedpath, tmp_fname)
+                # now compress it using gzip
+                with open(tmp_fname, 'rb') as f_in:
+                    with gzip.open(tmp_fname + '.gz', 'wb') as f_out:
+                        shutil.copyfileobj(f_in, f_out)
+                # remove uncompressed file
+                os.remove(tmp_fname)
+                # we cannot remove the .gz file since it is being served
+                headers = {'Content-Disposition': 'attachment; filename=%s' % fname+'.gz'}
+                return FileResponse(tmp_fname + '.gz', headers=headers, media_type='application/gzip')
+            except Exception as e:
+                return {'error': str(e)}
+        else:
+            return {'error': 'Unrecognized format for request, can be one of json, html and bed'}
     else:
         return {'error': 'no data found'}
 

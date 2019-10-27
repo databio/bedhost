@@ -1,5 +1,5 @@
 path_config:
-  bed_base_path : /home/maketo/dev/sheffield/bedstat/output/results_pipeline
+  bedstat_pipeline_output_path : /home/maketo/dev/sheffield/bedstat/output/results_pipeline
 
 database:
   host : localhost
