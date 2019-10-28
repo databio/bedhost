@@ -36,5 +36,5 @@
 {% endmacro %}
 <p>We currently have {{ num_files }} bed files stored and processed.</p>
 <br>
-<p>For an example bed file output, click <a href="http://localhost:8000/regionset/?id={{ docs[0]._source.id[0] }}&format=html">here</a></p>
+<p>For an example bed file output, click <a href="http://{{ host_ip }}:{{ host_port }}/regionset/?id={{ docs[0]._source.id[0] }}&format=html">here</a></p>
 {% endblock %}

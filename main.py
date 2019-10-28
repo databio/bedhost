@@ -1,3 +1,9 @@
+from argparse import ArgumentParser
+
+import json, yaml
+import os, sys, os.path
+import gzip, shutil
+
 from fastapi import FastAPI, HTTPException, Query, APIRouter
 from starlette.responses import FileResponse
 from starlette.templating import Jinja2Templates
@@ -5,22 +11,13 @@ from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 import uvicorn
 
-import json, yaml
-import os, sys, os.path
-
-import gzip, shutil
-
-#import tempfile
-#from datetime import datetime
-#import re
-
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 from elasticsearch.serializer import JSONSerializer
 
 from const import *
 
-global cfg, es_client, bedstat_base_path
+global cfg, es_client, bedstat_base_path, host_ip, host_port
 
 # some elasticsearch helper f-ns
 def getElasticClient(host):
@@ -40,13 +37,13 @@ def getElasticDocNum(es_client, idx):
 
 def elasticIDSearch(es_client, idx, q):
     # searches elastic for id 'q'
-    res = es_client.search(index=idx, doc_type="doc", body={"query": {"match": {"id": q}}})
+    res = es_client.search(index=idx, body={"query": {"match": {"id": q}}})
     return res
 
 # below function will ask for ALL docs stored in elastic but elastic returns only the first 10
 def getElasticDocs(es_client, idx):
     try:
-        res = es_client.search(index=idx, doc_type="doc", body = {
+        res = es_client.search(index=idx, body = {
             'query': {
                 'match_all' : {}
             }})
@@ -71,6 +68,16 @@ if 'database' in cfg and 'host' in cfg['database']:
     es_client = getElasticClient(cfg['database']['host'])
 else:
     es_client = getElasticClient('localhost')
+
+if 'server' in cfg:
+    if 'host' in cfg['server']:
+        host_ip = cfg['server']['host']
+    else:
+        host_ip = '0.0.0.0'
+    if 'port' in cfg['server']:
+        host_port = cfg['server']['port']
+    else:
+        host_port = 8000
 
 # get number of documents in the main index and test the connection at the same time
 doc_num = getElasticDocNum(es_client, 'bedstat_bedfiles')
@@ -109,7 +116,11 @@ async def root(request:Request):
     # pick a random ID from whatever is stored in the database
     # and pass it onto the main page so that the user can choose to click a link to it
     if all_elastic_docs is not None:
-        vars = {"request":request, "num_files": doc_num, "docs": all_elastic_docs}
+        vars = {"request":request,
+                "num_files": doc_num,
+                "docs": all_elastic_docs,
+                "host_ip": host_ip,
+                "host_port": host_port}
         return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
     else:
         return {"error": "no data available from database"}
@@ -120,7 +131,7 @@ async def bedstat_serve(request:Request, id, format):
     Searches database backend for id and returns a page matching id with images and stats
     """
     js = elasticIDSearch(es_client, "bedstat_bedfiles", id)
-    if 'hits' in js and int(js['hits']['total']) > 0:
+    if 'hits' in js and 'total' in js['hits'] and int(js['hits']['total']['value']) > 0:
         # we have a hit
         vars = {"request": request, "bed_id":id, "js":js['hits']['hits'][0]['_source']}
         if format == 'html':
@@ -156,14 +167,14 @@ async def bedstat_serve(request:Request, id, format):
     else:
         return {'error': 'no data found'}
 
-def main():
+def main(host_ip):
     # run the app
     app.include_router(router)
-    uvicorn.run(app, host="0.0.0.0")
+    uvicorn.run(app, host=host_ip)
 
 if __name__ == "__main__":
     try:
-        sys.exit(main())
+        sys.exit(main(host_ip))
     except KeyboardInterrupt:
         _LOGGER.info("Program canceled by user")
         sys.exit(1)
