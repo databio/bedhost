@@ -11,6 +11,8 @@ from const import *
 from config import *
 from elastic import *
 
+global host_ip, host_port
+
 # get basic config
 db_host = get_db_host()
 host_ip, host_port = get_server_cfg()
@@ -105,14 +107,14 @@ async def bedstat_serve(request:Request, id, format):
     else:
         return {'error': 'no data found'}
 
-def main(host_ip):
+def main():
     # run the app
     app.include_router(router)
-    uvicorn.run(app, host=host_ip)
+    uvicorn.run(app, host=host_ip, port=host_port)
 
 if __name__ == "__main__":
     try:
-        sys.exit(main(host_ip))
+        sys.exit(main())
     except KeyboardInterrupt:
         _LOGGER.info("Program canceled by user")
         sys.exit(1)
