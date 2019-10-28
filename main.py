@@ -1,6 +1,4 @@
-import json, yaml
-import os, sys, os.path
-import gzip, shutil
+import os, sys, os.path, json, gzip, shutil
 
 from fastapi import FastAPI, HTTPException, Query, APIRouter
 from starlette.responses import FileResponse
@@ -9,83 +7,25 @@ from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 import uvicorn
 
-from elasticsearch import Elasticsearch
-from elasticsearch import helpers
-from elasticsearch.serializer import JSONSerializer
-
 from const import *
+from config import *
+from elastic import *
 
-global cfg, es_client, bedstat_base_path, host_ip, host_port
-
-# some elasticsearch helper f-ns
-def getElasticClient(host):
-    return Elasticsearch([{'host': host}])
-
-# get number of documents in elastic
-def getElasticDocNum(es_client, idx):
-    try:
-        json_ct = es_client.cat.count(idx, params={"format":"json"})
-        # decompose the entry
-        # it will be returned as a list with one element, which is a dictionary
-        # such as [{'epoch': '1571915917', 'timestamp': '11:18:37', 'count': '6'}]
-        return json_ct[0]['count'] 
-    except Exception as e:
-        return -1
-
-
-def elasticIDSearch(es_client, idx, q):
-    # searches elastic for id 'q'
-    res = es_client.search(index=idx, body={"query": {"match": {"id": q}}})
-    return res
-
-# below function will ask for ALL docs stored in elastic but elastic returns only the first 10
-def getElasticDocs(es_client, idx):
-    try:
-        res = es_client.search(index=idx, body = {
-            'query': {
-                'match_all' : {}
-            }})
-        if '_shards' in res and int(res['_shards']['total']) > 0:
-            return res['hits']['hits']
-        else:
-            return None
-    except Exception as e:
-        return None
-
-# get the yaml config first
-# pick up base path for the json out of bedstat pipeline and generated PNG images
-with open("config.yaml", 'r') as ymlfile:
-    cfg = yaml.load(ymlfile)
-
-if 'path_config' in cfg and 'bedstat_pipeline_output_path' in cfg['path_config']:
-    bedstat_base_path = cfg['path_config']['bedstat_pipeline_output_path']
-else:
-    bedstat_base_path = os.getcwd()
-
-if 'database' in cfg and 'host' in cfg['database']:
-    es_client = getElasticClient(cfg['database']['host'])
-else:
-    es_client = getElasticClient('localhost')
-
-if 'server' in cfg:
-    if 'host' in cfg['server']:
-        host_ip = cfg['server']['host']
-    else:
-        host_ip = '0.0.0.0'
-    if 'port' in cfg['server']:
-        host_port = cfg['server']['port']
-    else:
-        host_port = 8000
+# get basic config
+db_host = get_db_host()
+host_ip, host_port = get_server_cfg()
+bedstat_base_path = get_bedstat_base_path()
+es_client = get_elastic_client(db_host)
 
 # get number of documents in the main index and test the connection at the same time
-doc_num = getElasticDocNum(es_client, 'bedstat_bedfiles')
+doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
 if doc_num == -1:
     # quit the server since we cannot connect to database backend
     print("Cannot connect to database back end. Aborting startup.")
     sys.exit(-1)
 
 # get all elastic docs here, do it once
-all_elastic_docs = getElasticDocs(es_client, 'bedstat_bedfiles')
+all_elastic_docs = get_elastic_docs(es_client, 'bedstat_bedfiles')
 
 # FASTAPI code starts
 app = FastAPI(
@@ -128,7 +68,7 @@ async def bedstat_serve(request:Request, id, format):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
-    js = elasticIDSearch(es_client, "bedstat_bedfiles", id)
+    js = elastic_id_search(es_client, "bedstat_bedfiles", id)
     if 'hits' in js and 'total' in js['hits'] and int(js['hits']['total']['value']) > 0:
         # we have a hit
         vars = {"request": request, "bed_id":id, "js":js['hits']['hits'][0]['_source']}
