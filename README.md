@@ -24,7 +24,17 @@ database:
   host : localhost
 ```
 
-To run Elastic in docker, follow the instructions in the bedstat pipeline software README.md: [https://github.com/databio/bedstat/blob/master/README.md](https://github.com/databio/bedstat/blob/master/README.md)
+In order to configure the server itself, a section of config.yaml exists, like so:
+
+```
+server:
+  host: 0.0.0.0
+  port: 8000
+```
+
+Either host and port variables can be modified in this file to suit the individual situations at hand.
+
+To run Elastic in docker, follow the instructions in the bedstat pipeline software README.md: [https://github.com/databio/bedstat#2-create-a-persistent-volume-to-house-elasticsearch-data](https://github.com/databio/bedstat#2-create-a-persistent-volume-to-house-elasticsearch-data), steps 2 and 3.
 
 After the elastic database has been run and the bedstat pipeline was used to populate it (see how to do it here: [https://github.com/databio/bedstat/blob/master/README.md#4-run-the-bedstat-pipeline-on-the-pep](https://github.com/databio/bedstat/blob/master/README.md#4-run-the-bedstat-pipeline-on-the-pep)), one can just start the bedstat-rest-api server like so:
 
