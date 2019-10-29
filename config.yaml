@@ -1,8 +1,8 @@
 path_config:
-  bedstat_pipeline_output_path : /home/maketo/dev/sheffield/bedstat/output/results_pipeline
+  bedstat_pipeline_output_path: /home/nsheff/code/bedstat/output/results_pipeline
 
 database:
-  host : 192.168.1.144
+  host : localhost
 
 server:
   host: 0.0.0.0
