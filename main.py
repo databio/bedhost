@@ -83,7 +83,7 @@ async def bedstat_serve(request:Request, id, format):
             return templates.TemplateResponse("gccontent.html", dict(vars, **ALL_VERSIONS))
         elif format == 'json':
             # serve the json retrieved from database
-            return js['hits']['hits']
+            return js['hits']['hits'][0]['_source']
         elif format == 'bed':
             # serve raw bed file
             # construct the path for the file holding the path of the raw bed file
@@ -111,3 +111,7 @@ async def bedstat_serve(request:Request, id, format):
             return {'error': 'Unrecognized format for request, can be one of json, html and bed'}
     else:
         return {'error': 'no data found'}
+
+#@app.get("/regionsets/")
+#async def bedstat_search(request:Request, cpg, nregions):
+    
