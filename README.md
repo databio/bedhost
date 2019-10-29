@@ -45,3 +45,28 @@ python3 main.py
 This will start the server, which will listen on [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
 To try it out, use an API point such as: http://127.0.0.1:8000/bedstat/{{id}} - where *id* is the ID of one of the bed files processed by the pipeline.
+
+## Running the server in Docker
+
+### Building container
+
+In the same directory as Dockerfile:
+
+```
+docker build -t bedstat-rest-api-server .
+```
+
+### Running container for development
+
+The container will need to have access to two different directories:
+
+1. Output of bedstat looper pipeline
+2. Original location of raw .BED files used to produce bedstat pipeline output
+
+For example, if LOLA Core DB was used as input to the bedstat pipeline and results were stored in \<some path\>/bedstat/output/results_pipeline:
+
+```
+docker run --rm -p 8000:8000 -e HOST=0.0.0.0 -e PORT=8000 --name bedstat-rest-server -v /ext/qumulo/LOLAweb/databases/LOLACore:/ext/qumulo/LOLAweb/databases/LOLACore -v /development/bedstat/output/results_pipeline:/development/bedstat/output/results_pipeline bedstat-rest-api-server
+```
+
+Add a -d to the above command to run the docker container in the background (production).
