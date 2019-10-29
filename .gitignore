@@ -1,6 +1,7 @@
 output
 bedstat_output
 lolacore.csv
+config.yaml
 __pycache__
 */__pycache__
 */#*

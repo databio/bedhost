@@ -26,7 +26,7 @@ doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
 if doc_num == -1:
     # quit the server since we cannot connect to database backend
     print("Cannot connect to database back end. Aborting startup.")
-    sys.exit(-1)
+    sys.exit(1)
 
 # get all elastic docs here, do it once
 all_elastic_docs = get_elastic_docs(es_client, 'bedstat_bedfiles')
@@ -74,8 +74,12 @@ async def bedstat_serve(request:Request, id, format):
     js = elastic_id_search(es_client, "bedstat_bedfiles", id)
     if 'hits' in js and 'total' in js['hits'] and int(js['hits']['total']['value']) > 0:
         # we have a hit
-        vars = {"request": request, "bed_id":id, "js":js['hits']['hits'][0]['_source']}
         if format == 'html':
+            bed_url = "http://{}:{}/regionset/?id={}&format=bed"
+            vars = {"request": request,
+                    "bed_id":id,
+                    "js":js['hits']['hits'][0]['_source'],
+                    "bed_url": bed_url.format(host_ip,host_port,id)}
             return templates.TemplateResponse("gccontent.html", dict(vars, **ALL_VERSIONS))
         elif format == 'json':
             # serve the json retrieved from database
