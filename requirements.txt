@@ -1,3 +1,4 @@
+pyyaml
 aiofiles
 fastapi
 jinja2

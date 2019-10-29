@@ -5,5 +5,5 @@ database:
   host : 192.168.1.144
 
 server:
-  host: 0.0.0.0
-  port: 80
+  host: 192.168.1.144
+  port: 8000

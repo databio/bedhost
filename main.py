@@ -15,9 +15,11 @@ global host_ip, host_port
 
 # get basic config
 db_host = get_db_host()
-host_ip, host_port = get_server_cfg()
 bedstat_base_path = get_bedstat_base_path()
 es_client = get_elastic_client(db_host)
+
+# get host and port to attach to (from parser)
+host_ip, host_port = get_server_cfg()
 
 # get number of documents in the main index and test the connection at the same time
 doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
@@ -39,14 +41,13 @@ app = FastAPI(
 app.mount("/static", StaticFiles(directory="static"), name="static")
 # since we have a bunch of images to serve, that are already pre-made...
 app.mount(bedstat_base_path, StaticFiles(directory=bedstat_base_path), name="bedfile_stats")
-
 templates = Jinja2Templates(directory="templates")
-
-router = APIRouter()
+#router = APIRouter()
+#app.include_router(router)
 
 # code to handle API paths follows
-@router.get("/")
-@router.get("/index")
+@app.get("/")
+@app.get("/index")
 async def root(request:Request):
     """
     Returns a landing page stating the number of bed files kept in database.
@@ -65,7 +66,7 @@ async def root(request:Request):
     else:
         return {"error": "no data available from database"}
 
-@router.get("/regionset/")
+@app.get("/regionset/")
 async def bedstat_serve(request:Request, id, format):
     """
     Searches database backend for id and returns a page matching id with images and stats
@@ -106,15 +107,3 @@ async def bedstat_serve(request:Request, id, format):
             return {'error': 'Unrecognized format for request, can be one of json, html and bed'}
     else:
         return {'error': 'no data found'}
-
-def main():
-    # run the app
-    app.include_router(router)
-    uvicorn.run(app, host=host_ip, port=host_port)
-
-if __name__ == "__main__":
-    try:
-        sys.exit(main())
-    except KeyboardInterrupt:
-        _LOGGER.info("Program canceled by user")
-        sys.exit(1)
