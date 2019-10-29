@@ -39,7 +39,7 @@ To run Elastic in docker, follow the instructions in the bedstat pipeline softwa
 After the elastic database has been run and the bedstat pipeline was used to populate it (see how to do it here: [https://github.com/databio/bedstat/blob/master/README.md#4-run-the-bedstat-pipeline-on-the-pep](https://github.com/databio/bedstat/blob/master/README.md#4-run-the-bedstat-pipeline-on-the-pep)), one can just start the bedstat-rest-api server like so:
 
 ```
-python3 main.py
+ uvicorn main:app --reload
 ```
 
 This will start the server, which will listen on [http://127.0.0.1:8000](http://127.0.0.1:8000)
