@@ -4,7 +4,7 @@ import yaml
 # pick up base path for the json out of bedstat pipeline and generated PNG images
 try:
     with open("config.yaml", 'r') as ymlfile:
-        cfg = yaml.load(ymlfile)
+        cfg = yaml.safe_load(ymlfile)
 except Exception as e:
     raise e
 

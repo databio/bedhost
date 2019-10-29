@@ -107,3 +107,4 @@ async def bedstat_serve(request:Request, id, format):
             return {'error': 'Unrecognized format for request, can be one of json, html and bed'}
     else:
         return {'error': 'no data found'}
+
