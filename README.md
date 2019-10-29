@@ -70,3 +70,13 @@ docker run --rm -p 8000:8000 -e HOST=0.0.0.0 -e PORT=8000 --name bedstat-rest-se
 ```
 
 Add a -d to the above command to run the docker container in the background (production).
+
+Here's how I run the container:
+
+```
+docker run --rm --init -p 8000:8000 --name bedstat-rest-server \
+  --network="host" \
+  -v /home/nsheff/code/bedstat/output/results_pipeline:/home/nsheff/code/bedstat/output/results_pipeline \
+  bedstat-rest-api-server uvicorn main:app --reload
+```
+
