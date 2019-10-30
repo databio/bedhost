@@ -90,9 +90,8 @@ async def bedstat_serve(request:Request, id, format):
             # serve raw bed file
             # construct the path for the file holding the path of the raw bed file
             try:
-                #bedpathfile = os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), id + ".path"))
-                bedpathfile = js['hits']['hits'][0]['_source']['path_to_bed_file'][0]
-                print(bedpathfile)
+                # get the original raw bed file name pointed to by raw_bedfile symbolic link
+                bedpathfile = os.readlink(os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), "raw_bedfile")))
                 # copy the bed file to /tmp, in order to compress it
                 # get the filename+extension portion of the file first
                 fname = os.path.split(bedpathfile)[1]
