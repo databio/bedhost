@@ -52,5 +52,8 @@
     <p>
       Display the JSON metadata calculated from the raw BED file: <a href={{ bed_url }}&format=json>{{ bed_url }}&format=json</a>.
     </p>
+    <p>
+      MD5 hash for original bedfile: {{ js.md5sum[0] }}
+    </p>
 </div>
 {% endblock %}
