@@ -47,7 +47,10 @@
     {% endfor %}
     </p>
     <p>
-      Download the raw BED file <a href={{ bed_url }}>here</a>.
+      Download the raw BED file here: <a href={{ bed_url }}&format=bed>{{ bed_url }}&format=bed</a>.
+    </p>
+    <p>
+      Display the JSON metadata calculated from the raw BED file: <a href={{ bed_url }}&format=json>{{ bed_url }}&format=json</a>.
     </p>
 </div>
 {% endblock %}

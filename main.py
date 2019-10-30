@@ -77,7 +77,7 @@ async def bedstat_serve(request:Request, id, format):
     if 'hits' in js and 'total' in js['hits'] and int(js['hits']['total']['value']) > 0:
         # we have a hit
         if format == 'html':
-            bed_url = "http://{}:{}/regionset/?id={}&format=bed"
+            bed_url = "http://{}:{}/regionset/?id={}"
             vars = {"request": request,
                     "bed_id":id,
                     "js":js['hits']['hits'][0]['_source'],
