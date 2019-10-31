@@ -15,13 +15,22 @@
     </div>
   </div>
 
+  {% set bed_base_dir = url_for('bedfile_stats', path='') %}
   <table class="table table-borderless">
     <tbody>
       <tr>
-        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_gccontent.png" width=75%></img></td>
-        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_chrombins.png" width=75%></img></td>
-        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_partitions.png" width=75%></img></td>
-        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_tssdist.png" width=75%></img></td>
+        <td align="center">
+          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_gccontent.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_gccontent.png" width=75%></img></a>
+        </td>
+        <td align="center">
+          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_chrombins.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_chrombins.png" width=75%></img></a>
+        </td>
+        <td align="center">
+          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_partitions.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_partitions.png" width=75%></img></a>
+        </td>
+        <td align="center">
+          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_tssdist.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_tssdist.png" width=75%></img></a>
+        </td>
       </tr>
       <tr>
         <td align="center"><b>GC Content</b></td>
