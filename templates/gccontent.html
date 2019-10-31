@@ -2,58 +2,103 @@
 {% block title %}GC content{% endblock %}
 {% block content %}
 <div class="container">
-    <div class="row">
-      <div class="col-12">
-        <img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_gccontent.png" width=20%>GC content</img>
-        <img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_chrombins.png" width=20%>Chrombins</img>
-        <img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_partitions.png" width=20%>Partitions</img>
-        <img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_tssdist.png" width=20%>Distance</img>
-      </div>
-    </div>
-    <div class="row">
-        Number of regions: {{ js.num_regions[0] }}
-    </div>
-    <div class="row">
-        GC Content: {{ js.gc_content[0] }}
-    </div>
-    <div class="row">
-        Mean absolute TSS distance: {{ js.mean_abs_tss_dist[0] }}
-    </div>
-    <p>
-    <b>Partitions:</b>
+ 
+  <div class="comtainer">
     <div class="row">
       <div class="col">
-        Partition
       </div>
       <div class="col">
-        Freq
+        <h3>{{ bed_id }}</h3>
       </div>
       <div class="col">
-        Perc
       </div>
     </div>
-    {% for partition in js.genomic_partitions %}
-      <div class="row">
-        <div class="col">
-          {{ partition.partition }}
-        </div>
-        <div class="col">
-          {{ partition.Freq }}
-        </div>
-        <div class="col">
-          {{ partition.Perc }}
-        </div>
+  </div>
+
+  <table class="table table-borderless">
+    <tbody>
+      <tr>
+        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_gccontent.png" width=75%></img></td>
+        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_chrombins.png" width=75%></img></td>
+        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_partitions.png" width=75%></img></td>
+        <td align="center"><img src="{{ url_for('bedfile_stats', path='')}}{{ bed_id }}/{{ bed_id }}_tssdist.png" width=75%></img></td>
+      </tr>
+      <tr>
+        <td align="center"><b>GC Content</b></td>
+        <td align="center"><b>Chrombins</b></td>
+        <td align="center"><b>Partitions</b></td>
+        <td align="center"><b>Distance</b></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <table class="table table-sm">
+          <tbody>
+            <tr>
+              <th scope="row">Number of regions</th>
+              <td>{{ js.num_regions[0] }}</td>
+            </tr>
+            <tr>
+              <th scope="row">GC Content</th>
+              <td>{{ js.gc_content[0] }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Mean abs. TSS distance</th>
+              <td>{{ js.mean_abs_tss_dist[0] }}</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    {% endfor %}
-    </p>
-    <p>
-      Download the raw BED file here: <a href={{ bed_url }}&format=bed>{{ bed_url }}&format=bed</a>.
-    </p>
-    <p>
-      Display the JSON metadata calculated from the raw BED file: <a href={{ bed_url }}&format=json>{{ bed_url }}&format=json</a>.
-    </p>
-    <p>
-      MD5 hash for original bedfile: {{ js.md5sum[0] }}
-    </p>
+      <div class="col">
+        <table class="table table-sm">
+          <thead>
+            <tr>
+              <th><i>Partition</i></th>
+              <th><i>Freq</i></th>
+              <th><i>Perc</i></th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for partition in js.genomic_partitions %}
+            <tr>
+              <td>{{ partition.partition }}</td>
+              <td>{{ partition.Freq }}</td>
+              <td>{{ partition.Perc }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <table class="table">
+          <tbody>
+            <tr>
+              <th scope="row">Raw bed file:</th>
+              <td><a href={{ bed_url }}&format=bed>{{ bed_url }}&format=bed</a></td>
+            </tr>
+            <tr>
+              <th scope="row">JSON metadata:</th>
+              <td><a href={{ bed_url }}&format=json>{{ bed_url }}&format=json</a></td>
+            </tr>
+            <tr>
+              <th scope="row">BED MD5 sum:</th>
+              <td>{{ js.md5sum[0] }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col">
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
