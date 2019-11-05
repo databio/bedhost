@@ -90,22 +90,12 @@ async def bedstat_serve(request:Request, id, format):
             # serve raw bed file
             # construct the path for the file holding the path of the raw bed file
             try:
-                # get the original raw bed file name pointed to by raw_bedfile symbolic link
-                bedpathfile = os.readlink(os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), "raw_bedfile")))
-                # copy the bed file to /tmp, in order to compress it
-                # get the filename+extension portion of the file first
-                fname = os.path.split(bedpathfile)[1]
-                tmp_fname = os.path.abspath(os.path.join('/tmp', fname))
-                dst = shutil.copyfile(bedpathfile, tmp_fname)
-                # now compress it using gzip
-                with open(tmp_fname, 'rb') as f_in:
-                    with gzip.open(tmp_fname + '.gz', 'wb') as f_out:
-                        shutil.copyfileobj(f_in, f_out)
-                # remove uncompressed file
-                os.remove(tmp_fname)
-                # we cannot remove the .gz file since it is being served
-                headers = {'Content-Disposition': 'attachment; filename=%s' % fname+'.gz'}
-                return FileResponse(tmp_fname + '.gz', headers=headers, media_type='application/gzip')
+                # get the original raw bed file name .gz
+                syml_tgt = os.readlink(os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), "raw_bedfile")))
+                gzbedpath = os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), syml_tgt))
+                # serve the .gz file
+                headers = {'Content-Disposition': 'attachment; filename=%s' % syml_tgt}
+                return FileResponse(gzbedpath, headers=headers, media_type='application/gzip')
             except Exception as e:
                 return {'error': str(e)}
         else:
