@@ -1,4 +1,5 @@
-import os, sys, os.path, json, gzip, shutil
+import os, sys, os.path, json, gzip, shutil, re
+import requests
 
 from fastapi import FastAPI, HTTPException, Query, APIRouter, Form
 from starlette.responses import FileResponse
@@ -104,9 +105,7 @@ async def bedstat_serve(request:Request, id, format):
         return {'error': 'no data found'}
 
 from typing import List
-@app.get("/regionsets")
-async def bedstat_search(request:Request, filters:List[str] = Query(None)):
-
+def bedstat_search_db(filters):
     elastic_ops = {'<' : 'lt',
                    '<=': 'lte',
                    '=' : 'eq',
@@ -120,8 +119,6 @@ async def bedstat_search(request:Request, filters:List[str] = Query(None)):
 
         # verify each filter is appropriate
         # and attempt to aggregate comparison operations per filter
-        print('filters=', filters)
-        import re
         re_pattern = '^(nregions|cpg)([<=>]+(=)*)(\d)+((\.)*(\d)+)'
         filter_regex = re.compile(re_pattern)
         filters_and_ops = {}
@@ -150,7 +147,6 @@ async def bedstat_search(request:Request, filters:List[str] = Query(None)):
                     filters_and_ops[sn] = [(elastic_ops.get(s[1]),s[3])]
         # filters_and_ops here looks something like (e.g.):
         # {'num_regions': [('gte', '100'), ('eq', '20')], 'gc_content': [('lt', '0.30')]}
-        print(filters_and_ops)
         # build up the elastic query
         should=[]
         for filter_name in filters_and_ops:
@@ -174,6 +170,34 @@ async def bedstat_search(request:Request, filters:List[str] = Query(None)):
             return { "result" : "no matching data found." }
     return {"error": "no filters provided"}
 
-@app.post("/search/")
+@app.get("/regionsets")
+async def bedstat_search(request:Request, filters:List[str] = Query(None)):
+    return bedstat_search_db(filters)
+
+@app.post("/search")
 async def parse_search_query(*, search_text:str = Form(...)):
-    return {"result" : search_text }
+
+    # tries to comprehend just one search phrase
+    # e.g. "id contains EncodeAwgTfbs"
+    def match_one(phrase):
+        pass
+        
+    # search for keywords like "and" or operators like ">" or "="
+    re_pattern="(((id) +(contains|matches) +(\w+))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?))+"
+    filter_regex = re.compile(re_pattern)
+
+    # split on an "and" only. for now
+    res_filtered = []
+    ands = search_text.split("and")
+    for a in ands:
+        # do the regex match
+        res = filter_regex.match(a.strip())
+        # remove all the unmatched sections of the pattern
+        #for i in range(0,len(res.groups())):
+        #    if (res.groups()[i] != None):
+        #        res_filtered.append(res.groups()[i])
+        if len(res.groups()) > 0:
+            res_filtered.append(res.groups()[0].replace(' ', ''))
+    print(res_filtered)
+    # here we can call the search function
+    return bedstat_search_db(res_filtered)
