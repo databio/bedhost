@@ -7,24 +7,6 @@
           $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
-    <script>
-        window.onload = function() {
-            var welcome_txt = "</i>. Here we provide a web interface and a RESTful API to various statistics calculated on" +
-                "BED files, as well as images produced from the same files. This server is running " +
-                "<a href='https://github.com/databio/bedstat-rest-api'><i>bedstat-rest-api</i></a>, " +
-                "which uses <a href='https://github.com/databio/bestat'><i>bedstat pipeline tool</i></a> "
-                "to process the bed files." + 
-            what();
-            function what(){
-                try {
-                    var current_url = window.location.hostname
-                } catch(err) {
-                    var current_url = "bedstat-rest-api.databio.org"
-                }
-                document.getElementById("welcome").innerHTML = "Welcome to <i> " + current_url + welcome_txt;
-            };
-        }
-    </script>
 {% endblock %}
 {% block content %}
 {% macro safe_show_asset_attr(x) %}
@@ -34,7 +16,31 @@
         {{ x }}
     {% endif %}
 {% endmacro %}
-<p>We currently have {{ num_files }} bed files stored and processed.</p>
-<br>
-<p>For an example bed file output, click <a href="http://{{ host_ip }}:{{ host_port }}/regionset/?id={{ docs[0]._source.id[0] }}&format=html">here</a></p>
+
+<div class="container">
+  <div class="row">
+    <div class="col-2">
+    </div>
+    <div class="col-8">
+      We currently have <b>{{ num_files }}</b> bed files stored and processed.
+      Type in your search criteria below:
+    </div>
+    <div class="col-2">
+    </div>
+  </div>
+</div>
+
+<container>
+<div class="row align-items-center justify-content-center">
+<div class="col-2"></div>
+<div class="col-8">
+<form class="form">
+  <div class="form-group">
+    <input type="text" class="form-control" id="search_text" value="id contains human and nregions > 5000 and cpg < 0.7" required>
+  </div>
+  <button class="btn btn-primary btn-sm form-control">Search</button>
+</form>
+</div>
+<div class="col-2"></div>
+</div>
 {% endblock %}

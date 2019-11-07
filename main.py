@@ -1,6 +1,6 @@
 import os, sys, os.path, json, gzip, shutil
 
-from fastapi import FastAPI, HTTPException, Query, APIRouter
+from fastapi import FastAPI, HTTPException, Query, APIRouter, Form
 from starlette.responses import FileResponse
 from starlette.templating import Jinja2Templates
 from starlette.requests import Request
@@ -173,3 +173,7 @@ async def bedstat_search(request:Request, filters:List[str] = Query(None)):
         else:
             return { "result" : "no matching data found." }
     return {"error": "no filters provided"}
+
+@app.post("/search/")
+async def parse_search_query(*, search_text:str = Form(...)):
+    return {"result" : search_text }
