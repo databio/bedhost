@@ -175,7 +175,7 @@ async def bedstat_search(request:Request, filters:List[str] = Query(None)):
     return bedstat_search_db(filters)
 
 @app.post("/search")
-async def parse_search_query(*, search_text:str = Form(...)):
+async def parse_search_query(request:Request, search_text:str = Form(...)):
 
     # tries to comprehend just one search phrase
     # e.g. "id contains EncodeAwgTfbs"
@@ -200,4 +200,19 @@ async def parse_search_query(*, search_text:str = Form(...)):
             res_filtered.append(res.groups()[0].replace(' ', ''))
     print(res_filtered)
     # here we can call the search function
-    return bedstat_search_db(res_filtered)
+    search_res = bedstat_search_db(res_filtered)
+    print("search_res=", search_res)
+    # prepare to pas on the results to response template
+    bed_url = "http://{}:{}/regionset/?id={}&format=html"
+    bed_gz = "http://{}:{}/regionset/?id={}&format=bed"
+    bed_json = "http://{}:{}/regionset/?id={}&format=json"
+    template_data = []
+    for s in search_res["result"]:
+        bed_id = s["_source"]["id"][0]
+        bed_url = bed_url.format(host_ip,host_port,bed_id)
+        bed_gz = bed_gz.format(host_ip,host_port,bed_id)
+        bed_json = bed_json.format(host_ip,host_port,bed_id)
+        template_data.append((bed_id, bed_url, bed_gz, bed_json))
+    print(template_data)
+    vars = { "request": request, "result" : template_data }
+    return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
