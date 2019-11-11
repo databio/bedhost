@@ -14,7 +14,7 @@ the config.yaml file in the base directory of bedstat-rest-api should be:
 
 ```
 path_config:
-  bedstat_pipeline_output_path : /home/ognen/bedstat/output/results_pipeline
+  bedstat_pipeline_output_path: /home/ognen/bedstat/output/results_pipeline
 ```
 
 The software also needs a working database, (for now) we use ElasticSearch. The config.yaml file needs to point to this database's host, such as:

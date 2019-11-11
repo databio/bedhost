@@ -1,4 +1,4 @@
-FROM tiangolo/uvicorn-gunicorn:python3.7-alpine3.8
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.7-alpine3.8
 LABEL authors="Ognen Duzlevski"
 
 COPY . /app
