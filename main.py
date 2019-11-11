@@ -104,6 +104,9 @@ async def bedstat_serve(request:Request, id, format):
     else:
         return {'error': 'no data found'}
 
+# this function had to be made independent because FastAPI does not like
+# being called from within FastAPI, which would have been the case in the
+# search function
 from typing import List
 def bedstat_search_db(filters):
     elastic_ops = {'<' : 'lt',
@@ -111,15 +114,17 @@ def bedstat_search_db(filters):
                    '=' : 'eq',
                    '>' : 'gt',
                    '>=': 'gte'}
+
+    search_terms = ['id', 'species', 'antibody', 'treatment', 'tissue', 'description']
         
     if filters:
 
         # filters here looks something like (hopefully! e.g.):
-        # filters= ['nregions>=100', 'cpg<0.30', 'nregions=20']
+        # filters= ['nregions>=100', 'cpg<0.30', 'nregions=20', 'id matches human', 'id contains mouse', 'tissue matches lung']
 
         # verify each filter is appropriate
         # and attempt to aggregate comparison operations per filter
-        re_pattern = '^(nregions|cpg)([<=>]+(=)*)(\d)+((\.)*(\d)+)'
+        re_pattern = '^(((\w)+ +(contains|matches) +(\w+))|((nregions|cpg)([<=>]+(=)*)(\d)+((\.)*(\d)+)))'
         filter_regex = re.compile(re_pattern)
         filters_and_ops = {}
         for f in filters:
@@ -127,6 +132,9 @@ def bedstat_search_db(filters):
             if not result:
                 return {"error" : "bad parameter --> " + f}
             else:
+                # we need to distinguish between id matches|contains <something>
+                # and the nregions/cpg op kind of a filter here
+                
                 # try to split on comparison op
                 s = re.split(r'([<=>]+(=)*)', f)
                 # element 0 = filter name (nregions or cpg)
@@ -140,11 +148,14 @@ def bedstat_search_db(filters):
                     sn = 'gc_content'
                 else:
                     sn = s[0]
-
+                
+                
                 if sn in filters_and_ops:
-                    filters_and_ops[sn].append((elastic_ops.get(s[1]),s[3]))
+                    if not sn in search_terms:
+                        filters_and_ops[sn].append((elastic_ops.get(s[1]),s[3]))
                 else:
-                    filters_and_ops[sn] = [(elastic_ops.get(s[1]),s[3])]
+                    if not sn in search_terms:
+                        filters_and_ops[sn] = [(elastic_ops.get(s[1]),s[3])]
         # filters_and_ops here looks something like (e.g.):
         # {'num_regions': [('gte', '100'), ('eq', '20')], 'gc_content': [('lt', '0.30')]}
         # build up the elastic query
@@ -176,12 +187,7 @@ async def bedstat_search(request:Request, filters:List[str] = Query(None)):
 
 @app.post("/search")
 async def parse_search_query(request:Request, search_text:str = Form(...)):
-
-    # tries to comprehend just one search phrase
-    # e.g. "id contains EncodeAwgTfbs"
-    def match_one(phrase):
-        pass
-        
+    
     # search for keywords like "and" or operators like ">" or "="
     re_pattern="(((id) +(contains|matches) +(\w+))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?))+"
     filter_regex = re.compile(re_pattern)
@@ -191,28 +197,29 @@ async def parse_search_query(request:Request, search_text:str = Form(...)):
     ands = search_text.split("and")
     for a in ands:
         # do the regex match
-        res = filter_regex.match(a.strip())
+        if a.strip().startswith("id"):
+            res = filter_regex.match(a)
+        else:
+            res = filter_regex.match(a.strip())
         # remove all the unmatched sections of the pattern
         #for i in range(0,len(res.groups())):
         #    if (res.groups()[i] != None):
         #        res_filtered.append(res.groups()[i])
-        if len(res.groups()) > 0:
+        if len(res.groups()) > 0 and not res.groups()[0].strip().startswith("id"):
             res_filtered.append(res.groups()[0].replace(' ', ''))
+        else:
+            res_filtered.append(res.groups()[0])
     print(res_filtered)
     # here we can call the search function
     search_res = bedstat_search_db(res_filtered)
-    print("search_res=", search_res)
+    #print("search_res=", search_res)
     # prepare to pas on the results to response template
-    bed_url = "http://{}:{}/regionset/?id={}&format=html"
-    bed_gz = "http://{}:{}/regionset/?id={}&format=bed"
-    bed_json = "http://{}:{}/regionset/?id={}&format=json"
     template_data = []
     for s in search_res["result"]:
         bed_id = s["_source"]["id"][0]
-        bed_url = bed_url.format(host_ip,host_port,bed_id)
-        bed_gz = bed_gz.format(host_ip,host_port,bed_id)
-        bed_json = bed_json.format(host_ip,host_port,bed_id)
+        bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip,host_port,bed_id)
+        bed_gz = "http://{}:{}/regionset/?id={}&format=bed".format(host_ip,host_port,bed_id)
+        bed_json = "http://{}:{}/regionset/?id={}&format=json".format(host_ip,host_port,bed_id)
         template_data.append((bed_id, bed_url, bed_gz, bed_json))
-    print(template_data)
     vars = { "request": request, "result" : template_data }
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
