@@ -11,7 +11,7 @@ import uvicorn
 from const import *
 from config import *
 from elastic import *
-from elasticsearch_dsl import Search
+from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.query import Range, Bool
 
 global host_ip, host_port, es_client
@@ -107,8 +107,12 @@ async def bedstat_serve(request:Request, id, format):
 # this function had to be made independent because FastAPI does not like
 # being called from within FastAPI, which would have been the case in the
 # search function
+
+# for now, we do not look at or queries at all, just and
+# in the future (when I figure out how to do "or" in elastic)
+# we will consider or as well
 from typing import List
-def bedstat_search_db(filters):
+def bedstat_search_db(ands, ors):
     elastic_ops = {'<' : 'lt',
                    '<=': 'lte',
                    '=' : 'eq',
@@ -116,70 +120,112 @@ def bedstat_search_db(filters):
                    '>=': 'gte'}
 
     search_terms = ['id', 'species', 'antibody', 'treatment', 'tissue', 'description']
-        
-    if filters:
-
+    
+    # process ands first
+    if ands:
         # filters here looks something like (hopefully! e.g.):
         # filters= ['nregions>=100', 'cpg<0.30', 'nregions=20', 'id matches human', 'id contains mouse', 'tissue matches lung']
 
         # verify each filter is appropriate
         # and attempt to aggregate comparison operations per filter
-        re_pattern = '^(((\w)+ +(contains|matches) +(\w+))|((nregions|cpg)([<=>]+(=)*)(\d)+((\.)*(\d)+)))'
+        re_pattern = "(((id|species|antibody|treatment|tissue|description) +(contains|matches) +(\w+))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?))"
+        #re_pattern = '^(((\w)+ +(contains|matches) +(\w+))|((nregions|cpg)([<=>]+(=)*)(\d)+((\.)*(\d)+)))'
         filter_regex = re.compile(re_pattern)
         filters_and_ops = {}
-        for f in filters:
+        for flist in ands:
+            if flist[0].endswith('and'):
+                f = flist[0][:-3]
+            elif flist[0].endswith('or'):
+                f = flist[0][:-2]
+            else:
+                f = flist[0]
+            f = f.strip()
+
             result = filter_regex.match(f)
             if not result:
                 return {"error" : "bad parameter --> " + f}
             else:
                 # we need to distinguish between id matches|contains <something>
                 # and the nregions/cpg op kind of a filter here
-                
                 # try to split on comparison op
                 s = re.split(r'([<=>]+(=)*)', f)
                 # element 0 = filter name (nregions or cpg)
                 # element 1 = comparison op (<, <=, =, >, >=)
                 # element 3 = numeric value (float or int)
+                if len(s) == 1: # cpg/nregions filter
+                    s = re.split(r'(id|species|antibody|treatment|tissue|description) +(matches|contains) +(\w+)', f)
 
-                # adjust query parameters to match json contents of database
-                if s[0] == 'nregions':
-                    sn = 'num_regions'
-                elif s[0] == 'cpg':
-                    sn = 'gc_content'
-                else:
-                    sn = s[0]
-                
-                
+                s = [ss for ss in s if ss != None and ss != '']
+                sn = s[0].strip()
+
                 if sn in filters_and_ops:
+                    # have we already processed a filter? if so, we need to append
+                    # this is the case where, for example, we have nregions<2000 and nregions>500
                     if not sn in search_terms:
-                        filters_and_ops[sn].append((elastic_ops.get(s[1]),s[3]))
+                        filters_and_ops[sn].append((elastic_ops.get(s[1]),s[2]))
+                    else:
+                        # this is not a range search but a match/contains search
+                        filters_and_ops[sn].append(s[1], s[2])
                 else:
                     if not sn in search_terms:
-                        filters_and_ops[sn] = [(elastic_ops.get(s[1]),s[3])]
-        # filters_and_ops here looks something like (e.g.):
-        # {'num_regions': [('gte', '100'), ('eq', '20')], 'gc_content': [('lt', '0.30')]}
-        # build up the elastic query
-        should=[]
+                        filters_and_ops[sn] = [(elastic_ops.get(s[1]),s[2])]
+                        # filters_and_ops here looks something like (e.g.):
+                        # {'num_regions': [('gte', '100'), ('eq', '20')], 'gc_content': [('lt', '0.30')]}
+                        # build up the elastic query
+                    else:
+                        filters_and_ops[sn] = [(s[1], s[2])]
+
+        musts=[]
         for filter_name in filters_and_ops:
             val_list = filters_and_ops[filter_name]
             for (fltr, op_val) in val_list:
                 # below approach is awkward since elasticsearch-dsl
                 # needs the actual name of the field in the Range object
                 # but NOT as string
-                if filter_name == 'num_regions':
-                    should.append(Range(num_regions={fltr : float(op_val)}))
-                elif filter_name == 'gc_content':
-                    should.append(Range(gc_content={fltr : float(op_val)}))
+                if filter_name in search_terms:
+                    if fltr == "matches":
+                        if filter_name == 'id':
+                            musts.append(Q('match', id=op_val))
+                        elif filter_name == 'species':
+                            musts.append(Q('match', species=op_val))
+                        elif filter_name == 'antibody':
+                            musts.append(Q('match', antibody=op_val))
+                        elif filter_name == 'treatment':
+                            musts.append(Q('match', treatment=op_val))
+                        elif filter_name == 'tissue':
+                            musts.append(Q('match', tissue=op_val))
+                        elif filter_name == 'description':
+                            musts.append(Q('match', description=op_val))
+                    elif fltr == "contains":
+                        op_val = '*'+op_val+'*'
+                        default_field = filter_name
+                        #if filter_name == 'id':
+                        musts.append(Q('query_string', query=op_val, default_field=default_field))
+                        #elif filter_name == 'species':
+                        #    musts.append(Q('query_string', query=op_val, default_field='species'))
+                        #elif filter_name == 'antibody':
+                        #    musts.append(Q('query_string', antibody=op_val))
+                        #elif filter_name == 'treatment':
+                        #    musts.append(Q('query_string', treatment=op_val))
+                        #elif filter_name == 'tissue':
+                        #    musts.append(Q('query_string', tissue=op_val))
+                        #elif filter_name == 'description':
+                        #    musts.append(Q('query_string', description=op_val))
+                elif filter_name == 'nregions':
+                    musts.append(Range(num_regions={fltr : int(op_val)}))
+                elif filter_name == 'cpg':
+                    musts.append(Range(gc_content={fltr : float(op_val)}))
                 else:
-                    # there could be other filters down the road
-                    continue
-        s = Search(using=es_client).query(Bool(must=should))
+                    # reserved for more filters
+                    pass
+                 
+        s = Search(using=es_client).query(Bool(must=musts))
         response = s.execute()
         if response.success():
             return { "result" : response.to_dict()['hits']['hits'] }
         else:
             return { "result" : "no matching data found." }
-    return {"error": "no filters provided"}
+    return {"error": "no filters provided."}
 
 @app.get("/regionsets")
 async def bedstat_search(request:Request, filters:List[str] = Query(None)):
@@ -187,39 +233,94 @@ async def bedstat_search(request:Request, filters:List[str] = Query(None)):
 
 @app.post("/search")
 async def parse_search_query(request:Request, search_text:str = Form(...)):
+
+    # first = True signals the first filter in the list
+    # last op will be the last operation from the previous filter ('and' or 'or')
+    # prev is the previous filter in the list
+    # cur is the curent filter in the list
+    # and and ors are the separate lists of logical operation filters
+    # we consult the previous filter's op to find out where to add the current filter (ands or ors)
+    def process_single_filter(first, prev, cur, ands, ors):
+        if len(cur) < 6:
+            if prev[6] == 'and':
+                append_to = ands
+            else:
+                append_to = ors
+        elif prev[6] == 'and':
+            append_to = ands
+        elif prev[6] == 'or':
+            append_to = ors
+        else:
+            raise Exception("Invalid logical op in filter search")
+            
+        if first:
+            append_to.append(prev)
+        append_to.append(cur)
+
+    search_terms = ['id', 'species', 'antibody', 'treatment', 'tissue', 'description', 'nregions', 'cpg']
     
     # search for keywords like "and" or operators like ">" or "="
-    re_pattern="(((id) +(contains|matches) +(\w+))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?))+"
+    #re_pattern="((((\w) +(contains|matches) +(\w))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?)) +(and|or)*)+"
+    re_pattern = "(((id|species|antibody|treatment|tissue|description) +(contains|matches) +(\w+)( *(and|or))?)|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?( *(and|or))?))+"
+
     filter_regex = re.compile(re_pattern)
 
-    # split on an "and" only. for now
     res_filtered = []
-    ands = search_text.split("and")
-    for a in ands:
-        # do the regex match
-        if a.strip().startswith("id"):
-            res = filter_regex.match(a)
-        else:
-            res = filter_regex.match(a.strip())
-        # remove all the unmatched sections of the pattern
-        #for i in range(0,len(res.groups())):
-        #    if (res.groups()[i] != None):
-        #        res_filtered.append(res.groups()[i])
-        if len(res.groups()) > 0 and not res.groups()[0].strip().startswith("id"):
-            res_filtered.append(res.groups()[0].replace(' ', ''))
-        else:
-            res_filtered.append(res.groups()[0])
-    print(res_filtered)
+    # now run through the search_text and try to parse it
+    ands=[]
+    ors=[]
+    regex_result = filter_regex.findall(search_text)
+
+    regex_results_fixed = []
+    for r in regex_result:
+        tmp_lst = []
+        for elem in r:
+            if elem != '':
+                elem = elem.lstrip().rstrip()
+                #if elem.split(' ')[0] in ['nregions', 'cpg']:
+                #    elem = elem.replace(' ', '')
+                tmp_lst.append(elem)#.lstrip().rstrip())
+        regex_results_fixed.append(tmp_lst)
+
+    l = len(regex_results_fixed)
+
+    if (l>1):
+        # more than one search filter
+        try:
+            for idx in range(1,l):
+                cur = regex_results_fixed[idx]
+                prev = regex_results_fixed[idx-1]
+                # is this a term search of nregions/cpg search filter?
+                if idx == 1:
+                    # first filter in the list
+                    process_single_filter(True, prev, cur, ands, ors)
+                else:
+                    process_single_filter(False, prev, cur, ands, ors)
+        except Exception as e:
+            return { "result": "error", "reason" : str(e) }
+    elif l==1:
+        # just one search filter
+        ands.append(regex_results_fixed[0])
+    else:
+        return { "result": "not found" }
+
     # here we can call the search function
-    search_res = bedstat_search_db(res_filtered)
-    #print("search_res=", search_res)
-    # prepare to pas on the results to response template
+    search_res = bedstat_search_db(ands, ors)
+    if search_res["result"] == "no matching data found." or \
+       search_res["result"] == "no filters provided.":
+       return { "result" : search_res["result"] }
+
+    #print("search_res=", search_res["result"])
+    # prepare to pass on the results to response template
     template_data = []
     for s in search_res["result"]:
-        bed_id = s["_source"]["id"][0]
-        bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip,host_port,bed_id)
-        bed_gz = "http://{}:{}/regionset/?id={}&format=bed".format(host_ip,host_port,bed_id)
-        bed_json = "http://{}:{}/regionset/?id={}&format=json".format(host_ip,host_port,bed_id)
-        template_data.append((bed_id, bed_url, bed_gz, bed_json))
-    vars = { "request": request, "result" : template_data }
-    return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
+        if 'id' in s["_source"]:
+            bed_id = s["_source"]["id"][0]
+            bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip,host_port,bed_id)
+            bed_gz = "http://{}:{}/regionset/?id={}&format=bed".format(host_ip,host_port,bed_id)
+            bed_json = "http://{}:{}/regionset/?id={}&format=json".format(host_ip,host_port,bed_id)
+            template_data.append((bed_id, bed_url, bed_gz, bed_json))
+    if len(template_data)>0:
+        vars = { "request": request, "result" : template_data }
+        return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
+    return { "result" : "no data matches search criteria." }
