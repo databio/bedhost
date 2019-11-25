@@ -11,6 +11,7 @@ import uvicorn
 from const import *
 from config import *
 from elastic import *
+import elasticsearch
 from elasticsearch_dsl import Search, Q
 from elasticsearch_dsl.query import Range, Bool
 
@@ -218,13 +219,11 @@ def bedstat_search_db(ands, ors):
                 else:
                     # reserved for more filters
                     pass
-                 
-        s = Search(using=es_client).query(Bool(must=musts))
-        response = s.execute()
-        if response.success():
-            return { "result" : response.to_dict()['hits']['hits'] }
-        else:
-            return { "result" : "no matching data found." }
+        
+        # use a scan search where we get ALL the results
+        s = Search(using=es_client).query(Bool(must=musts)).to_dict()
+        response = elasticsearch.helpers.scan(es_client, query=s, index="bedstat_bedfiles")
+        return { "result" : response }
     return {"error": "no filters provided."}
 
 @app.get("/regionsets")
@@ -313,13 +312,19 @@ async def parse_search_query(request:Request, search_text:str = Form(...)):
     #print("search_res=", search_res["result"])
     # prepare to pass on the results to response template
     template_data = []
-    for s in search_res["result"]:
-        if 'id' in s["_source"]:
-            bed_id = s["_source"]["id"][0]
-            bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip,host_port,bed_id)
-            bed_gz = "http://{}:{}/regionset/?id={}&format=bed".format(host_ip,host_port,bed_id)
-            bed_json = "http://{}:{}/regionset/?id={}&format=json".format(host_ip,host_port,bed_id)
-            template_data.append((bed_id, bed_url, bed_gz, bed_json))
+    ss = search_res["result"]
+    #for s in search_res["result"]:
+    while True:
+        try:
+            s = next(ss)
+            if 'id' in s["_source"]:
+                bed_id = s["_source"]["id"][0]
+                bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip,host_port,bed_id)
+                bed_gz = "http://{}:{}/regionset/?id={}&format=bed".format(host_ip,host_port,bed_id)
+                bed_json = "http://{}:{}/regionset/?id={}&format=json".format(host_ip,host_port,bed_id)
+                template_data.append((bed_id, bed_url, bed_gz, bed_json))
+        except StopIteration:
+            break
     if len(template_data)>0:
         vars = { "request": request, "result" : template_data }
         return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
