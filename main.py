@@ -25,6 +25,8 @@ es_client = get_elastic_client(db_host)
 # get host and port to attach to (from parser)
 host_ip, host_port = get_server_cfg()
 
+search_terms = ['id', 'species', 'antibody', 'treatment', 'tissue', 'description', 'protocol', 'genome']
+
 # get number of documents in the main index and test the connection at the same time
 doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
 if doc_num == -1:
@@ -118,10 +120,11 @@ def bedstat_search_db(ands, ors):
                    '<=': 'lte',
                    '=' : 'eq',
                    '>' : 'gt',
-                   '>=': 'gte'}
-
-    search_terms = ['id', 'species', 'antibody', 'treatment', 'tissue', 'description']
+                   '>=': 'gte'}    
     
+    # construct re pattern for matches/contains
+    re_ptrn_mc = "|".join(search_terms)
+
     # process ands first
     if ands:
         # filters here looks something like (hopefully! e.g.):
@@ -129,7 +132,7 @@ def bedstat_search_db(ands, ors):
 
         # verify each filter is appropriate
         # and attempt to aggregate comparison operations per filter
-        re_pattern = "(((id|species|antibody|treatment|tissue|description) +(contains|matches) +(\w+))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?))"
+        re_pattern = "((({}) +(contains|matches) +(\w+))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?))".format(re_ptrn_mc)
         #re_pattern = '^(((\w)+ +(contains|matches) +(\w+))|((nregions|cpg)([<=>]+(=)*)(\d)+((\.)*(\d)+)))'
         filter_regex = re.compile(re_pattern)
         filters_and_ops = {}
@@ -154,7 +157,8 @@ def bedstat_search_db(ands, ors):
                 # element 1 = comparison op (<, <=, =, >, >=)
                 # element 3 = numeric value (float or int)
                 if len(s) == 1: # cpg/nregions filter
-                    s = re.split(r'(id|species|antibody|treatment|tissue|description) +(matches|contains) +(\w+)', f)
+                    t = r"({}) +(matches|contains) +(\w+)".format(re_ptrn_mc)
+                    s = re.split(t, f)
 
                 s = [ss for ss in s if ss != None and ss != '']
                 sn = s[0].strip()
@@ -197,6 +201,10 @@ def bedstat_search_db(ands, ors):
                             musts.append(Q('match', tissue=op_val))
                         elif filter_name == 'description':
                             musts.append(Q('match', description=op_val))
+                        elif filter_name == 'protocol':
+                            musts.append(Q('match', protocol=op_val))
+                        elif filter_name == 'genome':
+                            musts.append(Q('match', genome=op_val))
                     elif fltr == "contains":
                         op_val = '*'+op_val+'*'
                         default_field = filter_name
@@ -256,11 +264,12 @@ async def parse_search_query(request:Request, search_text:str = Form(...)):
             append_to.append(prev)
         append_to.append(cur)
 
-    search_terms = ['id', 'species', 'antibody', 'treatment', 'tissue', 'description', 'nregions', 'cpg']
+    # construct re pattern for matches/contains
+    re_ptrn_mc = "|".join(search_terms)
     
     # search for keywords like "and" or operators like ">" or "="
     #re_pattern="((((\w) +(contains|matches) +(\w))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?)) +(and|or)*)+"
-    re_pattern = "(((id|species|antibody|treatment|tissue|description) +(contains|matches) +(\w+)( *(and|or))?)|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?( *(and|or))?))+"
+    re_pattern = "((({}) +(contains|matches) +(\w+)( *(and|or))?)|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?( *(and|or))?))+".format(re_ptrn_mc)
 
     filter_regex = re.compile(re_pattern)
 
