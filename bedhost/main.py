@@ -344,3 +344,19 @@ async def parse_search_query(request: Request, search_text: str = Form(...)):
         vars = {"request": request, "result": template_data}
         return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
     return {"result": "no data matches search criteria."}
+
+
+def main():
+    global _LOGGER
+    parser = build_parser()
+    args = parser.parse_args()
+    if not args.command:
+        parser.print_help()
+        print("No subcommand given")
+        sys.exit(1)
+    logger_args = dict(name=PKG_NAME, fmt=LOG_FORMAT, level=5) \
+        if args.debug else dict(name=PKG_NAME, fmt=LOG_FORMAT)
+    _LOGGER = logmuse.setup_logger(**logger_args)
+    if args.command == "serve":
+        _LOGGER.info("running bedhost app")
+        uvicorn.run(app, host="0.0.0.0", port=args.port)
