@@ -1,0 +1,9 @@
+pyyaml
+aiofiles
+fastapi
+jinja2
+starlette
+uvicorn>=0.7.1
+elasticsearch-dsl>=7.0.0,<8.0.0
+python-multipart
+requests
