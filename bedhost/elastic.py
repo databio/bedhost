@@ -1,10 +1,15 @@
+import sys
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 from elasticsearch.serializer import JSONSerializer
 
+from .main import _LOGGER
+
+
 # some elasticsearch helper f-ns
 def get_elastic_client(host):
     return Elasticsearch([{'host': host}])
+
 
 # get number of documents in elastic
 def get_elastic_doc_num(es_client, idx):
@@ -15,13 +20,15 @@ def get_elastic_doc_num(es_client, idx):
         # such as [{'epoch': '1571915917', 'timestamp': '11:18:37', 'count': '6'}]
         return json_ct[0]['count'] 
     except Exception as e:
-        return -1
+        _LOGGER.error("Cannot connect to database back end. Aborting startup.")
+        sys.exit(1)
 
 
 def elastic_id_search(es_client, idx, q):
     # searches elastic for id 'q'
     res = es_client.search(index=idx, body={"query": {"match": {"id": q}}})
     return res
+
 
 # below function will ask for ALL docs stored in elastic but elastic returns only the first 10
 def get_elastic_docs(es_client, idx):
@@ -32,8 +39,7 @@ def get_elastic_docs(es_client, idx):
             }})
         if '_shards' in res and int(res['_shards']['total']) > 0:
             return res['hits']['hits']
-        else:
-            return None
+        return None
     except Exception as e:
         return None
 

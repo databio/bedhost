@@ -18,6 +18,7 @@ from .const import *
 from .config import *
 from .elastic import *
 from .helpers import build_parser
+global _LOGGER
 
 app = FastAPI(
     title="bedstat-rest-api",
@@ -37,11 +38,6 @@ def est_elastic_conn(cfg):
     es_client = get_elastic_client(db_host)
     # get number of documents in the main index and test the connection at the same time
     doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
-    if doc_num == -1:
-        # quit the server since we cannot connect to database backend
-        print("Cannot connect to database back end. Aborting startup.")
-        sys.exit(1)
-
     # get all elastic docs here, do it once
     all_elastic_docs = get_elastic_docs(es_client, 'bedstat_bedfiles')
 
