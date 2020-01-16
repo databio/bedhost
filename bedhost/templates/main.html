@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Main page{% endblock %}
+{% block head %}
+    {{ super() }}
+    <script>
+        $(document).ready(function(){
+          $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+{% endblock %}
+{% block content %}
+{% macro safe_show_asset_attr(x) %}
+    {% if x is none or not x|length %}
+        NA
+    {% else %}
+        {{ x }}
+    {% endif %}
+{% endmacro %}
+
+    <div class="container">
+      <div class="row">
+        <div class="col-4">
+        </div>
+        <div class="col-4">
+          <p class="lead">We currently have <i>{{ num_files }}</i> bed files stored and processed.</p>
+        </div>
+        <div class="col-4">
+        </div>
+      </div>
+
+      <div style="margin-top:15px"></div>
+
+      <div class="row align-items-center justify-content-center">
+        <div class="col-2"></div>
+        <div class="col-6">
+          Type in your search criteria below:
+        </div>
+      </div>
+      <div class="row align-items-center justify-content-center">
+        <div class="col-2"></div>
+        <div class="col-4">
+          <form method="POST" action="/search">
+            <div class="form-group">
+              <input type="text" class="form-control" id="search_text" name="search_text" value="nregions > 5000 and cpg <= 0.7" required>
+            </div>
+            <button class="btn btn-primary btn-sm form-control">Search</button>
+          </form>
+        </div>
+        <div class="col-2"></div>
+      </div>
+    </div>
+{% endblock %}
