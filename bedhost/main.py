@@ -12,47 +12,39 @@ from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 
 import logmuse
+from yacman import select_config
 
 from .const import *
 from .config import *
 from .elastic import *
 from .helpers import build_parser
 
-global host_ip, host_port, es_client
-
-# get basic config
-db_host = get_db_host()
-bedstat_base_path = get_bedstat_base_path()
-es_client = get_elastic_client(db_host)
-
-# get host and port to attach to (from parser)
-host_ip, host_port = get_server_cfg()
-
-search_terms = ['id', 'species', 'antibody', 'treatment', 'tissue', 'description', 'protocol', 'genome']
-
-# get number of documents in the main index and test the connection at the same time
-doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
-if doc_num == -1:
-    # quit the server since we cannot connect to database backend
-    print("Cannot connect to database back end. Aborting startup.")
-    sys.exit(1)
-
-# get all elastic docs here, do it once
-all_elastic_docs = get_elastic_docs(es_client, 'bedstat_bedfiles')
-
-# FASTAPI code starts
 app = FastAPI(
     title="bedstat-rest-api",
     description="BED file statistics and image server API",
     version=server_v
 )
+app.mount("/" + STATIC_DIRNAME, StaticFiles(directory=STATIC_PATH), name=STATIC_DIRNAME)
+templates = Jinja2Templates(directory=TEMPLATES_PATH)
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-# since we have a bunch of images to serve, that are already pre-made...
-app.mount(bedstat_base_path, StaticFiles(directory=bedstat_base_path), name="bedfile_stats")
-templates = Jinja2Templates(directory="templates")
-#router = APIRouter()
-#app.include_router(router)
+
+def est_elastic_conn(cfg):
+    global db_host
+    global es_client
+    global doc_num
+    global all_elastic_docs
+    db_host = get_db_host(cfg)
+    es_client = get_elastic_client(db_host)
+    # get number of documents in the main index and test the connection at the same time
+    doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
+    if doc_num == -1:
+        # quit the server since we cannot connect to database backend
+        print("Cannot connect to database back end. Aborting startup.")
+        sys.exit(1)
+
+    # get all elastic docs here, do it once
+    all_elastic_docs = get_elastic_docs(es_client, 'bedstat_bedfiles')
+
 
 # code to handle API paths follows
 @app.get("/")
@@ -127,7 +119,7 @@ def bedstat_search_db(ands, ors):
                    '>=': 'gte'}    
     
     # construct re pattern for matches/contains
-    re_ptrn_mc = "|".join(search_terms)
+    re_ptrn_mc = "|".join(SEARCH_TERMS)
 
     # process ands first
     if ands:
@@ -170,13 +162,13 @@ def bedstat_search_db(ands, ors):
                 if sn in filters_and_ops:
                     # have we already processed a filter? if so, we need to append
                     # this is the case where, for example, we have nregions<2000 and nregions>500
-                    if sn not in search_terms:
+                    if sn not in SEARCH_TERMS:
                         filters_and_ops[sn].append((elastic_ops.get(s[1]), s[2]))
                     else:
                         # this is not a range search but a match/contains search
                         filters_and_ops[sn].append(s[1], s[2])
                 else:
-                    if sn not in search_terms:
+                    if sn not in SEARCH_TERMS:
                         filters_and_ops[sn] = [(elastic_ops.get(s[1]), s[2])]
                         # filters_and_ops here looks something like (e.g.):
                         # {'num_regions': [('gte', '100'), ('eq', '20')], 'gc_content': [('lt', '0.30')]}
@@ -191,7 +183,7 @@ def bedstat_search_db(ands, ors):
                 # below approach is awkward since elasticsearch-dsl
                 # needs the actual name of the field in the Range object
                 # but NOT as string
-                if filter_name in search_terms:
+                if filter_name in SEARCH_TERMS:
                     if fltr == "matches":
                         if filter_name == 'id':
                             musts.append(Q('match', id=op_val))
@@ -271,7 +263,7 @@ async def parse_search_query(request: Request, search_text: str = Form(...)):
         append_to.append(cur)
 
     # construct re pattern for matches/contains
-    re_ptrn_mc = "|".join(search_terms)
+    re_ptrn_mc = "|".join(SEARCH_TERMS)
     
     # search for keywords like "and" or operators like ">" or "="
     #re_pattern="((((\w) +(contains|matches) +(\w))|((nregions|cpg) *([<=>]+(=)?) *(\d+)(\.\d+)?)) +(and|or)*)+"
@@ -334,7 +326,7 @@ async def parse_search_query(request: Request, search_text: str = Form(...)):
             s = next(ss)
             if 'id' in s["_source"]:
                 bed_id = s["_source"]["id"][0]
-                bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip, host_port ,bed_id)
+                bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip, host_port,bed_id)
                 bed_gz = "http://{}:{}/regionset/?id={}&format=bed".format(host_ip, host_port, bed_id)
                 bed_json = "http://{}:{}/regionset/?id={}&format=json".format(host_ip, host_port, bed_id)
                 template_data.append((bed_id, bed_url, bed_gz, bed_json))
@@ -348,6 +340,9 @@ async def parse_search_query(request: Request, search_text: str = Form(...)):
 
 def main():
     global _LOGGER
+    global bedstat_base_path
+    global host_ip
+    global host_port
     parser = build_parser()
     args = parser.parse_args()
     if not args.command:
@@ -357,6 +352,13 @@ def main():
     logger_args = dict(name=PKG_NAME, fmt=LOG_FORMAT, level=5) \
         if args.debug else dict(name=PKG_NAME, fmt=LOG_FORMAT)
     _LOGGER = logmuse.setup_logger(**logger_args)
+    selected_cfg = select_config(args.config, config_env_vars=CFG_ENV_VARS)
+    assert selected_cfg is not None, "You must provide a config file or set the {} environment variable".\
+        format("or ".join(CFG_ENV_VARS))
+    est_elastic_conn(selected_cfg)
+    bedstat_base_path = get_bedstat_base_path(selected_cfg)
+    host_ip, host_port = get_server_cfg(selected_cfg)
     if args.command == "serve":
+        app.mount(bedstat_base_path, StaticFiles(directory=bedstat_base_path), name="bedfile_stats")
         _LOGGER.info("running bedhost app")
         uvicorn.run(app, host="0.0.0.0", port=args.port)
