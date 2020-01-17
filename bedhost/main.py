@@ -21,7 +21,7 @@ from .helpers import build_parser
 global _LOGGER
 
 app = FastAPI(
-    title="bedstat-rest-api",
+    title="bedhost",
     description="BED file statistics and image server API",
     version=server_v
 )
@@ -30,16 +30,23 @@ templates = Jinja2Templates(directory=TEMPLATES_PATH)
 
 
 def est_elastic_conn(cfg):
+    """
+    Establish Elasticsearch connection
+
+    :param str cfg: path to the bedhost config file
+    """
     global db_host
     global es_client
     global doc_num
     global all_elastic_docs
+    global index_name
+    index_name = get_elastic_index_name(cfg)
     db_host = get_db_host(cfg)
     es_client = get_elastic_client(db_host)
     # get number of documents in the main index and test the connection at the same time
-    doc_num = get_elastic_doc_num(es_client, 'bedstat_bedfiles')
+    doc_num = get_elastic_doc_num(es_client, index_name)
     # get all elastic docs here, do it once
-    all_elastic_docs = get_elastic_docs(es_client, 'bedstat_bedfiles')
+    all_elastic_docs = get_elastic_docs(es_client, index_name)
 
 
 # code to handle API paths follows
@@ -69,7 +76,7 @@ async def bedstat_serve(request: Request, id, format):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
-    js = elastic_id_search(es_client, "bedstat_bedfiles", id)
+    js = elastic_id_search(es_client, index_name, id)
     if 'hits' in js and 'total' in js['hits'] and int(js['hits']['total']['value']) > 0:
         # we have a hit
         if format == 'html':
@@ -222,7 +229,7 @@ def bedstat_search_db(ands, ors):
         
         # use a scan search where we get ALL the results
         s = Search(using=es_client).query(Bool(must=musts)).to_dict()
-        response = elasticsearch.helpers.scan(es_client, query=s, index="bedstat_bedfiles")
+        response = elasticsearch.helpers.scan(es_client, query=s, index=index_name)
         return {"result": response}
     return {"error": "no filters provided."}
 
