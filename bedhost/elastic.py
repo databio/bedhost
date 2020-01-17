@@ -3,8 +3,6 @@ from elasticsearch import Elasticsearch
 from elasticsearch import helpers
 from elasticsearch.serializer import JSONSerializer
 
-from .main import _LOGGER
-
 
 # some elasticsearch helper f-ns
 def get_elastic_client(host):
@@ -20,7 +18,7 @@ def get_elastic_doc_num(es_client, idx):
         # such as [{'epoch': '1571915917', 'timestamp': '11:18:37', 'count': '6'}]
         return json_ct[0]['count'] 
     except Exception as e:
-        _LOGGER.error("Cannot connect to database back end. Aborting startup.")
+        print("Cannot connect to database back end. Aborting startup.")
         sys.exit(1)
 
 
