@@ -17,7 +17,7 @@ from yacman import select_config, YacAttMap
 from .const import *
 from .config import *
 from .elastic import *
-from .helpers import build_parser
+from .helpers import build_parser, get_openapi_version
 global _LOGGER
 
 app = FastAPI(
@@ -65,7 +65,8 @@ async def root(request: Request):
                 "num_files": doc_num,
                 "docs": all_elastic_docs,
                 "host_ip": host_ip,
-                "host_port": host_port}
+                "host_port": host_port,
+                "openapi_version": get_openapi_version(app)}
         return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
     else:
         return {"error": "no data available from database"}
@@ -232,9 +233,9 @@ def bedstat_search_db(ands, ors):
     return {"error": "no filters provided."}
 
 
-# @app.get("/regionsets")
-# async def bedstat_search(request: Request, filters: List[str] = Query(None)):
-#     return bedstat_search_db(filters)
+@app.get("/regionsets")
+async def bedstat_search(request: Request, filters: List[str] = Query(None)):
+    return bedstat_search_db(filters)
 
 
 @app.post("/search")
@@ -332,7 +333,7 @@ async def parse_search_query(request: Request, search_text: str = Form(...)):
             bed_json = bed_data_url_template + "json"
             template_data.append((bed_id, bed_url, bed_gz, bed_json))
     if len(template_data) > 0:
-        vars = {"request": request, "result": template_data}
+        vars = {"request": request, "result": template_data, "openapi_version": get_openapi_version(app)}
         return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
     return {"result": "no data matches search criteria."}
 
