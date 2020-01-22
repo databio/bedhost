@@ -8,3 +8,4 @@ elasticsearch-dsl>=7.0.0,<8.0.0
 python-multipart
 requests
 yacman
+bbconf>=0.0.1

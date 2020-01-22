@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}GC content{% endblock %}
+{% block title %}{{ bed_id }}{% endblock %}
 {% block content %}
 <div class="container">
  
@@ -125,15 +125,15 @@
           <tbody>
             <tr>
               <th scope="row">Raw bed file:</th>
-              <td><a href={{ bed_url }}&format=bed>{{ bed_url }}&format=bed</a></td>
+              <td><a href={{ bed_url }}?format=bed>{{ bed_url }}?format=bed</a></td>
             </tr>
             <tr>
               <th scope="row">JSON metadata:</th>
-              <td><a href={{ bed_url }}&format=json>{{ bed_url }}&format=json</a></td>
+              <td><a href={{ bed_url }}?format=json>{{ bed_url }}?format=json</a></td>
             </tr>
             <tr>
               <th scope="row">BED MD5 sum:</th>
-              <td>{{ js.md5sum[0] }}</td>
+              <td><code>{{ js.md5sum[0] }}</code></td>
             </tr>
           </tbody>
         </table>

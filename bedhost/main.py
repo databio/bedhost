@@ -12,7 +12,7 @@ from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 
 import logmuse
-from yacman import select_config
+from yacman import select_config, YacAttMap
 
 from .const import *
 from .config import *
@@ -71,8 +71,8 @@ async def root(request: Request):
         return {"error": "no data available from database"}
 
 
-@app.get("/regionset/")
-async def bedstat_serve(request: Request, id, format):
+@app.get(REGIONSET_ENDPOINT)
+async def bedstat_serve(request: Request, id, format: str = None):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
@@ -80,12 +80,10 @@ async def bedstat_serve(request: Request, id, format):
     if 'hits' in js and 'total' in js['hits'] and int(js['hits']['total']['value']) > 0:
         # we have a hit
         if format == 'html':
-            bed_url = "http://{}:{}/regionset/?id={}"
-            vars = {"request": request,
-                    "bed_id": id,
-                    "js": js['hits']['hits'][0]['_source'],
-                    "bed_url": bed_url.format(host_ip, host_port, id)}
-            return templates.TemplateResponse("gccontent.html", dict(vars, **ALL_VERSIONS))
+            bed_url = "http://{}" + REGIONSET_ENDPOINT.format(id=id)
+            template_vars = {"request": request, "bed_id": id, "js": js['hits']['hits'][0]['_source'],
+                             "bed_url": bed_url.format(host_ip, id)}
+            return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
         elif format == 'json':
             # serve the json retrieved from database
             return js['hits']['hits'][0]['_source']
@@ -234,9 +232,9 @@ def bedstat_search_db(ands, ors):
     return {"error": "no filters provided."}
 
 
-@app.get("/regionsets")
-async def bedstat_search(request: Request, filters: List[str] = Query(None)):
-    return bedstat_search_db(filters)
+# @app.get("/regionsets")
+# async def bedstat_search(request: Request, filters: List[str] = Query(None)):
+#     return bedstat_search_db(filters)
 
 
 @app.post("/search")
@@ -322,19 +320,17 @@ async def parse_search_query(request: Request, search_text: str = Form(...)):
     #print("search_res=", search_res["result"])
     # prepare to pass on the results to response template
     template_data = []
-    ss = search_res["result"]
-    #for s in search_res["result"]:
-    while True:
-        try:
-            s = next(ss)
-            if 'id' in s["_source"]:
-                bed_id = s["_source"]["id"][0]
-                bed_url = "http://{}:{}/regionset/?id={}&format=html".format(host_ip, host_port,bed_id)
-                bed_gz = "http://{}:{}/regionset/?id={}&format=bed".format(host_ip, host_port, bed_id)
-                bed_json = "http://{}:{}/regionset/?id={}&format=json".format(host_ip, host_port, bed_id)
-                template_data.append((bed_id, bed_url, bed_gz, bed_json))
-        except StopIteration:
-            break
+    # ss = search_res["result"]
+    # _LOGGER.info("ss: {}".format(ss))
+    for s in search_res["result"]:
+        if 'id' in s["_source"]:
+            bed_id = s["_source"]["id"][0]
+            bed_data_url_template = \
+                "http://{host}{re}?format=".format(host=host_ip, re=REGIONSET_ENDPOINT.format(id=bed_id))
+            bed_url = bed_data_url_template + "html"
+            bed_gz = bed_data_url_template + "bed"
+            bed_json = bed_data_url_template + "json"
+            template_data.append((bed_id, bed_url, bed_gz, bed_json))
     if len(template_data) > 0:
         vars = {"request": request, "result": template_data}
         return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
@@ -358,9 +354,11 @@ def main():
     selected_cfg = select_config(args.config, config_env_vars=CFG_ENV_VARS)
     assert selected_cfg is not None, "You must provide a config file or set the {} environment variable".\
         format("or ".join(CFG_ENV_VARS))
-    est_elastic_conn(selected_cfg)
-    bedstat_base_path = get_bedstat_base_path(selected_cfg)
-    host_ip, host_port = get_server_cfg(selected_cfg)
+    cfg = YacAttMap(filepath=selected_cfg)
+    print(cfg)
+    est_elastic_conn(cfg)
+    bedstat_base_path = get_bedstat_base_path(cfg)
+    host_ip, host_port = get_server_cfg(cfg)
     if args.command == "serve":
         app.mount(bedstat_base_path, StaticFiles(directory=bedstat_base_path), name="bedfile_stats")
         _LOGGER.info("running bedhost app")

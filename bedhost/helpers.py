@@ -41,7 +41,7 @@ def build_parser():
         sps[cmd] = add_subparser(cmd, desc)
         sps[cmd].add_argument(
             '-c', '--config', required=False, dest="config",
-            help="A path to the refgenie config file (YAML). If not provided, the first available environment variable "
+            help="A path to the bedhost config file (YAML). If not provided, the first available environment variable "
                  "among: \'{}\' will be used if set. Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val))
         sps[cmd].add_argument(
             "-d", "--dbg",

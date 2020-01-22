@@ -22,7 +22,7 @@ def get_elastic_index_name(cfg):
     """
     if 'database' in cfg and 'bed_index' in cfg['database']:
         return cfg['database']['bed_index']
-    return DEFAULT_BED_INDEX
+    return BED_INDEX
 
 
 def get_server_cfg(cfg):
