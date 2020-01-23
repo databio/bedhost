@@ -241,6 +241,16 @@ def bedstat_search_db(ands, ors):
     return {"error": "no filters provided."}
 
 
+from typing import Dict
+@app.post("/bedfiles_filter_result")
+async def bedfiles_filter_result(json: Dict):
+    global es_client
+    _LOGGER.info("Received query: {}".format(json))
+    resp = es_client.search(index=BED_INDEX, body={"query": json})
+    _LOGGER.info("response: {}".format(resp))
+    return True
+
+
 @app.get("/regionsets")
 async def bedstat_search(filters: List[str] = Query(None)):
     return bedstat_search_db(filters)
