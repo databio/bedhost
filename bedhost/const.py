@@ -13,4 +13,5 @@ TEMPLATES_DIRNAME = "templates"
 TEMPLATES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), TEMPLATES_DIRNAME)
 STATIC_DIRNAME = "static"
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_DIRNAME)
-REGIONSET_ENDPOINT = "/regionset/{id}"
+RSET_API_ENDPOINT = "regionset"
+RSET_ID_URL = "http://{}/" + RSET_API_ENDPOINT + "?id={}"

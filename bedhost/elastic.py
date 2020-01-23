@@ -22,10 +22,8 @@ def get_elastic_doc_num(es_client, idx):
         sys.exit(1)
 
 
-def elastic_id_search(es_client, idx, q):
-    # searches elastic for id 'q'
-    res = es_client.search(index=idx, body={"query": {"match": {"id": q}}})
-    return res
+def elastic_id_search(es_client, idx, id):
+    return es_client.search(index=idx, body={"query": {"match": {"id": id}}})
 
 
 # below function will ask for ALL docs stored in elastic but elastic returns only the first 10
