@@ -9,26 +9,34 @@
 {% endblock %}
     <div class="container">
       <div class="row">
-        <div class="col-4">
+        <div class="col-6">
           <p class="lead">We currently have <i>{{ num_files }}</i> bed files stored and processed.</p>
         </div>
       </div>
       <div style="margin-top:15px"></div>
       <div class="row">
-        <div class="col-12">
+        <div class="col-3">
           Select your search criteria below:
         </div>
       </div>
       <div class="row">
-        <div class="col-12">
+        <div class="col-8">
           <div id="builder-basic"></div>
           <div class="btn-group">
             <button id="btn-reset" class="btn btn-warning reset" data-target="basic">Reset</button>
-            <button id="btn-get-elastic" class="btn btn-primary parse-json" data-target="basic">Get Elastic query</button>
+            <button id="btn-post-elastic" class="btn btn-primary parse-json" data-target="basic">Search</i></button>
+            <button id="btn-show-elastic" class="btn btn-primary parse-json" data-target="basic">Get Elastic query</i></button>
           </div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="container">
+      <div class="row">
+        <div class="col-8">
+          <div id="search-results"></div>
+        </div>
       </div>
+    </div>
     <script src="../static/queryBuilder.js"></script>
 {% endblock %}
