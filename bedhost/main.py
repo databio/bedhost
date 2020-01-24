@@ -249,23 +249,18 @@ async def bedfiles_filter_result(request: Request, json: Dict):
     resp = es_client.search(index=BED_INDEX, body={"query": json})
     _LOGGER.debug("response: {}".format(resp))
     hits = resp["hits"]["hits"]
-    _LOGGER.debug("hits: {}".format(hits))
     ids = [hit["_source"]["id"][0] for hit in hits]
     _LOGGER.debug("Matched ids: {}".format(ids))
     template_data = []
     for bed_id in ids:
-        _LOGGER.debug("processing id: {}".format(bed_id))
         bed_data_url_template = RSET_ID_URL.format(host_ip, bed_id) + "&format="
         bed_url = bed_data_url_template + "html"
         bed_gz = bed_data_url_template + "bed"
         bed_json = bed_data_url_template + "json"
         template_data.append([bed_id, bed_url, bed_gz, bed_json])
     _LOGGER.debug("template_data: {}".format(template_data))
-    if len(template_data) > 0:
-        vars = {"request": request, "result": template_data, "openapi_version": get_openapi_version(app)}
-        _LOGGER.debug("serving page results page")
-        return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
-    return {"result": "no data matches search criteria."}
+    vars = {"request": request, "result": template_data, "openapi_version": get_openapi_version(app)}
+    return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
 
 
 @app.get("/regionsets")
