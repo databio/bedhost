@@ -24,12 +24,9 @@
           <div class="btn-group">
             <button id="btn-reset" class="btn btn-warning reset" data-target="basic">Reset <i class="fas fa-undo"></i></button>
             <button id="btn-post-elastic" class="btn btn-primary parse-json" data-target="basic">Search <i class="fas fa-search"></i></button>
-            <button id="btn-show-elastic" class="btn btn-primary parse-json" data-target="basic">Get Elasticsearch query <img src="https://img.icons8.com/color/22/000000/elasticsearch.png"></button>
+            <button id="btn-show-elastic" class="btn btn-secondary parse-json" data-target="basic">Get Elasticsearch query <img src="https://img.icons8.com/color/22/000000/elasticsearch.png"></button>
           </div>
           </div>
-        <div class="col-6">
-        <div id="elastic-query"></div>
-        </div>
         </div>
       </div>
     </div>
@@ -41,35 +38,6 @@
       </div>
     </div>
     <script>
-<!--      var rules_basic = {-->
-<!--        rules: [{-->
-<!--          id: 'num_regions',-->
-<!--          operator: 'less',-->
-<!--          value: 100000-->
-<!--        },-->
-<!--        {-->
-<!--          id: 'gc_content',-->
-<!--          operator: 'less',-->
-<!--          value: 0.5-->
-<!--        },-->
-<!--        {-->
-<!--          id: 'mean_abs_tss_dist',-->
-<!--          operator: 'less',-->
-<!--          value: 100-->
-<!--        },-->
-<!--        {-->
-<!--          id: 'id',-->
-<!--          operator: 'not_equal',-->
-<!--          value: "someid"-->
-<!--        },-->
-<!--        {-->
-<!--          id: 'md5sum',-->
-<!--          operator: 'not_equal',-->
-<!--          value: "somehash"-->
-<!--        }-->
-<!--        ]-->
-<!--      };-->
-
       $('#builder-basic').queryBuilder({
         plugins: {
           'bt-tooltip-errors': null
@@ -90,10 +58,7 @@
           }{{ "," if not loop.last }}
         {% endfor %}
         ]
-<!--        ,rules: rules_basic-->
       });
-
-
 
       $('#btn-reset').on('click', function() {
         $('#builder-basic').queryBuilder('reset');
