@@ -3,31 +3,33 @@
 {% block content %}
 {% block head %}
   {{ super() }}
-  <link href="https://cdn.jsdelivr.net/npm/jQuery-QueryBuilder/dist/css/query-builder.default.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/jQuery-QueryBuilder/dist/js/query-builder.standalone.min.js"></script>
   <script src="../static/query-builder-elasticsearch.js"></script>
 {% endblock %}
     <div class="container">
       <div class="row">
         <div class="col-6">
-          <p class="lead">We currently have <i>{{ num_files }}</i> bed files stored and processed.</p>
+          <h3>We currently have <i>{{ num_files }}</i> bed files stored and processed</h3>
         </div>
       </div>
       <div style="margin-top:15px"></div>
       <div class="row">
         <div class="col-3">
-          Select your search criteria below:
+          <p>Select your search criteria below:</p>
         </div>
       </div>
       <div class="row">
-        <div class="col-8">
+        <div class="col-6">
           <div id="builder-basic"></div>
           <div class="btn-group">
-            <button id="btn-reset" class="btn btn-warning reset" data-target="basic">Reset</button>
-            <button id="btn-post-elastic" class="btn btn-primary parse-json" data-target="basic">Search</i></button>
-            <button id="btn-show-elastic" class="btn btn-primary parse-json" data-target="basic">Get Elastic query</i></button>
+            <button id="btn-reset" class="btn btn-warning reset" data-target="basic">Reset <i class="fas fa-undo"></i></button>
+            <button id="btn-post-elastic" class="btn btn-primary parse-json" data-target="basic">Search <i class="fas fa-search"></i></button>
+            <button id="btn-show-elastic" class="btn btn-primary parse-json" data-target="basic">Get Elasticsearch query <img src="https://img.icons8.com/color/22/000000/elasticsearch.png"></button>
           </div>
           </div>
+        <div class="col-6">
+        <div id="elastic-query"></div>
+        </div>
         </div>
       </div>
     </div>
@@ -38,5 +40,93 @@
         </div>
       </div>
     </div>
-    <script src="../static/queryBuilder.js"></script>
+    <script>
+<!--      var rules_basic = {-->
+<!--        rules: [{-->
+<!--          id: 'num_regions',-->
+<!--          operator: 'less',-->
+<!--          value: 100000-->
+<!--        },-->
+<!--        {-->
+<!--          id: 'gc_content',-->
+<!--          operator: 'less',-->
+<!--          value: 0.5-->
+<!--        },-->
+<!--        {-->
+<!--          id: 'mean_abs_tss_dist',-->
+<!--          operator: 'less',-->
+<!--          value: 100-->
+<!--        },-->
+<!--        {-->
+<!--          id: 'id',-->
+<!--          operator: 'not_equal',-->
+<!--          value: "someid"-->
+<!--        },-->
+<!--        {-->
+<!--          id: 'md5sum',-->
+<!--          operator: 'not_equal',-->
+<!--          value: "somehash"-->
+<!--        }-->
+<!--        ]-->
+<!--      };-->
+
+      $('#builder-basic').queryBuilder({
+        plugins: {
+          'bt-tooltip-errors': null
+        },
+        filters: [
+        {% for filter in filters %}
+          {
+          id: "{{ filter["id"] }}",
+          label: "{{ filter["label"] }}",
+          type: "{{ filter["type"] }}",
+          operators: {{ filter["operators"]|safe }},
+          {% if filter["validation"] is not none %}
+            validation: {
+              min: {{ filter["validation"]["min"] }},
+              step: {{ filter["validation"]["step"] }}
+            }
+          {% endif %}
+          }{{ "," if not loop.last }}
+        {% endfor %}
+        ]
+<!--        ,rules: rules_basic-->
+      });
+
+
+
+      $('#btn-reset').on('click', function() {
+        $('#builder-basic').queryBuilder('reset');
+        $('#search-results').html("");
+      });
+
+      $('#btn-show-elastic').on('click', function() {
+        var result = $('#builder-basic').queryBuilder('getESBool');
+        if (!$.isEmptyObject(result)) {
+          prompt("Copy the Elasticsearch query to clipboard", JSON.stringify(result, null, 2))
+        }
+      });
+
+      $('#btn-post-elastic').on('click', function() {
+        var result = $('#builder-basic').queryBuilder('getESBool');
+
+        var request = $.ajax({
+            url: "/bedfiles_filter_result",
+            type: "post",
+            data: JSON.stringify(result),
+            contentType: "application/json; charset=utf-8",
+            dataType: "html"
+            });
+        request.done(function(data){
+              console.log("Data received: " + data);
+              $('#search-results').html(data);
+          });
+        request.fail(function(jqXHR, textStatus){
+              console.log('Something went wrong: ' + textStatus);
+          });
+        request.always(function(jqXHR, textStatus) {
+             console.log('Ajax request was finished')
+          });
+      })
+    </script>
 {% endblock %}

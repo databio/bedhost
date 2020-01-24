@@ -1,31 +1,37 @@
 <div class="wrapper">
-	<div class="left_footer">
-		<table class="table-responsive">
-					<thead>
-						<tr>
-							<th scope="col" class="footer">bedhost</th>
-							<th scope="col" class="footer">bedstat</th>
-							<th scope="col" class="footer">Python</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td scope="row" class="footer">
-								<code class="footer">{{apiserver_version}}</code>
-							</td>
-							<td scope="row" class="footer">
-								<code class="footer">{{bedstat_version}}</code>
-							</td>
-							<td scope="row" class="footer">
-								<code class="footer">{{python_version}}</code>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-	</div>
-    <div class="center_footer">
-		<a href="/openapi.json">OpenAPI {{openapi_version}} description</a></div>
-	<div class="right_footer">
-		&copy; 2019-2020 <a href="http://databio.org/" target="_new">Sheffield Computational Biology Lab</a>
+	<div class="container">
+		<div class="row">
+			<div class="col-12">
+				<div class="left_footer">
+					<table class="table-responsive">
+						<thead>
+							<tr>
+								<th scope="col" class="footer">bedhost</th>
+								<th scope="col" class="footer">bedstat</th>
+								<th scope="col" class="footer">Python</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td scope="row" class="footer">
+									<code class="footer">{{apiserver_version}}</code>
+								</td>
+								<td scope="row" class="footer">
+									<code class="footer">{{bedstat_version}}</code>
+								</td>
+								<td scope="row" class="footer">
+									<code class="footer">{{python_version}}</code>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div class="center_footer">
+					<a href="/openapi.json">OpenAPI {{openapi_version}} description</a></div>
+				<div class="right_footer">
+					&copy; 2019-2020 <a href="http://databio.org/" target="_new">Sheffield Computational Biology Lab</a>
+				</div>
+			</div>
+		</div>
 	</div>
 </div>

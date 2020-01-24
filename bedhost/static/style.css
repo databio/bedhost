@@ -6,10 +6,7 @@
 html,
 body {
   height: 100%;
-}
-
-#vertical {
-    padding: 5px;
+  font-size: 14px;
 }
 
 #main {
@@ -26,22 +23,6 @@ body {
   height: 40px;
   padding-top: 5px;
   padding-left: 10px;
-}
-
-.divider-15 {
-  /* adds spacing 15px */
-  width:90%;
-  min-height:1px;
-  margin-top:15px;
-  margin-bottom:15px;
-  margin-left:15px;
-  display:inline-block;
-  position:relative;
-}
-
-.divider-vertical {
-  margin-top:15px;
-  /*margin-bottom:15px;*/
 }
 
 code.footer {
@@ -64,7 +45,7 @@ label.col-form-label {
 
 .nav-item {
   color: white;
-  font-size: 1rem;
+  font-size: 14px;
   }
 
 .nav-link {
@@ -92,50 +73,8 @@ label.col-form-label {
   text-align: center;
 }
 
-.wrapper {
-  padding-left: 30px;
-  padding-right: 30px;
-  clear: both;
-  position: relative;
-  overflow: hidden;
-}
-
 div#navbar_links {
   display: flex;
-}
-
-div.col-12#genome-asset {
-    margin: auto;
-    max-width: 1400px;
-}
-
-div.col-12#txt {
-    margin: auto;
-    max-width: 1400px;
-}
-
-.asset_name {
-    width: 200px;
-}
-
-.asset_desc {
-    width: 500px;
-    min-width: 250px;
-}
-
-.actions {
-    min-width: 180px;
-    width: 180px;
-}
-
-.size {
-    width: 150px;
-    min-width: 150px;
-}
-
-.checksum {
-    width: 280px;
-    min-width: 280px;
 }
 
 .container {
