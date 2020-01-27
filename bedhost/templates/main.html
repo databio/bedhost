@@ -3,7 +3,7 @@
 {% block content %}
 {% block head %}
   {{ super() }}
-  <script src="https://cdn.jsdelivr.net/npm/jQuery-QueryBuilder/dist/js/query-builder.standalone.min.js"></script>
+  <script src="../static/query-builder.standalone.min.js"></script>
   <script src="../static/query-builder-elasticsearch.js"></script>
 {% endblock %}
     <div class="container">
@@ -32,7 +32,7 @@
     </div>
     <div class="container">
       <div class="row">
-        <div class="col-8">
+        <div class="col-12">
           <div id="search-results"></div>
         </div>
       </div>
@@ -42,6 +42,8 @@
         plugins: {
           'bt-tooltip-errors': null
         },
+
+
         filters: [
         {% for filter in filters %}
           {
@@ -76,7 +78,7 @@
         var result = $('#builder-basic').queryBuilder('getESBool');
 
         var request = $.ajax({
-            url: "/bedfiles_filter_result",
+            url: "/bedfiles_filter_result?html=True",
             type: "post",
             data: JSON.stringify(result),
             contentType: "application/json; charset=utf-8",

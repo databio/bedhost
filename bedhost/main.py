@@ -146,7 +146,7 @@ def get_search_setup(es_client):
 
 from typing import Dict
 @app.post("/bedfiles_filter_result")
-async def bedfiles_filter_result(request: Request, json: Dict):
+async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None):
     global es_client
     _LOGGER.info("Received query: {}".format(json))
     resp = es_client.search(index=BED_INDEX, body={"query": json})
@@ -154,6 +154,8 @@ async def bedfiles_filter_result(request: Request, json: Dict):
     hits = resp["hits"]["hits"]
     ids = [hit["_source"]["id"][0] for hit in hits]
     _LOGGER.info("{} matched ids: {}".format(len(ids), ids))
+    if not html:
+        return ids
     template_data = []
     for bed_id in ids:
         bed_data_url_template = RSET_ID_URL.format(host_ip, bed_id) + "&format="
