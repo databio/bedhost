@@ -2,34 +2,27 @@
 {% block title %}{{ bed_id }}{% endblock %}
 {% block content %}
 <div class="container">
- 
-  <div class="comtainer">
+  <div class="container">
     <div class="row">
       <div class="col">
-      </div>
-      <div class="col">
-        <h3>ID = {{ bed_id }}</h3>
-      </div>
-      <div class="col">
+        <h3>BED file: <code>{{ bed_id }}</code></h3>
       </div>
     </div>
   </div>
-
-  {% set bed_base_dir = url_for('bedfile_stats', path='') %}
   <table class="table table-borderless">
     <tbody>
       <tr>
         <td align="center">
-          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_gccontent.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_gccontent.png" width=75%></img></a>
+          <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_gccontent.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_gccontent.png" width=75%></img></a>
         </td>
         <td align="center">
-          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_chrombins.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_chrombins.png" width=75%></img></a>
+          <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_chrombins.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_chrombins.png" width=75%></img></a>
         </td>
         <td align="center">
-          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_partitions.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_partitions.png" width=75%></img></a>
+          <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_partitions.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_partitions.png" width=75%></img></a>
         </td>
         <td align="center">
-          <a href="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_tssdist.pdf"><img src="{{ bed_base_dir }}{{ bed_id }}/{{ bed_id }}_tssdist.png" width=75%></img></a>
+          <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_tssdist.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_tssdist.png" width=75%></img></a>
         </td>
       </tr>
       <tr>
