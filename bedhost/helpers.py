@@ -57,6 +57,20 @@ def build_parser():
     return parser
 
 
+def compose_result_response(bbc, ids):
+    """
+    Construct a list of links to display as the sesrch result
+
+    :param Iterable[str] ids: ids to compose the list for
+    :return Iterable[str]: results to display
+    """
+    template_data = []
+    for bed_id in ids:
+        bed_data_url_template = RSET_ID_URL.format(bbc.server.host, bed_id) + "&format="
+        template_data.append([bed_id] + [bed_data_url_template + ext for ext in ["html", "bed", "json"]])
+    return template_data
+
+
 def get_openapi_version(app):
     """
     Get the OpenAPI version from the OpenAPI description JSON

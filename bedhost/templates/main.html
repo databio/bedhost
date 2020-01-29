@@ -33,7 +33,31 @@
     <div class="container">
       <div class="row">
         <div class="col-12">
-          <div id="search-results"></div>
+          <div id="search-results">
+            <h3>Example search result:</h3>
+                <div>
+                  <table class="table table-hover table-sm">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>HTML</th>
+                        <th>Raw BED file</th>
+                        <th>JSON</th>
+                      </tr>
+                    </thead>
+                    <tbody id="retTable">
+                    {% for r in result %}
+                    <tr>
+                      <td>{{ r[0] }}</td>
+                      <td><a href="{{ r[1] }}">{{ r[1] }}</a></td>
+                      <td><a href="{{ r[2] }}">{{ r[2] }}</a></td>
+                      <td><a href="{{ r[3] }}">{{ r[3] }}</a></td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+          </div>
         </div>
       </div>
     </div>

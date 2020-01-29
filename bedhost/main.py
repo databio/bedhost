@@ -12,7 +12,7 @@ import bbconf
 from .const import *
 from .config import *
 from .elastic import *
-from .helpers import build_parser, get_openapi_version
+from .helpers import build_parser, get_openapi_version, compose_result_response
 global _LOGGER
 
 app = FastAPI(
@@ -32,7 +32,8 @@ async def root(request: Request):
     Offers a database query constructor for the bed files.
     """
     global bbc
-    vars = {"request": request,
+    vars = {"result": compose_result_response(bbc, bbc.search_bedfiles({"query": {"match_all": {}}})[0]['id']),
+            "request": request,
             "num_files": bbc.count_bedfiles_docs(),
             "host_ip": bbc.server.host,
             "host_port": bbc.server.port,
@@ -120,15 +121,7 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
     _LOGGER.info("{} matched ids: {}".format(len(ids), ids))
     if not html:
         return ids
-    template_data = []
-    for bed_id in ids:
-        bed_data_url_template = RSET_ID_URL.format(bbc.server.host, bed_id) + "&format="
-        bed_url = bed_data_url_template + "html"
-        bed_gz = bed_data_url_template + "bed"
-        bed_json = bed_data_url_template + "json"
-        template_data.append([bed_id, bed_url, bed_gz, bed_json])
-    _LOGGER.debug("template_data: {}".format(template_data))
-    vars = {"request": request, "result": template_data, "openapi_version": get_openapi_version(app)}
+    vars = {"request": request, "result": compose_result_response(bbc, ids), "openapi_version": get_openapi_version(app)}
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
 
 
