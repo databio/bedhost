@@ -1,4 +1,5 @@
 import uvicorn
+import sys
 from fastapi import FastAPI, Query, Form
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
@@ -10,13 +11,11 @@ import logmuse
 import bbconf
 
 from .const import *
-from .config import *
-from .elastic import *
 from .helpers import *
 global _LOGGER
 
 app = FastAPI(
-    title="bedhost",
+    title=PKG_NAME,
     description="BED file statistics and image server API",
     version=server_v
 )
@@ -65,13 +64,13 @@ async def bedstat_serve(id: str = None, format: str = None):
     if json:
         # we have a hit
         if format == 'html':
+            # serve the html splash page (redirect to a dedicated endpoint)
             return RedirectResponse(url="/bed/" + RSET_API_ENDPOINT + "?id=" + id)
         elif format == 'json':
             # serve the json retrieved from database
             return json
         elif format == 'bed':
             # serve raw bed file
-            # construct the path for the file holding the path of the raw bed file
             try:
                 headers = {'Content-Disposition': 'attachment; filename={}'.
                     format(os.path.basename(json[BEDFILE_PATH_KEY]))}
@@ -113,5 +112,5 @@ def main():
     bbc.establish_elasticsearch_connection()
     if args.command == "serve":
         app.mount(bbc.path.bedstat_output, StaticFiles(directory=bbc.path.bedstat_output), name=BED_INDEX)
-        _LOGGER.info("running bedhost app")
-        uvicorn.run(app, host="0.0.0.0", port=args.port)
+        _LOGGER.info("running {} app".format(PKG_NAME))
+        uvicorn.run(app, host=bbc.server.host, port=bbc.server.port)
