@@ -12,7 +12,7 @@ import bbconf
 from .const import *
 from .config import *
 from .elastic import *
-from .helpers import build_parser, get_openapi_version, compose_result_response
+from .helpers import *
 global _LOGGER
 
 app = FastAPI(
@@ -32,7 +32,7 @@ async def root(request: Request):
     Offers a database query constructor for the bed files.
     """
     global bbc
-    vars = {"result": compose_result_response(bbc, bbc.search_bedfiles({"query": {"match_all": {}}})[0]['id']),
+    vars = {"result": construct_search_data(bbc, bbc.search_bedfiles({"query": {"match_all": {}}})[0]['id']),
             "request": request,
             "num_files": bbc.count_bedfiles_docs(),
             "host_ip": bbc.server.host,
@@ -83,34 +83,6 @@ async def bedstat_serve(id: str = None, format: str = None):
     return {'error': 'no data found'}
 
 
-def get_search_setup(bbc):
-    """
-    Create a query setup for a Jinja2 template.
-    The setup is used ot populate a queryBuilder in a JavaScript code.
-
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :return list[dict]: a list dictionaries with search setup to populate the JavaScript code with
-    """
-    mapping = bbc.get_bedfiles_mapping()
-    attrs = list(mapping.keys())
-    setup_dicts = []
-    for attr in attrs:
-        try:
-            attr_type = mapping[attr]["type"]
-        except KeyError:
-            _LOGGER.warning("Attribute '{}' does not have type defined. "
-                            "Is it a nested mapping?".format(attr))
-            continue
-        setup_dicts.append({"id": attr,
-                            "label": attr.replace("_", " "),
-                            "type": TYPES_MAPPING[attr_type],
-                            "validation": VALIDATIONS_MAPPING[attr_type],
-                            "operators": OPERATORS_MAPPING[attr_type]
-                            })
-    _LOGGER.debug("search setup: {}".format(setup_dicts))
-    return setup_dicts
-
-
 @app.post("/bedfiles_filter_result")
 async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None):
     global bbc
@@ -121,7 +93,7 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
     _LOGGER.info("{} matched ids: {}".format(len(ids), ids))
     if not html:
         return ids
-    vars = {"request": request, "result": compose_result_response(bbc, ids), "openapi_version": get_openapi_version(app)}
+    vars = {"request": request, "result": construct_search_data(bbc, ids), "openapi_version": get_openapi_version(app)}
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
 
 

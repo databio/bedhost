@@ -1,7 +1,11 @@
+from logging import getLogger
+
 from .const import *
 from ._version import __version__ as v
 from ubiquerg import VersionInHelpParser
 from yacman import get_first_env_var
+
+_LOGGER = getLogger(PKG_NAME)
 
 
 def build_parser():
@@ -57,7 +61,35 @@ def build_parser():
     return parser
 
 
-def compose_result_response(bbc, ids):
+def get_search_setup(bbc):
+    """
+    Create a query setup for a Jinja2 template.
+    The setup is used ot populate a queryBuilder in a JavaScript code.
+
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
+    :return list[dict]: a list dictionaries with search setup to populate the JavaScript code with
+    """
+    mapping = bbc.get_bedfiles_mapping()
+    attrs = list(mapping.keys())
+    setup_dicts = []
+    for attr in attrs:
+        try:
+            attr_type = mapping[attr]["type"]
+        except KeyError:
+            _LOGGER.warning("Attribute '{}' does not have type defined. "
+                            "Is it a nested mapping?".format(attr))
+            continue
+        setup_dicts.append({"id": attr,
+                            "label": attr.replace("_", " "),
+                            "type": TYPES_MAPPING[attr_type],
+                            "validation": VALIDATIONS_MAPPING[attr_type],
+                            "operators": OPERATORS_MAPPING[attr_type]
+                            })
+    _LOGGER.debug("search setup: {}".format(setup_dicts))
+    return setup_dicts
+
+
+def construct_search_data(bbc, ids):
     """
     Construct a list of links to display as the sesrch result
 
