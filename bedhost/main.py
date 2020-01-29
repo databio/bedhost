@@ -1,18 +1,13 @@
-import os
-import sys
-import re
-import elasticsearch
 import uvicorn
-from elasticsearch_dsl import Search, Q
-from elasticsearch_dsl.query import Range, Bool
 from fastapi import FastAPI, Query, Form
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
+from typing import Dict
 
 import logmuse
-from yacman import select_config, YacAttMap
+import bbconf
 
 from .const import *
 from .config import *
@@ -29,58 +24,31 @@ app.mount("/" + STATIC_DIRNAME, StaticFiles(directory=STATIC_PATH), name=STATIC_
 templates = Jinja2Templates(directory=TEMPLATES_PATH)
 
 
-def est_elastic_conn(cfg):
-    """
-    Establish Elasticsearch connection
-
-    :param str cfg: path to the bedhost config file
-    """
-    global db_host
-    global es_client
-    global doc_num
-    global all_elastic_docs
-    global index_name
-    index_name = get_elastic_index_name(cfg)
-    db_host = get_db_host(cfg)
-    es_client = get_elastic_client(db_host)
-    # get number of documents in the main index and test the connection at the same time
-    doc_num = get_elastic_doc_num(es_client, index_name)
-    # get all elastic docs here, do it once
-    all_elastic_docs = get_elastic_docs(es_client, index_name)
-
-
-# code to handle API paths follows
 @app.get("/")
 @app.get("/index")
 async def root(request: Request):
     """
     Returns a landing page stating the number of bed files kept in database.
-    Offers a search dialog for the bed files (by fraction of name),
-    Also offers a link to a sample file
+    Offers a database query constructor for the bed files.
     """
-    global es_client
-    # pick a random ID from whatever is stored in the database
-    # and pass it onto the main page so that the user can choose to click a link to it
-    if all_elastic_docs is not None:
-        vars = {"request": request,
-                "num_files": doc_num,
-                "docs": all_elastic_docs,
-                "host_ip": host_ip,
-                "host_port": host_port,
-                "openapi_version": get_openapi_version(app),
-                "filters": get_search_setup(es_client=es_client)}
-        return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
-    else:
-        return {"error": "no data available from database"}
+    global bbc
+    vars = {"request": request,
+            "num_files": bbc.count_bedfiles_docs(),
+            "host_ip": bbc.server.host,
+            "host_port": bbc.server.port,
+            "openapi_version": get_openapi_version(app),
+            "filters": get_search_setup(bbc)}
+    return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
 
 
 @app.get("/bed/" + RSET_API_ENDPOINT)
 async def serve_bedfile_info(request: Request, id: str = None):
-    sr = elastic_id_search(es_client, index_name, id)
-    if 'hits' in sr and 'total' in sr['hits'] and int(sr['hits']['total']['value']) > 0:
+    global bbc
+    json = bbc.search_bedfiles({"match": {"id": id}})
+    if json:
         # we have a hit
-        json = sr['hits']['hits'][0]['_source']
-        template_vars = {"request": request, "bed_id": id, "js": json, "bed_url": RSET_ID_URL.format(host_ip, id)}
+        template_vars = {"request": request, "bed_id": id, "js": json,
+                         "bed_url": RSET_ID_URL.format(bbc.server.host, id)}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     return {'error': 'no data found'}
 
@@ -90,10 +58,10 @@ async def bedstat_serve(id: str = None, format: str = None):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
-    sr = elastic_id_search(es_client, index_name, id)
-    if 'hits' in sr and 'total' in sr['hits'] and int(sr['hits']['total']['value']) > 0:
+    global bbc
+    json = bbc.search_bedfiles({"match": {"id": id}})
+    if json:
         # we have a hit
-        json = sr['hits']['hits'][0]['_source']
         if format == 'html':
             return RedirectResponse(url="/bed/" + RSET_API_ENDPOINT + "?id=" + id)
         elif format == 'json':
@@ -103,12 +71,8 @@ async def bedstat_serve(id: str = None, format: str = None):
             # serve raw bed file
             # construct the path for the file holding the path of the raw bed file
             try:
-                # get the original raw bed file name .gz
-                syml_tgt = os.readlink(os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), RAW_BEDFILE_KEY)))
-                gzbedpath = os.path.abspath(os.path.join(os.path.join(bedstat_base_path, id), syml_tgt))
-                # serve the .gz file
-                headers = {'Content-Disposition': 'attachment; filename={}'.format(syml_tgt)}
-                return FileResponse(gzbedpath, headers=headers, media_type='application/gzip')
+                headers = {'Content-Disposition': 'attachment; filename={}'.format(json[BEDFILE_PATH_KEY])}
+                return FileResponse(json[BEDFILE_PATH_KEY], headers=headers, media_type='application/gzip')
             except Exception as e:
                 return {'error': str(e)}
         else:
@@ -116,20 +80,20 @@ async def bedstat_serve(id: str = None, format: str = None):
     return {'error': 'no data found'}
 
 
-def get_search_setup(es_client):
+def get_search_setup(bbc):
     """
     Create a query setup for a Jinja2 template.
     The setup is used ot populate a queryBuilder in a JavaScript code.
 
-    :param elasticsearch.client.Elasticsearch es_client: Elasticsearch client object
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
     :return list[dict]: a list dictionaries with search setup to populate the JavaScript code with
     """
-    mapping = es_client.indices.get_mapping(BED_INDEX)
-    attrs = list(mapping[BED_INDEX]["mappings"]["properties"].keys())
+    mapping = bbc.get_bedfiles_mapping()
+    attrs = list(mapping.keys())
     setup_dicts = []
     for attr in attrs:
         try:
-            attr_type = mapping[BED_INDEX]["mappings"]["properties"][attr]["type"]
+            attr_type = mapping[attr]["type"]
         except KeyError:
             _LOGGER.warning("Attribute '{}' does not have type defined. "
                             "Is it a nested mapping?".format(attr))
@@ -144,21 +108,19 @@ def get_search_setup(es_client):
     return setup_dicts
 
 
-from typing import Dict
 @app.post("/bedfiles_filter_result")
 async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None):
-    global es_client
+    global bbc
     _LOGGER.info("Received query: {}".format(json))
-    resp = es_client.search(index=BED_INDEX, body={"query": json})
-    _LOGGER.debug("response: {}".format(resp))
-    hits = resp["hits"]["hits"]
-    ids = [hit["_source"]["id"][0] for hit in hits]
+    hits = bbc.search_bedfiles(json)
+    _LOGGER.debug("response: {}".format(hits))
+    ids = [hit["id"][0] for hit in hits]
     _LOGGER.info("{} matched ids: {}".format(len(ids), ids))
     if not html:
         return ids
     template_data = []
     for bed_id in ids:
-        bed_data_url_template = RSET_ID_URL.format(host_ip, bed_id) + "&format="
+        bed_data_url_template = RSET_ID_URL.format(bbc.server.host, bed_id) + "&format="
         bed_url = bed_data_url_template + "html"
         bed_gz = bed_data_url_template + "bed"
         bed_json = bed_data_url_template + "json"
@@ -170,9 +132,7 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
 
 def main():
     global _LOGGER
-    global bedstat_base_path
-    global host_ip
-    global host_port
+    global bbc
     parser = build_parser()
     args = parser.parse_args()
     if not args.command:
@@ -182,14 +142,9 @@ def main():
     logger_args = dict(name=PKG_NAME, fmt=LOG_FORMAT, level=5) \
         if args.debug else dict(name=PKG_NAME, fmt=LOG_FORMAT)
     _LOGGER = logmuse.setup_logger(**logger_args)
-    selected_cfg = select_config(args.config, config_env_vars=CFG_ENV_VARS)
-    assert selected_cfg is not None, "You must provide a config file or set the {} environment variable".\
-        format("or ".join(CFG_ENV_VARS))
-    cfg = YacAttMap(filepath=selected_cfg)
-    est_elastic_conn(cfg)
-    bedstat_base_path = get_bedstat_base_path(cfg)
-    host_ip, host_port = get_server_cfg(cfg)
+    bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
+    bbc.establish_elasticsearch_connection()
     if args.command == "serve":
-        app.mount(bedstat_base_path, StaticFiles(directory=bedstat_base_path), name="bedfile_stats")
+        app.mount(bbc.path.bedstat_output, StaticFiles(directory=bbc.path.bedstat_output), name=BED_INDEX)
         _LOGGER.info("running bedhost app")
         uvicorn.run(app, host="0.0.0.0", port=args.port)

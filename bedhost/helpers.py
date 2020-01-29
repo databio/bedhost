@@ -53,7 +53,7 @@ def build_parser():
         "-p", "--port",
         dest="port",
         type=int,
-        help="The port the webserver should be run on.", default=DEFAULT_PORT)
+        help="The port the webserver should be run on.", default=SERVER_DEFAULT_PORT)
     return parser
 
 
