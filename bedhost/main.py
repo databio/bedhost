@@ -44,10 +44,11 @@ async def root(request: Request):
 @app.get("/bed/" + RSET_API_ENDPOINT)
 async def serve_bedfile_info(request: Request, id: str = None):
     global bbc
-    json = bbc.search_bedfiles({"match": {"id": id}})
+    json = bbc.search_bedfiles({"match": {"id": id}})[0]
     if json:
         # we have a hit
         template_vars = {"request": request, "bed_id": id, "js": json,
+                         "bedstat_output": bbc.path.bedstat_output,
                          "bed_url": RSET_ID_URL.format(bbc.server.host, id)}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     return {'error': 'no data found'}
@@ -59,7 +60,7 @@ async def bedstat_serve(id: str = None, format: str = None):
     Searches database backend for id and returns a page matching id with images and stats
     """
     global bbc
-    json = bbc.search_bedfiles({"match": {"id": id}})
+    json = bbc.search_bedfiles({"match": {"id": id}})[0]
     if json:
         # we have a hit
         if format == 'html':
@@ -71,7 +72,8 @@ async def bedstat_serve(id: str = None, format: str = None):
             # serve raw bed file
             # construct the path for the file holding the path of the raw bed file
             try:
-                headers = {'Content-Disposition': 'attachment; filename={}'.format(json[BEDFILE_PATH_KEY])}
+                headers = {'Content-Disposition': 'attachment; filename={}'.
+                    format(os.path.basename(json[BEDFILE_PATH_KEY]))}
                 return FileResponse(json[BEDFILE_PATH_KEY], headers=headers, media_type='application/gzip')
             except Exception as e:
                 return {'error': str(e)}
