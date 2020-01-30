@@ -103,3 +103,8 @@ td.footer {
 code.footer {
   color:#464c56;
 }
+
+.list-group#block{
+      display:inline-block;
+      min-width: 300px;
+ }

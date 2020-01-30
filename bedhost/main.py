@@ -45,9 +45,10 @@ async def root(request: Request):
 async def serve_bedfile_info(request: Request, id: str = None):
     global bbc
     json = bbc.search_bedfiles({"match": {"id": id}})[0]
+    _LOGGER.debug("json: {}".format(json))
     if json:
         # we have a hit
-        template_vars = {"request": request, "bed_id": id, "js": json,
+        template_vars = {"request": request, "bed_id": id, "json": json,
                          "bedstat_output": bbc.path.bedstat_output,
                          "bed_url": RSET_ID_URL.format(bbc.server.host, id)}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
