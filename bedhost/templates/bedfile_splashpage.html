@@ -9,36 +9,27 @@
       </div>
     </div>
   </div>
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <h2>Figures</h2>
-      </div>
-    </div>
-  </div>
 <div class="container">
-  <div class="row">
-    <div class="col">
-      <table class="table table-borderless">
-        <tbody>
-          <tr>
-            <td align="center">
-              <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_gccontent.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_gccontent.png" width=75%></img></a>
-            </td>
-            <td align="center">
-              <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_chrombins.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_chrombins.png" width=75%></img></a>
-            </td>
-            <td align="center">
-              <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_partitions.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_partitions.png" width=75%></img></a>
-            </td>
-            <td align="center">
-              <a href="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_tssdist.pdf"><img src="{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_tssdist.png" width=75%></img></a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+<div class="row">
+  <div class="col">
+    <h2>Figures</h2>
   </div>
+</div>
+</div>
+<div class="container">
+    <div class='row justify-content-start'>
+        {% for figure in json["plots"] %}
+            {% set i = loop.index - 1 %}
+            <figure class="figure">
+                <a href='{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_{{ figure["name"] }}.pdf'>
+                    <img id="fig" src='{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_{{ figure["name"] }}.png' class="figure-img img-fluid rounded" alt="">
+                </a>
+                <a href='{{ bedstat_output }}/{{ bed_id }}/{{ bed_id }}_{{ figure["name"] }}.pdf'>
+                    <figcaption class="figure-caption text-center"><b>Fig.{{ i }} </b><i>{{ figure["caption"] }}</i></figcaption>
+                </a>
+            </figure>
+        {% endfor %}
+    </div>
 </div>
 <div class="container">
   <div class="row">
@@ -52,7 +43,7 @@
     <div class="col-8">
       <ul id="block" class="list-group">
           {% for key, value in json.items() %}
-            {% if key != "bedfile_path" %}
+            {% if key not in ["bedfile_path", "plots"] %}
                 {% if value[0] is not string and value[0] is not number %}
                 <li class="list-group-item list-group-item-secondary"><b>{{ key }}: </b>
                   {% for val in value %}
