@@ -1,4 +1,4 @@
-# bedstat-rest-api
+# bedhost
 
 This is a REST API for the bedstat pipeline produced statistics.
 It needs a path to the *bedbase configuration file*, which can be provided either via `-c`/`--config` argument or read from `$BEDBASE` environment variable. 
