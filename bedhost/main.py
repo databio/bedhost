@@ -1,6 +1,6 @@
 import uvicorn
 import sys
-from fastapi import FastAPI, Query, Form
+from fastapi import FastAPI, HTTPException
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.templating import Jinja2Templates
 from starlette.requests import Request
@@ -52,7 +52,7 @@ async def serve_bedfile_info(request: Request, id: str = None):
                          "bedstat_output": bbc.path.bedstat_output,
                          "bed_url": RSET_ID_URL.format(bbc.server.host, id)}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
-    return {'error': 'no data found'}
+    raise HTTPException(status_code=404, detail="BED file not found")
 
 
 @app.get("/" + RSET_API_ENDPOINT)
@@ -72,21 +72,24 @@ async def bedstat_serve(id: str = None, format: str = None):
             return json
         elif format == 'bed':
             # serve raw bed file
+            bed_path = json[BEDFILE_PATH_KEY][0]
+            if not os.path.exists(bed_path):
+                raise HTTPException(status_code=404, detail="BED file not found")
             try:
-                headers = {'Content-Disposition': 'attachment; filename={}'.
-                    format(os.path.basename(json[BEDFILE_PATH_KEY]))}
-                return FileResponse(json[BEDFILE_PATH_KEY], headers=headers, media_type='application/gzip')
+                headers = {'Content-Disposition': 'attachment; filename={}'.format(os.path.basename(bed_path))}
+                return FileResponse(bed_path, headers=headers, media_type='application/gzip')
             except Exception as e:
                 return {'error': str(e)}
         else:
-            return {'error': 'Unrecognized format for request, can be one of json, html and bed'}
-    return {'error': 'no data found'}
+            raise HTTPException(status_code=400, detail="Bad request: Unrecognized format for request, "
+                                                        "can be one of json, html and bed")
+    raise HTTPException(status_code=404, detail="BED file not found")
 
 
 @app.post("/bedfiles_filter_result")
 async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None):
     global bbc
-    _LOGGER.info("Received query: {}".format(json))
+    _LOGGER.debug("Received query: {}".format(json))
     hits = bbc.search_bedfiles(json)
     _LOGGER.debug("response: {}".format(hits))
     ids = [hit["id"][0] for hit in hits]
