@@ -23,7 +23,7 @@ database:
   host : 125.132.33.111
 ```
 
-In order to configure the server itself, a section of config exists, where server host address and port can be defined. By default host `0.0.0.0` and port `8000` are used.
+In order to configure the server itself, a section of config exists, where server host address and port can be defined. By default host `0.0.0.0` and port `80` are used.
 For example:
 
 ```yaml
