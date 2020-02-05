@@ -1,4 +1,5 @@
 from bedhost._version import __version__ as server_v
+from bbconf._version import __version__ as bbconf_v
 from platform import python_version
 from bbconf.const import *
 import os
@@ -6,7 +7,7 @@ PKG_NAME = "bedhost"
 LOG_FORMAT = "%(levelname)s in %(funcName)s: %(message)s"
 
 # for now bedstat version is hard coded
-ALL_VERSIONS = {"apiserver_version": server_v, "bedstat_version": "0.0.1", "python_version": python_version()}
+ALL_VERSIONS = {"apiserver_version": server_v, "bbconf_version": bbconf_v, "python_version": python_version()}
 TEMPLATES_DIRNAME = "templates"
 TEMPLATES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), TEMPLATES_DIRNAME)
 STATIC_DIRNAME = "static"

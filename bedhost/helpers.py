@@ -14,7 +14,8 @@ def build_parser():
 
     :return argparse.ArgumentParser
     """
-    env_var_val = get_first_env_var(CFG_ENV_VARS)[1] if get_first_env_var(CFG_ENV_VARS) is not None else "not set"
+    env_var_val = get_first_env_var(CFG_ENV_VARS)[1] \
+        if get_first_env_var(CFG_ENV_VARS) is not None else "not set"
     banner = "%(prog)s - REST API for the bedstat pipeline produced statistics"
     additional_description = "For subcommand-specific options, type: '%(prog)s <subcommand> -h'"
     additional_description += "\nhttps://github.com/databio/bedhost"
@@ -45,8 +46,9 @@ def build_parser():
         sps[cmd] = add_subparser(cmd, desc)
         sps[cmd].add_argument(
             '-c', '--config', required=False, dest="config",
-            help="A path to the bedhost config file (YAML). If not provided, the first available environment variable "
-                 "among: \'{}\' will be used if set. Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val))
+            help="A path to the bedhost config file (YAML). If not provided, "
+                 "the first available environment variable among: \'{}\' will be used if set."
+                 " Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val))
         sps[cmd].add_argument(
             "-d", "--dbg",
             action="store_true",
@@ -93,7 +95,8 @@ def construct_search_data(bbc, ids):
     template_data = []
     for bed_id in ids:
         bed_data_url_template = RSET_ID_URL.format(bbc.server.host, bed_id) + "&format="
-        template_data.append([bed_id] + [bed_data_url_template + ext for ext in ["html", "bed", "json"]])
+        template_data.append([bed_id] +
+                             [bed_data_url_template + ext for ext in ["html", "bed", "json"]])
     return template_data
 
 
