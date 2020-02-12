@@ -44,19 +44,7 @@
       <ul id="block" class="list-group">
           {% for key, value in json.items() %}
             {% if key not in ["bedfile_path", "plots"] %}
-                {% if value[0] is not string and value[0] is not number %}
-                <li class="list-group-item list-group-item-secondary"><b>{{ key }}: </b>
-                  {% for val in value %}
-                      <ul class="list-group list-group-flush">
-                        {% for internal_key, internal_value in val.items() %}
-                            <li class="list-group-item list-group-item-light"><b>{{ internal_key }}</b>: {{ internal_value }}</li>
-                        {% endfor %}
-                      </ul>
-                  {% endfor %}
-                {% else %}
-                  <li class="list-group-item"><b>{{ key }}: </b>{{ value[0] }}</li>
-                {% endif %}
-              </tr>
+                <li class="list-group-item"><b>{{ key }}: </b>{{ value[0] }}</li>
             {% endif %}
           {% endfor %}
       </ul>
