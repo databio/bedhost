@@ -100,6 +100,27 @@ def construct_search_data(bbc, ids):
     return template_data
 
 
+def get_mounted_symlink_path(symlink):
+    """
+    Get path to the symlinks target on a mounted filesystem volume
+
+    :param str symlink: absolute symlink path
+    :return str: path to the symlink target on the mounted volume
+    """
+    def _find_mount_point(path):
+        path = os.path.abspath(path)
+        while not os.path.ismount(path):
+            path = os.path.dirname(path)
+        return path
+
+    link_tgt = os.readlink(symlink)
+    mnt_point = _find_mount_point(symlink)
+    first = os.path.relpath(symlink, mnt_point).split("/")[0]
+    common_idx = link_tgt.split("/").index(first)
+    rel_tgt = os.path.join(*link_tgt.split("/")[common_idx:])
+    return os.path.join(mnt_point, rel_tgt)
+
+
 def get_openapi_version(app):
     """
     Get the OpenAPI version from the OpenAPI description JSON

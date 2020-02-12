@@ -74,11 +74,13 @@ async def bedstat_serve(id: str = None, format: str = None):
         elif format == 'bed':
             # serve raw bed file
             bed_path = json[BEDFILE_PATH_KEY][0]
-            if not os.path.exists(bed_path):
+            bed_target = get_mounted_symlink_path(bed_path) \
+                if os.path.islink(bed_path) else bed_path
+            _LOGGER.debug("Determined BED file path: {}".format(bed_target))
+            if not os.path.exists(bed_target):
                 raise HTTPException(status_code=404, detail="BED file not found")
             try:
-                headers = {'Content-Disposition': 'attachment; filename={}'.format(os.path.basename(bed_path))}
-                return FileResponse(bed_path, headers=headers, media_type='application/gzip')
+                return FileResponse(bed_target, media_type='application/gzip')
             except Exception as e:
                 return {'error': str(e)}
         else:
