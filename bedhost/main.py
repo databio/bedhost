@@ -51,7 +51,8 @@ async def serve_bedfile_info(request: Request, id: str = None):
         template_vars = {"request": request, "bed_id": id, "json": json,
                          "bedstat_output": bbc.path.bedstat_output,
                          "openapi_version": get_openapi_version(app),
-                         "bed_url": RSET_ID_URL.format(bbc.server.host, id)}
+                         "bed_url": RSET_ID_URL.format(bbc.server.host, id),
+                         "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED file not found")
 
