@@ -81,7 +81,8 @@ async def bedstat_serve(id: str = None, format: str = None):
             if not os.path.exists(bed_target):
                 raise HTTPException(status_code=404, detail="BED file not found")
             try:
-                return FileResponse(bed_target, media_type='application/gzip')
+                return FileResponse(bed_target, filename=os.path.basename(bed_path),
+                                    media_type='application/gzip')
             except Exception as e:
                 return {'error': str(e)}
         else:

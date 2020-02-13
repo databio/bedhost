@@ -87,8 +87,9 @@ def get_search_setup(bbc):
 
 def construct_search_data(bbc, ids):
     """
-    Construct a list of links to display as the sesrch result
+    Construct a list of links to display as the search result
 
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
     :param Iterable[str] ids: ids to compose the list for
     :return Iterable[str]: results to display
     """
@@ -102,7 +103,8 @@ def construct_search_data(bbc, ids):
 
 def get_mounted_symlink_path(symlink):
     """
-    Get path to the symlinks target on a mounted filesystem volume
+    Get path to the symlinks target on a mounted filesystem volume.
+    Accounts for both transformed and non-transformed symlink targets
 
     :param str symlink: absolute symlink path
     :return str: path to the symlink target on the mounted volume
@@ -114,6 +116,9 @@ def get_mounted_symlink_path(symlink):
         return path
 
     link_tgt = os.readlink(symlink)
+    if not os.path.isabs(link_tgt):
+        _LOGGER.debug("Volume mounted with symlinks transformation")
+        return os.path.abspath(os.path.join(os.path.dirname(symlink), link_tgt))
     mnt_point = _find_mount_point(symlink)
     first = os.path.relpath(symlink, mnt_point).split("/")[0]
     common_idx = link_tgt.split("/").index(first)
