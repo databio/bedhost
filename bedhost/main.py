@@ -31,44 +31,65 @@ async def root(request: Request):
     Offers a database query constructor for the bed files.
     """
     global bbc
-    vars = {"result": construct_search_data(bbc, bbc.search_bedfiles({"query": {"match_all": {}}})[0]['id']),
+    bedsets_json = bbc.search_bedsets(ALL_QUERY)
+    vars = {"result": construct_search_data(bbc, bbc.search_bedfiles(ALL_QUERY)[0]['id']),
             "request": request,
-            "num_files": bbc.count_bedfiles_docs(),
+            "num_bedfiles": bbc.count_bedfiles_docs(),
+            "num_bedsets": bbc.count_bedsets_docs(),
             "host_ip": bbc.server.host,
             "host_port": bbc.server.port,
             "openapi_version": get_openapi_version(app),
-            "filters": get_search_setup(bbc)}
+            "filters": get_search_setup(bbc),
+            "bedset_ids": [bedset_data["id"] for bedset_data in bedsets_json],
+            "bedset_api_endpoint": BEDSET_API_ENDPOINT,
+            "bbc": bbc}
     return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
 
 
-@app.get("/bed/" + RSET_API_ENDPOINT)
+@app.get("/bed/" + BEDFILE_API_ENDPOINT)
 async def serve_bedfile_info(request: Request, id: str = None):
     global bbc
-    json = bbc.search_bedfiles({"match": {"id": id}})[0]
+    json = bbc.search_bedfiles({"match": {JSON_ID_KEY: id}})[0]
     _LOGGER.debug("json: {}".format(json))
     if json:
         # we have a hit
-        template_vars = {"request": request, "bed_id": id, "json": json,
+        template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc.path.bedstat_output,
                          "openapi_version": get_openapi_version(app),
-                         "bed_url": RSET_ID_URL.format(bbc.server.host, id),
+                         "bed_url": BEDFILE_ID_URL.format(bbc.server.host, id),
                          "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED file not found")
 
 
-@app.get("/" + RSET_API_ENDPOINT)
-async def bedstat_serve(id: str = None, format: str = None):
+@app.get("/bedset/" + BEDSET_API_ENDPOINT)
+async def serve_bedset_info(request: Request, id: str = None):
+    global bbc
+    json = bbc.search_bedsets({"match": {JSON_ID_KEY: id}})[0]
+    _LOGGER.debug("json: {}".format(json))
+    if json:
+        # we have a hit
+        template_vars = {"request": request, "json": json,
+                         "bedstat_output": bbc.path.bedstat_output,
+                         "openapi_version": get_openapi_version(app),
+                         "bed_url": BEDSET_ID_URL.format(bbc.server.host, id),
+                         "descs": JSON_DICTS_KEY_DESCS}
+        return templates.TemplateResponse("bedset_splashpage.html", dict(template_vars, **ALL_VERSIONS))
+    raise HTTPException(status_code=404, detail="BED set not found")
+
+
+@app.get("/" + BEDFILE_API_ENDPOINT)
+async def bedfile_serve(id: str = None, format: str = None):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
     global bbc
-    json = bbc.search_bedfiles({"match": {"id": id}})[0]
+    json = bbc.search_bedfiles({"match": {JSON_ID_KEY: id}})[0]
     if json:
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
-            return RedirectResponse(url="/bed/" + RSET_API_ENDPOINT + "?id=" + id)
+            return RedirectResponse(url="/bed/" + BEDFILE_API_ENDPOINT + "?id=" + id)
         elif format == 'json':
             # serve the json retrieved from database
             return json
@@ -89,6 +110,42 @@ async def bedstat_serve(id: str = None, format: str = None):
             raise HTTPException(status_code=400, detail="Bad request: Unrecognized format for request, "
                                                         "can be one of json, html and bed")
     raise HTTPException(status_code=404, detail="BED file not found")
+
+
+@app.get("/" + BEDSET_API_ENDPOINT)
+async def bedset_serve(id: str = None, format: str = None):
+    """
+    Searches database backend for id and returns a page matching id with images and stats
+    """
+    # TODO: create a generic endpoint that BEDSET_API_ENDPOINT
+    #  and BEDFILE_API_ENDPOINT can build on since they are similar
+    global bbc
+    json = bbc.search_bedsets({"match": {JSON_ID_KEY: id}})[0]
+    if json:
+        # we have a hit
+        if format == 'html':
+            # serve the html splash page (redirect to a dedicated endpoint)
+            return RedirectResponse(url="/bedset/" + BEDSET_API_ENDPOINT + "?id=" + id)
+        elif format == 'json':
+            # serve the json retrieved from database
+            return json
+        elif format == 'bed':
+            # serve raw bed file
+            bedset_path = json[JSON_BEDSET_TAR_PATH_KEY][0]
+            bedset_target = get_mounted_symlink_path(bedset_path) \
+                if os.path.islink(bedset_path) else bedset_path
+            _LOGGER.debug("Determined BED set path: {}".format(bedset_target))
+            if not os.path.exists(bedset_target):
+                raise HTTPException(status_code=404, detail="BED set not found")
+            try:
+                return FileResponse(bedset_target, filename=os.path.basename(bedset_path),
+                                    media_type='application/gzip')
+            except Exception as e:
+                return {'error': str(e)}
+        else:
+            raise HTTPException(status_code=400, detail="Bad request: Unrecognized format for request, "
+                                                        "can be one of json, html and bed")
+    raise HTTPException(status_code=404, detail="BED set not found")
 
 
 @app.post("/bedfiles_filter_result")

@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% set bed_id = json['id'][0] %}
+{% set bed_id = json['id'] %}
 {% block title %}{{ bed_id }}{% endblock %}
 {% block content %}
 <div class="container">
   <div class="container">
     <div class="row">
       <div class="col">
-        <h1>BED file: <code>{{ bed_id }}</code></h1>
+        <h1>BED set: <code>{{ bed_id }}</code></h1>
       </div>
     </div>
   </div>
@@ -44,24 +44,39 @@
   </div>
 </div>
 <div class="container">
-  <div class="row">
-    <div class="col-8">
-      <ul id="block" class="list-group">
-          {% for key, value in json.items() %}
-            {% if key not in ["bedfile_path", "plots"] %}
-                <li class="list-group-item"><b>{{ descs[key] }}: </b>{{ value[0] }}</li>
-            {% endif %}
-          {% endfor %}
-      </ul>
+    <div class="row">
+        <div class="col-8" style="margin-left:10px">
+            <div class="row">
+                <h3>Average statistics</h3>
+            </div>
+            <div class="row">
+                <ul id="block" class="list-group">
+                  {% for key, value in json["bedset_means"].items() %}
+                    <li class="list-group-item"><b>{{ descs[key] }}: </b>{{ value }}</li>
+                  {% endfor %}
+                </ul>
+            </div>
+            <div style="margin-top:15px"></div>
+            <div class="row">
+                <h3>Standard deviation of bedset statistics</h3>
+            </div>
+            <div class="row">
+                <ul id="block" class="list-group">
+                  {% for key, value in json["bedset_standard_deviation"].items() %}
+                    <li class="list-group-item"><b>{{ descs[key] }}: </b>{{ value }}</li>
+                  {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div class="col-3">
+          <h2>Links</h2>
+          <ul>
+            <li><a href='{{ bed_url }}&format=bed'>BED set TAR achive</a></li>
+            <li><a href='{{ bed_url }}&format=json'>JSON metadata</a></li>
+          </ul>
+        </div>
     </div>
-    <div class="col-4">
-      <h2>Links</h2>
-      <ul>
-        <li><a href='{{ bed_url }}&format=bed'>Raw bed file</a></li>
-        <li><a href='{{ bed_url }}&format=json'>JSON metadata</a></li>
-      </ul>
     </div>
-  </div>
 </div>
 
 </div>

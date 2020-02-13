@@ -12,14 +12,17 @@ TEMPLATES_DIRNAME = "templates"
 TEMPLATES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), TEMPLATES_DIRNAME)
 STATIC_DIRNAME = "static"
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_DIRNAME)
-RSET_API_ENDPOINT = "regionset"
-RSET_ID_URL = "http://{}/" + RSET_API_ENDPOINT + "?id={}"
+BEDFILE_API_ENDPOINT = "bedfile"
+BEDSET_API_ENDPOINT = "bedset"
+BEDFILE_ID_URL = "http://{}/" + BEDFILE_API_ENDPOINT + "?id={}"
+BEDSET_ID_URL = "http://{}/" + BEDSET_API_ENDPOINT + "?id={}"
 TYPES_MAPPING = {"long": "integer", "float": "double", "text": "string"}
 VALIDATIONS_MAPPING = {
     "long": {"min": 0, "step": 1},
     "float": {"min": 0, "step": 0.01},
     "text": None
 }
+ALL_QUERY = {"query": {"match_all": {}}}
 # the operator lists below are intentionally string representation of lists since they are
 # intended to populate JavaScript code in the Jinja2 template
 NUMERIC_OPERATORS = '["equal", "not_equal", "greater", "greater_or_equal", "between", "less", ' \
