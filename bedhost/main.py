@@ -114,9 +114,9 @@ def main():
         parser.print_help()
         print("No subcommand given")
         sys.exit(1)
-    logger_args = dict(name=PKG_NAME, fmt=LOG_FORMAT, level=5) \
-        if args.debug else dict(name=PKG_NAME, fmt=LOG_FORMAT)
-    _LOGGER = logmuse.setup_logger(**logger_args)
+    log_lvl = 5 if args.debug else 1
+    _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_lvl)
+    logmuse.init_logger(name="bbconf", level=log_lvl)
     bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
     bbc.establish_elasticsearch_connection()
     if args.command == "serve":
