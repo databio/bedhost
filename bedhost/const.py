@@ -20,7 +20,6 @@ VALIDATIONS_MAPPING = {
     "float": {"min": 0, "step": 0.01},
     "text": None
 }
-ALL_QUERY = {"query": {"match_all": {}}}
 # the operator lists below are intentionally string representation of lists since they are
 # intended to populate JavaScript code in the Jinja2 template
 NUMERIC_OPERATORS = '["equal", "not_equal", "greater", "greater_or_equal", "between", "less", ' \

@@ -31,10 +31,7 @@ async def root(request: Request):
     Offers a database query constructor for the bed files.
     """
     global bbc
-    bedsets_json = bbc.search_bedsets(ALL_QUERY)
-    bedset_ids = [bedset_data["id"] for bedset_data in bedsets_json] \
-        if bedsets_json is not None else None
-    vars = {"result": construct_search_data(bbc.search_bedfiles(ALL_QUERY)[0]['id'], request),
+    vars = {"result": construct_search_data(bbc.search_bedfiles(QUERY_ALL)[0]['id'], request),
             "request": request,
             "num_bedfiles": bbc.count_bedfiles_docs(),
             "num_bedsets": bbc.count_bedsets_docs(),
@@ -42,8 +39,7 @@ async def root(request: Request):
             "host_port": bbc.server.port,
             "openapi_version": get_openapi_version(app),
             "filters": get_search_setup(bbc),
-            "bedset_ids": bedset_ids,
-            "bedset_api_endpoint": BEDSET_API_ENDPOINT,
+            "bedset_urls": get_all_bedset_urls_mapping(bbc, request),
             "bbc": bbc}
     return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
 
@@ -74,7 +70,7 @@ async def serve_bedset_info(request: Request, id: str = None):
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
-                         "bed_url": get_param_url(request.url_for("bedset"), {"id": id}),
+                         "bedset_url": get_param_url(request.url_for("bedset"), {"id": id}),
                          "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedset_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED set not found")

@@ -49,13 +49,12 @@
           {% if num_bedsets is not none and num_bedsets > 0 %}
             <div class="col-4">
               <div class="row">
-                <h3>We currently have <i>{{ num_bedsets}}</i> bed sets stored and processed</h3>
+                <h3>We currently have <i>{{ num_bedsets }}</i> bed sets stored and processed</h3>
               </div>
             <div class="row" style="margin-left:10px">
                 <ul>
-                    {% for id in bedset_ids %}
+                    {% for id, url in bedset_urls.items() %}
                         <li>
-                            {%- set url = "http://%s/%s?id=%s&format=html"|format(bbc.server.host, bedset_api_endpoint, id) -%}
                             <a href="{{ url }}">{{ id }}</a>
                         </li>
                     {% endfor %}

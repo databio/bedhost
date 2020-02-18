@@ -127,6 +127,24 @@ def get_mounted_symlink_path(symlink):
     return os.path.join(mnt_point, rel_tgt)
 
 
+def get_all_bedset_urls_mapping(bbc, request):
+    """
+    Get a mapping of all bedset ids and corrsponding splaspages urls
+
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
+    :param starlette.requests.Request request: request context for url generation
+    :return Mapping: a mapping of bedset ids and the urls to the corresponding splashpages
+    """
+    bedsets_json = bbc.search_bedsets(QUERY_ALL)
+    bm = dict()
+    if bedsets_json is None:
+        return
+    for bedset_data in bedsets_json:
+        bedset_id = bedset_data["id"]
+        bm.update({bedset_id: get_param_url(request.url_for("bedsetsplash"), {"id": bedset_id})})
+    return bm
+
+
 def get_param_url(url, params):
     """
     Create parametrized URL
