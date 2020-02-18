@@ -1,4 +1,5 @@
 from logging import getLogger
+from urllib import parse
 
 from .const import *
 from ._version import __version__ as v
@@ -89,8 +90,8 @@ def construct_search_data(ids, request):
     """
     Construct a list of links to display as the search result
 
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
     :param Iterable[str] ids: ids to compose the list for
+    :param starlette.requests.Request request: request for the context
     :return Iterable[str]: results to display
     """
     template_data = []
@@ -124,6 +125,19 @@ def get_mounted_symlink_path(symlink):
     common_idx = link_tgt.split("/").index(first)
     rel_tgt = os.path.join(*link_tgt.split("/")[common_idx:])
     return os.path.join(mnt_point, rel_tgt)
+
+
+def get_param_url(url, params):
+    """
+    Create parametrized URL
+
+    :param str url: URL base to parametrize
+    :param Mapping params: a mapping of URL parameters and values
+    :return str: parametrized URL
+    """
+    if not params:
+        return url
+    return url + "?" + parse.urlencode(params)
 
 
 def get_openapi_version(app):

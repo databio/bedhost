@@ -32,15 +32,17 @@ async def root(request: Request):
     """
     global bbc
     bedsets_json = bbc.search_bedsets(ALL_QUERY)
+    bedset_ids = [bedset_data["id"] for bedset_data in bedsets_json] \
+        if bedsets_json is not None else None
     vars = {"result": construct_search_data(bbc.search_bedfiles(ALL_QUERY)[0]['id'], request),
             "request": request,
             "num_bedfiles": bbc.count_bedfiles_docs(),
             "num_bedsets": bbc.count_bedsets_docs(),
-            "host_ip": bbc.server.host,
+            "host_ip": bbc[CFG_SERVER_KEY][CFG_HOST_KEY],
             "host_port": bbc.server.port,
             "openapi_version": get_openapi_version(app),
             "filters": get_search_setup(bbc),
-            "bedset_ids": [bedset_data["id"] for bedset_data in bedsets_json],
+            "bedset_ids": bedset_ids,
             "bedset_api_endpoint": BEDSET_API_ENDPOINT,
             "bbc": bbc}
     return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
@@ -54,10 +56,9 @@ async def serve_bedfile_info(request: Request, id: str = None):
     if json:
         # we have a hit
         template_vars = {"request": request, "json": json,
-                         "bedstat_output": bbc.path.bedstat_output,
+                         "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
-                         # "bed_url": BEDFILE_ID_URL.format(bbc.server.host, bbc.server.port, id),
-                         "bed_url": request.url_for("bedfile") + "?id={}".format(id),
+                         "bed_url": get_param_url(request.url_for("bedfile"), {"id": id}),
                          "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED file not found")
@@ -71,9 +72,9 @@ async def serve_bedset_info(request: Request, id: str = None):
     if json:
         # we have a hit
         template_vars = {"request": request, "json": json,
-                         "bedstat_output": bbc.path.bedstat_output,
+                         "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
-                         "bed_url": request.url_for("bedset") + "?id={}".format(id),
+                         "bed_url": get_param_url(request.url_for("bedset"), {"id": id}),
                          "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedset_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED set not found")
@@ -90,7 +91,7 @@ async def bedfile_serve(request: Request, id: str = None, format: str = None):
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
-            return RedirectResponse(url=request.url_for("bedsplash") + "?id={}".format(id))
+            return RedirectResponse(url=get_param_url(request.url_for("bedsplash"), {"id": id}))
         elif format == 'json':
             # serve the json retrieved from database
             return json
@@ -126,7 +127,7 @@ async def bedset_serve(request: Request, id: str = None, format: str = None):
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
-            return RedirectResponse(url=request.url_for("bedsetsplash") + "?id={}".format(id))
+            return RedirectResponse(url=get_param_url(request.url_for("bedsetsplash"), {"id": id}))
         elif format == 'json':
             # serve the json retrieved from database
             return json
@@ -179,6 +180,8 @@ def main():
     bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
     bbc.establish_elasticsearch_connection()
     if args.command == "serve":
-        app.mount(bbc.path.bedstat_output, StaticFiles(directory=bbc.path.bedstat_output), name=BED_INDEX)
+        app.mount(bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
+                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY]), name=BED_INDEX)
         _LOGGER.info("running {} app".format(PKG_NAME))
-        uvicorn.run(app, host=bbc.server.host, port=bbc.server.port)
+        uvicorn.run(app, host=bbc[CFG_SERVER_KEY][CFG_HOST_KEY],
+                    port=bbc[CFG_SERVER_KEY][CFG_PORT_KEY])
