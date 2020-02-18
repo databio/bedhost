@@ -24,7 +24,7 @@ templates = Jinja2Templates(directory=TEMPLATES_PATH)
 
 
 @app.get("/")
-@app.get("/index")
+@app.get("/index", name="index")
 async def root(request: Request):
     """
     Returns a landing page stating the number of bed files kept in database.
@@ -32,7 +32,7 @@ async def root(request: Request):
     """
     global bbc
     bedsets_json = bbc.search_bedsets(ALL_QUERY)
-    vars = {"result": construct_search_data(bbc, bbc.search_bedfiles(ALL_QUERY)[0]['id']),
+    vars = {"result": construct_search_data(bbc.search_bedfiles(ALL_QUERY)[0]['id'], request),
             "request": request,
             "num_bedfiles": bbc.count_bedfiles_docs(),
             "num_bedsets": bbc.count_bedsets_docs(),
@@ -46,7 +46,7 @@ async def root(request: Request):
     return templates.TemplateResponse("main.html", dict(vars, **ALL_VERSIONS))
 
 
-@app.get("/bed/" + BEDFILE_API_ENDPOINT)
+@app.get("/bed/" + BEDFILE_API_ENDPOINT, name="bedsplash")
 async def serve_bedfile_info(request: Request, id: str = None):
     global bbc
     json = bbc.search_bedfiles({"match": {JSON_ID_KEY: id}})[0]
@@ -56,13 +56,14 @@ async def serve_bedfile_info(request: Request, id: str = None):
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc.path.bedstat_output,
                          "openapi_version": get_openapi_version(app),
-                         "bed_url": BEDFILE_ID_URL.format(bbc.server.host, id),
+                         # "bed_url": BEDFILE_ID_URL.format(bbc.server.host, bbc.server.port, id),
+                         "bed_url": request.url_for("bedfile") + "?id={}".format(id),
                          "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED file not found")
 
 
-@app.get("/bedset/" + BEDSET_API_ENDPOINT)
+@app.get("/bedset/" + BEDSET_API_ENDPOINT, name="bedsetsplash")
 async def serve_bedset_info(request: Request, id: str = None):
     global bbc
     json = bbc.search_bedsets({"match": {JSON_ID_KEY: id}})[0]
@@ -72,14 +73,14 @@ async def serve_bedset_info(request: Request, id: str = None):
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc.path.bedstat_output,
                          "openapi_version": get_openapi_version(app),
-                         "bed_url": BEDSET_ID_URL.format(bbc.server.host, id),
+                         "bed_url": request.url_for("bedset") + "?id={}".format(id),
                          "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedset_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED set not found")
 
 
-@app.get("/" + BEDFILE_API_ENDPOINT)
-async def bedfile_serve(id: str = None, format: str = None):
+@app.get("/" + BEDFILE_API_ENDPOINT, name="bedfile")
+async def bedfile_serve(request: Request, id: str = None, format: str = None):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
@@ -89,7 +90,7 @@ async def bedfile_serve(id: str = None, format: str = None):
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
-            return RedirectResponse(url="/bed/" + BEDFILE_API_ENDPOINT + "?id=" + id)
+            return RedirectResponse(url=request.url_for("bedsplash") + "?id={}".format(id))
         elif format == 'json':
             # serve the json retrieved from database
             return json
@@ -112,8 +113,8 @@ async def bedfile_serve(id: str = None, format: str = None):
     raise HTTPException(status_code=404, detail="BED file not found")
 
 
-@app.get("/" + BEDSET_API_ENDPOINT)
-async def bedset_serve(id: str = None, format: str = None):
+@app.get("/" + BEDSET_API_ENDPOINT, name="bedset")
+async def bedset_serve(request: Request, id: str = None, format: str = None):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
@@ -125,7 +126,7 @@ async def bedset_serve(id: str = None, format: str = None):
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
-            return RedirectResponse(url="/bedset/" + BEDSET_API_ENDPOINT + "?id=" + id)
+            return RedirectResponse(url=request.url_for("bedsetsplash") + "?id={}".format(id))
         elif format == 'json':
             # serve the json retrieved from database
             return json
@@ -158,7 +159,8 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
     _LOGGER.info("{} matched ids: {}".format(len(ids), ids))
     if not html:
         return ids
-    vars = {"request": request, "result": construct_search_data(bbc, ids), "openapi_version": get_openapi_version(app)}
+    vars = {"request": request, "result": construct_search_data(ids, request),
+            "openapi_version": get_openapi_version(app)}
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
 
 

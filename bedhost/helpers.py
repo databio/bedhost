@@ -85,7 +85,7 @@ def get_search_setup(bbc):
     return setup_dicts
 
 
-def construct_search_data(bbc, ids):
+def construct_search_data(ids, request):
     """
     Construct a list of links to display as the search result
 
@@ -95,7 +95,7 @@ def construct_search_data(bbc, ids):
     """
     template_data = []
     for bed_id in ids:
-        bed_data_url_template = BEDFILE_ID_URL.format(bbc.server.host, bed_id) + "&format="
+        bed_data_url_template = request.url_for("bedfile") + "?id={}&format=".format(bed_id)
         template_data.append([bed_id] +
                              [bed_data_url_template + ext for ext in ["html", "bed", "json"]])
     return template_data

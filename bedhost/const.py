@@ -14,8 +14,6 @@ STATIC_DIRNAME = "static"
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_DIRNAME)
 BEDFILE_API_ENDPOINT = "bedfile"
 BEDSET_API_ENDPOINT = "bedset"
-BEDFILE_ID_URL = "http://{}/" + BEDFILE_API_ENDPOINT + "?id={}"
-BEDSET_ID_URL = "http://{}/" + BEDSET_API_ENDPOINT + "?id={}"
 TYPES_MAPPING = {"long": "integer", "float": "double", "text": "string"}
 VALIDATIONS_MAPPING = {
     "long": {"min": 0, "step": 1},
