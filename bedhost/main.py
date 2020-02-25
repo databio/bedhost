@@ -68,8 +68,8 @@ async def serve_bedset_info(request: Request, md5sum: str = None):
     _LOGGER.debug("json: {}".format(json))
     if json:
         # we have a hit
-        bed_urls = {md5sum: get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum})
-                    for md5sum in json[JSON_BEDSET_BED_IDS_KEY][0]} \
+        bed_urls = {id: get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum})
+                    for id, md5sum in json[JSON_BEDSET_BED_IDS_KEY][0].items()} \
             if JSON_BEDSET_BED_IDS_KEY in json else None
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
