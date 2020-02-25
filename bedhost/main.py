@@ -132,6 +132,7 @@ async def bedset_serve(request: Request, id: str = None, format: str = None):
         key = resp_type_map[format]
         if key in json and os.path.exists(json[key][0]):
             f = json[key][0]
+            _LOGGER.debug("Determined {} path: {}".format(format, f))
             return FileResponse(f, filename=os.path.basename(f),
                                 media_type='application/gzip')
         else:
@@ -158,12 +159,13 @@ async def bedset_serve(request: Request, id: str = None, format: str = None):
             return FileResponse(bedset_target, filename=os.path.basename(bedset_path),
                                 media_type='application/gzip')
         elif format in rtm.keys():
-            _gz_file_response(format)
+            return _gz_file_response(format)
         else:
             raise HTTPException(status_code=400,
                                 detail="Bad request: Unrecognized format for request. "
                                        "It must be one of: html, json, bed, {}".format(", ".join(rtm.keys())))
-    raise HTTPException(status_code=404, detail="BED set not found")
+    else:
+        raise HTTPException(status_code=404, detail="BED set not found")
 
 
 @app.post("/bedfiles_filter_result")
