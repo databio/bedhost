@@ -68,8 +68,8 @@ async def serve_bedset_info(request: Request, id: str = None):
     if json:
         # we have a hit
         bed_urls = {id: get_param_url(request.url_for("bedsplash"), {"id": id})
-                    for id in json[JSON_BEDSET_BED_IDS][0]} \
-            if JSON_BEDSET_BED_IDS in json else None
+                    for id in json[JSON_BEDSET_BED_IDS_KEY][0]} \
+            if JSON_BEDSET_BED_IDS_KEY in json else None
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
@@ -121,6 +121,22 @@ async def bedset_serve(request: Request, id: str = None, format: str = None):
     """
     # TODO: create a generic endpoint that BEDSET_API_ENDPOINT
     #  and BEDFILE_API_ENDPOINT can build on since they are similar
+
+    # mapping of gzip formats and json keys to paths to files to serve upon request
+    rtm = {"igd": JSON_BEDSET_IGD_DB_KEY,
+           "pep": JSON_BEDSET_PEP_KEY,
+           "csv": JSON_BEDSET_GD_STATS_KEY,
+           "csv-all": JSON_BEDSET_BEDFILES_GD_STATS_KEY}
+
+    def _gz_file_response(format, resp_type_map=rtm):
+        key = resp_type_map[format]
+        if key in json and os.path.exists(json[key][0]):
+            f = json[key][0]
+            return FileResponse(f, filename=os.path.basename(f),
+                                media_type='application/gzip')
+        else:
+            raise HTTPException(status_code=404,
+                                detail="{} for this BED set not found".format(format))
     global bbc
     json = bbc.search_bedsets({"match": {JSON_ID_KEY: id}})[0]
     if json:
@@ -139,14 +155,14 @@ async def bedset_serve(request: Request, id: str = None, format: str = None):
             _LOGGER.debug("Determined BED set path: {}".format(bedset_target))
             if not os.path.exists(bedset_target):
                 raise HTTPException(status_code=404, detail="BED set not found")
-            try:
-                return FileResponse(bedset_target, filename=os.path.basename(bedset_path),
-                                    media_type='application/gzip')
-            except Exception as e:
-                return {'error': str(e)}
+            return FileResponse(bedset_target, filename=os.path.basename(bedset_path),
+                                media_type='application/gzip')
+        elif format in rtm.keys():
+            _gz_file_response(format)
         else:
-            raise HTTPException(status_code=400, detail="Bad request: Unrecognized format for request, "
-                                                        "can be one of json, html and bed")
+            raise HTTPException(status_code=400,
+                                detail="Bad request: Unrecognized format for request. "
+                                       "It must be one of: html, json, bed, {}".format(", ".join(rtm.keys())))
     raise HTTPException(status_code=404, detail="BED set not found")
 
 

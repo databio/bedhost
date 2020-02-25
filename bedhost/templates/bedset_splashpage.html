@@ -73,6 +73,10 @@
           <ul>
             <li><a href='{{ bedset_url }}&format=bed'>BED set TAR achive</a></li>
             <li><a href='{{ bedset_url }}&format=json'>JSON metadata</a></li>
+            <li><a href='{{ bedset_url }}&format=csv'>BED set statistics</a></li>
+            <li><a href='{{ bedset_url }}&format=csv-all'>BED files statistics</a></li>
+            <li><a href='{{ bedset_url }}&format=pep'>PEP</a></li>
+            <li><a href='{{ bedset_url }}&format=igd'>iGD database</a></li>
           </ul>
           {% if bed_urls is not none %}
             <h2>{{ descs["bedset_bed_ids"] }}</h2>
