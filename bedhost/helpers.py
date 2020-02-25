@@ -86,19 +86,21 @@ def get_search_setup(bbc):
     return setup_dicts
 
 
-def construct_search_data(ids, request):
+def construct_search_data(md5sums, request):
     """
     Construct a list of links to display as the search result
 
-    :param Iterable[str] ids: ids to compose the list for
+    :param Iterable[str] md5sums: ids to compose the list for
     :param starlette.requests.Request request: request for the context
     :return Iterable[str]: results to display
     """
     template_data = []
-    for bed_id in ids:
-        bed_data_url_template = request.url_for("bedfile") + "?id={}&format=".format(bed_id)
-        template_data.append([bed_id] +
-                             [bed_data_url_template + ext for ext in ["html", "bed", "json"]])
+    for id, md5sum in md5sums.items():
+        bed_data_url_template = \
+            request.url_for("bedfile") + "?md5sum={}&format=".format(md5sum)
+        template_data.append([id] +
+                             [bed_data_url_template + ext
+                              for ext in ["html", "bed", "json"]])
     return template_data
 
 
@@ -140,8 +142,10 @@ def get_all_bedset_urls_mapping(bbc, request):
     if bedsets_json is None:
         return
     for bedset_data in bedsets_json:
-        bedset_id = bedset_data["id"]
-        bm.update({bedset_id: get_param_url(request.url_for("bedsetsplash"), {"id": bedset_id})})
+        bedset_md5sum = bedset_data[JSON_MD5SUM_KEY][0]
+        bedset_id = bedset_data[JSON_ID_KEY]
+        bm.update({bedset_id: get_param_url(request.url_for("bedsetsplash"),
+                                            {"md5sum": bedset_md5sum})})
     return bm
 
 

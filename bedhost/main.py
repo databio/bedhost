@@ -31,7 +31,8 @@ async def root(request: Request):
     Offers a database query constructor for the bed files.
     """
     global bbc
-    vars = {"result": construct_search_data(bbc.search_bedfiles(QUERY_ALL)[0]['id'], request),
+    esr = bbc.search_bedfiles(QUERY_ALL)[0]
+    vars = {"result": construct_search_data({esr[JSON_ID_KEY][0]: esr[JSON_MD5SUM_KEY][0]}, request),
             "request": request,
             "num_bedfiles": bbc.count_bedfiles_docs(),
             "num_bedsets": bbc.count_bedsets_docs(),
@@ -45,35 +46,35 @@ async def root(request: Request):
 
 
 @app.get("/bed/" + BEDFILE_API_ENDPOINT, name="bedsplash")
-async def serve_bedfile_info(request: Request, id: str = None):
+async def serve_bedfile_info(request: Request, md5sum: str = None):
     global bbc
-    json = bbc.search_bedfiles({"match": {JSON_ID_KEY: id}})[0]
+    json = bbc.search_bedfiles({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
     _LOGGER.debug("json: {}".format(json))
     if json:
         # we have a hit
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
-                         "bed_url": get_param_url(request.url_for("bedfile"), {"id": id}),
+                         "bed_url": get_param_url(request.url_for("bedfile"), {"md5sum": md5sum}),
                          "descs": JSON_DICTS_KEY_DESCS}
         return templates.TemplateResponse("bedfile_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED file not found")
 
 
 @app.get("/bedset/" + BEDSET_API_ENDPOINT, name="bedsetsplash")
-async def serve_bedset_info(request: Request, id: str = None):
+async def serve_bedset_info(request: Request, md5sum: str = None):
     global bbc
-    json = bbc.search_bedsets({"match": {JSON_ID_KEY: id}})[0]
+    json = bbc.search_bedsets({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
     _LOGGER.debug("json: {}".format(json))
     if json:
         # we have a hit
-        bed_urls = {id: get_param_url(request.url_for("bedsplash"), {"id": id})
-                    for id in json[JSON_BEDSET_BED_IDS_KEY][0]} \
+        bed_urls = {md5sum: get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum})
+                    for md5sum in json[JSON_BEDSET_BED_IDS_KEY][0]} \
             if JSON_BEDSET_BED_IDS_KEY in json else None
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
-                         "bedset_url": get_param_url(request.url_for("bedset"), {"id": id}),
+                         "bedset_url": get_param_url(request.url_for("bedset"), {"md5sum": md5sum}),
                          "descs": JSON_DICTS_KEY_DESCS,
                          "bed_urls": bed_urls}
         return templates.TemplateResponse("bedset_splashpage.html", dict(template_vars, **ALL_VERSIONS))
@@ -81,17 +82,17 @@ async def serve_bedset_info(request: Request, id: str = None):
 
 
 @app.get("/" + BEDFILE_API_ENDPOINT, name="bedfile")
-async def bedfile_serve(request: Request, id: str = None, format: str = None):
+async def bedfile_serve(request: Request, md5sum: str = None, format: str = None):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
     global bbc
-    json = bbc.search_bedfiles({"match": {JSON_ID_KEY: id}})[0]
+    json = bbc.search_bedfiles({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
     if json:
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
-            return RedirectResponse(url=get_param_url(request.url_for("bedsplash"), {"id": id}))
+            return RedirectResponse(url=get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum}))
         elif format == 'json':
             # serve the json retrieved from database
             return json
@@ -115,7 +116,7 @@ async def bedfile_serve(request: Request, id: str = None, format: str = None):
 
 
 @app.get("/" + BEDSET_API_ENDPOINT, name="bedset")
-async def bedset_serve(request: Request, id: str = None, format: str = None):
+async def bedset_serve(request: Request, md5sum: str = None, format: str = None):
     """
     Searches database backend for id and returns a page matching id with images and stats
     """
@@ -139,12 +140,12 @@ async def bedset_serve(request: Request, id: str = None, format: str = None):
             raise HTTPException(status_code=404,
                                 detail="{} for this BED set not found".format(format))
     global bbc
-    json = bbc.search_bedsets({"match": {JSON_ID_KEY: id}})[0]
+    json = bbc.search_bedsets({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
     if json:
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
-            return RedirectResponse(url=get_param_url(request.url_for("bedsetsplash"), {"id": id}))
+            return RedirectResponse(url=get_param_url(request.url_for("bedsetsplash"), {"md5sum": md5sum}))
         elif format == 'json':
             # serve the json retrieved from database
             return json
@@ -174,11 +175,11 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
     _LOGGER.debug("Received query: {}".format(json))
     hits = bbc.search_bedfiles(json)
     _LOGGER.debug("response: {}".format(hits))
-    ids = [hit["id"][0] for hit in hits]
-    _LOGGER.info("{} matched ids: {}".format(len(ids), ids))
+    md5sums = {hit[JSON_ID_KEY]: hit[JSON_MD5SUM_KEY][0] for hit in hits}
+    _LOGGER.info("{} matched files: {}".format(len(md5sums), md5sums))
     if not html:
-        return ids
-    vars = {"request": request, "result": construct_search_data(ids, request),
+        return md5sums
+    vars = {"request": request, "result": construct_search_data(md5sums, request),
             "openapi_version": get_openapi_version(app)}
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
 
