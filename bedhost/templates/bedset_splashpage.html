@@ -74,6 +74,14 @@
             <li><a href='{{ bedset_url }}&format=bed'>BED set TAR achive</a></li>
             <li><a href='{{ bedset_url }}&format=json'>JSON metadata</a></li>
           </ul>
+          {% if bed_urls is not none %}
+            <h2>{{ descs["bedset_bed_ids"] }}</h2>
+            <ul>
+            {% for key, value in bed_urls.items() %}
+                <li><a href='{{ value }}'>{{ key }}</a></li>
+            {% endfor %}
+            </ul>
+          {% endif %}
         </div>
     </div>
     </div>

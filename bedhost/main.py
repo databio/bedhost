@@ -67,11 +67,15 @@ async def serve_bedset_info(request: Request, id: str = None):
     _LOGGER.debug("json: {}".format(json))
     if json:
         # we have a hit
+        bed_urls = {id: get_param_url(request.url_for("bedsplash"), {"id": id})
+                    for id in json[JSON_BEDSET_BED_IDS][0]} \
+            if JSON_BEDSET_BED_IDS in json else None
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
                          "bedset_url": get_param_url(request.url_for("bedset"), {"id": id}),
-                         "descs": JSON_DICTS_KEY_DESCS}
+                         "descs": JSON_DICTS_KEY_DESCS,
+                         "bed_urls": bed_urls}
         return templates.TemplateResponse("bedset_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED set not found")
 
