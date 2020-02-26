@@ -184,6 +184,26 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
 
 
+@app.get("/bedfiles_stats/{bedset_md5sum}")
+async def bedfiles_stats(request: Request, bedset_md5sum: str):
+    global bbc
+    import pandas as pd
+    link_str = "<a href='{}'>{}</a>"
+    bedset_doc = bbc.get_bedsets_doc(doc_id=bedset_md5sum)
+    bedfiles_csv = bedset_doc["_source"][JSON_BEDSET_BEDFILES_GD_STATS_KEY][0]
+    bedset_id = bedset_doc["_source"][JSON_ID_KEY]
+    df = pd.read_csv(bedfiles_csv)
+    address_col = pd.Series([get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum})
+                           for md5sum in list(df[JSON_MD5SUM_KEY])])
+    df = df.assign(address=address_col)
+    df["BED file name"] = df.apply(lambda row: link_str.format(row["address"], row["id"]), axis=1)
+    mid = df['BED file name']
+    df = df.drop(columns=["address", "id", 'BED file name'])
+    df.insert(0, 'BED file name', mid)
+    template_vars = {"request": request, "openapi_version": get_openapi_version(app), "bedset_id": bedset_id, "columns": list(df), "data": df.to_dict(orient='records')}
+    return templates.TemplateResponse("bedfiles_table.html", dict(template_vars, **ALL_VERSIONS))
+
+
 def main():
     global _LOGGER
     global bbc
