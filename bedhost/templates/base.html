@@ -11,6 +11,7 @@
 		<link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
 		<link rel="icon" type="image/vnd.microsoft.icon" href="static/bedbase_bug.ico">
 		<title>bedhost - {% block title %}{% endblock %}</title>
+		{% block morelibs%}{% endblock %}
 	{% endblock %}
 	</head>
 
