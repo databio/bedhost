@@ -76,6 +76,7 @@ async def serve_bedset_info(request: Request, md5sum: str = None):
                          "openapi_version": get_openapi_version(app),
                          "bedset_url": get_param_url(request.url_for("bedset"), {"md5sum": md5sum}),
                          "descs": JSON_DICTS_KEY_DESCS,
+                         "bedset_stats_table_url": request.url_for("bedset_stats_table", **{"bedset_md5sum": md5sum}),
                          "bed_urls": bed_urls}
         return templates.TemplateResponse("bedset_splashpage.html", dict(template_vars, **ALL_VERSIONS))
     raise HTTPException(status_code=404, detail="BED set not found")
@@ -184,7 +185,7 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
 
 
-@app.get("/bedfiles_stats/{bedset_md5sum}")
+@app.get("/bedfiles_stats/{bedset_md5sum}", name="bedset_stats_table")
 async def bedfiles_stats(request: Request, bedset_md5sum: str):
     global bbc
     import pandas as pd

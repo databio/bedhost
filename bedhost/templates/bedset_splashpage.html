@@ -69,17 +69,23 @@
             </div>
         </div>
         <div class="col-3">
-          <h2>Links</h2>
-          <ul>
-            <li><a href='{{ bedset_url }}&format=bed'>BED set TAR achive</a></li>
-            <li><a href='{{ bedset_url }}&format=json'>JSON metadata</a></li>
-            <li><a href='{{ bedset_url }}&format=csv'>BED set statistics</a></li>
-            <li><a href='{{ bedset_url }}&format=csv-all'>BED files statistics</a></li>
-            <li><a href='{{ bedset_url }}&format=pep'>PEP</a></li>
-            <li><a href='{{ bedset_url }}&format=igd'>iGD database</a></li>
-          </ul>
-          {% if bed_urls is not none %}
-            <h2>{{ descs["bedset_bed_ids"] }}</h2>
+            <h2>Links</h2>
+            <ul>
+                <li><a href="{{bedset_stats_table_url}}">BED set individual files stats table</a></li>
+            </ul>
+            <h2>Downloads</h2>
+            <ul>
+                <li><a href='{{ bedset_url }}&format=bed'>BED set TAR achive</a></li>
+                <li><a href='{{ bedset_url }}&format=json'>JSON metadata</a></li>
+                <li><a href='{{ bedset_url }}&format=csv'>BED set statistics</a></li>
+                <li><a href='{{ bedset_url }}&format=csv-all'>BED files statistics</a></li>
+                <li><a href='{{ bedset_url }}&format=pep'>PEP</a></li>
+                <li><a href='{{ bedset_url }}&format=igd'>iGD database</a></li>
+                <li><a href='{{ bedset_url }}&format=igd'>iGD database</a></li>
+                <li><a href="{{bedset_stats_table_url}}">BED set bedfiles stats</a></li>
+            </ul>
+          {% if bed_urls is not none and bed_urls|length < 20  %}
+            <h2>{{bed_urls|length}} {{ descs["bedset_bed_ids"] }}</h2>
             <ul>
             {% for key, value in bed_urls.items() %}
                 <li><a href='{{ value }}'>{{ key }}</a></li>
