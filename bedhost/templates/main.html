@@ -54,18 +54,18 @@
         console.log('Handler for .ready() called.')
         <!-- This function is called every time the page is loaded to get the latest result query result -->
         $.get( "/serve_rules", function( data ) {
-          console.log("Rules received: " + data);
+          console.log("Rules received: " + JSON.stringify(data));
             $('#builder-basic').queryBuilder('setRules', data);
         });
         var request = $.ajax({
             url: "/bedfiles_filter_result?html=True",
             type: "post",
-            data: JSON.stringify({current: null}),
+            data: JSON.stringify({"elastic":{current: null}}),
             contentType: "application/json; charset=utf-8",
             dataType: "html"
         });
         request.done(function(data){
-            console.log("Data received: " + data);
+            console.log("Data received: " + JSON.stringify(data));
             $('#search-results').html(data);
         });
         request.fail(function(jqXHR, textStatus){
@@ -113,28 +113,11 @@
 
     $('#btn-post-elastic').on('click', function() {
         var current_rules = $('#builder-basic').queryBuilder('getRules');
-        var request_rules = $.ajax({
-            url: "/save_rules",
-            type: "post",
-            data: JSON.stringify(current_rules),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json"
-        });
-        request_rules.done(function(data){
-            console.log("request_rules done");
-        });
-        request_rules.fail(function(jqXHR, textStatus){
-            console.log('Something went wrong: ' + textStatus);
-        });
-        request_rules.always(function(jqXHR, textStatus) {
-            console.log('rules ajax request was finished')
-        });
-
-        var result = $('#builder-basic').queryBuilder('getESBool');
+        var query = $('#builder-basic').queryBuilder('getESBool');
         var request = $.ajax({
             url: "/bedfiles_filter_result?html=True",
             type: "post",
-            data: JSON.stringify(result),
+            data: JSON.stringify({"elastic":query,"rules":current_rules}),
             contentType: "application/json; charset=utf-8",
             dataType: "html"
         });
