@@ -71,7 +71,7 @@
         <div class="col-3">
             <h2>Links</h2>
             <ul>
-                <li><a href="{{bedset_stats_table_url}}">BED set individual files stats table</a></li>
+                <li><a href='{{bedset_stats_table_url}}'>BED set individual files stats table</a></li>
             </ul>
             <h2>Downloads</h2>
             <ul>
@@ -81,8 +81,6 @@
                 <li><a href='{{ bedset_url }}&format=csv-all'>BED files statistics</a></li>
                 <li><a href='{{ bedset_url }}&format=pep'>PEP</a></li>
                 <li><a href='{{ bedset_url }}&format=igd'>iGD database</a></li>
-                <li><a href='{{ bedset_url }}&format=igd'>iGD database</a></li>
-                <li><a href="{{bedset_stats_table_url}}">BED set bedfiles stats</a></li>
             </ul>
           {% if bed_urls is not none and bed_urls|length < 20  %}
             <h2>{{bed_urls|length}} {{ descs["bedset_bed_ids"] }}</h2>

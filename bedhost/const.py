@@ -28,3 +28,12 @@ TEXT_OPERATORS = '["equal", "not_equal", "in", "not_in", "is_null", "is_not_null
 OPERATORS_MAPPING = {"text": TEXT_OPERATORS,
                      "float": NUMERIC_OPERATORS,
                      "long": NUMERIC_OPERATORS}
+INIT_ELASTIC = {'bool': {'must': [{'range': {'gc_content': {'gt': 0.5}}}]}}
+INIT_QUERYBUILDER = {'condition': 'AND', 'rules': [
+    {'id': 'gc_content',
+     'field': 'gc_content',
+     'type': 'double',
+     'input': 'number',
+     'operator': 'greater',
+     'value': 0.5}
+], 'valid': True}

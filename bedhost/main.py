@@ -31,8 +31,13 @@ async def root(request: Request):
     Offers a database query constructor for the bed files.
     """
     global bbc
-    esr = bbc.search_bedfiles(QUERY_ALL)[0]
-    vars = {"result": construct_search_data({esr[JSON_ID_KEY][0]: esr[JSON_MD5SUM_KEY][0]}, request),
+    global current_result
+    if current_result is None:
+        # initialize search results
+        hits = bbc.search_bedfiles(INIT_ELASTIC)
+        md5sums = {hit[JSON_ID_KEY][0]: hit[JSON_MD5SUM_KEY][0] for hit in hits}
+        current_result = construct_search_data(md5sums, request)
+    vars = {"result": current_result,
             "request": request,
             "num_bedfiles": bbc.count_bedfiles_docs(),
             "num_bedsets": bbc.count_bedsets_docs(),
@@ -173,16 +178,39 @@ async def bedset_serve(request: Request, md5sum: str = None, format: str = None)
 @app.post("/bedfiles_filter_result")
 async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None):
     global bbc
+    global current_result
     _LOGGER.debug("Received query: {}".format(json))
+    if "current" in json.keys():
+        # special kind of query, to serve the latest results
+        if html:
+            _LOGGER.debug("Serving current result")
+            vars = {"request": request, "result": current_result,
+                    "openapi_version": get_openapi_version(app)}
+            return templates.TemplateResponse("response_search.html",
+                                              dict(vars, **ALL_VERSIONS))
     hits = bbc.search_bedfiles(json)
     _LOGGER.debug("response: {}".format(hits))
-    md5sums = {hit[JSON_ID_KEY]: hit[JSON_MD5SUM_KEY][0] for hit in hits}
+    md5sums = {hit[JSON_ID_KEY][0]: hit[JSON_MD5SUM_KEY][0] for hit in hits}
     _LOGGER.info("{} matched files: {}".format(len(md5sums), md5sums))
     if not html:
         return md5sums
-    vars = {"request": request, "result": construct_search_data(md5sums, request),
+    current_result = construct_search_data(md5sums, request)
+    vars = {"request": request, "result": current_result,
             "openapi_version": get_openapi_version(app)}
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
+
+
+@app.post("/save_rules")
+async def save_rules(request: Request, json: Dict):
+    global current_rules
+    current_rules = json
+    return True
+
+
+@app.get("/serve_rules")
+async def serve_rules(request: Request):
+    global current_rules
+    return current_rules
 
 
 @app.get("/bedfiles_stats/{bedset_md5sum}", name="bedset_stats_table")
@@ -193,7 +221,10 @@ async def bedfiles_stats(request: Request, bedset_md5sum: str):
     bedset_doc = bbc.get_bedsets_doc(doc_id=bedset_md5sum)
     bedfiles_csv = bedset_doc["_source"][JSON_BEDSET_BEDFILES_GD_STATS_KEY][0]
     bedset_id = bedset_doc["_source"][JSON_ID_KEY]
-    df = pd.read_csv(bedfiles_csv)
+    try:
+        df = pd.read_csv(bedfiles_csv)
+    except FileNotFoundError:
+        raise HTTPException(status_code=404, detail="CSV file not found")
     address_col = pd.Series([get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum})
                            for md5sum in list(df[JSON_MD5SUM_KEY])])
     df = df.assign(address=address_col)
@@ -208,6 +239,8 @@ async def bedfiles_stats(request: Request, bedset_md5sum: str):
 def main():
     global _LOGGER
     global bbc
+    global current_result
+    global current_rules
     parser = build_parser()
     args = parser.parse_args()
     if not args.command:
@@ -219,6 +252,8 @@ def main():
     logmuse.init_logger(name="bbconf", level=log_lvl)
     bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
     bbc.establish_elasticsearch_connection()
+    current_result = None
+    current_rules = INIT_QUERYBUILDER
     if args.command == "serve":
         app.mount(bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
                   StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY]), name=BED_INDEX)
