@@ -33,16 +33,16 @@ async def root(request: Request):
     Offers a database query constructor for the bed files.
     """
     global bbc
-    if "current_result" not in request.session:
+    if CUR_RESULT not in request.session:
         _LOGGER.debug("Creating sample result")
         hits = bbc.search_bedfiles(INIT_ELASTIC)
         md5sums = {hit[JSON_ID_KEY][0]: hit[JSON_MD5SUM_KEY][0] for hit in hits}
         current_result = construct_search_data(md5sums, request)
-        request.session.update({"current_result": current_result})
-    if "current_rules" not in request.session:
+        request.session.update({CUR_RESULT: current_result})
+    if CUR_RULES not in request.session:
         _LOGGER.debug("Creating sample filter rules")
-        request.session.update({"current_rules": INIT_QUERYBUILDER})
-    vars = {"result": request.session["current_result"],
+        request.session.update({CUR_RULES: INIT_QUERYBUILDER})
+    vars = {"result": request.session[CUR_RESULT],
             "request": request,
             "num_bedfiles": bbc.count_bedfiles_docs(),
             "num_bedsets": bbc.count_bedsets_docs(),
@@ -188,7 +188,7 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
         # special kind of query, to serve the latest results
         if html:
             _LOGGER.debug("Serving current result")
-            vars = {"request": request, "result": request.session["current_result"],
+            vars = {"request": request, "result": request.session[CUR_RESULT],
                     "openapi_version": get_openapi_version(app)}
             return templates.TemplateResponse("response_search.html",
                                               dict(vars, **ALL_VERSIONS))
@@ -199,8 +199,8 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
     if not html:
         return md5sums
     current_result = construct_search_data(md5sums, request)
-    request.session.update({"current_result": current_result})
-    request.session.update({"current_rules": json["rules"]})
+    request.session.update({CUR_RESULT: current_result})
+    request.session.update({CUR_RULES: json["rules"]})
     vars = {"request": request, "result": current_result,
             "openapi_version": get_openapi_version(app)}
     return templates.TemplateResponse("response_search.html", dict(vars, **ALL_VERSIONS))
@@ -208,7 +208,7 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
 
 @app.get("/serve_rules")
 async def serve_rules(request: Request):
-    return request.session["current_rules"]
+    return request.session[CUR_RULES]
 
 
 @app.get("/bedfiles_stats/{bedset_md5sum}", name="bedset_stats_table")
