@@ -37,3 +37,5 @@ INIT_QUERYBUILDER = {'condition': 'AND', 'rules': [
      'operator': 'greater',
      'value': 0.5}
 ], 'valid': True}
+CUR_RESULT = "current_result"
+CUR_RULES = "current_rules"
