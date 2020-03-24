@@ -2,10 +2,11 @@ pyyaml
 aiofiles
 fastapi
 jinja2
-starlette
+starlette==0.12.9
 uvicorn>=0.7.1
 elasticsearch-dsl>=7.0.0,<8.0.0
 python-multipart
 requests
 yacman
 bbconf>=0.0.2-dev
+itsdangerous
