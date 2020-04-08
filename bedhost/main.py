@@ -7,6 +7,7 @@ from starlette.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 from typing import Dict
+from logging import INFO, DEBUG
 
 import logmuse
 import bbconf
@@ -243,14 +244,15 @@ def main():
         parser.print_help()
         print("No subcommand given")
         sys.exit(1)
-    log_lvl = 5 if args.debug else 1
-    _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_lvl)
-    logmuse.init_logger(name="bbconf", level=log_lvl)
+    log_level = DEBUG if args.debug else INFO
+    _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
+    logmuse.init_logger(name="bbconf", level=log_level)
     bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
     bbc.establish_elasticsearch_connection()
     if args.command == "serve":
         app.mount(bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
-                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY]), name=BED_INDEX)
+                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY]),
+                  name=BED_INDEX)
         _LOGGER.info("running {} app".format(PKG_NAME))
         uvicorn.run(app, host=bbc[CFG_SERVER_KEY][CFG_HOST_KEY],
                     port=bbc[CFG_SERVER_KEY][CFG_PORT_KEY])
