@@ -1,0 +1,11 @@
+metadata:
+  sample_table: bedbuncher_query.csv
+  output_dir: $BBTUTORIAL/outputs/bedbuncher_output/bedbuncher_pipeline_logs
+  pipeline_interfaces: $BBTUTORIAL/bedbuncher/pipeline_interface.yaml 
+
+derived_attributes: [JSONquery_path, bbconfig_path]
+data_sources:
+  source1: $BBTUTORIAL/bedbuncher/tests/{JSONquery_name}.json
+  source2: $BBTUTORIAL/configuration_files/{bbconfig_name}.yaml
+constant_attributes:
+  protocol: "bedbuncher"
