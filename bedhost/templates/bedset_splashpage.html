@@ -24,10 +24,10 @@
             {% for figure in json["plots"] %}
                 {% set i = loop.index - 1 %}
                 <figure class="figure">
-                    <a href='{{ bedstat_output }}/{{ bed_md5sum }}/{{ bed_id }}_{{ figure["name"] }}.pdf'>
-                        <img id="fig" src='{{ bedstat_output }}/{{ bed_md5sum }}/{{ bed_id }}_{{ figure["name"] }}.png' class="figure-img img-fluid rounded" alt="">
+                    <a href='{{ bedbuncher_output }}/{{ bed_md5sum }}/{{ bed_id }}_{{ figure["name"] }}.pdf'>
+                        <img id="fig" src='{{ bedbuncher_output }}/{{ bed_md5sum }}/{{ bed_id }}_{{ figure["name"] }}.png' class="figure-img img-fluid rounded" alt="">
                     </a>
-                    <a href='{{ bedstat_output }}/{{ bed_md5sum }}/{{ bed_id }}_{{ figure["name"] }}.pdf'>
+                    <a href='{{ bedbuncher_output }}/{{ bed_md5sum }}/{{ bed_id }}_{{ figure["name"] }}.pdf'>
                         <figcaption class="figure-caption text-center"><b>Fig.{{ i }} </b><i>{{ figure["caption"] }}</i></figcaption>
                     </a>
                 </figure>
