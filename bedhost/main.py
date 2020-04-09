@@ -65,7 +65,6 @@ async def serve_bedfile_info(request: Request, md5sum: str = None):
         # we have a hit
         template_vars = {"request": request, "json": json,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
-                         "bedbuncher_output": bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
                          "bed_url": get_param_url(request.url_for("bedfile"), {"md5sum": md5sum}),
                          "descs": JSON_DICTS_KEY_DESCS}
@@ -84,7 +83,6 @@ async def serve_bedset_info(request: Request, md5sum: str = None):
                     for id, md5sum in json[JSON_BEDSET_BED_IDS_KEY][0].items()} \
             if JSON_BEDSET_BED_IDS_KEY in json else None
         template_vars = {"request": request, "json": json,
-                         "bedstat_output": bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
                          "bedbuncher_output": bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
                          "bedset_url": get_param_url(request.url_for("bedset"), {"md5sum": md5sum}),
