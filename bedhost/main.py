@@ -18,7 +18,7 @@ global _LOGGER
 
 app = FastAPI(
     title=PKG_NAME,
-    description="BED file statistics and image server API",
+    description="BED file/sets statistics and image server API",
     version=server_v
 )
 app.mount("/" + STATIC_DIRNAME, StaticFiles(directory=STATIC_PATH), name=STATIC_DIRNAME)
@@ -64,7 +64,8 @@ async def serve_bedfile_info(request: Request, md5sum: str = None):
     if json:
         # we have a hit
         template_vars = {"request": request, "json": json,
-                         "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
+                         "bedstat_output": bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
+                         "bedbuncher_output": bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
                          "bed_url": get_param_url(request.url_for("bedfile"), {"md5sum": md5sum}),
                          "descs": JSON_DICTS_KEY_DESCS}
@@ -83,7 +84,8 @@ async def serve_bedset_info(request: Request, md5sum: str = None):
                     for id, md5sum in json[JSON_BEDSET_BED_IDS_KEY][0].items()} \
             if JSON_BEDSET_BED_IDS_KEY in json else None
         template_vars = {"request": request, "json": json,
-                         "bedstat_output": bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
+                         "bedstat_output": bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
+                         "bedbuncher_output": bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
                          "bedset_url": get_param_url(request.url_for("bedset"), {"md5sum": md5sum}),
                          "descs": JSON_DICTS_KEY_DESCS,
@@ -250,9 +252,13 @@ def main():
     bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
     bbc.establish_elasticsearch_connection()
     if args.command == "serve":
-        app.mount(bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY],
-                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_PIP_OUTPUT_KEY]),
+        app.mount(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
+                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY]),
                   name=BED_INDEX)
+        app.mount(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
+                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY]),
+                  name=BEDSET_INDEX)
+        
         _LOGGER.info("running {} app".format(PKG_NAME))
         uvicorn.run(app, host=bbc[CFG_SERVER_KEY][CFG_HOST_KEY],
                     port=bbc[CFG_SERVER_KEY][CFG_PORT_KEY])
