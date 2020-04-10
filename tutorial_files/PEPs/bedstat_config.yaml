@@ -10,5 +10,5 @@ constant_attributes:
 
 derived_attributes: [output_file_path, yaml_file]
 data_sources:
-  source: "$BBTUTORIAL/bedbase_BEDfiles/{file_name}" 
+  source: "$BBTUTORIAL/bed_files/{file_name}" 
   source2: "$BBTUTORIAL/outputs/bedstat_pipeline_logs/submission/{sample_name}.yaml"
