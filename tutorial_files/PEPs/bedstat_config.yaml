@@ -6,9 +6,11 @@ metadata:
 constant_attributes: 
   output_file_path: "source"
   yaml_file: "source2"
+  open_signal_matrix: "source3"
   protocol: "bedstat"
 
-derived_attributes: [output_file_path, yaml_file]
+derived_attributes: [output_file_path, yaml_file, open_signal_matrix]
 data_sources:
   source: "$BBTUTORIAL/bed_files/{file_name}" 
   source2: "$BBTUTORIAL/outputs/bedstat_pipeline_logs/submission/{sample_name}.yaml"
+  source3: "$BBTUTORIAL/openSignalMatrix_{genome}_quantileNormalized_round4.txt"
