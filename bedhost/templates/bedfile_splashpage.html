@@ -50,7 +50,11 @@
       <ul id="block" class="list-group">
           {% for key, value in json.items() %}
             {% if key not in ["bedfile_path", "plots"] %}
-                <li class="list-group-item"><b>{{ descs[key] }}: </b>{{ value[0] }}</li>
+                {% if key in descs.keys() %}
+                    <li class="list-group-item"><b>{{ descs[key] }}: </b>{{ value[0] }}</li>
+                {% else %}
+                    <li class="list-group-item"><b>{{ key }}: </b>{{ value[0] }}</li>
+                {% endif %}
             {% endif %}
           {% endfor %}
       </ul>
