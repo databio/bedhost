@@ -1,16 +1,19 @@
-metadata:
-  sample_table: bedstat_annotation_sheet.csv
-  output_dir: $BBTUTORIAL/outputs/bedstat_output/bedstat_pipeline_logs 
-  pipeline_interfaces: $BBTUTORIAL/bedstat/pipeline_interface.yaml
+pep_version: 2.0.0
+sample_table: bedstat_annotation_sheet.csv
 
-constant_attributes: 
-  output_file_path: "source"
-  yaml_file: "source2"
-  open_signal_matrix: "source3"
-  protocol: "bedstat"
+looper:
+  output_dir: $BBTUTORIAL/outputs/bedstat_output/bedstat_pipeline_logs
 
-derived_attributes: [output_file_path, yaml_file, open_signal_matrix]
-data_sources:
-  source: "$BBTUTORIAL/bed_files/{file_name}" 
-  source2: "$BBTUTORIAL/outputs/bedstat_pipeline_logs/submission/{sample_name}.yaml"
-  source3: "$BBTUTORIAL/openSignalMatrix_{genome}_quantileNormalized_round4.txt"
+sample_modifiers: 
+  append:
+    pipeline_interfaces: $BBTUTORIAL/bedstat/pipeline_interface.yaml
+    output_file_path: "source"
+    yaml_file: "source2"
+    open_signal_matrix: "source3"
+    protocol: "bedstat"
+  derive:
+    attributes: [output_file_path, yaml_file, open_signal_matrix]
+    sources: 
+      source: "$BBTUTORIAL/bed_files/{file_name}"
+      source2: "$BBTUTORIAL/outputs/bedstat_pipeline_logs/submission/{sample_name}.yaml"
+      source3: "$BBTUTORIAL/openSignalMatrix_{genome}_quantileNormalized_round4.txt"  
