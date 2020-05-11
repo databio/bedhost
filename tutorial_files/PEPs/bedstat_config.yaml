@@ -6,11 +6,11 @@ looper:
 
 sample_modifiers: 
   append:
-    pipeline_interfaces: $BBTUTORIAL/bedstat/pipeline_interface.yaml
+    pipeline_interfaces: $BBTUTORIAL/bedstat/pipeline_interface_new.yaml
     output_file_path: "source"
     yaml_file: "source2"
     open_signal_matrix: "source3"
-    protocol: "bedstat"
+    #protocol: "bedstat"
   derive:
     attributes: [output_file_path, yaml_file, open_signal_matrix]
     sources: 

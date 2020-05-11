@@ -7,7 +7,7 @@ looper:
 sample_modifiers:
   append:
     pipeline_interfaces: $BBTUTORIAL/bedbuncher/pipeline_interface.yaml
-    protocol: "bedbuncher"
+    #protocol: "bedbuncher"
   derive:
     attributes: [JSONquery_path, bbconfig_path]
     sources: 
