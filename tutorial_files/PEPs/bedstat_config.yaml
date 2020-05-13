@@ -2,19 +2,18 @@ pep_version: 2.0.0
 sample_table: bedstat_annotation_sheet.csv
 
 looper:
-  output_dir: $BBTUTORIAL/outputs/bedstat_output/bedstat_pipeline_logs
+  run:
+    output-dir: $BBTUTORIAL/outputs/bedstat_output/bedstat_pipeline_logs 
 
-sample_modifiers: 
+sample_modifiers:
   append:
-    bedbase_config: $BBTUTORIAL/bedhost/tutorial_files/bedbase_configuration.yaml
     pipeline_interfaces: $BBTUTORIAL/bedstat/pipeline_interface_new.yaml
-    output_file_path: "source"
-    yaml_file: "source2"
-    open_signal_matrix: "source3"
-    #protocol: "bedstat"
+    output_file_path: OUTPUT
+    yaml_file: SAMPLE_YAML
+    open_signal_matrix: MATRIX
   derive:
     attributes: [output_file_path, yaml_file, open_signal_matrix]
-    sources: 
-      source: "$BBTUTORIAL/bed_files/{file_name}"
-      source2: "$BBTUTORIAL/outputs/bedstat_pipeline_logs/submission/{sample_name}.yaml"
-      source3: "$BBTUTORIAL/openSignalMatrix_{genome}_quantileNormalized_round4.txt"  
+    sources:
+      OUTPUT: "$BBTUTORIAL/bed_files/{file_name}" 
+      SAMPLE_YAML: "$BBTUTORIAL/outputs/bedstat_pipeline_logs/submission/{sample_name}.yaml"
+      MATRIX: "$BBTUTORIAL/openSignalMatrix_{genome}_quantileNormalized_round4.txt.gz"
