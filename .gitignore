@@ -12,4 +12,4 @@ __pycache__
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
-
+docs_jupyter/bedbase_tutorial
