@@ -4,7 +4,6 @@
 {% block head %}
   {{ super() }}
   <script src="../static/query-builder.standalone.min.js"></script>
-  <script src="../static/query-builder-elasticsearch.js"></script>
 {% endblock %}
     <div class="container">
         <div class="row">
@@ -22,8 +21,8 @@
             <div class="row">
               <div class="btn-group">
                 <button id="btn-reset" class="btn btn-warning reset" data-target="basic">Reset <i class="fas fa-undo"></i></button>
-                <button id="btn-post-elastic" class="btn btn-primary parse-json" data-target="basic">Search <i class="fas fa-search"></i></button>
-                <button id="btn-show-elastic" class="btn btn-secondary parse-json" data-target="basic">Get Elasticsearch query <img src="https://img.icons8.com/color/22/000000/elasticsearch.png"></button>
+                <button id="btn-post-postgres" class="btn btn-primary parse-json" data-target="basic">Search <i class="fas fa-search"></i></button>
+                <button id="btn-show-postgres" class="btn btn-secondary parse-json" data-target="basic">Get SQL query  <img width="16" height="16" src="../static/postgres_icon.png"></button>
               </div>
           </div>
           <div style="margin-top:15px"></div>
@@ -60,7 +59,7 @@
         var request = $.ajax({
             url: "/bedfiles_filter_result?html=True",
             type: "post",
-            data: JSON.stringify({"elastic":{current: null}}),
+            data: JSON.stringify({"postgres":{current: null}}),
             contentType: "application/json; charset=utf-8",
             dataType: "html"
         });
@@ -104,20 +103,20 @@
         $('#search-results').html("");
     });
 
-    $('#btn-show-elastic').on('click', function() {
-        var result = $('#builder-basic').queryBuilder('getESBool');
+    $('#btn-show-postgres').on('click', function() {
+        var result = $('#builder-basic').queryBuilder('getSQL');
         if (!$.isEmptyObject(result)) {
-            prompt("Copy the Elasticsearch query to clipboard", JSON.stringify(result, null, 2))
+            prompt("Copy the PostgreSQL query to clipboard", JSON.stringify(result, null, 2))
         }
     });
 
-    $('#btn-post-elastic').on('click', function() {
+    $('#btn-post-postgres').on('click', function() {
         var current_rules = $('#builder-basic').queryBuilder('getRules');
-        var query = $('#builder-basic').queryBuilder('getESBool');
+        var query = $('#builder-basic').queryBuilder('getSQL');
         var request = $.ajax({
             url: "/bedfiles_filter_result?html=True",
             type: "post",
-            data: JSON.stringify({"elastic":query,"rules":current_rules}),
+            data: JSON.stringify({"postgres":query,"rules":current_rules}),
             contentType: "application/json; charset=utf-8",
             dataType: "html"
         });

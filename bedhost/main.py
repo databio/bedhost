@@ -186,7 +186,7 @@ async def bedset_serve(request: Request, md5sum: str = None, format: str = None)
 async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None):
     global bbc
     _LOGGER.debug("Received query: {}".format(json))
-    if "current" in json["elastic"].keys():
+    if "current" in json["postgres"].keys():
         # special kind of query, to serve the latest results
         if html:
             _LOGGER.debug("Serving current result")
@@ -194,9 +194,10 @@ async def bedfiles_filter_result(request: Request, json: Dict, html: bool = None
                     "openapi_version": get_openapi_version(app)}
             return templates.TemplateResponse("response_search.html",
                                               dict(vars, **ALL_VERSIONS))
-    hits = bbc.search_bedfiles(json["elastic"])
-    _LOGGER.debug("response: {}".format(hits))
-    md5sums = {hit[JSON_ID_KEY][0]: hit[JSON_MD5SUM_KEY][0] for hit in hits}
+    md5sums = bbc.select(table_name=BED_TABLE,
+                      condition=json["postgres"]["sql"],
+                      columns=[JSON_NAME_KEY, JSON_MD5SUM_KEY])
+    _LOGGER.debug("response: {}".format(md5sums))
     _LOGGER.info("{} matched files: {}".format(len(md5sums), md5sums))
     if not html:
         return md5sums
