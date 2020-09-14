@@ -14,21 +14,22 @@ STATIC_DIRNAME = "static"
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_DIRNAME)
 BEDFILE_API_ENDPOINT = "bedfile"
 BEDSET_API_ENDPOINT = "bedset"
-TYPES_MAPPING = {"long": "integer", "float": "double", "text": "string"}
+TYPES_MAPPING = {"integer": "integer", "double precision": "double", "character varying": "string"}
 VALIDATIONS_MAPPING = {
-    "long": {"min": 0, "step": 1},
-    "float": {"min": 0, "step": 0.01},
-    "text": None
+    "integer": {"min": 0, "step": 1},
+    "double precision": {"min": 0, "step": 0.01},
+    "character varying": None
 }
 # the operator lists below are intentionally string representation of lists since they are
 # intended to populate JavaScript code in the Jinja2 template
 NUMERIC_OPERATORS = '["equal", "not_equal", "greater", "greater_or_equal", "between", "less", ' \
                     '"less_or_equal", "is_null", "is_not_null"]'
 TEXT_OPERATORS = '["equal", "not_equal", "in", "not_in", "is_null", "is_not_null"]'
-OPERATORS_MAPPING = {"text": TEXT_OPERATORS,
-                     "float": NUMERIC_OPERATORS,
-                     "long": NUMERIC_OPERATORS}
+OPERATORS_MAPPING = {"character varying": TEXT_OPERATORS,
+                     "double precision": NUMERIC_OPERATORS,
+                     "integer": NUMERIC_OPERATORS}
 INIT_ELASTIC = {'bool': {'must': [{'range': {'gc_content': {'gt': 0.5}}}]}}
+INIT_POSTGRES_CONDITION = "gc_content>0.5"
 INIT_QUERYBUILDER = {'condition': 'AND', 'rules': [
     {'id': 'gc_content',
      'field': 'gc_content',

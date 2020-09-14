@@ -64,41 +64,40 @@ def get_search_setup(bbc):
     The setup is used ot populate a queryBuilder in a JavaScript code.
 
     :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :return list[dict]: a list dictionaries with search setup to populate the JavaScript code with
+    :return list[dict]: a list dictionaries with search setup to populate the
+        JavaScript code with
     """
-    mapping = bbc.get_bedfiles_mapping()
-    attrs = list(mapping.keys())
+    columns = bbc.get_bedfiles_table_columns_types()
     setup_dicts = []
-    for attr in attrs:
+    for col in columns:
         try:
-            attr_type = mapping[attr]["type"]
-        except KeyError:
-            _LOGGER.warning("Attribute '{}' does not have type defined. "
-                            "Is it a nested mapping?".format(attr))
-            continue
-        setup_dicts.append({"id": attr,
-                            "label": attr.replace("_", " "),
-                            "type": TYPES_MAPPING[attr_type],
-                            "validation": VALIDATIONS_MAPPING[attr_type],
-                            "operators": OPERATORS_MAPPING[attr_type]
-                            })
+            setup_dicts.append({"id": col["column_name"],
+                                "label": col["column_name"].replace("_", " "),
+                                "type": TYPES_MAPPING[col["data_type"]],
+                                "validation": VALIDATIONS_MAPPING[col["data_type"]],
+                                "operators": OPERATORS_MAPPING[col["data_type"]]
+                                })
+        except (AttributeError, KeyError):
+            _LOGGER.warning(f"Database column '{col['column_name']}' of type "
+                            f"'{col['data_type']}' has no query builder "
+                            f"settings predefined, skipping.")
     _LOGGER.debug("search setup: {}".format(setup_dicts))
     return setup_dicts
 
 
-def construct_search_data(md5sums, request):
+def construct_search_data(hits, request):
     """
     Construct a list of links to display as the search result
 
-    :param Iterable[str] md5sums: ids to compose the list for
+    :param Iterable[str] hits: ids to compose the list for
     :param starlette.requests.Request request: request for the context
     :return Iterable[str]: results to display
     """
     template_data = []
-    for id, md5sum in md5sums.items():
-        bed_data_url_template = \
-            request.url_for("bedfile") + "?md5sum={}&format=".format(md5sum)
-        template_data.append([id] +
+    for h in hits:
+        bed_data_url_template = request.url_for("bedfile") + \
+                                "?md5sum={}&format=".format(h[JSON_MD5SUM_KEY])
+        template_data.append([h[JSON_NAME_KEY]] +
                              [bed_data_url_template + ext
                               for ext in ["html", "bed", "json"]])
     return template_data
@@ -137,13 +136,13 @@ def get_all_bedset_urls_mapping(bbc, request):
     :param starlette.requests.Request request: request context for url generation
     :return Mapping: a mapping of bedset ids and the urls to the corresponding splashpages
     """
-    bedsets_json = bbc.search_bedsets(QUERY_ALL)
+    hits = bbc._select_all(BEDSET_TABLE)
     bm = dict()
-    if bedsets_json is None:
+    if not hits:
         return
-    for bedset_data in bedsets_json:
-        bedset_md5sum = bedset_data[JSON_MD5SUM_KEY][0]
-        bedset_id = bedset_data[JSON_ID_KEY]
+    for hit in hits:
+        bedset_md5sum = hit[JSON_MD5SUM_KEY]
+        bedset_id = hit[JSON_NAME_KEY]
         bm.update({bedset_id: get_param_url(request.url_for("bedsetsplash"),
                                             {"md5sum": bedset_md5sum})})
     return bm

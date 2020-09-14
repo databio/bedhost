@@ -36,8 +36,9 @@ async def root(request: Request):
     global bbc
     if CUR_RESULT not in request.session:
         _LOGGER.debug("Creating sample result")
-        hits = bbc.search_bedfiles(INIT_ELASTIC)
-        md5sums = {hit[JSON_ID_KEY][0]: hit[JSON_MD5SUM_KEY][0] for hit in hits}
+        md5sums = bbc.select(condition=INIT_POSTGRES_CONDITION,
+                             table_name=BED_TABLE,
+                             columns=[JSON_MD5SUM_KEY, JSON_NAME_KEY])
         current_result = construct_search_data(md5sums, request)
         request.session.update({CUR_RESULT: current_result})
     if CUR_RULES not in request.session:
@@ -45,8 +46,8 @@ async def root(request: Request):
         request.session.update({CUR_RULES: INIT_QUERYBUILDER})
     vars = {"result": request.session[CUR_RESULT],
             "request": request,
-            "num_bedfiles": bbc.count_bedfiles_docs(),
-            "num_bedsets": bbc.count_bedsets_docs(),
+            "num_bedfiles": bbc.count_bedfiles(),
+            "num_bedsets": bbc.count_bedsets(),
             "host_ip": bbc[CFG_SERVER_KEY][CFG_HOST_KEY],
             "host_port": bbc.server.port,
             "openapi_version": get_openapi_version(app),
@@ -248,14 +249,14 @@ def main():
     _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
     logmuse.init_logger(name="bbconf", level=log_level)
     bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
-    bbc.establish_elasticsearch_connection()
+    bbc.establish_postgres_connection()
     if args.command == "serve":
         app.mount(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
                   StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY]),
-                  name=BED_INDEX)
+                  name=BED_TABLE)
         app.mount(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
                   StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY]),
-                  name=BEDSET_INDEX)
+                  name=BEDSET_TABLE)
         
         _LOGGER.info("running {} app".format(PKG_NAME))
         uvicorn.run(app, host=bbc[CFG_SERVER_KEY][CFG_HOST_KEY],
