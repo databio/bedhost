@@ -16,14 +16,18 @@
               <p>Select your search criteria below:</p>
           </div>
           <div class="row">
-              <div id="builder-basic"></div>
+              <div class="col-md-12">
+                <div id="builder-basic"></div>
+              </div>
           </div>
             <div class="row">
-              <div class="btn-group">
-                <button id="btn-reset" class="btn btn-warning reset" data-target="basic">Reset <i class="fas fa-undo"></i></button>
-                <button id="btn-post-postgres" class="btn btn-primary parse-json" data-target="basic">Search <i class="fas fa-search"></i></button>
-                <button id="btn-show-postgres" class="btn btn-secondary parse-json" data-target="basic">Get SQL query  <img width="16" height="16" src="../static/postgres_icon.png"></button>
-              </div>
+                <div class="col-md-12">
+                  <div class="btn-group">
+                    <button id="btn-reset" class="btn btn-warning reset" data-target="basic">Reset <i class="fas fa-undo"></i></button>
+                    <button id="btn-post-postgres" class="btn btn-primary parse-json" data-target="basic">Search <i class="fas fa-search"></i></button>
+                    <button id="btn-show-postgres" class="btn btn-secondary parse-json" data-target="basic">Get SQL query  <img width="16" height="16" src="../static/postgres_icon.png"></button>
+                  </div>
+                </div>
           </div>
           <div style="margin-top:15px"></div>
           <div class="row">
@@ -106,7 +110,7 @@
     $('#btn-show-postgres').on('click', function() {
         var result = $('#builder-basic').queryBuilder('getSQL');
         if (!$.isEmptyObject(result)) {
-            prompt("Copy the PostgreSQL query to clipboard", JSON.stringify(result, null, 2))
+            prompt("Copy the PostgreSQL query to clipboard", result["sql"])
         }
     });
 
