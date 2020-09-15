@@ -60,11 +60,12 @@ async def root(request: Request):
 @app.get("/bed/" + BEDFILE_API_ENDPOINT, name="bedsplash")
 async def serve_bedfile_info(request: Request, md5sum: str = None):
     global bbc
-    json = bbc.search_bedfiles({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
-    _LOGGER.debug("json: {}".format(json))
-    if json:
+    hit = bbc.select(table_name=BED_TABLE, condition=f"{JSON_MD5SUM_KEY}='{md5sum}'")
+    assert len(hit) == 1, f"More than one records matched md5sum ({md5sum})"
+    hit = hit[0]
+    if hit:
         # we have a hit
-        template_vars = {"request": request, "json": json,
+        template_vars = {"request": request, "json": hit,
                          "bedstat_output": bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
                          "bed_url": get_param_url(request.url_for("bedfile"), {"md5sum": md5sum}),
@@ -76,14 +77,15 @@ async def serve_bedfile_info(request: Request, md5sum: str = None):
 @app.get("/bedset/" + BEDSET_API_ENDPOINT, name="bedsetsplash")
 async def serve_bedset_info(request: Request, md5sum: str = None):
     global bbc
-    json = bbc.search_bedsets({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
-    _LOGGER.debug("json: {}".format(json))
-    if json:
+    hit = bbc.select(table_name=BEDSET_TABLE, condition=f"{JSON_MD5SUM_KEY}='{md5sum}'")
+    assert len(hit) == 1, f"More than one records matched md5sum ({md5sum})"
+    hit = hit[0]
+    if hit:
         # we have a hit
         bed_urls = {id: get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum})
-                    for id, md5sum in json[JSON_BEDSET_BED_IDS_KEY][0].items()} \
-            if JSON_BEDSET_BED_IDS_KEY in json else None
-        template_vars = {"request": request, "json": json,
+                    for id, md5sum in hit[JSON_BEDSET_BED_IDS_KEY].items()} \
+            if JSON_BEDSET_BED_IDS_KEY in hit else None
+        template_vars = {"request": request, "json": hit,
                          "bedbuncher_output": bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
                          "openapi_version": get_openapi_version(app),
                          "bedset_url": get_param_url(request.url_for("bedset"), {"md5sum": md5sum}),
@@ -100,18 +102,20 @@ async def bedfile_serve(request: Request, md5sum: str = None, format: str = None
     Searches database backend for id and returns a page matching id with images and stats
     """
     global bbc
-    json = bbc.search_bedfiles({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
-    if json:
+    hit = bbc.select(table_name=BED_TABLE, condition=f"{JSON_MD5SUM_KEY}='{md5sum}'")
+    assert len(hit) == 1, f"More than one records matched md5sum ({md5sum})"
+    hit = hit[0]
+    if hit:
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
             return RedirectResponse(url=get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum}))
         elif format == 'json':
             # serve the json retrieved from database
-            return json
+            return hit
         elif format == 'bed':
             # serve raw bed file
-            bed_path = json[BEDFILE_PATH_KEY][0]
+            bed_path = hit[BEDFILE_PATH_KEY]
             bed_target = get_mounted_symlink_path(bed_path) \
                 if os.path.islink(bed_path) else bed_path
             _LOGGER.debug("Determined BED file path: {}".format(bed_target))
@@ -144,8 +148,8 @@ async def bedset_serve(request: Request, md5sum: str = None, format: str = None)
 
     def _gz_file_response(format, resp_type_map=rtm):
         key = resp_type_map[format]
-        if key in json and os.path.exists(json[key][0]):
-            f = json[key][0]
+        if key in hit and os.path.exists(hit[key]):
+            f = hit[key]
             _LOGGER.debug("Determined {} path: {}".format(format, f))
             return FileResponse(f, filename=os.path.basename(f),
                                 media_type='application/gzip')
@@ -153,18 +157,21 @@ async def bedset_serve(request: Request, md5sum: str = None, format: str = None)
             raise HTTPException(status_code=404,
                                 detail="{} for this BED set not found".format(format))
     global bbc
-    json = bbc.search_bedsets({"match": {JSON_MD5SUM_KEY: md5sum}})[0]
-    if json:
+    hit = bbc.select(table_name=BED_TABLE,
+                     condition=f"{JSON_MD5SUM_KEY}='{md5sum}'")
+    assert len(hit) == 1, f"More than one records matched md5sum ({md5sum})"
+    hit = hit[0]
+    if hit:
         # we have a hit
         if format == 'html':
             # serve the html splash page (redirect to a dedicated endpoint)
             return RedirectResponse(url=get_param_url(request.url_for("bedsetsplash"), {"md5sum": md5sum}))
         elif format == 'json':
             # serve the json retrieved from database
-            return json
+            return hit
         elif format == 'bed':
             # serve raw bed file
-            bedset_path = json[JSON_BEDSET_TAR_PATH_KEY][0]
+            bedset_path = hit[JSON_BEDSET_TAR_PATH_KEY]
             bedset_target = get_mounted_symlink_path(bedset_path) \
                 if os.path.islink(bedset_path) else bedset_path
             _LOGGER.debug("Determined BED set path: {}".format(bedset_target))
