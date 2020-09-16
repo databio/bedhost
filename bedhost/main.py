@@ -112,7 +112,7 @@ async def bedfile_serve(request: Request, md5sum: str = None, format: str = None
             return RedirectResponse(url=get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum}))
         elif format == 'json':
             # serve the json retrieved from database
-            return hit
+            return dict(hit)
         elif format == 'bed':
             # serve raw bed file
             bed_path = hit[BEDFILE_PATH_KEY]
@@ -157,7 +157,7 @@ async def bedset_serve(request: Request, md5sum: str = None, format: str = None)
             raise HTTPException(status_code=404,
                                 detail="{} for this BED set not found".format(format))
     global bbc
-    hit = bbc.select(table_name=BED_TABLE,
+    hit = bbc.select(table_name=BEDSET_TABLE,
                      condition=f"{JSON_MD5SUM_KEY}='{md5sum}'")
     assert len(hit) == 1, f"More than one records matched md5sum ({md5sum})"
     hit = hit[0]
@@ -168,7 +168,7 @@ async def bedset_serve(request: Request, md5sum: str = None, format: str = None)
             return RedirectResponse(url=get_param_url(request.url_for("bedsetsplash"), {"md5sum": md5sum}))
         elif format == 'json':
             # serve the json retrieved from database
-            return hit
+            return dict(hit)
         elif format == 'bed':
             # serve raw bed file
             bedset_path = hit[JSON_BEDSET_TAR_PATH_KEY]
@@ -226,19 +226,21 @@ async def bedfiles_stats(request: Request, bedset_md5sum: str):
     global bbc
     import pandas as pd
     link_str = "<a href='{}'>{}</a>"
-    bedset_doc = bbc.get_bedsets_doc(doc_id=bedset_md5sum)
-    bedfiles_csv = bedset_doc["_source"][JSON_BEDSET_BEDFILES_GD_STATS_KEY][0]
-    bedset_id = bedset_doc["_source"][JSON_ID_KEY]
+    hit = bbc.select(table_name=BEDSET_TABLE,
+                     condition=f"{JSON_MD5SUM_KEY}='{bedset_md5sum}'",
+                     columns=[JSON_NAME_KEY, JSON_BEDSET_BEDFILES_GD_STATS_KEY])
+    assert len(hit) == 1, f"More than one records matched md5sum ({bedset_md5sum})"
+    hit = hit[0]
+    bedset_id = hit[JSON_NAME_KEY]
     try:
-        df = pd.read_csv(bedfiles_csv)
+        df = pd.read_csv(hit[JSON_BEDSET_BEDFILES_GD_STATS_KEY])
     except FileNotFoundError:
         raise HTTPException(status_code=404, detail="CSV file not found")
-    address_col = pd.Series([get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum})
-                           for md5sum in list(df[JSON_MD5SUM_KEY])])
+    address_col = pd.Series([get_param_url(request.url_for("bedsplash"), {"md5sum": md5sum}) for md5sum in list(df[JSON_MD5SUM_KEY])])
     df = df.assign(address=address_col)
-    df["BED file name"] = df.apply(lambda row: link_str.format(row["address"], row["id"]), axis=1)
+    df["BED file name"] = df.apply(lambda row: link_str.format(row["address"], row["name"]), axis=1)
     mid = df['BED file name']
-    df = df.drop(columns=["address", "id", 'BED file name'])
+    df = df.drop(columns=["address", "name", 'BED file name'])
     df.insert(0, 'BED file name', mid)
     template_vars = {"request": request, "openapi_version": get_openapi_version(app), "bedset_id": bedset_id, "columns": list(df), "data": df.to_dict(orient='records')}
     return templates.TemplateResponse("bedfiles_table.html", dict(template_vars, **ALL_VERSIONS))
