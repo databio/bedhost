@@ -28,4 +28,4 @@ Build the app for production to the `./build` folder
 npm run build
 ```
 
-The contents of the `./build` directory can be copier over to `bedhost/bedhost/static/bedhost-ui`
+The contents of the `./build` directory can be copied over to `bedhost/bedhost/static/bedhost-ui`
