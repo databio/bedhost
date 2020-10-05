@@ -13,7 +13,7 @@ TEMPLATES_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), TEMPLA
 STATIC_DIRNAME = "static"
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_DIRNAME)
 
-UI_PATH = os.path.join(os.path.dirname(__file__), "static", "bedhost_ui")
+UI_PATH = os.path.join(os.path.dirname(__file__), "static", "bedhost-ui")
 
 BEDFILE_API_ENDPOINT = "bedfile"
 BEDSET_API_ENDPOINT = "bedset"
