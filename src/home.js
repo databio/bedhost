@@ -1,4 +1,5 @@
 import React from "react";
+import QueryBuilderWrapper from './queryBuilder.jsx';
 import BedCountsSpan from "./bedCountsSpan";
 import BedSetList from "./bedSetList";
 import Header from './header';
@@ -27,6 +28,7 @@ export default class Home extends React.Component {
                     </Col>
                     <Col>
                         <h1> Search Component</h1>
+                        <QueryBuilderWrapper />
                     </Col>
                     </Row>
                 </Container>

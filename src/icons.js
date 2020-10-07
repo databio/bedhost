@@ -17,7 +17,6 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import {FaDatabase} from "react-icons/fa";
 
 export const icons = {
   Add: forwardRef((props, ref) => <AddBox {...props} ref={ref} />),
@@ -41,5 +40,4 @@ export const icons = {
   SortArrow: forwardRef((props, ref) => <ArrowUpward {...props} ref={ref} />),
   ThirdStateCheck: forwardRef((props, ref) => <Remove {...props} ref={ref} />),
   ViewColumn: forwardRef((props, ref) => <ViewColumn {...props} ref={ref} />),
-  Database: forwardRef((props, ref) => <FaDatabase {...props} ref={ref} />),
 };
