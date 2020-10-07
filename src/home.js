@@ -13,7 +13,6 @@ export default class Home extends React.Component {
         return (
             <React.StrictMode>
                 <Header />
-    
                 <Container fluid className="p-4">
                     <Row>
                     <Col>
@@ -26,11 +25,13 @@ export default class Home extends React.Component {
                     <Col md={6}>
                         <BedSetList />
                     </Col>
+                    <Col>
+                        <h1> Search Component</h1>
+                    </Col>
                     </Row>
                 </Container>
                 <VersionsSpan />
             </React.StrictMode>
-            
         )
     }
 }

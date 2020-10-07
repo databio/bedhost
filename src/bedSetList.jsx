@@ -6,6 +6,8 @@ import Alert from "react-bootstrap/Alert";
 import "bootstrap/dist/css/bootstrap.min.css";
 import BedFileList from "./bedFileList";
 import bedhost_api_url from "./const";
+import {Link} from "react-router-dom";
+import {FaDatabase} from "react-icons/fa";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -16,6 +18,7 @@ export default class BedSetList extends React.Component {
     bedSetNames: [],
     selectedId: -1,
     bedFileNames: [],
+    iconColor: '#45B39D'
   };
 
   constructor() {
@@ -44,7 +47,7 @@ export default class BedSetList extends React.Component {
   };
 
   handleClick = (id) => {
-    this.setState({ selectedId: id });
+    this.setState({ selectedId: id, iconColor: '#ffffff'});
     this.getBedFileNames(id);
   };
 
@@ -65,6 +68,10 @@ export default class BedSetList extends React.Component {
                   key={bedSet[0]}
                 >
                   {bedSet[0]}: {bedSet[1]}
+                  <Link to={{
+                    pathname: '/bedsetsplash/' + bedSet[1]}}>
+                    <FaDatabase className="float-right" color={this.state.iconColor}/>
+                  </Link>
                 </ListGroup.Item>
               ) : (
                 <ListGroup.Item
@@ -73,6 +80,10 @@ export default class BedSetList extends React.Component {
                   key={bedSet[0]}
                 >
                   {bedSet[0]}: {bedSet[1]}
+                  <Link to={{
+                    pathname: '/bedsetsplash/' + bedSet[1]}}>
+                    <FaDatabase className="float-right" color='#45B39D'/>
+                  </Link>
                 </ListGroup.Item>
               );
             })}
