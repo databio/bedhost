@@ -38,10 +38,10 @@ export default class Home extends React.Component {
                         <Col>
                             <Row>
                                 <Col md={6}>
-                                    <button className='btn btn-block btn-info btn-sm' onClick={() => this.handleClick('bedfiles')}> Search Bedfiles </button>
+                                    <button className='btn btn-block btn-sm' style={{backgroundColor:'#264653', color:"white"}} onClick={() => this.handleClick('bedfiles')}> Search BED Files </button>
                                 </Col>
                                 <Col md={6}>
-                                    <button className='btn btn-block btn-info btn-sm' onClick={() => this.handleClick('bedsets')}> Search Bedsets </button>
+                                    <button className='btn btn-block btn-sm' style={{backgroundColor:'#264653', color:"white"}} onClick={() => this.handleClick('bedsets')}> Search BED Sets </button>
                                 </Col>
                             </Row>
 
@@ -50,7 +50,6 @@ export default class Home extends React.Component {
                             ) : (
                                     <QueryBuilderBedfile />
                                 )}
-                            {/* <QueryBuilderWrapper/> */}
                         </Col>
                         <Col md={6}>
                             <BedSetList />

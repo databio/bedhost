@@ -83,7 +83,7 @@ export default class BedSetList extends React.Component {
                     <Link to={{
                       pathname: '/bedsetsplash/' + bedSet[1]
                     }}>
-                      <FaDatabase className="float-right" color='#45B39D' />
+                      <FaDatabase className="float-right" color='#2a9d8f' />
                     </Link>
                   </ListGroup.Item>
                 );

@@ -1,6 +1,6 @@
 import React from 'react';
 import "./queryBuilder.css";
-import Button from 'react-bootstrap/Button';
+import { FaSearch } from "react-icons/fa";
 // import $ from 'jquery';
 // import QueryBuilder from '../utils/qb.js';
 
@@ -91,10 +91,9 @@ export default class QueryBuilderBedfile extends React.Component {
         return (
             <div>
                 <div id='query-builder' ref='queryBuilder' />
-                <button className='btn btn-info btn-sm' style={{marginRight:'5px'}} onClick={this.handleGetRulesClick.bind(this)}>SQL</button>
-                <button className='btn btn-info btn-sm' onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
-                    
-                    
+                    <button className='btn btn-sm' style={{marginRight:'5px', backgroundColor:'#264653', color:"white"}} onClick={this.handleGetRulesClick.bind(this)}>SQL</button>
+                    <button className='btn btn-sm' style={{backgroundColor:'#264653', color:"white"}} onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
+                    <div className="float-right"><button className='btn btn-sm' style={{backgroundColor:'#264653'}}><FaSearch size={20} style={{ fill: 'white' }} /></button></div>
                 <pre>
                     Component state:
                     {JSON.stringify(this.state.rules, undefined, 2)}
