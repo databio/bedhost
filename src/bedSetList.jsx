@@ -30,12 +30,7 @@ export default class BedSetList extends React.Component {
     console.log("BED set names retrieved from the server: ", data);
     this.setState({ bedSetNames: data });
   }
-  // getBedSetNames = async () => {
-  //   let data = await api.get("bedset/list/name").then(({ data }) => data);
-  //   console.log("BED set names retrieved from the server: ", data);
-  //   this.setState({ bedSetNames: data });
-  // };
-
+  
   getBedFileNames = async (id) => {
     let data = await api
       .get("/bed/bedset/" + id + "?column=name")

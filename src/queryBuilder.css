@@ -155,7 +155,9 @@
   border-radius: 5px;
   padding: 5px;
   border: 1px solid #EEE;
-  background: rgba(255, 255, 255, .9)
+  background: rgba(255, 255, 255, .9);
+  display: inline-block;
+  width: 100%;
 }
 
 .query-builder .drag-handle,
