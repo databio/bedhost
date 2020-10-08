@@ -4,10 +4,10 @@ import BedCountsSpan from "./bedCountsSpan";
 import BedSetList from "./bedSetList";
 import Header from './header';
 import VersionsSpan from "./versionsSpan";
-import "bootstrap/dist/css/bootstrap.min.css";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default class Home extends React.Component {
     render() {
@@ -23,7 +23,7 @@ export default class Home extends React.Component {
                 </Container>
                 <Container fluid className="p-4">
                     <Row>
-                    <Col md={6}>
+                    <Col md={4}>
                         <BedSetList />
                     </Col>
                     <Col>

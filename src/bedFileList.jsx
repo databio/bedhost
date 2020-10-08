@@ -9,7 +9,7 @@ export default class BedFileList extends React.Component {
   renderList(id) {
     return (
       <div>
-        <Card style={{ width: "30em" }}>
+        <Card md={4}>
           <Card.Header>
             <b>
               List of BED files in <code>{id}</code>
