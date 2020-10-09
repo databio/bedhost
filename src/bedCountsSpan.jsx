@@ -9,7 +9,6 @@ const api = axios.create({
 });
 
 export default class BedCountsSpan extends React.Component {
-  
 
   constructor() {
     super();

@@ -111,9 +111,11 @@ export default class QueryBuilder extends React.Component {
     componentWillUnmount() {
         window.$(this.refs.queryBuilder).queryBuilder('destroy');
     }
+    
     shouldComponentUpdate() {
         return false;
     }
+    
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
         const rules = window.$(this.refs.queryBuilder).queryBuilder('getSQL');
