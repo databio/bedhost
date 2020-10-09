@@ -52,8 +52,8 @@ export default class BedSetList extends React.Component {
 
   render() {
     return (
-      <div>
-        <Card md={4}>
+      <div style={{marginTop: '10px'}}>
+        <Card>
           <Card.Header>
             <b>List of BED sets</b>
           </Card.Header>
@@ -83,7 +83,7 @@ export default class BedSetList extends React.Component {
                     <Link to={{
                       pathname: '/bedsetsplash/' + bedSet[1]
                     }}>
-                      <FaDatabase className="float-right" color='#2a9d8f' />
+                      <FaDatabase className="float-right" color='teal' />
                     </Link>
                   </ListGroup.Item>
                 );

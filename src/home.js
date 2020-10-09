@@ -1,6 +1,5 @@
 import React from "react";
-import QueryBuilderBedset from './queryBuilderBedset.jsx';
-import QueryBuilderBedfile from './queryBuilderBedfile.jsx';
+import QueryBuilder from './queryBuilder.jsx';
 import BedCountsSpan from "./bedCountsSpan";
 import BedSetList from "./bedSetList";
 import Header from './header';
@@ -9,6 +8,7 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Label } from 'semantic-ui-react'
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -33,7 +33,7 @@ export default class Home extends React.Component {
                         </Col>
                     </Row>
                 </Container>
-                <Container fluid className="p-4">
+                {/* <Container fluid className="p-4">
                     <Row>
                         <Col>
                             <Row>
@@ -52,6 +52,24 @@ export default class Home extends React.Component {
                                 )}
                         </Col>
                         <Col md={6}>
+                            <BedSetList />
+                        </Col>
+                    </Row>
+                </Container> */}
+                <Container fluid className="p-4">
+                    <Row>
+                        <Col>
+                            <Label style={{marginLeft: '15px', 'font-size': '15px'}} as='a' color='teal' ribbon>
+                                BED File Search
+                            </Label>
+                            <QueryBuilder schema = 'bedfile'/>
+                            <BedSetList />
+                        </Col>
+                        <Col >
+                            <Label style={{marginLeft: '15px', 'font-size': '15px'}} as='a' color='teal' ribbon>
+                                BED Set Search
+                            </Label>
+                            <QueryBuilder schema = 'bedset' />
                             <BedSetList />
                         </Col>
                     </Row>

@@ -53,8 +53,8 @@
 
 .query-builder .btn-success {
   color: #FFF;
-  background-color:#2a9d8f;
-  border-color: #2a9d8f;
+  background-color:teal;
+  border-color: teal;
 }
 
 /*AND OR SELECTOR*/
@@ -76,8 +76,8 @@
 .query-builder .btn-success:focus,
 .query-builder .btn-success:hover {
   color: #FFF;
-  background-color: #2a9d8f;
-  border-color: #2a9d8f;
+  background-color: teal;
+  border-color: teal;
 }
 
 .query-builder .btn-primary.active,
@@ -88,8 +88,8 @@
 .query-builder .btn-primary:focus,
 .query-builder .btn-primary:hover {
   color: #FFF;
-  background-color:#2a9d8f;
-  border-color: #2a9d8f;
+  background-color:teal;
+  border-color: teal;
 }
 .query-builder .btn-primary.disabled, 
 .query-builder .btn-primary:disabled{
