@@ -59,14 +59,14 @@ export default class Home extends React.Component {
                 <Container fluid className="p-4">
                     <Row>
                         <Col>
-                            <Label style={{marginLeft: '15px', 'font-size': '15px'}} as='a' color='teal' ribbon>
+                            <Label style={{marginLeft: '15px', fontSize: '15px'}} as='a' color='teal' ribbon>
                                 BED File Search
                             </Label>
                             <QueryBuilder schema = 'bedfile'/>
                             <BedSetList />
                         </Col>
                         <Col >
-                            <Label style={{marginLeft: '15px', 'font-size': '15px'}} as='a' color='teal' ribbon>
+                            <Label style={{marginLeft: '15px', fontSize: '15px'}} as='a' color='teal' ribbon>
                                 BED Set Search
                             </Label>
                             <QueryBuilder schema = 'bedset' />

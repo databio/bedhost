@@ -27,8 +27,6 @@ export default function ResponsiveDialog(props) {
         setCopied(true);
     };
 
-    console.log(props.massage)
-
     return (
         <div className="float-left" onClick={props.onClick}>
             <button className='btn btn-sm' style={{ marginRight: '5px', backgroundColor: '#264653', color: "white" }} onClick={handleClickOpen}>
