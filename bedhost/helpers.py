@@ -58,16 +58,15 @@ def build_parser():
     return parser
 
 
-def get_search_setup(bbc):
+def get_search_setup(columns):
     """
-    Create a query setup for a Jinja2 template.
-    The setup is used ot populate a queryBuilder in a JavaScript code.
+    Create a query setup for QueryBuilder to interface the DB.
 
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :return list[dict]: a list dictionaries with search setup to populate the
-        JavaScript code with
+    :param list[list[str]] columns: a list of lists that determine pairs of DB
+        column name and data type, for example: [['other', 'jsonb'],
+        ['regions_no', 'integer']]
+    :return list[dict]: a list dictionaries with search setup to use in QueryBuilder
     """
-    columns = bbc.get_bedfiles_table_columns_types()
     setup_dicts = []
     for col in columns:
         try:
@@ -81,7 +80,7 @@ def get_search_setup(bbc):
             _LOGGER.warning(f"Database column '{col['column_name']}' of type "
                             f"'{col['data_type']}' has no query builder "
                             f"settings predefined, skipping.")
-    _LOGGER.debug("search setup: {}".format(setup_dicts))
+    _LOGGER.debug(f"search setup: {setup_dicts}")
     return setup_dicts
 
 

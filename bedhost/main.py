@@ -321,6 +321,19 @@ async def index():
     return FileResponse(os.path.join(UI_PATH, "index.html"))
 
 
+@app.get("/filters/{table_name}")
+async def get_bedfile_table_filters(
+        table_name: str = Path(..., description="DB column name",
+                               regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE))):
+    """
+    Returns the filters mapping to based on the selected table schema to
+    construct the queryBuilder to interface the DB
+    """
+    if table_name == BED_TABLE:
+        return get_search_setup(bbc.get_bedfiles_table_columns_types())
+    return get_search_setup(bbc.get_bedsets_table_columns_types())
+
+
 def main():
     global _LOGGER
     global bbc

@@ -23,15 +23,13 @@ VALIDATIONS_MAPPING = {
     "double precision": {"min": 0, "step": 0.01},
     "character varying": None
 }
-# the operator lists below are intentionally string representation of lists since they are
-# intended to populate JavaScript code in the Jinja2 template
-NUMERIC_OPERATORS = '["equal", "not_equal", "greater", "greater_or_equal", "between", "less", ' \
-                    '"less_or_equal", "is_null", "is_not_null"]'
-TEXT_OPERATORS = '["equal", "not_equal", "in", "not_in", "is_null", "is_not_null"]'
+NUMERIC_OPERATORS = ["equal", "not_equal", "greater", "greater_or_equal",
+                     "between", "less", "less_or_equal", "is_null",
+                     "is_not_null"]
+TEXT_OPERATORS = ["equal", "not_equal", "in", "not_in", "is_null", "is_not_null"]
 OPERATORS_MAPPING = {"character varying": TEXT_OPERATORS,
                      "double precision": NUMERIC_OPERATORS,
                      "integer": NUMERIC_OPERATORS}
-INIT_ELASTIC = {'bool': {'must': [{'range': {'gc_content': {'gt': 0.5}}}]}}
 INIT_POSTGRES_CONDITION = "gc_content>0.5"
 INIT_QUERYBUILDER = {'condition': 'AND', 'rules': [
     {'id': 'gc_content',
