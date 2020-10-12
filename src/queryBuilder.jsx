@@ -43,13 +43,13 @@ const fileRules = {
 
 
 async function initializeQueryBuilder(element, table_name, newRules) {
-        var filters_res = await api
-        .get("filters/" + table_name)
-        .catch(function (error) {
-          alert(error + "; is bedhost running at " + bedhost_api_url + "?");
-        });
-        var filters = filters_res.data
-        console.log(table_name, "filters retrieved from the server:", filters);
+    let filters_res = await api
+    .get("filters/" + table_name)
+    .catch(function (error) {
+      alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+    });
+    let filters = filters_res.data
+    console.log(table_name, "filters retrieved from the server:", filters);
     const defaultRules = table_name === "bedfiles" ? fileRules : setRules
     const rules = newRules ? newRules : defaultRules;
     window.$(element).queryBuilder({ filters, rules });
@@ -80,7 +80,7 @@ export default class QueryBuilder extends React.Component {
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
         const rules = window.$(this.queryBuilder.current).queryBuilder('getSQL');
-        this.setState({ rules: rules });
+        this.setState({ rules: rules.sql });
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
