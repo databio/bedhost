@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
@@ -7,28 +8,29 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import BedFileList from "./bedFileList";
 import bedhost_api_url from "./const";
 
+import { FaDatabase } from "react-icons/fa";
+
 const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
 export default class BedSetList extends React.Component {
-  state = {
-    bedSetNames: [],
-    selectedId: -1,
-    bedFileNames: [],
-  };
-
   constructor() {
     super();
-    this.getBedSetNames();
+    this.state = {
+      bedSetNames: [],
+      selectedId: -1,
+      bedFileNames: [],
+      iconColor: '#45B39D'
+    };
   }
 
-  getBedSetNames = async () => {
+  async componentDidMount(){
     let data = await api.get("bedset/list/name").then(({ data }) => data);
     console.log("BED set names retrieved from the server: ", data);
     this.setState({ bedSetNames: data });
-  };
-
+  }
+  
   getBedFileNames = async (id) => {
     let data = await api
       .get("/bed/bedset/" + id + "?column=name")
@@ -44,14 +46,14 @@ export default class BedSetList extends React.Component {
   };
 
   handleClick = (id) => {
-    this.setState({ selectedId: id });
+    this.setState({ selectedId: id, iconColor: '#ffffff' });
     this.getBedFileNames(id);
   };
 
   render() {
     return (
-      <div>
-        <Card style={{ width: "30em" }}>
+      <div style={{marginTop: '10px'}}>
+        <Card>
           <Card.Header>
             <b>List of BED sets</b>
           </Card.Header>
@@ -65,16 +67,26 @@ export default class BedSetList extends React.Component {
                   key={bedSet[0]}
                 >
                   {bedSet[0]}: {bedSet[1]}
+                  <Link to={{
+                    pathname: '/bedsetsplash/' + bedSet[1]
+                  }}>
+                    <FaDatabase className="float-right" color={this.state.iconColor} />
+                  </Link>
                 </ListGroup.Item>
               ) : (
-                <ListGroup.Item
-                  onClick={() => this.handleClick(bedSet[0])}
-                  action
-                  key={bedSet[0]}
-                >
-                  {bedSet[0]}: {bedSet[1]}
-                </ListGroup.Item>
-              );
+                  <ListGroup.Item
+                    onClick={() => this.handleClick(bedSet[0])}
+                    action
+                    key={bedSet[0]}
+                  >
+                    {bedSet[0]}: {bedSet[1]}
+                    <Link to={{
+                      pathname: '/bedsetsplash/' + bedSet[1]
+                    }}>
+                      <FaDatabase className="float-right" color='teal' />
+                    </Link>
+                  </ListGroup.Item>
+                );
             })}
           </ListGroup>
         </Card>
@@ -85,10 +97,10 @@ export default class BedSetList extends React.Component {
               bedFileList={this.state.bedFileNames}
             />
           ) : (
-            <Alert style={{ width: "30em" }} variant="secondary">
-              <i>Select BED set to display BED files for</i>
-            </Alert>
-          )}
+              <Alert md={4} variant="secondary">
+                <i>Select BED set to display BED files for</i>
+              </Alert>
+            )}
         </div>
       </div>
     );

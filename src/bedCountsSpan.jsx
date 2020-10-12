@@ -9,39 +9,33 @@ const api = axios.create({
 });
 
 export default class BedCountsSpan extends React.Component {
-  state = {
-    bed: -1,
-    bedSet: -1,
-  };
 
   constructor() {
     super();
-    this.getBedCount();
-    this.getBedSetCount();
+    this.state = {
+      bed: -1,
+      bedSet: -1,
+    };
   }
 
-  getBedCount = async () => {
-    let data = await api
-      .get("bed/count")
-      .then(({ data }) => data)
-      .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
-      });
-    console.log("BED file count retrieved from the server: ", data);
-    this.setState({ bed: data });
-  };
+  async componentDidMount(){
+    let bfcount = await api
+    .get("bed/count")
+    .catch(function (error) {
+      alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+    });
+    console.log("BED file count retrieved from the server: ", bfcount.data);
+    this.setState({ bed: bfcount.data });
 
-  getBedSetCount = async () => {
-    let data = await api
+    let bscount = await api
       .get("bedset/count")
-      .then(({ data }) => data)
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
-    console.log("BED set count retrieved from the server: ", data);
-    this.setState({ bedSet: data });
-  };
-
+    console.log("BED set count retrieved from the server: ", bscount.data);
+    this.setState({ bedSet: bscount.data });
+  }
+  
   render() {
     return this.state["bed"] + this.state["bedSet"] !== -2 ? (
       <div>

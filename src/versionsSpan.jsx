@@ -8,25 +8,25 @@ const api = axios.create({
 });
 
 export default class VersionsSpan extends React.Component {
-  state = {
-    openapi_version: "",
-    python_version: "",
-    apiserver_version: "",
-    bbconf_version: "",
-  };
+  
 
   constructor() {
     super();
-    this.getVersions();
+    this.state = {
+      openapi_version: "",
+      python_version: "",
+      apiserver_version: "",
+      bbconf_version: "",
+    };
   }
 
-  getVersions = async () => {
+  async componentDidMount(){
     let data = await api
-      .get("versions")
-      .then(({ data }) => data)
-      .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
-      });
+    .get("versions")
+    .then(({ data }) => data)
+    .catch(function (error) {
+      alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+    });
     console.log("versions retrieved from the server: ", data);
     this.setState({
       openapi_version: data["openapi_version"],
@@ -34,10 +34,7 @@ export default class VersionsSpan extends React.Component {
       apiserver_version: data["apiserver_version"],
       bbconf_version: data["bbconf_version"],
     });
-    // this.setState({
-    //   data,
-    // });
-  };
+  }
 
   render() {
     return (
