@@ -4,93 +4,53 @@ import { FaSearch } from "react-icons/fa";
 import ResponsiveDialog from "./responsiveDialog"
 // import $ from 'jquery';
 // import QueryBuilder from '../utils/qb.js';
+import axios from "axios";
+import bedhost_api_url from "./const";
+
+console.log("bedhost_api_url:", bedhost_api_url);
+const api = axios.create({
+  baseURL: bedhost_api_url,
+});
 
 const setRules = {
     condition: 'AND',
     rules: [{
-        id: 'setname',
+        id: 'name',
         operator: 'not_equal',
-        value: 'null'
-    }, {
-        condition: 'OR',
-        rules: [{
-            id: 'genome',
-            operator: 'equal',
-            value: 'hg19'
-        }]
+        value: 'testname'
     }]
 };
 
 const fileRules = {
     condition: 'AND',
     rules: [{
-        id: 'filename',
+        id: 'name',
         operator: 'not_equal',
         value: 'null'
     }, {
         condition: 'OR',
         rules: [{
-            id: 'gccontent',
+            id: 'gc_content',
             operator: 'greater',
             value: 0.4
         }, {
-            id: 'genome',
+            id: 'md5sum',
             operator: 'equal',
-            value: 'hg38'
+            value: '23jhb4j324b32hj4b23hj4b23hb42'
         }]
     }]
 };
 
-let setFilters = [{
-    id: 'setname',
-    label: 'Set Name',
-    type: 'string'
-}, {
-    id: 'genome',
-    label: 'Genome',
-    type: 'string',
-    input: 'select',
-    values: {
-        hg38: 'hg38',
-        hg19: 'hg19',
-    },
-    operators: ['equal']
-}];
 
-let fileFilters = [{
-    id: 'filename',
-    label: 'File Name',
-    type: 'string'
-}, {
-    id: 'gccontent',
-    label: 'GC content',
-    type: 'double',
-    validation: {
-        min: 0,
-        step: 0.1
-    },
-    operators: ['equal', 'not_equal', 'less', 'greater']
-}, {
-    id: 'genome',
-    label: 'Genome',
-    type: 'string',
-    input: 'select',
-    values: {
-        hg38: 'hg38',
-        hg19: 'hg19',
-    },
-    operators: ['equal']
-}];
-
-
-function initializeQueryBuilder(element, schema, newRules) {
-    if (schema === 'bedset'){
-        var filters = setFilters
-        var defaultRules = setRules
-    } else if (schema === 'bedfile') {
-        filters = fileFilters
-        defaultRules = fileRules
-    }
+async function initializeQueryBuilder(element, table_name, newRules) {
+        var filters_res = await api
+        .get("filters/" + table_name)
+        .catch(function (error) {
+          alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+        });
+        var filters = filters_res.data
+        console.log(table_name, "filters retrieved from the server:", filters);
+    const defaultRules = table_name === "bedfiles" ? fileRules : setRules
     const rules = newRules ? newRules : defaultRules;
     window.$(element).queryBuilder({ filters, rules });
 }
@@ -98,47 +58,47 @@ function initializeQueryBuilder(element, schema, newRules) {
 export default class QueryBuilder extends React.Component {
     constructor(props) {
         super();
-        this.queryBuilder = React.createRef()
         this.state = {
             rules: {},
         };
     }
 
     componentDidMount() {
-        const element = this.queryBuilder.current;
-        initializeQueryBuilder(element, this.props.schema);
+        const element = this.refs.queryBuilder;
+        initializeQueryBuilder(element, this.props.table_name);
     }
 
     componentWillUnmount() {
-        window.$(this.queryBuilder.current).queryBuilder('destroy');
+        window.$(this.refs.queryBuilder).queryBuilder('destroy');
     }
 
     shouldComponentUpdate() {
         return false;
     }
-    
+
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
-        const rules = window.$(this.queryBuilder.current).queryBuilder('getSQL');
+        const rules = window.$(this.refs.queryBuilder).queryBuilder('getSQL');
         this.setState({ rules: rules });
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
     handleSetRulesClick() {
-        if (this.props.schema === 'bedset'){
+        if (this.props.table_name === 'bedsets'){
             var defaultRules = setRules
-        } else if (this.props.schema === 'bedfile') {
-            defaultRules = fileRules
+        } else if (this.props.table_name === 'bedfiles') {
+            var defaultRules = fileRules
         }
         const newRules = { ...defaultRules };
-        window.$(this.queryBuilder.current).queryBuilder('setRules', newRules);
+        newRules.rules[0].value = newRules.rules[0].value ;
+        window.$(this.refs.queryBuilder).queryBuilder('setRules', newRules);
         this.setState({ rules: newRules });
     }
 
     render() {
         return (
             <div>
-                <div id='query-builder' ref={this.queryBuilder} />
+                <div id='query-builder' ref='queryBuilder' />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message = {JSON.stringify(this.state.rules, undefined, 2)}/>
                 <button className='btn btn-sm' style={{backgroundColor:'#264653', color:"white"}} onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
                 <button className='float-right btn btn-sm' style={{backgroundColor:'#264653'}}><FaSearch size={20} style={{ fill: 'white' }} /></button>

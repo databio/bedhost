@@ -62,14 +62,14 @@ export default class Home extends React.Component {
                             <Label style={{marginLeft: '15px', fontSize: '15px'}} as='a' color='teal' ribbon>
                                 BED File Search
                             </Label>
-                            <QueryBuilder schema = 'bedfile'/>
+                            <QueryBuilder table_name = 'bedfiles'/>
                             <BedSetList />
                         </Col>
                         <Col >
                             <Label style={{marginLeft: '15px', fontSize: '15px'}} as='a' color='teal' ribbon>
                                 BED Set Search
                             </Label>
-                            <QueryBuilder schema = 'bedset' />
+                            <QueryBuilder table_name = 'bedsets' />
                             <BedSetList />
                         </Col>
                     </Row>
