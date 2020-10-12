@@ -58,18 +58,19 @@ async function initializeQueryBuilder(element, table_name, newRules) {
 export default class QueryBuilder extends React.Component {
     constructor(props) {
         super();
+        this.queryBuilder = React.createRef()
         this.state = {
             rules: {},
         };
     }
 
     componentDidMount() {
-        const element = this.refs.queryBuilder;
+        const element = this.queryBuilder.current;
         initializeQueryBuilder(element, this.props.table_name);
     }
 
     componentWillUnmount() {
-        window.$(this.refs.queryBuilder).queryBuilder('destroy');
+        window.$(this.queryBuilder.current).queryBuilder('destroy');
     }
 
     shouldComponentUpdate() {
@@ -78,7 +79,7 @@ export default class QueryBuilder extends React.Component {
 
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
-        const rules = window.$(this.refs.queryBuilder).queryBuilder('getSQL');
+        const rules = window.$(this.queryBuilder.current).queryBuilder('getSQL');
         this.setState({ rules: rules });
         this.forceUpdate();
     }
@@ -90,15 +91,14 @@ export default class QueryBuilder extends React.Component {
             var defaultRules = fileRules
         }
         const newRules = { ...defaultRules };
-        newRules.rules[0].value = newRules.rules[0].value ;
-        window.$(this.refs.queryBuilder).queryBuilder('setRules', newRules);
+        window.$(this.queryBuilder.current).queryBuilder('setRules', newRules);
         this.setState({ rules: newRules });
     }
 
     render() {
         return (
             <div>
-                <div id='query-builder' ref='queryBuilder' />
+                <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message = {JSON.stringify(this.state.rules, undefined, 2)}/>
                 <button className='btn btn-sm' style={{backgroundColor:'#264653', color:"white"}} onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
                 <button className='float-right btn btn-sm' style={{backgroundColor:'#264653'}}><FaSearch size={20} style={{ fill: 'white' }} /></button>
