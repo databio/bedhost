@@ -88,7 +88,7 @@ export default class QueryBuilder extends React.Component {
         if (this.props.table_name === 'bedsets'){
             var defaultRules = setRules
         } else if (this.props.table_name === 'bedfiles') {
-            var defaultRules = fileRules
+            defaultRules = fileRules
         }
         const newRules = { ...defaultRules };
         window.$(this.queryBuilder.current).queryBuilder('setRules', newRules);

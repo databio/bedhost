@@ -24,7 +24,7 @@ export default class BedFileList extends React.Component {
                 <ListGroup.Item as="li" key={bedFile[0]}>
                   <Link to={{
                     pathname: '/bedfilesplash/' + bedFile[1]}}>
-                    {bedFile[0]}: {bedFile[1]}
+                    {bedFile[0]}: {bedFile[2]}
                   </Link>  
                 </ListGroup.Item>
               );

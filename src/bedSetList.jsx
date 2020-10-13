@@ -66,7 +66,7 @@ export default class BedSetList extends React.Component {
                   active
                   key={bedSet[0]}
                 >
-                  {bedSet[0]}: {bedSet[1]}
+                  {bedSet[0]}: {bedSet[2]}
                   <Link to={{
                     pathname: '/bedsetsplash/' + bedSet[1]
                   }}>
@@ -79,7 +79,7 @@ export default class BedSetList extends React.Component {
                     action
                     key={bedSet[0]}
                   >
-                    {bedSet[0]}: {bedSet[1]}
+                    {bedSet[0]}: {bedSet[2]}
                     <Link to={{
                       pathname: '/bedsetsplash/' + bedSet[1]
                     }}>
