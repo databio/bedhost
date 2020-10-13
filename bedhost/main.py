@@ -279,7 +279,7 @@ async def get_all_bedset_list(column: str = Path(..., description="DB column nam
     """
     Returns a list of selected columns for all bedset records
     """
-    return bbc.select(table_name=BEDSET_TABLE, columns=["id", column])
+    return bbc.select(table_name=BEDSET_TABLE, columns=["id", JSON_MD5SUM_KEY, column])
 
 
 @app.get("/bed/list/{column}")
@@ -289,18 +289,25 @@ async def get_all_bed_list(column: str = Path(..., description="DB column name",
     Returns a dict of record IDs and names of selected columns
     for all bedfile records
     """
-    return dict(bbc.select(table_name=BED_TABLE, columns=["id", column]))
+    return dict(bbc.select(table_name=BED_TABLE, columns=["id", JSON_MD5SUM_KEY, column]))
 
 
 @app.get("/bed/bedset/{bedset_id}")
-async def get_bed_list_for_bedset(bedset_id: int = Path(..., description="BED set ID", regex=r"^\D+$"),
-                                  column: Optional[str] = Query(None, description="Column name", regex=r"^\S+$")):
+async def get_bed_list_for_bedset(bedset_id: int = Path(..., description="BED set ID"),
+                                  column: Optional[str] = Query(None, description="Column name", regex=r"^\D+$")):
     """
     Returns a list of bedfile columns that are part of the bedset with a provided ID
     """
-    columns = None if column is None else ["id"] + [column]
+    columns = ["id", JSON_MD5SUM_KEY] if column is None else ["id", JSON_MD5SUM_KEY] + [column]
     return bbc.select_bedfiles_for_bedset(query=f"id='{bedset_id}'", bedfile_col=columns)
 
+@app.get("/bedset/splash/{bedset_md5sum}")
+async def get_bed_data_for_bedset(bedset_md5sum: str = Path(..., description="BED set digest"),
+                                  column: Optional[str] = Query(None, description="Column name", regex=r"^\D+$")):
+    """
+    Returns bedset data with a provided ID
+    """
+    return bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{bedset_md5sum}'")
 
 @app.get("/versions")
 async def get_version_info():
