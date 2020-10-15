@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";
 import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { FaDatabase } from "react-icons/fa";
 
 
 export default class BedFileList extends React.Component {
@@ -12,8 +13,13 @@ export default class BedFileList extends React.Component {
         <Card md={4}>
           <Card.Header>
             <b>
-              List of BED files in <code>{id}</code>
+              List of BED files in selected BED set
             </b>
+            <Link to={{
+                      pathname: '/bedsetsplash/bedsetstats/' + id
+                    }}>
+                      <FaDatabase className="float-right" color='teal' />
+                    </Link>
           </Card.Header>
           <ListGroup
             variant="flush"

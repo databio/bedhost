@@ -4,6 +4,7 @@ import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 import Home from "./home";
 import BedSetSplash from './bedSetSplash';
+import BedSetStats from './bedSetStats';
 import BedFileSplash from './bedFileSplash';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -16,7 +17,8 @@ ReactDOM.render(
   <Router>
       <Switch>
         <Route exact path="/" component={Home}/>
-        <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash}/>
+        <Route path="/bedsetsplash/bedsetstats/:bedset_md5sum" component={BedSetSplash}/>
+        <Route path="/bedsetsplash/bedstats/:bedset_md5sum" component={BedSetStats}/>
         <Route path="/bedfilesplash/:bedfile_md5sum" component={BedFileSplash}/>
       </Switch>
   </Router>,

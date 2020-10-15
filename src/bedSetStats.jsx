@@ -18,14 +18,13 @@ const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-export default class BedSetSplash extends React.Component {
+export default class BedSetStats extends React.Component {
   constructor(props) {
     super();
     this.state = {
       Data: [],
       bedSetName: "",
       bedSetRxiv: "",
-      bedSetData: "",
       bedSetSum: "",
       bedSetDownload: [],
       bedSetFig: []
@@ -38,7 +37,6 @@ export default class BedSetSplash extends React.Component {
       {
         bedSetName: data[0][2],
         bedSetRxiv: data[0][3],
-        bedSetData: data[0][4],
         bedSetSum: data[0][5],
         bedSetDownload: [data[0][3], data[0][4], data[0][5], data[0][6], data[0][7]],
         bedSetFig: data[0][8][0],
@@ -64,13 +62,23 @@ export default class BedSetSplash extends React.Component {
         <Container fluid className="p-4">
           <Row>
             <Col >
+              <Label style={{ marginLeft: '15px', fontSize: '15px' ,padding: "6px 20px 6px 30px"}} as='a' color='teal' ribbon>
+                {this.state.bedSetFig.caption}
 
-              {this.state.bedSetData ? (
-                <BedSetTable dataSrc={this.state.bedSetData.match(/\/outputs\/.*/)} />
+              </Label>
+              {this.state.bedSetFig.src ? (
+                <BedSetPlots data={this.state.bedSetFig} />
               ) : null}
 
+              <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
+                Bedset Stats Table
+              </Label>
+              <StatsTable dataSrc={this.state.bedSetSum.match(/\/outputs\/.*/)} />
+              <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
+                Bedset Download List
+              </Label>
+              <DownloadList list={this.state.bedSetDownload} />
             </Col>
-
           </Row>
         </Container>
         <VersionsSpan />

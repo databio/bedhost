@@ -8,7 +8,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import BedFileList from "./bedFileList";
 import bedhost_api_url from "./const";
 
-import { FaDatabase } from "react-icons/fa";
+import { FaChartBar } from "react-icons/fa";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -68,9 +68,9 @@ export default class BedSetList extends React.Component {
                 >
                   {bedSet[0]}: {bedSet[2]}
                   <Link to={{
-                    pathname: '/bedsetsplash/' + bedSet[1]
+                    pathname: '/bedsetsplash/bedstats/' + bedSet[1]
                   }}>
-                    <FaDatabase className="float-right" color={this.state.iconColor} />
+                    <FaChartBar className="float-right" color={this.state.iconColor} />
                   </Link>
                 </ListGroup.Item>
               ) : (
@@ -81,9 +81,9 @@ export default class BedSetList extends React.Component {
                   >
                     {bedSet[0]}: {bedSet[2]}
                     <Link to={{
-                      pathname: '/bedsetsplash/' + bedSet[1]
+                      pathname: '/bedsetsplash/bedstats/' + bedSet[1]
                     }}>
-                      <FaDatabase className="float-right" color='teal' />
+                      <FaChartBar className="float-right" color='teal' />
                     </Link>
                   </ListGroup.Item>
                 );
