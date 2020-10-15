@@ -7,7 +7,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
 import bedhost_api_url from "./const";
-import "./bedSetSplash.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -23,7 +22,7 @@ export default class BedSetSplash extends React.Component {
   }
 
   async componentDidMount() {
-    let data = await api.get("/bedset/splash/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
+    let data = await api.get("/bedsets/splash/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
       this.setState(
         {
           bedSetName: data[0][2],

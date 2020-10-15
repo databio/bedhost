@@ -1,5 +1,4 @@
 import React from "react";
-import ListGroup from "react-bootstrap/ListGroup";
 
 export default class DownloadList extends React.Component {
   render() {

@@ -2,7 +2,6 @@ import React from "react";
 import Header from './header';
 import VersionsSpan from "./versionsSpan";
 import Container from "react-bootstrap/Container";
-import BedSetTable from "./bedSetTable";
 import BedSetPlots from "./bedSetPlots";
 import DownloadList from "./downloadList";
 import StatsTable from "./statsTable";
@@ -11,7 +10,6 @@ import Col from "react-bootstrap/Col";
 import axios from "axios";
 import bedhost_api_url from "./const";
 import path from "path";
-import "./bedSetSplash.css";
 import { Label } from 'semantic-ui-react';
 
 const api = axios.create({
@@ -23,20 +21,16 @@ export default class BedSetStats extends React.Component {
         super();
         this.state = {
             bedSetName: "",
-            bedSetRxiv: "",
-            bedSetSum: "",
             bedSetDownload: {},
             bedSetFig: []
         };
     }
 
     async componentDidMount() {
-        let data = await api.get("/bedset/splash/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
+        let data = await api.get("/bedsets/splash/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
         this.setState(
             {
                 bedSetName: data[0][2],
-                bedSetRxiv: data[0][3],
-                bedSetSum: data[0][5],
                 bedSetDownload: {
                     BED_Set_Rxiv: data[0][3], 
                     BED_Stats: data[0][4],

@@ -1,8 +1,7 @@
 import React from "react";
 import * as d3 from 'd3';
-import MaterialTable, { MTableToolbar } from "material-table";
-import { Button, Paper } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
+import MaterialTable  from "material-table";
+import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 
 export default class StatsTable extends React.Component {

@@ -5,7 +5,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import * as d3 from 'd3';
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-import "./bedSetSplash.css";
 
 export default class BedSetTable extends React.Component {
     constructor(props) {
@@ -45,6 +44,7 @@ export default class BedSetTable extends React.Component {
                     color: "#FFF",
                     fontWeight: "bold",
                 },
+                render: rowData => <a href={'/bedfilesplash/' + rowData.md5sum}>{rowData.name}</a>
             },
             { title: this.state.columns[0], field: this.state.columns[0], width: 300 },
             { title: this.state.columns[2], field: this.state.columns[2], width: 200 },
