@@ -5,7 +5,7 @@ export default function ShowFig(props) {
   const [figList, setFigList] = useState([]);
 
   const getFig = () => {
-    if (figList != 0) {
+    if (figList.length !== 0) {
       console.log("clear");
       setFigList([]);
     }

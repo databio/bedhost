@@ -8,7 +8,6 @@ import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Label } from 'semantic-ui-react'
 
 export default class Home extends React.Component {
     constructor(props) {
@@ -33,7 +32,7 @@ export default class Home extends React.Component {
                         </Col>
                     </Row>
                 </Container>
-                {/* <Container fluid className="p-4">
+                <Container fluid className="p-4">
                     <Row>
                         <Col>
                             <Row>
@@ -46,17 +45,17 @@ export default class Home extends React.Component {
                             </Row>
 
                             {this.state.search === "bedsets" ? (
-                                <QueryBuilderBedset />
+                                <QueryBuilder table_name = 'bedsets' />
                             ) : (
-                                    <QueryBuilderBedfile />
+                                <QueryBuilder table_name = 'bedfiles' />
                                 )}
                         </Col>
                         <Col md={6}>
                             <BedSetList />
                         </Col>
                     </Row>
-                </Container> */}
-                <Container fluid className="p-4">
+                </Container>
+                {/* <Container fluid className="p-4">
                     <Row>
                         <Col>
                             <Label style={{marginLeft: '15px', fontSize: '15px'}} as='a' color='teal' ribbon>
@@ -73,7 +72,7 @@ export default class Home extends React.Component {
                             <BedSetList />
                         </Col>
                     </Row>
-                </Container>
+                </Container> */}
                 <VersionsSpan />
             </React.StrictMode>
         )

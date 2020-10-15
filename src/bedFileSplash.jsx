@@ -8,9 +8,7 @@ import axios from "axios";
 import bedhost_api_url from "./const";
 import path from "path";
 import ImgGrid from "./imgGrid";
-import GridList from "@material-ui/core/GridList";
-import GridListTile from "@material-ui/core/GridListTile";
-import GridListTileBar from "@material-ui/core/GridListTileBar";
+// import DownloadList from "./downloadList";
 import "./splash.css";
 
 const api = axios.create({
@@ -23,8 +21,9 @@ export default class BedFileSplash extends React.Component {
     super();
     this.state = {
       bedName: "",
-      bedData: "",
-      bedFig: []
+      bedData: [],
+      bedFig: [],
+      bedDownload: {},
     };
   }
 
@@ -33,14 +32,16 @@ export default class BedFileSplash extends React.Component {
     this.setState(
       {
         bedName: data[0][3],
-        // bedData: data[0][4],
+        bedDownload: {
+          BED_File: data[0][2], 
+      },
       }
     );
     const newbedFig = data[0][22].map((file) => {
-      return { ...file, src: "."+path.join("/outputs/bedstat_output", this.props.match.params.bedfile_md5sum, this.state.bedName + "_" + file.name) };
+      return { ...file, src: "." + path.join("/outputs/bedstat_output", this.props.match.params.bedfile_md5sum, this.state.bedName + "_" + file.name) };
     });
     this.setState({ bedFig: newbedFig });
-    console.log("BED set data retrieved from the server: ", this.state.bedFig);
+    console.log("BED set data retrieved from the server: ", this.state.bedDownload);
   }
 
 
@@ -56,16 +57,10 @@ export default class BedFileSplash extends React.Component {
           </Row>
         </Container>
         <Container fluid className="p-4">
-          <Row>
-            <Col >
-              {this.state.bedFig ?
-                (<ImgGrid imgList={this.state.bedFig} />) : null
-              }
-            </Col>
-            <Col sm="4">
-              <h2>Download list</h2>
-            </Col>
-          </Row>
+          {this.state.bedFig ?
+            (<ImgGrid imgList={this.state.bedFig} />) : null
+          }
+
         </Container>
         <VersionsSpan />
       </div>

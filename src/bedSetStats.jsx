@@ -21,6 +21,7 @@ export default class BedSetStats extends React.Component {
         super();
         this.state = {
             bedSetName: "",
+            bedSetSum: "",
             bedSetDownload: {},
             bedSetFig: []
         };
@@ -31,6 +32,7 @@ export default class BedSetStats extends React.Component {
         this.setState(
             {
                 bedSetName: data[0][2],
+                bedSetSum: data[0][5],
                 bedSetDownload: {
                     BED_Set_Rxiv: data[0][3], 
                     BED_Stats: data[0][4],
@@ -77,7 +79,7 @@ export default class BedSetStats extends React.Component {
                             ) : null}
                             <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
                                 Bedset Download List
-                        </Label>
+                            </Label>
                             <DownloadList list={this.state.bedSetDownload} />
                         </Col>
 

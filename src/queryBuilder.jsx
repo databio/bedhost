@@ -1,6 +1,6 @@
 import React from 'react';
 import "./queryBuilder.css";
-import { FaSearch } from "react-icons/fa";
+// import { FaSearch } from "react-icons/fa";
 import ResponsiveDialog from "./responsiveDialog"
 // import $ from 'jquery';
 // import QueryBuilder from '../utils/qb.js';
@@ -101,7 +101,7 @@ export default class QueryBuilder extends React.Component {
                 <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message = {JSON.stringify(this.state.rules, undefined, 2)}/>
                 <button className='btn btn-sm' style={{backgroundColor:'#264653', color:"white"}} onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
-                <button className='float-right btn btn-sm' style={{backgroundColor:'#264653'}}><FaSearch size={20} style={{ fill: 'white' }} /></button>
+                <button className='float-right btn btn-sm' style={{backgroundColor:'#264653', color:"white"}}>SEARCH</button>
             </div>
         );
     }
