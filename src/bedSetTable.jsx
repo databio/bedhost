@@ -1,10 +1,11 @@
 import React from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
+import { Button, Paper } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
 import * as d3 from 'd3';
 import { tableIcons } from "./tableIcons";
-import { Button } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
 import ShowFig from "./showFig";
+import "./bedSetSplash.css";
 
 export default class BedSetTable extends React.Component {
     constructor(props) {
@@ -120,6 +121,7 @@ export default class BedSetTable extends React.Component {
                                 }));
                         }}
                         components={{
+                            Container: props => <Paper {...props} elevation={0}/>,
                             Toolbar: (props) => (
                                 <div>
                                     <MTableToolbar {...props} />
@@ -140,7 +142,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 TSS dist
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip
                                             title="Regions distribution over chromosomes"
@@ -158,7 +160,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 chrombins
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip title="GC Content" placement="top">
                                             <Button
@@ -170,7 +172,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 GC Content
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip
                                             title="Regions distribution over genomic partitions"
@@ -188,7 +190,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 Partitions
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip
                                             title="Expected distribution over genomic partitions"
@@ -206,7 +208,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 Expected partitions
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip
                                             title="Cumulative distribution over genomic partitions"
@@ -224,7 +226,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 Cumulative partitions
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip
                                             title="Quantile-Trimmed Histogram of Widths"
@@ -242,7 +244,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 Widths Histogram
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip
                                             title="Distances between neighbor regions"
@@ -260,7 +262,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 Neighbor Distances
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                         <Tooltip
                                             title="Cell specific enrichment for open chromatin"
@@ -278,7 +280,7 @@ export default class BedSetTable extends React.Component {
                                                 }}
                                             >
                                                 Open chromatin
-                    </Button>
+                                            </Button>
                                         </Tooltip>
                                     </div>
                                 </div>
