@@ -34,16 +34,17 @@ export default class BedSetSplash extends React.Component {
 
   async componentDidMount() {
     let data = await api.get("/bedset/splash/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
-    this.setState(
-      {
-        bedSetName: data[0][2],
-        bedSetRxiv: data[0][3],
-        bedSetData: data[0][4],
-        bedSetSum: data[0][5],
-        bedSetDownload: [data[0][3], data[0][4], data[0][5], data[0][6], data[0][7]],
-        bedSetFig: data[0][8][0],
-      }
-    );
+    var regex =
+      this.setState(
+        {
+          bedSetName: data[0][2],
+          bedSetRxiv: data[0][3],
+          bedSetData: data[0][4],
+          bedSetSum: data[0][5],
+          bedSetDownload: [data[0][3], data[0][4], data[0][5], data[0][6], data[0][7]],
+          bedSetFig: data[0][8][0],
+        }
+      );
 
     const newbedSetFig = { ...this.state.bedSetFig, src: path.join("/outputs/bedbuncher_output", this.props.match.params.bedset_md5sum, this.state.bedSetName + "_" + this.state.bedSetFig.name) };
     this.setState({ bedSetFig: newbedSetFig });

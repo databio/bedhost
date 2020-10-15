@@ -16,7 +16,7 @@ export default class BedSetTable extends React.Component {
             showFig: false,
             figType: "",
             selectedBedId: [],
-            selectedBedName: [],
+            selectedBedName: []
         }
     }
 
