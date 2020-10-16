@@ -301,13 +301,15 @@ async def get_bed_list_for_bedset(bedset_id: int = Path(..., description="BED se
     columns = ["id", JSON_MD5SUM_KEY] if column is None else ["id", JSON_MD5SUM_KEY] + [column]
     return bbc.select_bedfiles_for_bedset(query=f"id='{bedset_id}'", bedfile_col=columns)
 
-@app.get("/bedset/splash/{bedset_md5sum}")
-async def get_bed_data_for_bedset(bedset_md5sum: str = Path(..., description="BED set digest"),
+@app.get("/{table_name}/splash/{md5sum}")
+async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB column name",
+                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
+                                  md5sum: str = Path(..., description="digest"),
                                   column: Optional[str] = Query(None, description="Column name", regex=r"^\D+$")):
     """
     Returns bedset data with a provided ID
     """
-    return bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{bedset_md5sum}'")
+    return bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'")
 
 @app.get("/versions")
 async def get_version_info():
