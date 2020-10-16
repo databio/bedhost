@@ -1,5 +1,5 @@
 import React from "react";
-import QueryBuilder from './queryBuilder.jsx';
+import QueryBuilderWrapper from './queryBuilder.jsx';
 import BedCountsSpan from "./bedCountsSpan";
 import BedSetList from "./bedSetList";
 import Header from './header';
@@ -45,9 +45,9 @@ export default class Home extends React.Component {
                             </Row>
 
                             {this.state.search === "bedsets" ? (
-                                <QueryBuilder table_name = 'bedsets' />
+                                <QueryBuilderWrapper table_name = 'bedsets' />
                             ) : (
-                                <QueryBuilder table_name = 'bedfiles' />
+                                <QueryBuilderWrapper table_name = 'bedfiles' />
                                 )}
                         </Col>
                         <Col md={6}>

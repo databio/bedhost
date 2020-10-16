@@ -13,7 +13,7 @@
     "copy-to-clipboard": "^3.3.1",
     "d3": "^6.2.0",
     "jQuery-QueryBuilder": "^2.5.2",
-    "jquery": "^3.5.1",
+    "jquery": ">= 1.9.0 < 3.0.0",
     "material-table": "^1.69.1",
     "path": "^0.12.7",
     "react": "^16.13.1",
