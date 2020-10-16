@@ -1,0 +1,17 @@
+.splash-img {
+  height: 300px;
+}
+
+.splash-link {
+  color: #ffffff;
+}
+
+.splash-link:hover {
+  color:  #e76f51;
+  font-weight: bolder;
+}
+
+.MuiGridListTileBar-title:hover{
+  font-weight: bolder;
+  color:  #e76f51;
+}

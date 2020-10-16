@@ -1,5 +1,5 @@
 import React from "react";
-import "./splash.css";
+import "./style/splash.css";
 
 
 export default class BedSetPlots extends React.Component {
@@ -16,7 +16,7 @@ export default class BedSetPlots extends React.Component {
             <div>
                 <a href={require(`${this.state.pdfPath}`)}>
                     <img
-                        className="imgSize"
+                        className="splash-img"
                         src={require(`${this.state.pngPath}`)}
                         alt={this.props.data.name}
                     />

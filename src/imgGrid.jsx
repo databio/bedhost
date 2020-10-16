@@ -3,6 +3,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import GridListTileBar from "@material-ui/core/GridListTileBar";
+import "./style/splash.css";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -23,12 +24,13 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ImgGrid(props) {
     const classes = useStyles();
+    console.log("Img List: ", props.imgList)
     return (
         <div className={classes.root}>
             <GridList cellHeight={350} className={classes.gridList} cols={5}>
-              {props.imgList.map((image) => {
+              {props.imgList.map((image, index) => {
                 return (
-                  <GridListTile key={image.id}>
+                  <GridListTile key={index}>
                     <img
                       className={classes.imgSize}
                       src={require(image.src + ".png")}

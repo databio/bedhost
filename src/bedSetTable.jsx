@@ -24,7 +24,7 @@ export default class BedSetTable extends React.Component {
         var data = require(`${this.state.dataPath}`)
         d3.csv(data).then((data) => {
             this.setState({ columns: data.columns, bedSetData: data.slice(0, data.length) });
-            console.log(data);
+            console.log("BED set data from local CSV: ", data);
         })
     }
 
@@ -44,7 +44,7 @@ export default class BedSetTable extends React.Component {
                     color: "#FFF",
                     fontWeight: "bold",
                 },
-                render: rowData => <a href={'/bedfilesplash/' + rowData.md5sum}>{rowData.name}</a>
+                render: rowData => <a className = "splash-link" href={'/bedfilesplash/' + rowData.md5sum}>{rowData.name}</a>
             },
             { title: this.state.columns[0], field: this.state.columns[0], width: 300 },
             { title: this.state.columns[2], field: this.state.columns[2], width: 200 },
@@ -64,10 +64,9 @@ export default class BedSetTable extends React.Component {
     }
 
     bedFileSelected(rows) {
-        console.log(rows);
+        console.log("Selected Row Data:", rows);
         this.state.selectedBedId.splice(0, this.state.selectedBedId.length);
         this.state.selectedBedName.splice(0, this.state.selectedBedName.length);
-        console.log(this.state.selectedBedId);
         for (var i = 0; i < rows.length; i++) {
             this.state.selectedBedId.push(rows[i].md5sum);
             this.state.selectedBedName.push(rows[i].name);
@@ -76,8 +75,6 @@ export default class BedSetTable extends React.Component {
             selectedBedId: this.state.selectedBedId,
             selectedBedName: this.state.selectedBedName
         });
-
-        console.log(this.state.selectedBedName);
     };
 
     figTypeClicked(fig, name) {
@@ -88,8 +85,6 @@ export default class BedSetTable extends React.Component {
     };
 
     render() {
-        console.log(this.state.columns)
-        console.log(this.state.bedSetData)
         return (
             <div>
                 <div>

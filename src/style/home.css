@@ -1,0 +1,37 @@
+.footer{
+    position:absolute;
+    left:0;
+    bottom:0;
+    right:0;
+}
+
+.list-group-item.active {
+    z-index: 2;
+    color: #fff;
+    background-color:teal;
+    border-color: teal;
+}
+
+.home-link {
+    color:teal;
+}
+.home-link:hover {
+    color: #e76f51;
+    font-weight: bolder;
+}
+
+.my-btn{
+    color: #FFF;
+    background-color:#264653;
+    border-color: #264653;
+}
+
+.my-btn:hover,
+.my-btn:focus,
+.my-btn.disabled, 
+.my-btn:disabled{
+    color: #FFF;
+    background-color:#e76f51;
+    border-color:#e76f51;
+    opacity: 1
+}

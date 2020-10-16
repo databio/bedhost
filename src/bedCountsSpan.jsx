@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import bedhost_api_url from "./const";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({

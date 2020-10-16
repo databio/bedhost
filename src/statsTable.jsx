@@ -17,7 +17,7 @@ export default class StatsTable extends React.Component {
     var data = require(`${this.state.dataPath}`)
     d3.csv(data).then((data) => {
       this.setState({ columns: data.columns, bedStats: data.slice(0, data.length) });
-      console.log(data);
+      console.log('BED set summary from loacal CSV: ', data);
     })
   }
 
@@ -46,9 +46,6 @@ export default class StatsTable extends React.Component {
 
   render() {
     return (
-      // <div>
-      //   <>{this.props.dataSrc}</>
-      // </div>
       <div>
         <div>
           <MaterialTable

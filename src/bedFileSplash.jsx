@@ -9,7 +9,7 @@ import bedhost_api_url from "./const";
 import path from "path";
 import ImgGrid from "./imgGrid";
 // import DownloadList from "./downloadList";
-import "./splash.css";
+import "./style/splash.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,

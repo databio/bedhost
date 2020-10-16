@@ -2,9 +2,9 @@ import React from "react";
 import {Link} from "react-router-dom";
 import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
-import "bootstrap/dist/css/bootstrap.min.css";
 import { FaDatabase } from "react-icons/fa";
-
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./style/home.css"
 
 export default class BedFileList extends React.Component {
   renderList(id) {
@@ -28,7 +28,7 @@ export default class BedFileList extends React.Component {
             {this.props.bedFileList.map((bedFile) => {
               return (
                 <ListGroup.Item as="li" key={bedFile[0]}>
-                  <Link to={{
+                  <Link className="home-link" to={{
                     pathname: '/bedfilesplash/' + bedFile[1]}}>
                     {bedFile[0]}: {bedFile[2]}
                   </Link>  

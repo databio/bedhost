@@ -6,9 +6,9 @@ export default class DownloadList extends React.Component {
       <div>
         {
           Object.entries(this.props.list)
-            .map(([key, value]) =>
+            .map(([key, value],index) =>
               <a href={require(`${"." + value.match(/\/outputs\/.*/)}`)}>
-                <li key={key}>{key}</li>
+                <li key={index}>{key}</li>
               </a>)
         }
       </div>

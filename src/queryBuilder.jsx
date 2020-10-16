@@ -1,11 +1,11 @@
 import React from 'react';
-import "./queryBuilder.css";
-// import { FaSearch } from "react-icons/fa";
 import ResponsiveDialog from "./responsiveDialog"
 import $ from 'jquery';
 import queryBuilder from 'jQuery-QueryBuilder';
 import axios from "axios";
 import bedhost_api_url from "./const";
+import "./style/queryBuilder.css";
+
 
 console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
@@ -84,7 +84,6 @@ export default class QueryBuilderWrapper extends React.Component {
                 alert(error + "; is bedhost running at " + bedhost_api_url + "?");
             });
         this.setState({ filters: filters_res.data })
-        console.log(this.state.filters)
     }
 
     initializeQueryBuilder(element, filters, newRules) {
@@ -96,7 +95,7 @@ export default class QueryBuilderWrapper extends React.Component {
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
-        this.setState({ rules: rules.sql });
+        this.setState({ rules: rules.sql , open:true});
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
@@ -111,15 +110,16 @@ export default class QueryBuilderWrapper extends React.Component {
         this.setState({ rules: newRules });
     }
 
-
     render() {
         return (
             <div>
                 <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
-                <button className='btn btn-sm' style={{ backgroundColor: '#264653', color: "white" }} onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
-                <button className='float-right btn btn-sm' style={{ backgroundColor: '#264653', color: "white" }}>SEARCH</button>
+                <button className='btn btn-sm my-btn'  onClick={this.handleGetRulesClick.bind(this)}>RESET RULES</button>
+                <button className='float-right btn btn-sm my-btn' >SEARCH</button>
             </div>
+
+
         );
     }
 };

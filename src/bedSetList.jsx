@@ -4,11 +4,11 @@ import axios from "axios";
 import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
-import "bootstrap/dist/css/bootstrap.min.css";
 import BedFileList from "./bedFileList";
 import bedhost_api_url from "./const";
-
 import { FaChartBar } from "react-icons/fa";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./style/home.css"
 
 const api = axios.create({
   baseURL: bedhost_api_url,
