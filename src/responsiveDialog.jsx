@@ -20,6 +20,7 @@ export default function ResponsiveDialog(props) {
 
     const handleClose = () => {
         setOpen(false);
+        setCopied(false)
     };
 
     const handleClickCopy = () => {
