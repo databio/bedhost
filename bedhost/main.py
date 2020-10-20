@@ -9,6 +9,7 @@ from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
 from typing import Optional
 from logging import INFO, DEBUG
+import os
 
 import logmuse
 import bbconf
@@ -341,6 +342,49 @@ async def get_bedfile_table_filters(
     if table_name == BED_TABLE:
         return get_search_setup(bbc.get_bedfiles_table_columns_types())
     return get_search_setup(bbc.get_bedsets_table_columns_types())
+
+@app.get("/{table_name}/data/{md5sum}")
+async def get_table_data( table_name: str = Path(..., description="DB column name",
+                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
+                            md5sum: str = Path(..., description="digest"),
+                            column: str = Query(None, description="Column name", regex=r"^\D+$")):
+                        
+    """
+    Returns the content of csv file in array of object with provided ID
+    """
+    file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
+
+    return FileResponse(file_path)
+
+@app.get("/{table_name}/img/{md5sum}")
+async def get_table_img( table_name: str = Path(..., description="DB column name",
+                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
+                            md5sum: str = Path(..., description="digest")):
+                        
+    """
+    Returns the img with provided ID
+    """
+    imgs = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = ["name","plots"])
+    if table_name == "bedsets":
+        img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY], md5sum, imgs[0][0] + "_" + imgs[0][1][0].get('name')+".pdf")
+    # elif table_name == "bedfiles":
+    #     img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY], md5sum, imgs[0][0] + "_" + imgs[0][1][0].get('name'))
+
+
+    return FileResponse(img_path)
+
+@app.get("/{table_name}/download/{md5sum}")
+async def download_file( table_name: str = Path(..., description="DB column name",
+                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
+                            md5sum: str = Path(..., description="digest"),
+                            column: str = Query(None, description="Column name", regex=r"^\D+$")):
+                        
+    """
+    Download file with provided ID
+    """
+    file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
+    return FileResponse(file_path, media_type='application/octet-stream',filename=os.path.basename(file_path))
+
 
 
 def main():
