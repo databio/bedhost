@@ -362,16 +362,21 @@ async def get_table_data( table_name: str = Path(..., description="DB column nam
 @app.get("/{table_name}/img/{md5sum}")
 async def get_table_img( table_name: str = Path(..., description="DB column name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
-                            md5sum: str = Path(..., description="digest")):
+                            md5sum: str = Path(..., description="digest"),
+                            img_type: str = Query(None, description="pdf or png",
+                                    regex=r"pdf|png"),
+                            img_name: str = Query(None, description="plot type")):
                         
     """
     Returns the img with provided ID
     """
     imgs = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = ["name","plots"])
+    name = imgs[0][1][0].get('name') if img_name is None else img_name
+
     if table_name == "bedsets":
-        img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY], md5sum, imgs[0][0] + "_" + imgs[0][1][0].get('name')+".pdf")
-    # elif table_name == "bedfiles":
-    #     img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY], md5sum, imgs[0][0] + "_" + imgs[0][1][0].get('name'))
+        img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY], md5sum, imgs[0][0] + "_" + name + "." + img_type)
+    elif table_name == "bedfiles":
+        img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY], md5sum, imgs[0][0] + "_" +name + "." + img_type)
 
 
     return FileResponse(img_path)
