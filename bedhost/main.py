@@ -1,6 +1,6 @@
 import uvicorn
 import sys
-from fastapi import FastAPI, HTTPException, Path, Query
+from fastapi import FastAPI, HTTPException, Path, Query, Response
 from starlette.responses import FileResponse, RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -10,6 +10,7 @@ from starlette.staticfiles import StaticFiles
 from typing import Optional
 from logging import INFO, DEBUG
 import os
+import pandas as pd
 
 import logmuse
 import bbconf
@@ -353,8 +354,10 @@ async def get_table_data( table_name: str = Path(..., description="DB column nam
     Returns the content of csv file in array of object with provided ID
     """
     file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
-
-    return FileResponse(file_path)
+    df = pd.read_csv(file_path)
+    columns = list(df)
+    data = df.to_dict('records')
+    return {"columns" : columns, "data": data}
 
 @app.get("/{table_name}/img/{md5sum}")
 async def get_table_img( table_name: str = Path(..., description="DB column name",
