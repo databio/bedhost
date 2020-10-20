@@ -5,12 +5,17 @@ import Tooltip from "@material-ui/core/Tooltip";
 import * as d3 from 'd3';
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
+import bedhost_api_url from "./const";
+import axios from "axios";
+
+const api = axios.create({
+    baseURL: bedhost_api_url,
+});
 
 export default class BedSetTable extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            dataPath: "." + props.dataSrc,
             columns: [],
             bedSetData: [],
             showFig: false,
@@ -20,11 +25,13 @@ export default class BedSetTable extends React.Component {
         }
     }
 
-    componentDidMount() {
-        var data = require(`${this.state.dataPath}`)
-        d3.csv(data).then((data) => {
-            this.setState({ columns: data.columns, bedSetData: data.slice(0, data.length) });
-            console.log("BED set data from local CSV: ", data);
+    async componentDidMount() {
+        let res = await api.get("/bedsets/data/" + this.props.bedset_md5sum + "?column=bedset_bedfiles_gd_stats").then(({ data }) => data);
+        console.log('BED set summary from API: ', res)
+
+        this.setState({
+            columns: res.columns,
+            bedSetData: res.data
         })
     }
 
@@ -44,7 +51,7 @@ export default class BedSetTable extends React.Component {
                     color: "#FFF",
                     fontWeight: "bold",
                 },
-                render: rowData => <a className = "splash-link" href={'/bedfilesplash/' + rowData.md5sum}>{rowData.name}</a>
+                render: rowData => <a className="splash-link" href={'/bedfilesplash/' + rowData.md5sum}>{rowData.name}</a>
             },
             { title: this.state.columns[0], field: this.state.columns[0], width: 300 },
             { title: this.state.columns[2], field: this.state.columns[2], width: 200 },
@@ -89,7 +96,7 @@ export default class BedSetTable extends React.Component {
             <div>
                 <div>
                     <MaterialTable
-                        title = ""
+                        title=""
                         columns={this.getColumns()} // <-- Set the columns on the table
                         data={this.state.bedSetData} // <-- Set the data on the table
                         icons={tableIcons}
@@ -116,7 +123,7 @@ export default class BedSetTable extends React.Component {
                                 }));
                         }}
                         components={{
-                            Container: props => <Paper {...props} elevation={0}/>,
+                            Container: props => <Paper {...props} elevation={0} />,
                             Toolbar: (props) => (
                                 <div>
                                     <MTableToolbar {...props} />

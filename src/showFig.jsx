@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import ImgGrid from "./imgGrid";
+import bedhost_api_url from "./const";
 
 export default function ShowFig(props) {
   const [figList, setFigList] = useState([]);
@@ -14,13 +15,8 @@ export default function ShowFig(props) {
       figList.push({
         id: i + 1,
         caption: props.bedNames[i],
-        src:
-          "./outputs/bedstat_output/" + 
-          props.bedIds[i] +
-          "/" +
-          props.bedNames[i] +
-          "_" +
-          props.figType[0],
+        src_pdf: bedhost_api_url+"/bedfiles/img/"+ props.bedIds[i] +"?img_type=pdf&img_name="+ props.figType[0],
+        src_png: bedhost_api_url+"/bedfiles/img/"+ props.bedIds[i] +"?img_type=png&img_name="+ props.figType[0]
       });
     }
   };

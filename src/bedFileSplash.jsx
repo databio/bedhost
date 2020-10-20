@@ -38,7 +38,8 @@ export default class BedFileSplash extends React.Component {
       }
     );
     const newbedFig = data[0][22].map((file) => {
-      return { ...file, src: "." + path.join("/outputs/bedstat_output", this.props.match.params.bedfile_md5sum, this.state.bedName + "_" + file.name) };
+      return { ...file, src_pdf: bedhost_api_url+"/bedfiles/img/"+ this.props.match.params.bedfile_md5sum +"?img_type=pdf&img_name="+ file.name,
+      src_png: bedhost_api_url+"/bedfiles/img/"+  this.props.match.params.bedfile_md5sum +"?img_type=png&img_name="+ file.name};
     });
     this.setState({ bedFig: newbedFig });
     console.log("BED set data retrieved from the server: ", this.state.bedDownload);

@@ -33,10 +33,10 @@ export default function ImgGrid(props) {
                   <GridListTile key={index}>
                     <img
                       className={classes.imgSize}
-                      src={require(image.src + ".png")}
+                      src={image.src_png}
                       alt={image.name}
                     />
-                    <a href={require(image.src + ".pdf")}>
+                    <a href={image.src_pdf}>
                       <GridListTileBar title={image.caption} />
                     </a>
                   </GridListTile>

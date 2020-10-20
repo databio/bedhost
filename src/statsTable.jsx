@@ -3,28 +3,36 @@ import * as d3 from 'd3';
 import MaterialTable  from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
+import bedhost_api_url from "./const";
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: bedhost_api_url,
+});
 
 export default class StatsTable extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      dataPath: "." + props.dataSrc,
       columns: [],
       bedStats: []
     }
   }
-  componentDidMount() {
-    var data = require(`${this.state.dataPath}`)
-    d3.csv(data).then((data) => {
-      this.setState({ columns: data.columns, bedStats: data.slice(0, data.length) });
-      console.log('BED set summary from loacal CSV: ', data);
+
+  async componentDidMount() {
+    let res = await api.get("/bedsets/data/" + this.props.bedset_md5sum+"?column=bedset_gd_stats").then(({ data }) => data);
+    console.log('BED set summary from API: ', res)
+    
+    this.setState({
+      columns: res.columns,
+      bedStats: res.data
     })
   }
 
   getColumns() {
     const tableColumns = [
       {
-        title: this.state.columns[0],
+        title: "",
         field: this.state.columns[0],
         
         cellStyle: {

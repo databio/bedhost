@@ -44,8 +44,6 @@ export default class BedSetStats extends React.Component {
             }
         );
 
-        const newbedSetFig = { ...this.state.bedSetFig, src: path.join("/outputs/bedbuncher_output", this.props.match.params.bedset_md5sum, this.state.bedSetName + "_" + this.state.bedSetFig.name) };
-        this.setState({ bedSetFig: newbedSetFig });
         console.log("BED set data retrieved from the server: ", data);
     }
 
@@ -66,17 +64,17 @@ export default class BedSetStats extends React.Component {
                             <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
                                 Bedset Stats Table
                             </Label>
-                            {this.state.bedSetSum ? (
-                                <StatsTable dataSrc={this.state.bedSetSum.match(/\/outputs\/.*/)} />
-                            ) : null}
+                            
+                                <StatsTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
+                           
                         </Col>
                         <Col >
                             <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                                 {this.state.bedSetFig.caption}
                             </Label>
-                            {this.state.bedSetFig.src ? (
-                                <BedSetPlots data={this.state.bedSetFig} />
-                            ) : null}
+                            
+                                <BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} />
+                            
                             <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
                                 Bedset Download List
                             </Label>
