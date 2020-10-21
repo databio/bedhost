@@ -344,19 +344,29 @@ async def get_bedfile_table_filters(
         return get_search_setup(bbc.get_bedfiles_table_columns_types())
     return get_search_setup(bbc.get_bedsets_table_columns_types())
 
-@app.get("/{table_name}/data/{md5sum}")
-async def get_table_data( table_name: str = Path(..., description="DB column name",
-                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
-                            md5sum: str = Path(..., description="digest"),
-                            column: str = Query(None, description="Column name", regex=r"^\D+$")):
+@app.get("/bedset/data/{md5sum}")
+async def get_table_data( md5sum: str = Path(..., description="digest"),
+                          column: str = Query(None, description="Column name", regex=r"^\D+$")):
                         
     """
-    Returns the content of csv file in array of object with provided ID
+    Returns the  csv file content of bedsets stats in array of object with provided ID
     """
-    file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
+    column = JSON_BEDSET_GD_STATS_KEY if column is None else column
+
+    file_path = bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
     df = pd.read_csv(file_path)
+    if column == JSON_BEDSET_GD_STATS_KEY:
+        df = df.transpose()
+        new_header = df.iloc[0] 
+        df = df[1:] 
+        df = df.astype(float).round(4)
+        df.columns = new_header
+        df = df.reset_index()
+        
+    
     columns = list(df)
     data = df.to_dict('records')
+
     return {"columns" : columns, "data": data}
 
 @app.get("/{table_name}/img/{md5sum}")
@@ -373,9 +383,9 @@ async def get_table_img( table_name: str = Path(..., description="DB column name
     imgs = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = ["name","plots"])
     name = imgs[0][1][0].get('name') if img_name is None else img_name
 
-    if table_name == "bedsets":
+    if table_name == BEDSET_TABLE:
         img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY], md5sum, imgs[0][0] + "_" + name + "." + img_type)
-    elif table_name == "bedfiles":
+    elif table_name == BED_TABLE:
         img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY], md5sum, imgs[0][0] + "_" +name + "." + img_type)
 
 
@@ -390,6 +400,11 @@ async def download_file( table_name: str = Path(..., description="DB column name
     """
     Download file with provided ID
     """
+    if table_name == BEDSET_TABLE:
+        column = JSON_BEDSET_TAR_PATH_KEY if column is None else column
+    elif table_name == BED_TABLE:
+        column = BEDFILE_PATH_KEY if column is None else column
+
     file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
     return FileResponse(file_path, media_type='application/octet-stream',filename=os.path.basename(file_path))
 
