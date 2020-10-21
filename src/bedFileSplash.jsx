@@ -8,6 +8,7 @@ import axios from "axios";
 import bedhost_api_url from "./const";
 import ImgGrid from "./imgGrid";
 import DownloadList from "./downloadList";
+import Dropdown from 'react-bootstrap/Dropdown'
 import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
 
@@ -50,12 +51,27 @@ export default class BedFileSplash extends React.Component {
 
   render() {
     return (
-      <div style={{ height: "100%", overflow: "scroll" }}>
+      <div style={{ height: "96%", overflow: "scroll" }}>
         <Header />
         <Container fluid className="p-4">
           <Row>
             <Col>
               <h1>BED File: {this.state.bedName}</h1>
+            </Col>
+            <Col>
+              <Dropdown>
+                <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
+                  DOWNLOADS
+              </Dropdown.Toggle>
+
+                <Dropdown.Menu>
+                  {Object.entries(this.state.bedDownload)
+                    .map(([key, value]) =>
+                      <Dropdown.Item href={value}>
+                        {key}
+                      </Dropdown.Item>)}
+                </Dropdown.Menu>
+              </Dropdown>
             </Col>
           </Row>
         </Container>
@@ -64,10 +80,6 @@ export default class BedFileSplash extends React.Component {
             (<ImgGrid imgList={this.state.bedFig} />) : null
           }
         </Container>
-        <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
-          BED File Download List
-        </Label>
-        <DownloadList list={this.state.bedDownload} />
         <VersionsSpan />
       </div>
     )

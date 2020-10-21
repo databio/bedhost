@@ -26,6 +26,10 @@
     border-color: #264653;
 }
 
+.primary-btn:hover,
+.primary-btn:focus,
+.primary-btn.disabled, 
+.primary-btn:disabled,
 .my-btn:hover,
 .my-btn:focus,
 .my-btn.disabled, 
@@ -34,4 +38,10 @@
     background-color:#e76f51;
     border-color:#e76f51;
     opacity: 1
+}
+
+.primary-btn{
+    color: #FFF;
+    background-color:teal;
+    border-color:teal;
 }

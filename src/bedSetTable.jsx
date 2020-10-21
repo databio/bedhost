@@ -6,6 +6,9 @@ import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
 import bedhost_api_url from "./const";
 import axios from "axios";
+import { Label } from 'semantic-ui-react';
+
+
 
 const api = axios.create({
     baseURL: bedhost_api_url,
@@ -25,7 +28,7 @@ export default class BedSetTable extends React.Component {
     }
 
     async componentDidMount() {
-        let res = await api.get("/bedsets/data/" + this.props.bedset_md5sum + "?column=bedset_bedfiles_gd_stats").then(({ data }) => data);
+        let res = await api.get("/bedset/data/" + this.props.bedset_md5sum + "?column=bedset_bedfiles_gd_stats").then(({ data }) => data);
         console.log('BED set summary from API: ', res)
 
         this.setState({
@@ -35,11 +38,11 @@ export default class BedSetTable extends React.Component {
     }
 
     getColumns() {
-        const tableColumns = [
+        let tableColumns = [
             {
                 title: this.state.columns[1],
                 field: this.state.columns[1],
-                width: 600,
+                width: 550,
                 cellStyle: {
                     backgroundColor: "#333535",
                     color: "#FFF",
@@ -51,21 +54,17 @@ export default class BedSetTable extends React.Component {
                     fontWeight: "bold",
                 },
                 render: rowData => <a className="splash-link" href={'/bedfilesplash/' + rowData.md5sum}>{rowData.name}</a>
-            },
-            { title: this.state.columns[0], field: this.state.columns[0], width: 300 },
-            { title: this.state.columns[2], field: this.state.columns[2], width: 200 },
-            { title: this.state.columns[3], field: this.state.columns[3], width: 200 },
-            { title: this.state.columns[4], field: this.state.columns[4], width: 200 },
-            { title: this.state.columns[5], field: this.state.columns[5], width: 200 },
-            { title: this.state.columns[6], field: this.state.columns[6], width: 200 },
-            { title: this.state.columns[7], field: this.state.columns[7], width: 200 },
-            { title: this.state.columns[8], field: this.state.columns[8], width: 200 },
-            { title: this.state.columns[9], field: this.state.columns[9], width: 200 },
-            { title: this.state.columns[10], field: this.state.columns[10], width: 200 },
-            { title: this.state.columns[11], field: this.state.columns[11], width: 200 },
-            { title: this.state.columns[12], field: this.state.columns[12], width: 200 },
-            { title: this.state.columns[13], field: this.state.columns[13], width: 200 }
-        ];
+            }
+        ]
+
+        for (var i = 0; i < this.state.columns.length; i++) {
+            if (i === 0) {
+                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 300 })
+            } else if (i !== 1) {
+                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 200 })
+            }
+        }
+        console.log(tableColumns)
         return tableColumns
     }
 
@@ -297,7 +296,11 @@ export default class BedSetTable extends React.Component {
                             bedNames={this.state.selectedBedName}
                         />
                     ) : (
-                            <h2>Please select plot type.</h2>
+                        <div style={{ marginLeft: "10px" }}>
+                        <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='orange' ribbon>
+                        Please select plot type.
+                      </Label>
+                      </div>
                         )}
                 </div>
             </div>

@@ -6,7 +6,7 @@ import Card from "react-bootstrap/Card";
 import Alert from "react-bootstrap/Alert";
 import BedFileList from "./bedFileList";
 import bedhost_api_url from "./const";
-import { FaChartBar } from "react-icons/fa";
+import { FaDatabase } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style/home.css"
 
@@ -68,9 +68,9 @@ export default class BedSetList extends React.Component {
                 >
                   {bedSet[0]}: {bedSet[2]}
                   <Link to={{
-                    pathname: '/bedsetsplash/bedstats/' + bedSet[1]
+                    pathname: '/bedsetsplash/bedsetstats/' + bedSet[1]
                   }}>
-                    <FaChartBar className="float-right" color={this.state.iconColor} />
+                   <FaDatabase className="float-right" color={this.state.iconColor} />
                   </Link>
                 </ListGroup.Item>
               ) : (
@@ -81,9 +81,9 @@ export default class BedSetList extends React.Component {
                   >
                     {bedSet[0]}: {bedSet[2]}
                     <Link to={{
-                      pathname: '/bedsetsplash/bedstats/' + bedSet[1]
+                      pathname: '/bedsetsplash/bedsetstats/' + bedSet[1]
                     }}>
-                      <FaChartBar className="float-right" color='teal' />
+                      <FaDatabase className="float-right" color='teal' />
                     </Link>
                   </ListGroup.Item>
                 );

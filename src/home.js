@@ -31,7 +31,7 @@ export default class Home extends React.Component {
 
     render() {
         return (
-            <React.StrictMode style={{ height: "100%", overflow: "scroll" }}>
+            <React.StrictMode style={{ height: "96%", overflow: "scroll" }}>
                 <Header />
                 <Container fluid className="p-4">
                     <Row>
