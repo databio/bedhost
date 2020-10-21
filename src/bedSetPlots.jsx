@@ -12,6 +12,7 @@ export default class BedSetPlots extends React.Component {
                     <img
                         className="splash-img"
                         src={bedhost_api_url+"/bedsets/img/"+ this.props.bedset_md5sum+"?img_type=png"}
+                        alt={this.props.bedset_md5sum}
                     />
                 </a>
             </div>

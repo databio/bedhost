@@ -7,7 +7,7 @@ export default class DownloadList extends React.Component {
         {
           Object.entries(this.props.list)
             .map(([key, value],index) =>
-              <a href={require(`${"." + value.match(/\/outputs\/.*/)}`)}>
+              <a href={value}>
                 <li key={index}>{key}</li>
               </a>)
         }

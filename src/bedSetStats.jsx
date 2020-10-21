@@ -9,7 +9,6 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
 import bedhost_api_url from "./const";
-import path from "path";
 import { Label } from 'semantic-ui-react';
 
 const api = axios.create({
@@ -34,11 +33,11 @@ export default class BedSetStats extends React.Component {
                 bedSetName: data[0][2],
                 bedSetSum: data[0][5],
                 bedSetDownload: {
-                    BED_Set_Rxiv: data[0][3], 
-                    BED_Stats: data[0][4],
-                    BED_Set_Summary: data[0][5], 
-                    BED_Set_IGD: data[0][6],
-                    BED_Set_PEP: data[0][7]
+                    BED_Set_Rxiv: bedhost_api_url+"/bedsets/download/"+ this.props.match.params.bedset_md5sum +"?column=bedset_tar_archive_path", 
+                    BED_Stats:  bedhost_api_url+"/bedsets/download/"+ this.props.match.params.bedset_md5sum +"?column=bedset_bedfiles_gd_stats",
+                    BED_Set_Summary:  bedhost_api_url+"/bedsets/download/"+ this.props.match.params.bedset_md5sum +"?column=bedset_gd_stats", 
+                    BED_Set_IGD:  bedhost_api_url+"/bedsets/download/"+ this.props.match.params.bedset_md5sum +"?column=bedset_igd_database_path",
+                    BED_Set_PEP:  bedhost_api_url+"/bedsets/download/"+ this.props.match.params.bedset_md5sum +"?column=bedset_pep"
                 },
                 bedSetFig: data[0][8][0],
             }
@@ -76,7 +75,7 @@ export default class BedSetStats extends React.Component {
                                 <BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} />
                             
                             <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
-                                Bedset Download List
+                                BED Set Download List
                             </Label>
                             <DownloadList list={this.state.bedSetDownload} />
                         </Col>

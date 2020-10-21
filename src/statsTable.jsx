@@ -1,5 +1,4 @@
 import React from "react";
-import * as d3 from 'd3';
 import MaterialTable  from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";

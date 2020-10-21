@@ -2,7 +2,6 @@ import React from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { Button, Paper } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
-import * as d3 from 'd3';
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
 import bedhost_api_url from "./const";
