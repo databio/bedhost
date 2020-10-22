@@ -1,5 +1,6 @@
 .splash-img {
-  height: 200px;
+  height: 300px;
+  width: 300px
 }
 
 .splash-link {
@@ -11,7 +12,8 @@
   font-weight: bolder;
 }
 
-
+.primary-btn:not(:disabled):not(.disabled).active, 
+.primary-btn:not(:disabled):not(.disabled):active,
 .show>.primary-btn.dropdown-toggle {
   background-color:  #e76f51;
   border-color: #e76f51
@@ -30,7 +32,5 @@
 }
 
 .MuiTableCell-root {
-  height: 10px !important;
   padding: 5px !important;
-  
-  }
+}

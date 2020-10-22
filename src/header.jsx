@@ -7,18 +7,19 @@ import { FaGithub, FaBook } from "react-icons/fa";
 export default function Header() {
 
     return (
-        <Navbar bg="dark" variant="dark">
-            <Navbar.Brand href="/#home">
+        <Navbar className="header" bg="dark" variant="dark">
+            <Navbar.Brand style={{ marginLeft: "30px" }} href="/#home">
                 <img
                     src="/bedbase_logo.svg"
-                    width="200"
-                    height="30"
+                    height="45px"
                     className="d-inline-block align-top"
                     alt="BEDBASE logo"
                 />
             </Navbar.Brand>
             <Nav className="mr-auto">
-                <Nav.Link href="http://localhost:8000/docs">API documentation</Nav.Link>
+                <Nav.Link style={{ fontSize: "16px", color: "white" }} href="http://localhost:8000/docs">
+                    <b>API documentation</b>
+                </Nav.Link>
             </Nav>
             {/* <Nav className="float-right" >
                 <Nav.Link href="https://github.com/databio/bedbase">
@@ -26,7 +27,7 @@ export default function Header() {
                 </Nav.Link>
             </Nav> */}
             <Nav className="float-right">
-                <Nav.Link href="https://github.com/databio/bedbase">
+                <Nav.Link style={{ marginRight: "30px" }} href="https://github.com/databio/bedbase">
                     <FaGithub size={30} style={{ fill: 'white' }} />
                 </Nav.Link>
             </Nav>

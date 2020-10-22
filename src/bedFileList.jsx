@@ -17,7 +17,7 @@ export default class BedFileList extends React.Component {
           </Card.Header>
           <ListGroup
             variant="flush"
-            style={{height: "30em", overflow: "scroll" }}
+            style={{height: "19em", overflow: "scroll" }}
           >
             {this.props.bedFileList.map((bedFile) => {
               return (

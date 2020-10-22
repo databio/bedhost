@@ -7,7 +7,6 @@ import Col from "react-bootstrap/Col";
 import axios from "axios";
 import bedhost_api_url from "./const";
 import ImgGrid from "./imgGrid";
-import DownloadList from "./downloadList";
 import Dropdown from 'react-bootstrap/Dropdown'
 import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
@@ -51,37 +50,39 @@ export default class BedFileSplash extends React.Component {
 
   render() {
     return (
-      <div style={{ height: "96%", overflow: "scroll" }}>
+      <React.StrictMode >
         <Header />
-        <Container fluid className="p-4">
-          <Row>
-            <Col>
-              <h1>BED File: {this.state.bedName}</h1>
-            </Col>
-            <Col>
-              <Dropdown>
-                <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
-                  DOWNLOADS
+        <div className="conten-body">
+          <Container style={{ width: "75%" }} fluid className="p-4">
+            <Row>
+              <Col>
+                <h1>BED File: {this.state.bedName}</h1>
+              </Col>
+              <Col>
+                <Dropdown>
+                  <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
+                    DOWNLOADS
               </Dropdown.Toggle>
-
-                <Dropdown.Menu>
-                  {Object.entries(this.state.bedDownload)
-                    .map(([key, value]) =>
-                      <Dropdown.Item href={value}>
-                        {key}
-                      </Dropdown.Item>)}
-                </Dropdown.Menu>
-              </Dropdown>
-            </Col>
-          </Row>
-        </Container>
-        <Container fluid className="p-4">
-          {this.state.bedFig ?
-            (<ImgGrid imgList={this.state.bedFig} />) : null
-          }
-        </Container>
+                  <Dropdown.Menu>
+                    {Object.entries(this.state.bedDownload)
+                      .map(([key, value], index) =>
+                        <Dropdown.Item key={index} href={value}>
+                          {key}
+                        </Dropdown.Item>)}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Col>
+            </Row>
+          </Container>
+          <Container style={{ width: "75%" }} fluid className="p-4">
+            {this.state.bedFig ?
+              (<ImgGrid imgList={this.state.bedFig} cols = "3"/>) : null
+            }
+          </Container>
+        </div>
         <VersionsSpan />
-      </div>
+      </React.StrictMode >
+
     )
   }
 }

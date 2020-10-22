@@ -110,7 +110,7 @@ export default class BedSetTable extends React.Component {
                             paging: true,
                             search: true,
                             selection: true,
-                            // showSelectAllCheckbox: false,
+                            showSelectAllCheckbox: true,
                         }}
                         onSelectionChange={(rows) => {
                             rows.length > 0

@@ -40,7 +40,7 @@ export default class BedCountsSpan extends React.Component {
     return this.state["bed"] + this.state["bedSet"] !== -2 ? (
       <div>
         <h1>Welcome to BEDBASE</h1>
-        <span>
+        <span style={{fontSize : "12pt"}}>
           {" "}
           We currently have <b>{this.state.bed}</b> BED files and{" "}
           <b>{this.state.bedSet}</b> BED sets in the database

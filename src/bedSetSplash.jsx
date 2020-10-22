@@ -48,58 +48,60 @@ export default class BedSetSplash extends React.Component {
 
   render() {
     return (
-      <div style={{ height: "96%", overflow: "scroll" }}>
+      <React.StrictMode >
         <Header />
-        <Container fluid className="p-4">
-          <Row>
-            <Col>
-              <h1>BED Set: {this.state.bedSetName}</h1>
-              <span>
-                {" "}
+        <div className = "conten-body">
+          <Container style={{ width: "75%" }} fluid className="p-4">
+            <Row>
+              <Col>
+                <h1>BED Set: {this.state.bedSetName}</h1>
+                <span style={{fontSize : "12pt"}}>
+                  {" "}
                 There are <b>{this.state.bedFilesCount}</b> BED files in this BED set.
               </span>
-            </Col>
-            <Col>
-              <Dropdown>
-                <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
-                  DOWNLOADS
+              </Col>
+              <Col>
+                <Dropdown>
+                  <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
+                    DOWNLOADS
               </Dropdown.Toggle>
 
-                <Dropdown.Menu>
-                  {Object.entries(this.state.bedSetDownload)
-                    .map(([key, value]) =>
-                      <Dropdown.Item href={value}>
-                        {key}
-                      </Dropdown.Item>)}
-                </Dropdown.Menu>
-              </Dropdown>
-            </Col>
-          </Row>
-        </Container>
-        <Container fluid className="p-4">
-          <Row>
-            <Col>
-              <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                BED Set Plots
+                  <Dropdown.Menu>
+                    {Object.entries(this.state.bedSetDownload)
+                      .map(([key, value], index) =>
+                        <Dropdown.Item key={index} href={value}>
+                          {key}
+                        </Dropdown.Item>)}
+                  </Dropdown.Menu>
+                </Dropdown>
+              </Col>
+            </Row>
+          </Container>
+          <Container style={{ width: "75%" }} fluid className="p-4">
+            <Row>
+              <Col>
+                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                  BED Set Plots
               </Label>
-              <BedSetPlots  bedset_md5sum={this.props.match.params.bedset_md5sum} />
-              <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
-                BED Set Stats
+                <BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} />
+                <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
+                  BED Set Stats
               </Label>
-              <StatsTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-              <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
-                BED Files Stats
+                <StatsTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
+                  BED Files Stats
               </Label>
-              <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
-            </Col>
-          </Row>
-        </Container>
+                <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
+              </Col>
+            </Row>
+          </Container>
+        </div>
         <VersionsSpan />
-      </div>
+      </React.StrictMode>
     )
   }
 }

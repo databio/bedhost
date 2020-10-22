@@ -13,9 +13,6 @@ const useStyles = makeStyles((theme) => ({
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
   },
-  gridList: {
-    width: 2000,
-  },
   imgSize: {
     height: 300,
     width: 300
@@ -27,7 +24,7 @@ export default function ImgGrid(props) {
     console.log("Img List: ", props.imgList)
     return (
         <div className={classes.root}>
-            <GridList cellHeight={350} className={classes.gridList} cols={5}>
+            <GridList style={{width: props.cols*300}} cellHeight={350} cols={props.cols}>
               {props.imgList.map((image, index) => {
                 return (
                   <GridListTile key={index}>

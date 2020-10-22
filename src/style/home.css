@@ -1,8 +1,22 @@
+.header{
+    position:absolute;
+    left:0;
+    top:0;
+    right:0;
+}
+
 .footer{
     position:absolute;
     left:0;
     bottom:0;
     right:0;
+    font-size: small;
+}
+
+.conten-body{
+    margin-top: 70px;
+    height: 88%;
+    overflow: scroll 
 }
 
 .list-group-item.active {

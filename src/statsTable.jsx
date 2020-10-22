@@ -51,7 +51,6 @@ export default class StatsTable extends React.Component {
         tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], minWidth: 200 })
       }
     }
-      console.log(tableColumns)
       return tableColumns
     }
 

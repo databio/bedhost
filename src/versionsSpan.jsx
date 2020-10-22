@@ -41,15 +41,18 @@ export default class VersionsSpan extends React.Component {
     return (
       <footer className="footer mt-auto py-3 bg-light text-black small p-4">
         {this.state["python_version"] !== "" ? (
-          <span>
-            | openAPI: <code>{this.state.openapi_version}</code> | Python:{" "}
-            <code>{this.state.python_version}</code> | bedhost:{" "}
-            <code>{this.state.apiserver_version}</code> | bbconf:{" "}
-            <code>{this.state.bbconf_version}</code> |
+          <span style={{ marginLeft: "30px" }}>
+            | openAPI: <code style={{ color:"#e76f51" }}>{this.state.openapi_version}</code> | Python:{" "}
+            <code style={{ color:"#e76f51" }}>{this.state.python_version}</code> | bedhost:{" "}
+            <code style={{ color:"#e76f51" }}>{this.state.apiserver_version}</code> | bbconf:{" "}
+            <code style={{ color:"#e76f51" }}>{this.state.bbconf_version}</code> |
           </span>
         ) : (
-          <span>Couldn't fetch version info</span>
+          <span style={{ marginLeft: "30px" }}>Couldn't fetch version info</span>
         )}
+        <a className="float-right home-link" style={{ marginRight: "30px" }} href="http://databio.org/">
+        Sheffield Computational Biology Lab
+        </a>
       </footer>
     );
   }
