@@ -7,6 +7,7 @@ import Col from "react-bootstrap/Col";
 import axios from "axios";
 import bedhost_api_url from "./const";
 import ImgGrid from "./imgGrid";
+import BedInfo from "./bedInfo";
 import Dropdown from 'react-bootstrap/Dropdown'
 import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
@@ -75,9 +76,16 @@ export default class BedFileSplash extends React.Component {
             </Row>
           </Container>
           <Container style={{ width: "75%" }} fluid className="p-4">
-            {this.state.bedFig ?
-              (<ImgGrid imgList={this.state.bedFig} cols = "3"/>) : null
-            }
+            <Row>
+              <Col md={3}>
+                <BedInfo bedfile_md5sum={this.props.match.params.bedfile_md5sum} />
+              </Col>
+              <Col md={9}>
+                {this.state.bedFig ?
+                  (<ImgGrid imgList={this.state.bedFig} cols={3} />) : null
+                }
+              </Col>
+            </Row>
           </Container>
         </div>
         <VersionsSpan />

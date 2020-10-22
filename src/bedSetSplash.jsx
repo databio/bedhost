@@ -47,6 +47,7 @@ export default class BedSetSplash extends React.Component {
         },
       }
     );
+    console.log("BED set data retrieved from the server: ", data);
     data = await api.get("/bedset/stats/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
     this.setState(
       {
