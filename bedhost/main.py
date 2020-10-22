@@ -11,6 +11,8 @@ from typing import Optional
 from logging import INFO, DEBUG
 import os
 import pandas as pd
+import matplotlib.pyplot as plt 
+import numpy as np
 
 import logmuse
 import bbconf
@@ -345,29 +347,76 @@ async def get_bedfile_table_filters(
     return get_search_setup(bbc.get_bedsets_table_columns_types())
 
 @app.get("/bedset/data/{md5sum}")
-async def get_table_data( md5sum: str = Path(..., description="digest"),
+async def get_bedset_data( md5sum: str = Path(..., description="digest"),
                           column: str = Query(None, description="Column name", regex=r"^\D+$")):
                         
     """
     Returns the  csv file content of bedsets stats in array of object with provided ID
     """
+    
+
+
     column = JSON_BEDSET_GD_STATS_KEY if column is None else column
 
     file_path = bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
     df = pd.read_csv(file_path)
+
+    rows = [JSON_GC_CONTENT_KEY,
+        JSON_MEAN_REGION_WIDTH,
+        JSON_EXON_PERCENTAGE_KEY, 
+        JSON_EXON_FREQUENCY_KEY, 
+        JSON_5UTR_PERCENTAGE_KEY, 
+        JSON_5UTR_FREQUENCY_KEY,
+        JSON_INTERGENIC_PERCENTAGE_KEY,
+        JSON_INTERGENIC_FREQUENCY_KEY,
+        JSON_INTRON_PERCENTAGE_KEY,
+        JSON_INTRON_FREQUENCY_KEY, 
+        JSON_3UTR_PERCENTAGE_KEY,
+        JSON_3UTR_FREQUENCY_KEY]
+
     if column == JSON_BEDSET_GD_STATS_KEY:
+        df = df[rows]
         df = df.transpose()
         new_header = df.iloc[0] 
         df = df[1:] 
-        df = df.astype(float).round(4)
+        df = df.astype(float).round(3)
         df.columns = new_header
         df = df.reset_index()
         
-    
+    df = df[[JSON_MD5SUM_KEY, JSON_NAME_KEY]+rows]
     columns = list(df)
     data = df.to_dict('records')
 
     return {"columns" : columns, "data": data}
+
+@app.get("/bedset/stats/{md5sum}")
+async def get_bedset_summary( md5sum: str = Path(..., description="digest")):                 
+    """
+    plot the bed set stats with provided ID
+    return img
+    """
+
+    file_path = bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = JSON_BEDSET_GD_STATS_KEY)[0][0]
+    rows = [JSON_EXON_PERCENTAGE_KEY, 
+            JSON_5UTR_PERCENTAGE_KEY, 
+            JSON_INTERGENIC_PERCENTAGE_KEY,
+            JSON_INTRON_PERCENTAGE_KEY, 
+            JSON_3UTR_PERCENTAGE_KEY]
+
+    df = pd.read_csv(file_path, index_col=0).astype(float).round(3)
+
+    gc_content = {"mean":df.loc[JSON_GC_CONTENT_KEY]["Mean"], "sd" : df.loc[JSON_GC_CONTENT_KEY]["Standard Deviation"]}
+    mean_region_width = {"mean":df.loc[JSON_MEAN_REGION_WIDTH]["Mean"], "sd" : df.loc[JSON_MEAN_REGION_WIDTH]["Standard Deviation"]}
+
+    df = df.loc[rows]
+
+    columns = list(df)
+    data = df.to_dict('index')
+
+    return {"regionsDistribution":{"columns" : columns, "data": data},
+            "gc_content":gc_content,
+            "mean_region_width": mean_region_width
+            }
 
 @app.get("/{table_name}/img/{md5sum}")
 async def get_table_img( table_name: str = Path(..., description="DB column name",
