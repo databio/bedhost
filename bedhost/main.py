@@ -11,8 +11,7 @@ from typing import Optional
 from logging import INFO, DEBUG
 import os
 import pandas as pd
-import matplotlib.pyplot as plt 
-import numpy as np
+import yaml
 
 import logmuse
 import bbconf
@@ -311,9 +310,11 @@ async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB co
                                   md5sum: str = Path(..., description="digest"),
                                   column: Optional[str] = Query(None, description="Column name", regex=r"^\D+$")):
     """
-    Returns bedset data with a provided ID
+    Returns table data with a provided ID
     """
-    return bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'")
+    column = "*" if column is None else column
+
+    return bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)
 
 @app.get("/versions")
 async def get_version_info():
@@ -351,17 +352,15 @@ async def get_bedset_data( md5sum: str = Path(..., description="digest"),
                           column: str = Query(None, description="Column name", regex=r"^\D+$")):
                         
     """
-    Returns the  csv file content of bedsets stats in array of object with provided ID
+    Returns the csv file content of bedset data in array of object with provided ID
     """
-    
-
 
     column = JSON_BEDSET_GD_STATS_KEY if column is None else column
 
     file_path = bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
     df = pd.read_csv(file_path)
 
-    rows = [JSON_GC_CONTENT_KEY,
+    cols = [JSON_GC_CONTENT_KEY,
         JSON_MEAN_REGION_WIDTH,
         JSON_EXON_PERCENTAGE_KEY, 
         JSON_EXON_FREQUENCY_KEY, 
@@ -375,7 +374,7 @@ async def get_bedset_data( md5sum: str = Path(..., description="digest"),
         JSON_3UTR_FREQUENCY_KEY]
 
     if column == JSON_BEDSET_GD_STATS_KEY:
-        df = df[rows]
+        df = df[cols]
         df = df.transpose()
         new_header = df.iloc[0] 
         df = df[1:] 
@@ -383,7 +382,7 @@ async def get_bedset_data( md5sum: str = Path(..., description="digest"),
         df.columns = new_header
         df = df.reset_index()
         
-    df = df[[JSON_MD5SUM_KEY, JSON_NAME_KEY]+rows]
+    df = df[[JSON_MD5SUM_KEY, JSON_NAME_KEY]+cols]
     columns = list(df)
     data = df.to_dict('records')
 
@@ -392,8 +391,7 @@ async def get_bedset_data( md5sum: str = Path(..., description="digest"),
 @app.get("/bedset/stats/{md5sum}")
 async def get_bedset_summary( md5sum: str = Path(..., description="digest")):                 
     """
-    plot the bed set stats with provided ID
-    return img
+    Returns the  csv file content of bedsets stats in array of object with provided ID
     """
 
     file_path = bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = JSON_BEDSET_GD_STATS_KEY)[0][0]
@@ -417,6 +415,24 @@ async def get_bedset_summary( md5sum: str = Path(..., description="digest")):
             "gc_content":gc_content,
             "mean_region_width": mean_region_width
             }
+
+@app.get("/bed/info/{md5sum}")
+async def get_bedfile_info( md5sum: str = Path(..., description="digest")):
+                        
+    """
+    Returns the  bedfile info in array of object with provided ID
+    """
+    bedfile_index = bbc.select(table_name=BED_TABLE,  condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns=["id"])[0][0]
+
+    file_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY], 
+                            "bedstat_pipeline_logs", 
+                            "submission",
+                            "bedbase_demo_db"+str(bedfile_index)+"_sample.yaml")
+    with open(file_path) as f:
+        my_dict = yaml.safe_load(f)
+
+    return my_dict
+
 
 @app.get("/{table_name}/img/{md5sum}")
 async def get_table_img( table_name: str = Path(..., description="DB column name",
