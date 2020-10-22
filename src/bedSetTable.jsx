@@ -64,7 +64,6 @@ export default class BedSetTable extends React.Component {
                 tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 200 })
             }
         }
-        console.log(tableColumns)
         return tableColumns
     }
 

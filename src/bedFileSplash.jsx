@@ -55,7 +55,7 @@ export default class BedFileSplash extends React.Component {
         <div className="conten-body">
           <Container style={{ width: "75%" }} fluid className="p-4">
             <Row>
-              <Col>
+              <Col md="10">
                 <h1>BED File: {this.state.bedName}</h1>
               </Col>
               <Col>

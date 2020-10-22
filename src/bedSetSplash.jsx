@@ -5,6 +5,7 @@ import Container from "react-bootstrap/Container";
 import BedSetTable from "./bedSetTable";
 import StatsTable from "./statsTable";
 import BedSetPlots from "./bedSetPlots";
+import BarChart from "./barChart";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import Dropdown from 'react-bootstrap/Dropdown'
@@ -24,6 +25,9 @@ export default class BedSetSplash extends React.Component {
     this.state = {
       bedSetName: "",
       bedFilesCount: "",
+      avgGC: {},
+      avgRegionW: {},
+      avgRegionD: {},
       bedSetDownload: {}
     };
   }
@@ -43,22 +47,33 @@ export default class BedSetSplash extends React.Component {
         },
       }
     );
-    console.log("BED set data retrieved from the server: ", data);
+    data = await api.get("/bedset/stats/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
+    this.setState(
+      {
+        avgGC: data.gc_content,
+        avgRegionW: data.mean_region_width,
+        avgRegionD: data.regionsDistribution
+      }
+    );
+    console.log("BED set data retrieved from the server: ", this.state.avgRegionD);
   }
 
   render() {
     return (
       <React.StrictMode >
         <Header />
-        <div className = "conten-body">
+        <div className="conten-body">
           <Container style={{ width: "75%" }} fluid className="p-4">
             <Row>
-              <Col>
+              <Col md="10">
                 <h1>BED Set: {this.state.bedSetName}</h1>
-                <span style={{fontSize : "12pt"}}>
+                <span style={{ fontSize: "12pt" }}>
                   {" "}
                 There are <b>{this.state.bedFilesCount}</b> BED files in this BED set.
-              </span>
+                <br />
+                The mean GC content is  <b>{this.state.avgGC.mean}</b> (SD = {this.state.avgGC.sd} );
+                mean region width is <b>{this.state.avgRegionW.mean}</b> (SD = {this.state.avgRegionW.sd} ).
+                </span>
               </Col>
               <Col>
                 <Dropdown>
@@ -79,22 +94,27 @@ export default class BedSetSplash extends React.Component {
           </Container>
           <Container style={{ width: "75%" }} fluid className="p-4">
             <Row>
-              <Col>
-                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+              <Col md={6}>
+                {/* <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Plots
-              </Label>
+              </Label> */}
                 <BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} />
+              </Col>
+              <Col md={6}>
+              {this.state.avgRegionD.data ? (<BarChart stats={this.state.avgRegionD.data} />) : null}
+              </Col>
+              {/* <Col>
                 <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
                   BED Set Stats
               </Label>
                 <StatsTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
-              </Col>
+              </Col> */}
             </Row>
             <Row>
               <Col>
-                <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
+                {/* <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
                   BED Files Stats
-              </Label>
+              </Label> */}
                 <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
               </Col>
             </Row>
