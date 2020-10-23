@@ -5,6 +5,7 @@ import queryBuilder from 'jQuery-QueryBuilder';
 import axios from "axios";
 import bedhost_api_url from "./const";
 import "./style/queryBuilder.css";
+import QueryResults from './queryResults';
 
 
 console.log("bedhost_api_url:", bedhost_api_url);
@@ -47,7 +48,8 @@ export default class QueryBuilderWrapper extends React.Component {
         this.queryBuilder = React.createRef()
         this.state = {
             rules: {},
-            filters: {}
+            filters: {},
+            showResult: false
         };
     }
 
@@ -96,6 +98,7 @@ export default class QueryBuilderWrapper extends React.Component {
     handleGetRulesClick() {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
         this.setState({ rules: rules.sql , open:true});
+        console.log ("query:" , this.state.rules)
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
@@ -110,16 +113,21 @@ export default class QueryBuilderWrapper extends React.Component {
         this.setState({ rules: newRules });
     }
 
+    handleGetResultClick(){
+        this.handleGetRulesClick()
+        console.log ("query:" , this.state.rules)
+        this.setState({showResult : true})
+    }
+
     render() {
         return (
             <div>
                 <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
                 <button className='btn btn-sm my-btn'  onClick={this.handleGetRulesClick.bind(this)}>RESET RULES</button>
-                <button className='float-right btn btn-sm my-btn' >SEARCH</button>
+                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetResultClick.bind(this)}>SEARCH</button>
+                {this.state.showResult ? (<QueryResults table_name = {this.props.table_name} query ={JSON.stringify(this.state.rules, undefined, 2)}/>) :null}
             </div>
-
-
         );
     }
 };

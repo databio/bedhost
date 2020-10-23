@@ -77,10 +77,10 @@ export default class BedFileSplash extends React.Component {
           </Container>
           <Container style={{ width: "75%" }} fluid className="p-4">
             <Row>
-              <Col md={3}>
+              <Col md={4}>
                 <BedInfo bedfile_md5sum={this.props.match.params.bedfile_md5sum} />
               </Col>
-              <Col md={9}>
+              <Col md={8}>
                 {this.state.bedFig ?
                   (<ImgGrid imgList={this.state.bedFig} cols={3} />) : null
                 }

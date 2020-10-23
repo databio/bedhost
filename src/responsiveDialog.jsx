@@ -32,7 +32,7 @@ export default function ResponsiveDialog(props) {
         <div className="float-left" onClick={props.onClick}>
             <button className='btn btn-sm my-btn' style={{ marginRight: '5px' }} onClick={handleClickOpen}>
                 SQL
-      </button>
+            </button>
             <Dialog
                 fullScreen={fullScreen}
                 open={open}

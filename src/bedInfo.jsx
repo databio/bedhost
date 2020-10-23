@@ -39,10 +39,7 @@ export default class BedInfo extends React.Component {
                                     <td style={{ padding:"3px 15px", fontSize: "12pt" }}>
                                         {value}
                                     </td>
-
-                                </tr>)
-                                : null
-                         
+                                </tr>) : null
                             )}
                     </tbody>
                 </table>
