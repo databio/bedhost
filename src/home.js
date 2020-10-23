@@ -1,7 +1,6 @@
 import React from "react";
 import QueryBuilderWrapper from './queryBuilder.jsx';
 import BedCountsSpan from "./bedCountsSpan";
-import BedSetList from "./bedSetList";
 import Header from './header';
 import VersionsSpan from "./versionsSpan";
 import Container from "react-bootstrap/Container";
@@ -52,8 +51,6 @@ export default class Home extends React.Component {
                         ) : (
                                 <QueryBuilderWrapper table_name='bedfiles' />
                             )}
-                        <BedSetList />
-
                     </Container>
                 </div>
                 <VersionsSpan />

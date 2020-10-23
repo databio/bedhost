@@ -9,7 +9,7 @@ import bedhost_api_url from "./const";
 import ImgGrid from "./imgGrid";
 import BedInfo from "./bedInfo";
 import Dropdown from 'react-bootstrap/Dropdown'
-import { Label } from 'semantic-ui-react';
+// import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
 
 const api = axios.create({

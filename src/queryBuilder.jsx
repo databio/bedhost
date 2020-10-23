@@ -8,6 +8,7 @@ import "./style/queryBuilder.css";
 import QueryResults from './queryResults';
 
 
+
 console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
     baseURL: bedhost_api_url,
@@ -49,7 +50,6 @@ export default class QueryBuilderWrapper extends React.Component {
         this.state = {
             rules: {},
             filters: {},
-            showResult: false
         };
     }
 
@@ -57,6 +57,7 @@ export default class QueryBuilderWrapper extends React.Component {
         await this.getfilter()
         const element = this.queryBuilder.current;
         this.initializeQueryBuilder(element, this.state.filters);
+        this.handleGetRulesClick()
     }
 
     componentWillUnmount() {
@@ -64,7 +65,7 @@ export default class QueryBuilderWrapper extends React.Component {
     }
 
     async componentDidUpdate(prevProps, prevState) {
-        // only update chart if the data has changed
+        // only update query filter if the table_name has changed
         if (prevProps.table_name !== this.props.table_name) {
             await this.getfilter()
             $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
@@ -76,6 +77,7 @@ export default class QueryBuilderWrapper extends React.Component {
             const newRules = { ...defaultRules };
             $(this.queryBuilder.current).queryBuilder('setRules', newRules);
             this.setState({ rules: newRules });
+            this.handleGetRulesClick()
         }
     }
 
@@ -97,8 +99,7 @@ export default class QueryBuilderWrapper extends React.Component {
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
-        this.setState({ rules: rules.sql , open:true});
-        console.log ("query:" , this.state.rules)
+        this.setState({ rules: rules.sql, open: true });
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
@@ -113,10 +114,8 @@ export default class QueryBuilderWrapper extends React.Component {
         this.setState({ rules: newRules });
     }
 
-    handleGetResultClick(){
+    handleGetResultClick() {
         this.handleGetRulesClick()
-        console.log ("query:" , this.state.rules)
-        this.setState({showResult : true})
     }
 
     render() {
@@ -124,9 +123,10 @@ export default class QueryBuilderWrapper extends React.Component {
             <div>
                 <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
-                <button className='btn btn-sm my-btn'  onClick={this.handleGetRulesClick.bind(this)}>RESET RULES</button>
+                <button className='btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>RESET RULES</button>
                 <button className='float-right btn btn-sm my-btn' onClick={this.handleGetResultClick.bind(this)}>SEARCH</button>
-                {this.state.showResult ? (<QueryResults table_name = {this.props.table_name} query ={JSON.stringify(this.state.rules, undefined, 2)}/>) :null}
+                { Object.entries(this.state.rules).length !== 0 ? (<QueryResults table_name={this.props.table_name} query={JSON.stringify(this.state.rules, undefined, 2)} />):null}
+                {/* <QueryResults table_name={this.props.table_name} query={JSON.stringify(this.state.rules, undefined, 2)} /> */}
             </div>
         );
     }

@@ -1,7 +1,7 @@
 import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import { FaGithub, FaBook } from "react-icons/fa";
+import { FaGithub } from "react-icons/fa";
 
 
 export default function Header() {

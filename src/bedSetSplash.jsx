@@ -3,7 +3,7 @@ import Header from './header';
 import VersionsSpan from "./versionsSpan";
 import Container from "react-bootstrap/Container";
 import BedSetTable from "./bedSetTable";
-import StatsTable from "./statsTable";
+// import StatsTable from "./statsTable";
 import BedSetPlots from "./bedSetPlots";
 import BarChart from "./barChart";
 import Row from "react-bootstrap/Row";
@@ -11,7 +11,7 @@ import Col from "react-bootstrap/Col";
 import Dropdown from 'react-bootstrap/Dropdown'
 import axios from "axios";
 import bedhost_api_url from "./const";
-import { Label } from 'semantic-ui-react';
+// import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
 
 
