@@ -305,7 +305,7 @@ async def get_bed_list_for_bedset(bedset_id: int = Path(..., description="BED se
     return bbc.select_bedfiles_for_bedset(query=f"id='{bedset_id}'", bedfile_col=columns)
 
 @app.get("/{table_name}/splash/{md5sum}")
-async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB column name",
+async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                                   md5sum: str = Path(..., description="digest"),
                                   column: Optional[str] = Query(None, description="Column name", regex=r"^\D+$")):
@@ -337,7 +337,7 @@ async def index():
 
 @app.get("/filters/{table_name}")
 async def get_bedfile_table_filters(
-        table_name: str = Path(..., description="DB column name",
+        table_name: str = Path(..., description="DB Table name",
                                regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE))):
     """
     Returns the filters mapping to based on the selected table schema to
@@ -435,7 +435,7 @@ async def get_bedfile_info( md5sum: str = Path(..., description="digest")):
 
 
 @app.get("/{table_name}/img/{md5sum}")
-async def get_table_img( table_name: str = Path(..., description="DB column name",
+async def get_table_img( table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                             md5sum: str = Path(..., description="digest"),
                             img_type: str = Query(None, description="pdf or png",
@@ -457,7 +457,7 @@ async def get_table_img( table_name: str = Path(..., description="DB column name
     return FileResponse(img_path)
 
 @app.get("/{table_name}/download/{md5sum}")
-async def download_file( table_name: str = Path(..., description="DB column name",
+async def download_file( table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                             md5sum: str = Path(..., description="digest"),
                             column: str = Query(None, description="Column name", regex=r"^\D+$")):
@@ -473,6 +473,20 @@ async def download_file( table_name: str = Path(..., description="DB column name
     file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
     return FileResponse(file_path, media_type='application/octet-stream',filename=os.path.basename(file_path))
 
+@app.get("/{table_name}/{query}")
+async def download_file( table_name: str = Path(..., description="DB Table name",
+                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
+                            query: str = Path(None, description="query condiction", regex=r"^.+$"),
+                            column: str = Query(None, description="Column name", regex=r"^\D+$")):
+                        
+    """
+    Download file with provided ID
+    """
+
+    columns = ["id", JSON_MD5SUM_KEY] if column is None else ["id", JSON_MD5SUM_KEY] + [column]
+
+    
+    return bbc.select(table_name = table_name, condition = query, columns = columns)
 
 
 def main():
