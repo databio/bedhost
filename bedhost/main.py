@@ -416,24 +416,6 @@ async def get_bedset_summary( md5sum: str = Path(..., description="digest")):
             "mean_region_width": mean_region_width
             }
 
-@app.get("/bed/info/{md5sum}")
-async def get_bedfile_info( md5sum: str = Path(..., description="digest")):
-                        
-    """
-    Returns the  bedfile info in array of object with provided ID
-    """
-    bedfile_index = bbc.select(table_name=BED_TABLE,  condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns=["id"])[0][0]
-
-    file_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY], 
-                            "bedstat_pipeline_logs", 
-                            "submission",
-                            "bedbase_demo_db"+str(bedfile_index)+"_sample.yaml")
-    with open(file_path) as f:
-        my_dict = yaml.safe_load(f)
-
-    return my_dict
-
-
 @app.get("/{table_name}/img/{md5sum}")
 async def get_table_img( table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
