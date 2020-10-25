@@ -78,12 +78,13 @@ export default class QueryResults extends React.Component {
 
     async getQueryResult() {
         let my_query = JSON.parse(this.props.query)
-        let data = await api.get("/" + this.props.table_name + "/" + my_query + "?column=name").then(({ data }) => data);
+        let data = await api.get("/" + this.props.table_name + "/" + my_query + "?column=name")
+            .then(({ data }) => data)
+            
         console.log(data)
         if (this.props.table_name === "bedfiles") {
             this.setState({ bedFileNames: data })
         } else { this.setState({ bedSetNames: data }) }
-
     }
 
 
@@ -117,17 +118,17 @@ export default class QueryResults extends React.Component {
         return (
             <div style={{ marginTop: '30px' }}>
                 {this.props.table_name === "bedfiles" ? (
-                     this.state.bedFileNames.map((bedFile) => {
+                    this.state.bedFileNames.map((bedFile) => {
                         return (
-                          <ListGroup.Item as="li" key={bedFile[0]}>
-                            <Link className="home-link" to={{
-                              pathname: '/bedfilesplash/' + bedFile[1]
-                            }}>
-                              {bedFile[2]}
-                            </Link>
-                          </ListGroup.Item>
+                            <ListGroup.Item as="li" key={bedFile[0]}>
+                                <Link className="home-link" to={{
+                                    pathname: '/bedfilesplash/' + bedFile[1]
+                                }}>
+                                    {bedFile[2]}
+                                </Link>
+                            </ListGroup.Item>
                         );
-                      })
+                    })
                 ) : (
                         this.state.bedSetNames.map((bedSet, index) => {
                             return (
