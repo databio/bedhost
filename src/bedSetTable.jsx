@@ -7,6 +7,7 @@ import ShowFig from "./showFig";
 import bedhost_api_url from "./const";
 import axios from "axios";
 import { Label } from 'semantic-ui-react';
+import { Link } from "react-router-dom";
 
 
 
@@ -53,7 +54,10 @@ export default class BedSetTable extends React.Component {
                     color: "#FFF",
                     fontWeight: "bold",
                 },
-                render: rowData => <a className="splash-link" href={'/bedfilesplash/' + rowData.md5sum}>{rowData.name}</a>
+                render: rowData => <Link className="splash-link" to={{
+                    pathname: '/bedfilesplash/' + rowData.md5sum
+                }}>{rowData.name}
+                </Link>
             }
         ]
 
@@ -295,11 +299,11 @@ export default class BedSetTable extends React.Component {
                             bedNames={this.state.selectedBedName}
                         />
                     ) : (
-                        <div style={{ marginLeft: "10px" }}>
-                        <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='orange' ribbon>
-                        Please select plot type.
+                            <div style={{ marginLeft: "10px" }}>
+                                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='orange' ribbon>
+                                    Please select plot type.
                       </Label>
-                      </div>
+                            </div>
                         )}
                 </div>
             </div>
