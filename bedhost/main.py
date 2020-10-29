@@ -1,6 +1,6 @@
 import uvicorn
 import sys
-from fastapi import FastAPI, HTTPException, Path, Query, Response
+from fastapi import FastAPI, HTTPException, Path, Query, Response, APIRouter
 from starlette.responses import FileResponse, RedirectResponse, HTMLResponse
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.middleware.cors import CORSMiddleware
@@ -260,8 +260,7 @@ app.add_middleware(
 #     template_vars = {"bedset_id": bedset_id, "columns": list(df), "address": address_col, "data": df.to_dict(orient='records')}
 #     return template_vars
 
-
-@app.get("/bed/count")
+@app.get("/api/bed/count")
 async def get_bedfile_count():
     """
     Returns the number of bedfiles available in the database
@@ -269,7 +268,7 @@ async def get_bedfile_count():
     return int(bbc.count_bedfiles())
 
 
-@app.get("/bedset/count")
+@app.get("/api/bedset/count")
 async def get_bedset_count():
     """
     Returns the number of bedsets available in the database
@@ -277,7 +276,7 @@ async def get_bedset_count():
     return int(bbc.count_bedsets())
 
 
-@app.get("/bedset/list/{column}")
+@app.get("/api/bedset/list/{column}")
 async def get_all_bedset_list(column: str = Path(..., description="DB column name", regex=r"^\S+$")):
     """
     Returns a list of selected columns for all bedset records
@@ -285,7 +284,7 @@ async def get_all_bedset_list(column: str = Path(..., description="DB column nam
     return bbc.select(table_name=BEDSET_TABLE, columns=["id", JSON_MD5SUM_KEY, column])
 
 
-@app.get("/bed/list/{column}")
+@app.get("/api/bed/list/{column}")
 async def get_all_bed_list(column: str = Path(..., description="DB column name",
                                               regex=r"^\S+$")):
     """
@@ -295,7 +294,7 @@ async def get_all_bed_list(column: str = Path(..., description="DB column name",
     return dict(bbc.select(table_name=BED_TABLE, columns=["id", JSON_MD5SUM_KEY, column]))
 
 
-@app.get("/bed/bedset/{bedset_id}")
+@app.get("/api/bed/bedset/{bedset_id}")
 async def get_bed_list_for_bedset(bedset_id: int = Path(..., description="BED set ID"),
                                   column: Optional[str] = Query(None, description="Column name", regex=r"^\D+$")):
     """
@@ -304,7 +303,7 @@ async def get_bed_list_for_bedset(bedset_id: int = Path(..., description="BED se
     columns = ["id", JSON_MD5SUM_KEY] if column is None else ["id", JSON_MD5SUM_KEY] + [column]
     return bbc.select_bedfiles_for_bedset(query=f"id='{bedset_id}'", bedfile_col=columns)
 
-@app.get("/{table_name}/splash/{md5sum}")
+@app.get("/api/{table_name}/splash/{md5sum}")
 async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                                   md5sum: str = Path(..., description="digest"),
@@ -316,7 +315,7 @@ async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB Ta
 
     return bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)
 
-@app.get("/versions")
+@app.get("/api/versions")
 async def get_version_info():
     """
     Returns app version information
@@ -327,15 +326,23 @@ async def get_version_info():
 
 
 @app.get("/")
+@app.get("/bedfilesplash/{md5sum}", include_in_schema=False)
+@app.get("/bedsetsplash/{md5sum}", include_in_schema=False)
 @app.get("/index")
 async def index():
     """
     Display the index UI page
     """
     return FileResponse(os.path.join(UI_PATH, "index.html"))
+# @app.get("/index")
+# async def index():
+#     """
+#     Display the index UI page
+#     """
+#     return FileResponse(os.path.join(UI_PATH, "index.html"))
 
 
-@app.get("/filters/{table_name}")
+@app.get("/api/filters/{table_name}")
 async def get_bedfile_table_filters(
         table_name: str = Path(..., description="DB Table name",
                                regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE))):
@@ -347,7 +354,7 @@ async def get_bedfile_table_filters(
         return get_search_setup(bbc.get_bedfiles_table_columns_types())
     return get_search_setup(bbc.get_bedsets_table_columns_types())
 
-@app.get("/bedset/data/{md5sum}")
+@app.get("/api/bedset/data/{md5sum}")
 async def get_bedset_data( md5sum: str = Path(..., description="digest"),
                           column: str = Query(None, description="Column name", regex=r"^\D+$")):
                         
@@ -388,7 +395,7 @@ async def get_bedset_data( md5sum: str = Path(..., description="digest"),
 
     return {"columns" : columns, "data": data}
 
-@app.get("/bedset/stats/{md5sum}")
+@app.get("/api/bedset/stats/{md5sum}")
 async def get_bedset_summary( md5sum: str = Path(..., description="digest")):                 
     """
     Returns the  csv file content of bedsets stats in array of object with provided ID
@@ -416,7 +423,7 @@ async def get_bedset_summary( md5sum: str = Path(..., description="digest")):
             "mean_region_width": mean_region_width
             }
 
-@app.get("/{table_name}/img/{md5sum}")
+@app.get("/api/{table_name}/img/{md5sum}")
 async def get_table_img( table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                             md5sum: str = Path(..., description="digest"),
@@ -438,7 +445,7 @@ async def get_table_img( table_name: str = Path(..., description="DB Table name"
 
     return FileResponse(img_path)
 
-@app.get("/{table_name}/download/{md5sum}")
+@app.get("/api/{table_name}/download/{md5sum}")
 async def download_file( table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                             md5sum: str = Path(..., description="digest"),
@@ -455,18 +462,17 @@ async def download_file( table_name: str = Path(..., description="DB Table name"
     file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
     return FileResponse(file_path, media_type='application/octet-stream',filename=os.path.basename(file_path))
 
-@app.get("/{table_name}/{query}")
-async def download_file( table_name: str = Path(..., description="DB Table name",
+@app.get("/api/{table_name}/search/{query}")
+async def get_query_results( table_name: str = Path(..., description="DB Table name",
                                     regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                             query: str = Path(None, description="query condiction", regex=r"^.+$"),
                             column: str = Query(None, description="Column name", regex=r"^\D+$")):
                         
     """
-    Download file with provided ID
+    Return query results with provided table name and query string
     """
 
     columns = ["id", JSON_MD5SUM_KEY] if column is None else ["id", JSON_MD5SUM_KEY] + [column]
-
     
     return bbc.select(table_name = table_name, condition = query, columns = columns)
 
