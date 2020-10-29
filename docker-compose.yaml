@@ -1,0 +1,30 @@
+# .env file in the compose directory is loaded automatically and the env vars defined there are available
+# for use in this file, but are not passed to the container runtimes. In order to pass these to a specific
+# container, 'env_file' section needs to be used: https://docs.docker.com/compose/environment-variables/#the-env-file
+version: '3'
+services:
+  fastapi-api:
+    container_name: fastAPI-bedbase
+    env_file: .env
+    build:
+      dockerfile: dev.Dockerfile
+      context: .
+    ports:
+      - ${API_PORT}:${API_PORT}
+    volumes:
+      - ${BEDBASE_DATA_PATH_HOST}:${BEDBASE_DATA_PATH}
+    depends_on:
+      - ${DB_HOST_URL}
+    command: ["./wait-for-it/wait-for-it.sh", "${DB_HOST_URL}:${POSTGRES_PORT}", "--timeout=60" ,"--", "bedhost", "serve", "-d", "-c", "${BEDBASE_DATA_PATH}/bedbase/tutorial_files/bedbase_configuration.yaml"]
+  postgres-db:
+    container_name: postgreSQL-bedbase
+    env_file: .env
+    image: postgres:12
+    restart: always
+    ports:
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data: #/var/lib/docker/volumes/postgres-data/_data
+    external: true
