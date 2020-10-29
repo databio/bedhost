@@ -71,14 +71,6 @@ export default class QueryBuilderWrapper extends React.Component {
             await this.getfilter()
             $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
             this.handleSetRulesClick()
-            // if (this.props.table_name === 'bedsets') {
-            //     var defaultRules = setRules
-            // } else if (this.props.table_name === 'bedfiles') {
-            //     defaultRules = fileRules
-            // }
-            // const newRules = { ...defaultRules };
-            // $(this.queryBuilder.current).queryBuilder('setRules', newRules);
-            // this.setState({ rules: newRules });
             this.handleGetRulesClick()
         }
     }
@@ -128,7 +120,6 @@ export default class QueryBuilderWrapper extends React.Component {
                 <button className='btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>RESET RULES</button>
                 <button className='float-right btn btn-sm my-btn' onClick={this.handleGetResultClick.bind(this)}>SEARCH</button>
                 { this.state.query ? (<QueryResults table_name={this.props.table_name} query={this.state.query} />):null}
-                {/* <QueryResults table_name={this.props.table_name} query={JSON.stringify(this.state.rules, undefined, 2)} /> */}
             </div>
         );
     }

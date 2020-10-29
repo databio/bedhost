@@ -16,7 +16,7 @@ ReactDOM.render(
   <Router>
       <Switch>
         <Route exact path="/" component={Home}/>
-        <Route path="/bedsetsplash/bedsetstats/:bedset_md5sum" component={BedSetSplash}/>
+        <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash}/>
         <Route path="/bedfilesplash/:bedfile_md5sum" component={BedFileSplash}/>
       </Switch>
   </Router>,

@@ -78,7 +78,7 @@ export default class QueryResults extends React.Component {
 
     async getQueryResult() {
         let my_query = JSON.parse(this.props.query)
-        let data = await api.get("/" + this.props.table_name + "/" + my_query + "?column=name")
+        let data = await api.get("/" + this.props.table_name + "/search/" + my_query + "?column=name")
             .then(({ data }) => data)
             
         console.log(data)
@@ -136,7 +136,7 @@ export default class QueryResults extends React.Component {
                                     <AccordionSummary style={{ minHeight: "50px" }} aria-controls="panel1d-content" id="panel1d-header">
                                         <Typography>
                                             <Link className="home-link" to={{
-                                                pathname: '/bedsetsplash/bedsetstats/' + bedSet[1]
+                                                pathname: '/bedsetsplash/' + bedSet[1]
                                             }}>
                                                 {bedSet[2]}
                                             </Link>

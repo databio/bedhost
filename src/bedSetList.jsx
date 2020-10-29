@@ -68,7 +68,7 @@ export default class BedSetList extends React.Component {
                 >
                   {bedSet[0]}: {bedSet[2]}
                   <Link to={{
-                    pathname: '/bedsetsplash/bedsetstats/' + bedSet[1]
+                    pathname: '/bedsetsplash/' + bedSet[1]
                   }}>
                    <FaDatabase className="float-right" color={this.state.iconColor} />
                   </Link>
@@ -81,7 +81,7 @@ export default class BedSetList extends React.Component {
                   >
                     {bedSet[0]}: {bedSet[2]}
                     <Link to={{
-                      pathname: '/bedsetsplash/bedsetstats/' + bedSet[1]
+                      pathname: '/bedsetsplash/' + bedSet[1]
                     }}>
                       <FaDatabase className="float-right" color='teal' />
                     </Link>
