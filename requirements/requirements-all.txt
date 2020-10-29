@@ -1,12 +1,9 @@
 pyyaml
 aiofiles
 fastapi
-jinja2
 starlette
 uvicorn
-elasticsearch-dsl>=7.0.0,<8.0.0
 python-multipart
 requests
-yacman
-bbconf>=0.0.2-dev
 itsdangerous
+pandas
