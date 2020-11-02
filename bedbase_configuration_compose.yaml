@@ -12,4 +12,4 @@ database:
   relationship_table: bedset_bedfiles
 server:
   host: 0.0.0.0
-  port: $API_PORT
+  port: 8000
