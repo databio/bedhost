@@ -15,11 +15,11 @@ services:
       - ${BEDBASE_DATA_PATH_HOST}:${BEDBASE_DATA_PATH}
     depends_on:
       - ${DB_HOST_URL}
-    command: ["./wait-for-it/wait-for-it.sh", "${DB_HOST_URL}:${POSTGRES_PORT}", "--timeout=60" ,"--", "bedhost", "serve", "-d", "-c", "${BEDBASE_DATA_PATH}/bedbase/tutorial_files/bedbase_configuration.yaml"]
+    command: ["./wait-for-it/wait-for-it.sh", "${DB_HOST_URL}:${POSTGRES_PORT}", "--timeout=60" ,"--", "bedhost", "serve", "-d", "-c", "${BEDBASE_DATA_PATH}/bedbase/tutorial_files/bedbase_configuration_compose.yaml"]
   postgres-db:
     container_name: postgreSQL-bedbase
     env_file: .env
-    image: postgres:12
+    image: postgres # version of the image (and therefore software) has to match the one used to load the data in
     restart: always
     ports:
       - ${POSTGRES_PORT}:${POSTGRES_PORT}
