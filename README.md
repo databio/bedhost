@@ -54,6 +54,13 @@ In the same directory as Dockerfile:
 docker build -t bedstat-rest-api-server .
 ```
 
+Or, maybe this is better:
+
+```
+docker build -t databio/bedhost -f dev.Dockerfile .
+```
+
+
 ### Running container for development
 
 The container will need to have access to two different directories:
