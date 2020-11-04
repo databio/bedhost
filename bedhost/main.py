@@ -423,57 +423,58 @@ async def get_bedset_summary( md5sum: str = Path(..., description="digest")):
             "mean_region_width": mean_region_width
             }
 
-@app.get("/api/{table_name}/img/{md5sum}")
-async def get_table_img( table_name: str = Path(..., description="DB Table name",
-                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
-                            md5sum: str = Path(..., description="digest"),
-                            img_type: str = Query(None, description="pdf or png",
-                                    regex=r"pdf|png"),
-                            img_name: str = Query(None, description="plot type")):
-                        
+
+@app.get("/api/img/{table_name}/{md5sum}/{img_name}/{format}")
+async def get_image(
+        table_name: str = Path(..., description="DB Table name", regex=fr"{BED_TABLE}|{BEDSET_TABLE}"),
+        md5sum: str = Path(..., description="digest"),
+        img_name: str = Path(..., description="image name"),
+        format: str = Path(..., description="pdf or png", regex=r"pdf|png")):
     """
     Returns the img with provided ID
     """
-    imgs = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = ["name","plots"])
-    name = imgs[0][1][0].get('name') if img_name is None else img_name
+    imgs = bbc.select(table_name=table_name,
+                      condition=f"{JSON_MD5SUM_KEY} = '{md5sum}'",
+                      columns=["name", "plots"])
+    output_getter = bbc.get_bedbuncher_output_path \
+        if table_name == BEDSET_TABLE else bbc.get_bedstat_output_path
+    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    ret_fun = RedirectResponse if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] \
+        else FileResponse
+    return ret_fun(os.path.join(output_getter(remote), md5sum, f"{imgs[0][0]}_{img_name}.{format}"))
 
-    if table_name == BEDSET_TABLE:
-        img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY], md5sum, imgs[0][0] + "_" + name + "." + img_type)
-    elif table_name == BED_TABLE:
-        img_path = os.path.join(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY], md5sum, imgs[0][0] + "_" +name + "." + img_type)
-
-
-    return FileResponse(img_path)
 
 @app.get("/api/{table_name}/download/{md5sum}")
-async def download_file( table_name: str = Path(..., description="DB Table name",
-                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
-                            md5sum: str = Path(..., description="digest"),
-                            column: str = Query(None, description="Column name", regex=r"^\D+$")):
+async def download_file(table_name: str = Path(..., description="DB Table name", regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
+                        md5sum: str = Path(..., description="digest")):
                         
     """
     Download file with provided ID
     """
-    if table_name == BEDSET_TABLE:
-        column = JSON_BEDSET_TAR_PATH_KEY if column is None else column
-    elif table_name == BED_TABLE:
-        column = BEDFILE_PATH_KEY if column is None else column
+    file_path = bbc.select(table_name=table_name,
+                           condition=f"{JSON_MD5SUM_KEY}='{md5sum}'",
+                           columns=BEDFILE_PATH_KEY if table_name == BED_TABLE else JSON_BEDSET_TAR_PATH_KEY)[0][0]
+    _LOGGER.info(f"Got relative path from DB: {file_path}")
+    output_getter = bbc.get_bedbuncher_output_path if table_name == BEDSET_TABLE else bbc.get_bedstat_output_path
+    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    _LOGGER.info(f"Returning: {os.path.join(output_getter(remote), file_path)}")
+    if remote:
+        return RedirectResponse(os.path.join(output_getter(remote), file_path))
+    else:
+        return FileResponse(os.path.join(output_getter(remote), file_path),
+                            filename=os.path.basename(file_path),
+                            media_type="application/octet-stream")
 
-    file_path = bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
-    return FileResponse(file_path, media_type='application/octet-stream',filename=os.path.basename(file_path))
 
 @app.get("/api/{table_name}/search/{query}")
-async def get_query_results( table_name: str = Path(..., description="DB Table name",
-                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
+async def get_query_results(table_name: str = Path(..., description="DB Table name", regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
                             query: str = Path(None, description="query condiction", regex=r"^.+$"),
                             column: str = Query(None, description="Column name", regex=r"^\D+$")):
                         
     """
     Return query results with provided table name and query string
     """
-
     columns = ["id", JSON_MD5SUM_KEY] if column is None else ["id", JSON_MD5SUM_KEY] + [column]
-    
     return bbc.select(table_name = table_name, condition = query, columns = columns)
 
 
@@ -492,13 +493,18 @@ def main():
     bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
     bbc.establish_postgres_connection()
     if args.command == "serve":
-        app.mount(bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY],
-                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_BEDSTAT_OUTPUT_KEY]),
-                  name=BED_TABLE)
-        app.mount(bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY],
-                  StaticFiles(directory=bbc[CFG_PATH_KEY][CFG_BEDBUNCHER_OUTPUT_KEY]),
-                  name=BEDSET_TABLE)
-
+        if not bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]:
+            _LOGGER.debug(f"Using local files for serving: "
+                          f"{bbc[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY]}")
+            app.mount(bbc.get_bedstat_output_path(),
+                      StaticFiles(directory=bbc.get_bedstat_output_path()),
+                      name=BED_TABLE)
+            app.mount(bbc.get_bedbuncher_output_path(),
+                      StaticFiles(directory=bbc.get_bedbuncher_output_path()),
+                      name=BEDSET_TABLE)
+        else:
+            _LOGGER.debug(f"Using remote files for serving: "
+                          f"{bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]}")
         if os.path.exists(UI_PATH):
             _LOGGER.debug(f"Determined React UI path: {UI_PATH}")
         else:
