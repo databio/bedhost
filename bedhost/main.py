@@ -439,9 +439,17 @@ async def get_image(
     output_getter = bbc.get_bedbuncher_output_path \
         if table_name == BEDSET_TABLE else bbc.get_bedstat_output_path
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    ret_fun = RedirectResponse if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] \
-        else FileResponse
-    return ret_fun(os.path.join(output_getter(remote), md5sum, f"{imgs[0][0]}_{img_name}.{format}"))
+    path = os.path.join(output_getter(remote), md5sum, f"{imgs[0][0]}_{img_name}.{format}")
+    if remote:
+        _LOGGER.info(f"Redirecting to: {path}")
+        return RedirectResponse(path)
+    _LOGGER.info(f"Returning local: {path}")
+    if os.path.isfile(path):
+        return FileResponse(path, filename=os.path.basename(path), media_type="application/octet-stream")
+    else:
+        msg = f"File not found on server: {path}"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
 
 
 @app.get("/api/{table_name}/download/{md5sum}")
@@ -457,13 +465,20 @@ async def download_file(table_name: str = Path(..., description="DB Table name",
     _LOGGER.info(f"Got relative path from DB: {file_path}")
     output_getter = bbc.get_bedbuncher_output_path if table_name == BEDSET_TABLE else bbc.get_bedstat_output_path
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    _LOGGER.info(f"Returning: {os.path.join(output_getter(remote), file_path)}")
+    path = os.path.join(output_getter(remote), file_path)
     if remote:
-        return RedirectResponse(os.path.join(output_getter(remote), file_path))
+        _LOGGER.info(f"Redirecting to: {path}")
+        return RedirectResponse(path)
+    _LOGGER.info(f"Returning local: {path}")
+    if os.path.isfile(path):
+        return FileResponse(path, filename=os.path.basename(path), media_type="application/octet-stream")
     else:
-        return FileResponse(os.path.join(output_getter(remote), file_path),
-                            filename=os.path.basename(file_path),
-                            media_type="application/octet-stream")
+        msg = f"File not found on server: {path}"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
+    if remote:
+        _LOGGER.info(f"Redirecting")
+        return RedirectResponse(os.path.join(output_getter(remote), file_path))
 
 
 @app.get("/api/{table_name}/search/{query}")
