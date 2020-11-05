@@ -13,8 +13,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import "./style/splash.css";
 
 const api = axios.create({
-  // baseURL: bedhost_api_url,
-  baseURL: `${ window.location.protocol }//${ window.location.host }/api`,
+  baseURL: bedhost_api_url
 });
 
 

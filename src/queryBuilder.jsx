@@ -11,8 +11,7 @@ import QueryResults from './queryResults';
 
 console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
-    // baseURL: bedhost_api_url,
-    baseURL: `${ window.location.protocol }//${ window.location.host }/api`,
+    baseURL: bedhost_api_url,
 });
 
 const setRules = {

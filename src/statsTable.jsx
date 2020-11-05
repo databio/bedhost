@@ -6,8 +6,7 @@ import bedhost_api_url from "./const";
 import axios from "axios";
 
 const api = axios.create({
-  // baseURL: bedhost_api_url,
-  baseURL: `${ window.location.protocol }//${ window.location.host }/api`,
+  baseURL: bedhost_api_url,
 });
 
 export default class StatsTable extends React.Component {
