@@ -2,6 +2,7 @@ import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import { FaGithub } from "react-icons/fa";
+import bedhost_api_url from "./const";
 
 
 export default function Header() {
@@ -17,7 +18,7 @@ export default function Header() {
                 />
             </Navbar.Brand>
             <Nav className="mr-auto">
-                <Nav.Link style={{ fontSize: "16px", color: "white" }} href="http://localhost:8000/docs">
+                <Nav.Link style={{ fontSize: "16px", color: "white" }} href={bedhost_api_url + "/docs"}>
                     <b>API documentation</b>
                 </Nav.Link>
             </Nav>

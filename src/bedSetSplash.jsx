@@ -16,7 +16,7 @@ import "./style/splash.css";
 
 
 const api = axios.create({
-  baseURL: bedhost_api_url,
+  baseURL: bedhost_api_url + "/api",
 });
 
 export default class BedSetSplash extends React.Component {
@@ -40,11 +40,11 @@ export default class BedSetSplash extends React.Component {
         bedSetName: data[0][2],
         bedFilesCount: Object.keys(data[0][11]).length,
         bedSetDownload: {
-          BED_Set_Rxiv: bedhost_api_url + "/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_tar_archive_path",
-          BED_Stats: bedhost_api_url + "/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_bedfiles_gd_stats",
-          BED_Set_Summary: bedhost_api_url + "/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_gd_stats",
-          BED_Set_IGD: bedhost_api_url + "/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_igd_database_path",
-          BED_Set_PEP: bedhost_api_url + "/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_pep"
+          BED_Set_Rxiv: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_tar_archive_path",
+          BED_Stats: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_bedfiles_gd_stats",
+          BED_Set_Summary: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_gd_stats",
+          BED_Set_IGD: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_igd_database_path",
+          BED_Set_PEP: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_pep"
         },
         bedSetFig: data[0][8][0]
       }

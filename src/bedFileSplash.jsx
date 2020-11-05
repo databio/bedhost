@@ -13,7 +13,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import "./style/splash.css";
 
 const api = axios.create({
-  baseURL: bedhost_api_url
+  baseURL: bedhost_api_url + "/api",
 });
 
 
@@ -34,14 +34,14 @@ export default class BedFileSplash extends React.Component {
       {
         bedName: data[0][3],
         bedDownload: {
-          BED_File: bedhost_api_url + "/bedfiles/download/" + this.props.match.params.bedfile_md5sum + "?column=bedfile_path",
+          BED_File: bedhost_api_url + "/api/bedfiles/download/" + this.props.match.params.bedfile_md5sum + "?column=bedfile_path",
         },
       }
     );
     const newbedFig = data[0][22].map((file) => {
       return {
-        ...file, src_pdf: bedhost_api_url + "/img/bedfiles/" + this.props.match.params.bedfile_md5sum + "/" + file.name + "/pdf",
-        src_png: bedhost_api_url + "/img/bedfiles/" + this.props.match.params.bedfile_md5sum + "/" + file.name + "/png"
+        ...file, src_pdf: bedhost_api_url + "/api/img/bedfiles/" + this.props.match.params.bedfile_md5sum + "/" + file.name + "/pdf",
+        src_png: bedhost_api_url + "/api/img/bedfiles/" + this.props.match.params.bedfile_md5sum + "/" + file.name + "/png"
       };
     });
     this.setState({ bedFig: newbedFig });

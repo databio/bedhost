@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./style/home.css"
 
 const api = axios.create({
-  baseURL: bedhost_api_url,
+  baseURL: bedhost_api_url + "/api",
 });
 
 export default class VersionsSpan extends React.Component {

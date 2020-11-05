@@ -53,7 +53,7 @@ const AccordionDetails = withStyles((theme) => ({
 }))(MuiAccordionDetails);
 
 const api = axios.create({
-    baseURL: bedhost_api_url,
+    baseURL: bedhost_api_url + "/api",
 });
 
 export default class QueryResults extends React.Component {

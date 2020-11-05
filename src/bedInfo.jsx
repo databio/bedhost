@@ -3,7 +3,7 @@ import axios from "axios";
 import bedhost_api_url from "./const";
 
 const api = axios.create({
-    baseURL: bedhost_api_url,
+    baseURL: bedhost_api_url + "/api",
 });
 
 export default class BedInfo extends React.Component {
