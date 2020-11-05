@@ -6,10 +6,10 @@ export default class BedSetPlots extends React.Component {
     render() {
         return (
             <div style={{ marginBottom: "10px" }}>
-                <a href={bedhost_api_url + "/bedsets/img/" + this.props.bedset_md5sum + "?img_type=pdf"}>
+                <a href={bedhost_api_url + "/img/bedsets/" + this.props.bedset_md5sum + "/" + this.props.bedset_figs.name + "/pdf"}>
                     <img
                         className="splash-img"
-                        src={bedhost_api_url + "/bedsets/img/" + this.props.bedset_md5sum + "?img_type=png"}
+                        src={bedhost_api_url + "/img/bedsets/" + this.props.bedset_md5sum + "/" + this.props.bedset_figs.name + "/png"}
                         alt={this.props.bedset_md5sum}
                     />
                 </a>

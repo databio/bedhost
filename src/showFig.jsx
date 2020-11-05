@@ -16,8 +16,8 @@ export default function ShowFig(props) {
       figList.push({
         id: i + 1,
         caption: props.bedNames[i],
-        src_pdf: bedhost_api_url + "/bedfiles/img/" + props.bedIds[i] + "?img_type=pdf&img_name=" + props.figType[0],
-        src_png: bedhost_api_url + "/bedfiles/img/" + props.bedIds[i] + "?img_type=png&img_name=" + props.figType[0]
+        src_pdf: bedhost_api_url + "/img/bedfiles/" + props.bedIds[i] + "/" + props.figType[0] + "/pdf",
+        src_png: bedhost_api_url + "/img/bedfiles/" + props.bedIds[i] + "/" + props.figType[0] + "/png"
       });
     }
   };

@@ -4,6 +4,7 @@ import bedhost_api_url from "./const";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 console.log("bedhost_api_url:", bedhost_api_url);
+// console.log("react_url:", location.port);
 const api = axios.create({
   baseURL: bedhost_api_url,
 });
