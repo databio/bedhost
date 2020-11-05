@@ -12,7 +12,8 @@ import { Link } from "react-router-dom";
 
 
 const api = axios.create({
-    baseURL: bedhost_api_url,
+    // baseURL: bedhost_api_url,
+    baseURL: `${ window.location.protocol }//${ window.location.host }/api`,
 });
 
 export default class BedSetTable extends React.Component {

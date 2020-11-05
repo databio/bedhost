@@ -4,9 +4,10 @@ import bedhost_api_url from "./const";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 console.log("bedhost_api_url:", bedhost_api_url);
-// console.log("react_url:", location.port);
+console.log("bedhost_react_url:", `${ window.location.protocol }//${ window.location.host }/api`);
 const api = axios.create({
-  baseURL: bedhost_api_url,
+  // baseURL: bedhost_api_url,
+  baseURL: `${ window.location.protocol }//${ window.location.host }/api`,
 });
 
 export default class BedCountsSpan extends React.Component {
