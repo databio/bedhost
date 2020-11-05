@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import bedhost_api_url from "./const";
+import { version } from "../package.json";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./style/home.css"
 
@@ -44,7 +45,8 @@ export default class VersionsSpan extends React.Component {
           <span style={{ marginLeft: "30px" }}>
             | openAPI: <code style={{ color:"#e76f51" }}>{this.state.openapi_version}</code> | Python:{" "}
             <code style={{ color:"#e76f51" }}>{this.state.python_version}</code> | bedhost:{" "}
-            <code style={{ color:"#e76f51" }}>{this.state.apiserver_version}</code> | bbconf:{" "}
+            <code style={{ color:"#e76f51" }}>{this.state.apiserver_version}</code> | bedhost-ui:{" "}
+            <code style={{ color:"#e76f51" }}>{version}</code> | bbconf:{" "}
             <code style={{ color:"#e76f51" }}>{this.state.bbconf_version}</code> |
           </span>
         ) : (
