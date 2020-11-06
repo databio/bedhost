@@ -7,10 +7,9 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.templating import Jinja2Templates
 from starlette.requests import Request
 from starlette.staticfiles import StaticFiles
-from typing import Optional
+from typing import List, Optional
 from logging import INFO, DEBUG
 import os
-import pandas as pd
 import yaml
 
 import logmuse
@@ -315,6 +314,7 @@ async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB Ta
 
     return bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)
 
+
 @app.get("/api/versions")
 async def get_version_info():
     """
@@ -334,12 +334,6 @@ async def index():
     Display the index UI page
     """
     return FileResponse(os.path.join(UI_PATH, "index.html"))
-# @app.get("/index")
-# async def index():
-#     """
-#     Display the index UI page
-#     """
-#     return FileResponse(os.path.join(UI_PATH, "index.html"))
 
 
 @app.get("/api/filters/{table_name}")
@@ -354,74 +348,61 @@ async def get_bedfile_table_filters(
         return get_search_setup(bbc.get_bedfiles_table_columns_types())
     return get_search_setup(bbc.get_bedsets_table_columns_types())
 
-@app.get("/api/bedset/data/{md5sum}")
-async def get_bedset_data( md5sum: str = Path(..., description="digest"),
-                          column: str = Query(None, description="Column name", regex=r"^\D+$")):
+
+@app.get("/api/bedset/{md5sum}/bedfiles")
+async def get_bedfiles_in_bedset(
+        md5sum: str = Path(..., description="digest"),
+        column: Optional[str] = Query(
+            None,
+            description="Column name to select from the table"
+        )
+):
+    avail_cols = [c[0] for c in bbc.get_bedfiles_table_columns_types()]
+    if column and column not in avail_cols:
+        msg = f"Column '{column}' not found in '{BED_TABLE}' table"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
+    res = bbc.select_bedfiles_for_bedset(
+        query=f"md5sum='{md5sum}'",
+        bedfile_col=column
+    )[0]
+    colnames = list(res.keys())
+    values = list(res.values())
+    _LOGGER.info(f"Serving data for columns: {colnames}")
+    return {"columns": colnames, "data": values}
+
+
+@app.get("/api/bedset/{md5sum}/data")
+async def get_bedset_data(
+        md5sum: str = Path(
+            ...,
+            description="digest"
+        ),
+        column: Optional[str] = Query(
+            None,
+            description="Column name to select from the table"
+        )
+):
                         
     """
-    Returns the csv file content of bedset data in array of object with provided ID
+    Returns selected bedset
     """
-
-    column = JSON_BEDSET_GD_STATS_KEY if column is None else column
-
-    file_path = bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)[0][0]
-    df = pd.read_csv(file_path)
-
-    cols = [JSON_GC_CONTENT_KEY,
-        JSON_MEAN_REGION_WIDTH,
-        JSON_EXON_PERCENTAGE_KEY, 
-        JSON_EXON_FREQUENCY_KEY, 
-        JSON_5UTR_PERCENTAGE_KEY, 
-        JSON_5UTR_FREQUENCY_KEY,
-        JSON_INTERGENIC_PERCENTAGE_KEY,
-        JSON_INTERGENIC_FREQUENCY_KEY,
-        JSON_INTRON_PERCENTAGE_KEY,
-        JSON_INTRON_FREQUENCY_KEY, 
-        JSON_3UTR_PERCENTAGE_KEY,
-        JSON_3UTR_FREQUENCY_KEY]
-
-    if column == JSON_BEDSET_GD_STATS_KEY:
-        df = df[cols]
-        df = df.transpose()
-        new_header = df.iloc[0] 
-        df = df[1:] 
-        df = df.astype(float).round(3)
-        df.columns = new_header
-        df = df.reset_index()
-        
-    df = df[[JSON_MD5SUM_KEY, JSON_NAME_KEY]+cols]
-    columns = list(df)
-    data = df.to_dict('records')
-
-    return {"columns" : columns, "data": data}
-
-@app.get("/api/bedset/stats/{md5sum}")
-async def get_bedset_summary( md5sum: str = Path(..., description="digest")):                 
-    """
-    Returns the  csv file content of bedsets stats in array of object with provided ID
-    """
-
-    file_path = bbc.select(table_name = BEDSET_TABLE, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = JSON_BEDSET_GD_STATS_KEY)[0][0]
-    rows = [JSON_EXON_PERCENTAGE_KEY, 
-            JSON_5UTR_PERCENTAGE_KEY, 
-            JSON_INTERGENIC_PERCENTAGE_KEY,
-            JSON_INTRON_PERCENTAGE_KEY, 
-            JSON_3UTR_PERCENTAGE_KEY]
-
-    df = pd.read_csv(file_path, index_col=0).astype(float).round(3)
-
-    gc_content = {"mean":df.loc[JSON_GC_CONTENT_KEY]["Mean"], "sd" : df.loc[JSON_GC_CONTENT_KEY]["Standard Deviation"]}
-    mean_region_width = {"mean":df.loc[JSON_MEAN_REGION_WIDTH]["Mean"], "sd" : df.loc[JSON_MEAN_REGION_WIDTH]["Standard Deviation"]}
-
-    df = df.loc[rows]
-
-    columns = list(df)
-    data = df.to_dict('index')
-
-    return {"regionsDistribution":{"columns" : columns, "data": data},
-            "gc_content":gc_content,
-            "mean_region_width": mean_region_width
-            }
+    avail_cols = [c[0] for c in bbc.get_bedsets_table_columns_types()]
+    if column and column not in avail_cols:
+        msg = f"Column '{column}' not found in '{BEDSET_TABLE}' table"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
+    # there's certainly only one record matching the md5sum query due to
+    # bedsets md5sum uniqueness table restrictions
+    res = bbc.select(
+        table_name=BEDSET_TABLE,
+        condition=f"{JSON_MD5SUM_KEY}='{md5sum}'",
+        columns=column
+    )[0]
+    colnames = list(res.keys())
+    values = list(res.values())
+    _LOGGER.info(f"Serving data for columns: {colnames}")
+    return {"columns": colnames, "data": values}
 
 
 @app.get("/api/img/{table_name}/{md5sum}/{img_name}/{format}")
