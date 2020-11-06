@@ -22,6 +22,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ImgGrid(props) {
     const classes = useStyles();
     console.log("Img List: ", props.imgList)
+
     return (
         <div className={classes.root}>
             <GridList style={{width: props.cols*300}} cellHeight={350} cols={props.cols}>
@@ -33,13 +34,14 @@ export default function ImgGrid(props) {
                       src={image.src_png}
                       alt={image.name}
                     />
-                    <a href={image.src_pdf}>
+                    <a href={image.src_png}>
                       <GridListTileBar title={image.caption} />
                     </a>
                   </GridListTile>
                 );
               })}
             </GridList>
+            
           </div>
     )
 }

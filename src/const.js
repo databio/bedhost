@@ -1,5 +1,3 @@
-import { ModeComment } from "@material-ui/icons";
-
 // dev mode
 // const bedhost_api_address = "http://0.0.0.0";
 // const bedhost_api_port = "9000";

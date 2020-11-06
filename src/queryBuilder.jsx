@@ -1,7 +1,7 @@
 import React from 'react';
 import ResponsiveDialog from "./responsiveDialog"
 import $ from 'jquery';
-import queryBuilder from 'jQuery-QueryBuilder';
+import 'jQuery-QueryBuilder';
 import axios from "axios";
 import bedhost_api_url from "./const";
 import "./style/queryBuilder.css";

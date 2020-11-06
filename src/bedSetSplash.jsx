@@ -29,7 +29,7 @@ export default class BedSetSplash extends React.Component {
       avgRegionW: {},
       avgRegionD: {},
       bedSetDownload: {}, 
-      bedSetFig:[]
+      bedSetFig: false
     };
   }
 
@@ -58,7 +58,7 @@ export default class BedSetSplash extends React.Component {
         avgRegionD: data.regionsDistribution
       }
     );
-    console.log("BED set data retrieved from the server: ", this.state.avgRegionD);
+    console.log("BED set data retrieved from the server: ", this.state.bedSetFig);
   }
 
   render() {
@@ -101,7 +101,7 @@ export default class BedSetSplash extends React.Component {
                 {/* <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Plots
               </Label> */}
-                <BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} bedset_figs = {this.state.bedSetFig} />
+                {this.state.bedSetFig ? (<BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} bedset_figs = {this.state.bedSetFig} />) :null}
               </Col>
               <Col md={6}>
               {this.state.avgRegionD.data ? (<BarChart stats={this.state.avgRegionD.data} />) : null}
