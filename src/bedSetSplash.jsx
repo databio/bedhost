@@ -3,7 +3,6 @@ import Header from './header';
 import VersionsSpan from "./versionsSpan";
 import Container from "react-bootstrap/Container";
 import BedSetTable from "./bedSetTable";
-// import StatsTable from "./statsTable";
 import BedSetPlots from "./bedSetPlots";
 import BarChart from "./barChart";
 import Row from "react-bootstrap/Row";
@@ -25,10 +24,10 @@ export default class BedSetSplash extends React.Component {
     this.state = {
       bedSetName: "",
       bedFilesCount: "",
-      avgGC: {},
-      avgRegionW: {},
+      avgGC: [],
+      avgRegionW: [],
       avgRegionD: {},
-      bedSetDownload: {}, 
+      bedSetDownload: {},
       bedSetFig: false
     };
   }
@@ -50,15 +49,22 @@ export default class BedSetSplash extends React.Component {
       }
     );
     console.log("BED set data retrieved from the server: ", data);
-    data = await api.get("/bedset/stats/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
+    data = await api.get("/bedsets/splash/" + this.props.match.params.bedset_md5sum + "?column=bedset_means,bedset_standard_deviation").then(({ data }) => data);
+    console.log('BED set summary from the server: ', data)
     this.setState(
       {
-        avgGC: data.gc_content,
-        avgRegionW: data.mean_region_width,
-        avgRegionD: data.regionsDistribution
+        avgGC: [data[0][0].gc_content.toFixed(3), data[0][1].gc_content.toFixed(3)],
+        avgRegionW: [data[0][0].mean_region_width.toFixed(3), data[0][1].mean_region_width.toFixed(3)],
+        avgRegionD: {
+          exon: [data[0][0].exon_percentage.toFixed(3), data[0][1].exon_percentage.toFixed(3)],
+          fiveutr: [data[0][0].fiveutr_percentage.toFixed(3), data[0][1].fiveutr_percentage.toFixed(3)],
+          intergenic: [data[0][0].intergenic_percentage.toFixed(3), data[0][1].intergenic_percentage.toFixed(3)],
+          intron: [data[0][0].intron_percentage.toFixed(3), data[0][1].intron_percentage.toFixed(3)],
+          threeutr: [data[0][0].threeutr_percentage.toFixed(3), data[0][1].threeutr_percentage.toFixed(3)]
+        }
       }
     );
-    console.log("BED set data retrieved from the server: ", this.state.bedSetFig);
+    console.log("BED set data retrieved from the server: ", this.state.avgRegionD);
   }
 
   render() {
@@ -74,8 +80,8 @@ export default class BedSetSplash extends React.Component {
                   {" "}
                 There are <b>{this.state.bedFilesCount}</b> BED files in this BED set.
                 <br />
-                The mean GC content is  <b>{this.state.avgGC.mean}</b> (SD = {this.state.avgGC.sd} );
-                mean region width is <b>{this.state.avgRegionW.mean}</b> (SD = {this.state.avgRegionW.sd} ).
+                The mean GC content is  <b>{this.state.avgGC[0]}</b> (SD = {this.state.avgGC[1]} );
+                mean region width is <b>{this.state.avgRegionW[0]}</b> (SD = {this.state.avgRegionW[1]} ).
                 </span>
               </Col>
               <Col>
@@ -101,17 +107,11 @@ export default class BedSetSplash extends React.Component {
                 {/* <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Plots
               </Label> */}
-                {this.state.bedSetFig ? (<BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} bedset_figs = {this.state.bedSetFig} />) :null}
+                {this.state.bedSetFig ? (<BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} bedset_figs={this.state.bedSetFig} />) : null}
               </Col>
               <Col md={6}>
-              {this.state.avgRegionD.data ? (<BarChart stats={this.state.avgRegionD.data} />) : null}
+                {Object.keys(this.state.avgRegionD).length !== 0 ? (<BarChart stats={this.state.avgRegionD} />) : null}
               </Col>
-              {/* <Col>
-                <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
-                  BED Set Stats
-              </Label>
-                <StatsTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
-              </Col> */}
             </Row>
             <Row>
               <Col>

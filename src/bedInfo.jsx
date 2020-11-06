@@ -20,7 +20,7 @@ export default class BedInfo extends React.Component {
             {
                 dict: data[0][0]
             })
-        console.log("BED file info from API:", this.state.dict)
+        console.log("BED file info from the server:", this.state.dict)
     }
 
     render() {

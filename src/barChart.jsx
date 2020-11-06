@@ -52,7 +52,8 @@
 
 import React from 'react';
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip} from 'recharts';
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ErrorBar
+} from 'recharts';
 
 export default class Example extends React.Component {
   // static jsfiddleUrl = 'https://jsfiddle.net/alidingling/30763kr7/';
@@ -67,7 +68,13 @@ export default class Example extends React.Component {
   async componentDidMount() {
     let data_value = []
     console.log(await this.props.stats)
-    Object.entries(await this.props.stats).map(([key, value], index) => data_value.push({ name: key.match(/^[a-z0-9]+/), value: Number((value.Mean * 100).toFixed(1)) }))
+    Object.entries(await this.props.stats).map(([key, value], index) => 
+      data_value.push({ name: key, 
+                        value: Number((value[0] * 100).toFixed(2)), 
+                        std:[Number((value[0] * 100).toFixed(2))-Number((value[1] * 100).toFixed(2)),
+                        Number((value[0] * 100).toFixed(2))+Number((value[1] * 100).toFixed(2))
+                      ] 
+                    }))
     console.log(data_value)
     this.setState({ data: data_value })
   }
@@ -75,7 +82,7 @@ export default class Example extends React.Component {
   render() {
     return (
       <div>
-        <span style={{marginLeft:"60px"}}>Mean Regional Distribution of the BED Set</span>
+        <span style={{ marginLeft: "80px" }}>Mean Regional Distribution of the BED Set</span>
         <BarChart
           width={500}
           height={290}
@@ -88,7 +95,14 @@ export default class Example extends React.Component {
           <XAxis dataKey="name" />
           <YAxis label={{ value: 'Frequency (%)', angle: -90, position: 'insideLeft', offset: 10 }} />
           <Tooltip />
-          <Bar dataKey="value" fill="teal" />
+          <Bar dataKey="value" fill="teal" >
+            <ErrorBar
+              dataKey="std"
+              width={2}
+              strokeWidth={1}
+              stroke="black"
+              direction="y" />
+          </Bar>
         </BarChart>
       </div>
 

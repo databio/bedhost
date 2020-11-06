@@ -30,7 +30,7 @@ export default class BedSetTable extends React.Component {
 
     async componentDidMount() {
         let res = await api.get("/bedset/data/" + this.props.bedset_md5sum + "?column=bedset_bedfiles_gd_stats").then(({ data }) => data);
-        console.log('BED set summary from API: ', res)
+        console.log('BED set summary from the server: ', res)
 
         this.setState({
             columns: res.columns,
