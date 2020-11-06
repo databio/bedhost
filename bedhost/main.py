@@ -426,7 +426,7 @@ async def get_image(
         return RedirectResponse(path)
     _LOGGER.info(f"Returning local: {path}")
     if os.path.isfile(path):
-        return FileResponse(path, filename=os.path.basename(path), media_type="application/octet-stream")
+        return FileResponse(path,  headers={"Content-Disposition": f"inline; filename={os.path.basename(path)}"})
     else:
         msg = f"File not found on server: {path}"
         _LOGGER.warning(msg)
