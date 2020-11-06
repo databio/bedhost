@@ -33,11 +33,12 @@ export default class BedSetSplash extends React.Component {
   }
 
   async componentDidMount() {
-    let data = await api.get("/bedsets/splash/" + this.props.match.params.bedset_md5sum).then(({ data }) => data);
+    let data = await api.get("/bedset/" + this.props.match.params.bedset_md5sum + "/data").then(({ data }) => data);
+    console.log("BED set data retrieved from the server: ", data);
     this.setState(
       {
-        bedSetName: data[0][2],
-        bedFilesCount: Object.keys(data[0][11]).length,
+        bedSetName: data.data[2],
+        bedFilesCount: Object.keys(data.data[11]).length,
         bedSetDownload: {
           BED_Set_Rxiv: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_tar_archive_path",
           BED_Stats: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_bedfiles_gd_stats",
@@ -45,26 +46,18 @@ export default class BedSetSplash extends React.Component {
           BED_Set_IGD: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_igd_database_path",
           BED_Set_PEP: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_pep"
         },
-        bedSetFig: data[0][8][0]
-      }
-    );
-    console.log("BED set data retrieved from the server: ", data);
-    data = await api.get("/bedsets/splash/" + this.props.match.params.bedset_md5sum + "?column=bedset_means,bedset_standard_deviation").then(({ data }) => data);
-    console.log('BED set summary from the server: ', data)
-    this.setState(
-      {
-        avgGC: [data[0][0].gc_content.toFixed(3), data[0][1].gc_content.toFixed(3)],
-        avgRegionW: [data[0][0].mean_region_width.toFixed(3), data[0][1].mean_region_width.toFixed(3)],
+        bedSetFig: data.data[8][0],
+        avgGC: [data.data[9].gc_content.toFixed(3), data.data[10].gc_content.toFixed(3)],
+        avgRegionW: [data.data[9].mean_region_width.toFixed(3), data.data[9].mean_region_width.toFixed(3)],
         avgRegionD: {
-          exon: [data[0][0].exon_percentage.toFixed(3), data[0][1].exon_percentage.toFixed(3)],
-          fiveutr: [data[0][0].fiveutr_percentage.toFixed(3), data[0][1].fiveutr_percentage.toFixed(3)],
-          intergenic: [data[0][0].intergenic_percentage.toFixed(3), data[0][1].intergenic_percentage.toFixed(3)],
-          intron: [data[0][0].intron_percentage.toFixed(3), data[0][1].intron_percentage.toFixed(3)],
-          threeutr: [data[0][0].threeutr_percentage.toFixed(3), data[0][1].threeutr_percentage.toFixed(3)]
+          exon: [data.data[9].exon_percentage.toFixed(3), data.data[10].exon_percentage.toFixed(3)],
+          fiveutr: [data.data[9].fiveutr_percentage.toFixed(3), data.data[10].fiveutr_percentage.toFixed(3)],
+          intergenic: [data.data[9].intergenic_percentage.toFixed(3), data.data[10].intergenic_percentage.toFixed(3)],
+          intron: [data.data[9].intron_percentage.toFixed(3), data.data[10].intron_percentage.toFixed(3)],
+          threeutr: [data.data[9].threeutr_percentage.toFixed(3), data.data[10].threeutr_percentage.toFixed(3)]
         }
       }
     );
-    console.log("BED set data retrieved from the server: ", this.state.avgRegionD);
   }
 
   render() {

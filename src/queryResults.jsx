@@ -80,7 +80,7 @@ export default class QueryResults extends React.Component {
         let my_query = JSON.parse(this.props.query)
         let data = await api.get("/" + this.props.table_name + "/search/" + my_query + "?column=name")
             .then(({ data }) => data)
-            
+
         console.log(data)
         if (this.props.table_name === "bedfiles") {
             this.setState({ bedFileNames: data })
@@ -90,16 +90,16 @@ export default class QueryResults extends React.Component {
 
     async getBedFileNames(id) {
         let data = await api
-            .get("/bed/bedset/" + id + "?column=name")
+            .get("/bedset/" + id + "/data")
             .then(({ data }) => data)
             .catch(function (error) {
                 alert(error + "; is bedhost running at " + bedhost_api_url + "?");
             });
         console.log(
-            "BED files names retrieved from the server for 0 BED set: ",
+            "BED files names retrieved from the server for BED set: ",
             data
         );
-        this.setState({ bedFileNames: data });
+        this.setState({ bedFileNames: data.data[11] });
     };
 
     handleChange(panel) {
@@ -132,7 +132,7 @@ export default class QueryResults extends React.Component {
                 ) : (
                         this.state.bedSetNames.map((bedSet, index) => {
                             return (
-                                <Accordion key={index} square expanded={this.state.expanded === bedSet[0]} onChange={() => this.handleChange(bedSet[0])}>
+                                <Accordion key={index} square expanded={this.state.expanded === bedSet[1]} onChange={() => this.handleChange(bedSet[1])}>
                                     <AccordionSummary style={{ minHeight: "50px" }} aria-controls="panel1d-content" id="panel1d-header">
                                         <Typography>
                                             <Link className="home-link" to={{
@@ -144,17 +144,18 @@ export default class QueryResults extends React.Component {
                                     </AccordionSummary>
                                     <AccordionDetails>
                                         <Typography>
-                                            {this.state.bedFileNames.map((bedFile) => {
-                                                return (
-                                                    <li as="li" key={bedFile[0]}>
-                                                        <Link className="home-link" to={{
-                                                            pathname: '/bedfilesplash/' + bedFile[1]
-                                                        }}>
-                                                            {bedFile[2]}
-                                                        </Link>
-                                                    </li>
-                                                );
-                                            })}
+                                            {Object.entries(this.state.bedFileNames)
+                                                .map(([key, value], index) => {
+                                                    return (
+                                                        <li as="li" key={index}>
+                                                            <Link className="home-link" to={{
+                                                                pathname: '/bedfilesplash/' + value
+                                                            }}>
+                                                                {key}
+                                                            </Link>
+                                                        </li>
+                                                    );
+                                                })}
                                         </Typography>
                                     </AccordionDetails>
                                 </Accordion>

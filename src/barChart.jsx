@@ -67,7 +67,6 @@ export default class Example extends React.Component {
 
   async componentDidMount() {
     let data_value = []
-    console.log(await this.props.stats)
     Object.entries(await this.props.stats).map(([key, value], index) => 
       data_value.push({ name: key, 
                         value: Number((value[0] * 100).toFixed(2)), 
@@ -75,7 +74,7 @@ export default class Example extends React.Component {
                         Number((value[0] * 100).toFixed(2))+Number((value[1] * 100).toFixed(2))
                       ] 
                     }))
-    console.log(data_value)
+    console.log("BED set stats: ", data_value)
     this.setState({ data: data_value })
   }
 
