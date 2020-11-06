@@ -26,8 +26,10 @@ jobs:
         node-version: 12.18.4
     - name: Build production package
       run: |
-        npm install bedhost-ui
-        npm run build bedhost-ui
+        cd bedhost-ui 
+        npm install
+        npm run build
+        cd ..
 
     - name: Copy to bedhost package
       run: |
