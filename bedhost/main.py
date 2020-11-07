@@ -34,8 +34,35 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# app.add_middleware(SessionMiddleware, secret_key="bedbase")
-# templates = Jinja2Templates(directory=TEMPLATES_PATH)
+
+def _serve_columns_for_table(bedbase_conf, table_name, columns, digest):
+    """
+    Serve data from selected columns for selected table
+
+    :param bbconf.BedBaseConf bedbase_conf: bedbase configuration object
+    :param str table_name: table name to query
+    :param list[str] columns: columns to return
+    :return:
+    """
+    if isinstance(columns, str):
+        columns = [columns]
+    avail_cols = [c[0] for c in bbc.get_bedfiles_table_columns_types()]
+    diff = set(columns).difference(avail_cols)
+    if diff:
+        msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
+    # there's certainly only one record matching the md5sum query due to
+    # bedsets md5sum uniqueness table restrictions
+    res = bedbase_conf.select(
+        table_name=table_name,
+        condition=f"{JSON_MD5SUM_KEY}='{digest}'",
+        columns=columns
+    )[0]
+    colnames = list(res.keys())
+    values = list(res.values())
+    _LOGGER.info(f"Serving data for columns: {colnames}")
+    return {"columns": colnames, "data": values}
 
 
 #
@@ -302,18 +329,6 @@ async def get_bed_list_for_bedset(bedset_id: int = Path(..., description="BED se
     columns = ["id", JSON_MD5SUM_KEY] if column is None else ["id", JSON_MD5SUM_KEY] + [column]
     return bbc.select_bedfiles_for_bedset(query=f"id='{bedset_id}'", bedfile_col=columns)
 
-@app.get("/api/{table_name}/splash/{md5sum}")
-async def get_bed_data_for_bedset(table_name: str = Path(..., description="DB Table name",
-                                    regex=r"{}|{}".format(BED_TABLE, BEDSET_TABLE)),
-                                  md5sum: str = Path(..., description="digest"),
-                                  column: Optional[str] = Query(None, description="Column name", regex=r"^\D+$")):
-    """
-    Returns table data with a provided ID
-    """
-    column = "*" if column is None else column
-
-    return bbc.select(table_name = table_name, condition = f"{JSON_MD5SUM_KEY} = '{md5sum}'", columns = column)
-
 
 @app.get("/api/versions")
 async def get_version_info():
@@ -365,8 +380,8 @@ async def get_bedfiles_in_bedset(
     res = bbc.select_bedfiles_for_bedset(
         query=f"md5sum='{md5sum}'",
         bedfile_col=column
-    )[0]
-    colnames = list(res.keys())
+    )
+    colnames = list(res[0].keys())
     values = list(res.values())
     _LOGGER.info(f"Serving data for columns: {colnames}")
     return {"columns": colnames, "data": values}
@@ -385,24 +400,34 @@ async def get_bedset_data(
 ):
                         
     """
-    Returns selected bedset
+    Returns data from selected columns for selected bedset
     """
-    avail_cols = [c[0] for c in bbc.get_bedsets_table_columns_types()]
-    if column and column not in avail_cols:
-        msg = f"Column '{column}' not found in '{BEDSET_TABLE}' table"
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
-    # there's certainly only one record matching the md5sum query due to
-    # bedsets md5sum uniqueness table restrictions
-    res = bbc.select(
+    return _serve_columns_for_table(
+        bedbase_conf=bbc,
         table_name=BEDSET_TABLE,
-        condition=f"{JSON_MD5SUM_KEY}='{md5sum}'",
-        columns=column
-    )[0]
-    colnames = list(res.keys())
-    values = list(res.values())
-    _LOGGER.info(f"Serving data for columns: {colnames}")
-    return {"columns": colnames, "data": values}
+        columns=column,
+        digest=md5sum
+    )
+
+
+@app.get("/api/bed/{md5sum}/data")
+async def get_bedset_data(
+        md5sum: str = Path(
+            ...,
+            description="digest"),
+        column: Optional[str] = Query(
+            None,
+            description="Column name to select from the table")
+):
+    """
+    Returns data from selected columns for selected bedfile
+    """
+    return _serve_columns_for_table(
+        bedbase_conf=bbc,
+        table_name=BED_TABLE,
+        columns=column,
+        digest=md5sum
+    )
 
 
 @app.get("/api/img/{table_name}/{md5sum}/{img_name}/{format}")
