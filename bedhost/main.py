@@ -35,26 +35,27 @@ app.add_middleware(
 )
 
 
-def _serve_columns_for_table(bedbase_conf, table_name, columns, digest):
+def _serve_columns_for_table(bbc, table_name, columns, digest):
     """
     Serve data from selected columns for selected table
 
-    :param bbconf.BedBaseConf bedbase_conf: bedbase configuration object
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
     :param str table_name: table name to query
     :param list[str] columns: columns to return
     :return:
     """
     if isinstance(columns, str):
         columns = [columns]
-    avail_cols = [c[0] for c in bbc.get_bedfiles_table_columns_types()]
-    diff = set(columns).difference(avail_cols)
+    coldata_getter = bbc.get_bedfiles_table_columns_types \
+        if table_name == BED_TABLE else bbc.get_bedsets_table_columns_types
+    diff = set(columns).difference([c[0] for c in coldata_getter()])
     if diff:
         msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
     # there's certainly only one record matching the md5sum query due to
     # bedsets md5sum uniqueness table restrictions
-    res = bedbase_conf.select(
+    res = bbc.select(
         table_name=table_name,
         condition=f"{JSON_MD5SUM_KEY}='{digest}'",
         columns=columns
@@ -403,7 +404,7 @@ async def get_bedset_data(
     Returns data from selected columns for selected bedset
     """
     return _serve_columns_for_table(
-        bedbase_conf=bbc,
+        bbc=bbc,
         table_name=BEDSET_TABLE,
         columns=column,
         digest=md5sum
@@ -423,7 +424,7 @@ async def get_bedset_data(
     Returns data from selected columns for selected bedfile
     """
     return _serve_columns_for_table(
-        bedbase_conf=bbc,
+        bbc=bbc,
         table_name=BED_TABLE,
         columns=column,
         digest=md5sum
