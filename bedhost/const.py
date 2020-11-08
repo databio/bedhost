@@ -3,6 +3,7 @@ from bbconf._version import __version__ as bbconf_v
 from platform import python_version
 from bbconf.const import *
 import os
+from enum import Enum
 PKG_NAME = "bedhost"
 LOG_FORMAT = "%(levelname)s in %(funcName)s: %(message)s"
 
@@ -41,3 +42,38 @@ INIT_QUERYBUILDER = {'condition': 'AND', 'rules': [
 ], 'valid': True}
 CUR_RESULT = "current_result"
 CUR_RULES = "current_rules"
+
+
+class FigFormat(str, Enum):
+    png = "png"
+    pdf = "pdf"
+
+
+class FileColumnBedset(str, Enum):
+    PEP = "PEP"
+    iGD_database = "iGD_database"
+    bedset_tar = "bedset_tar"
+    summary_stats = "summary_stats"
+    bedfiles_stats = "bedfiles_stats"
+
+
+class FileColumnBed(str, Enum):
+    bedfile = "bedfile"
+
+
+class TableName(str, Enum):
+    bedfiles = "bedfiles"
+    bedsets = "bedsets"
+
+
+file_map_bedset = {
+    "PEP": "bedset_pep",
+    "iGD_database": "bedset_igd_database_path",
+    "bedset_tar": "bedset_tar_archive_path",
+    "summary_stats": "bedset_gd_stats",
+    "bedfiles_stats": "bedset_bedfiles_gd_stats"
+}
+
+file_map_bed = {
+    "bedfile": "bedfile_path",
+}

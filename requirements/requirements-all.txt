@@ -1,9 +1,12 @@
 pyyaml
-aiofiles
-fastapi
+fastapi>=0.61.2
 starlette
+aiofiles
 uvicorn
 python-multipart
 requests
 itsdangerous
 pandas
+logmuse
+#yacman
+#bbconf
