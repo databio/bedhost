@@ -2,7 +2,7 @@ name: Build React UI and push container to Dockerhub
 
 on:
   push:
-    branches: [master]
+    branches: [dev]
   workflow_dispatch:
     inputs: null   
     
@@ -40,7 +40,7 @@ jobs:
     - name: Push to DockerHub
       uses: docker/build-push-action@v1
       with:
-        dockerfile: ./Dockerfile
+        dockerfile: ./dev.Dockerfile
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: databio/bedhost
