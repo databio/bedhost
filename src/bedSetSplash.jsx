@@ -41,10 +41,10 @@ export default class BedSetSplash extends React.Component {
         bedFilesCount: Object.keys(data.data[0][11]).length,
         bedSetDownload: {
           BED_Set_Rxiv: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar",
-          BED_Stats: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/bedfiles_stats",
-          BED_Set_Summary: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/summary_stats",
-          BED_Set_IGD: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
-          BED_Set_PEP: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/PEP"
+          BED_Stats: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedfiles_stats",
+          BED_Set_Summary: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/summary_stats",
+          BED_Set_IGD: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
+          BED_Set_PEP: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP"
         },
         bedSetFig: data.data[0][8][0],
         avgGC: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
