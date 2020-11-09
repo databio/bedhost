@@ -34,7 +34,7 @@ export default function ImgGrid(props) {
                       src={image.src_png}
                       alt={image.name}
                     />
-                    <a target="_blank" href={image.src_pdf} >
+                    <a target="_blank" rel="noopener noreferrer" href={image.src_pdf} >
                       <GridListTileBar title={image.caption} />
                     </a>
                   </GridListTile>

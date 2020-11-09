@@ -15,7 +15,7 @@ import "./style/splash.css";
 
 
 const api = axios.create({
-  baseURL: bedhost_api_url + "/api",
+  baseURL: bedhost_api_url,
 });
 
 export default class BedSetSplash extends React.Component {
@@ -33,28 +33,28 @@ export default class BedSetSplash extends React.Component {
   }
 
   async componentDidMount() {
-    let data = await api.get("/bedset/" + this.props.match.params.bedset_md5sum + "/data").then(({ data }) => data);
+    let data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/data").then(({ data }) => data);
     console.log("BED set data retrieved from the server: ", data);
     this.setState(
       {
-        bedSetName: data.data[2],
-        bedFilesCount: Object.keys(data.data[11]).length,
+        bedSetName: data.data[0][2],
+        bedFilesCount: Object.keys(data.data[0][11]).length,
         bedSetDownload: {
-          BED_Set_Rxiv: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_tar_archive_path",
-          BED_Stats: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_bedfiles_gd_stats",
-          BED_Set_Summary: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_gd_stats",
-          BED_Set_IGD: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_igd_database_path",
-          BED_Set_PEP: bedhost_api_url + "/api/bedsets/download/" + this.props.match.params.bedset_md5sum + "?column=bedset_pep"
+          BED_Set_Rxiv: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar",
+          BED_Stats: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/bedfiles_stats",
+          BED_Set_Summary: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/summary_stats",
+          BED_Set_IGD: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
+          BED_Set_PEP: bedhost_api_url + "/api/bedsets/" + this.props.match.params.bedset_md5sum + "/file/PEP"
         },
-        bedSetFig: data.data[8][0],
-        avgGC: [data.data[9].gc_content.toFixed(3), data.data[10].gc_content.toFixed(3)],
-        avgRegionW: [data.data[9].mean_region_width.toFixed(3), data.data[9].mean_region_width.toFixed(3)],
+        bedSetFig: data.data[0][8][0],
+        avgGC: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
+        avgRegionW: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)],
         avgRegionD: {
-          exon: [data.data[9].exon_percentage.toFixed(3), data.data[10].exon_percentage.toFixed(3)],
-          fiveutr: [data.data[9].fiveutr_percentage.toFixed(3), data.data[10].fiveutr_percentage.toFixed(3)],
-          intergenic: [data.data[9].intergenic_percentage.toFixed(3), data.data[10].intergenic_percentage.toFixed(3)],
-          intron: [data.data[9].intron_percentage.toFixed(3), data.data[10].intron_percentage.toFixed(3)],
-          threeutr: [data.data[9].threeutr_percentage.toFixed(3), data.data[10].threeutr_percentage.toFixed(3)]
+          exon: [data.data[0][9].exon_percentage.toFixed(3), data.data[0][10].exon_percentage.toFixed(3)],
+          fiveutr: [data.data[0][9].fiveutr_percentage.toFixed(3), data.data[0][10].fiveutr_percentage.toFixed(3)],
+          intergenic: [data.data[0][9].intergenic_percentage.toFixed(3), data.data[0][10].intergenic_percentage.toFixed(3)],
+          intron: [data.data[0][9].intron_percentage.toFixed(3), data.data[0][10].intron_percentage.toFixed(3)],
+          threeutr: [data.data[0][9].threeutr_percentage.toFixed(3), data.data[0][10].threeutr_percentage.toFixed(3)]
         }
       }
     );

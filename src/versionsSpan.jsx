@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./style/home.css"
 
 const api = axios.create({
-  baseURL: bedhost_api_url + "/api",
+  baseURL: bedhost_api_url,
 });
 
 export default class VersionsSpan extends React.Component {
@@ -24,7 +24,7 @@ export default class VersionsSpan extends React.Component {
 
   async componentDidMount(){
     let data = await api
-    .get("versions")
+    .get("/api/versions")
     .then(({ data }) => data)
     .catch(function (error) {
       alert(error + "; is bedhost running at " + bedhost_api_url + "?");

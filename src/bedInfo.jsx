@@ -3,7 +3,7 @@ import axios from "axios";
 import bedhost_api_url from "./const";
 
 const api = axios.create({
-    baseURL: bedhost_api_url + "/api",
+    baseURL: bedhost_api_url,
 });
 
 export default class BedInfo extends React.Component {
@@ -15,10 +15,10 @@ export default class BedInfo extends React.Component {
     }
 
     async componentDidMount() {
-        let data = await api.get("/bedfiles/splash/" + this.props.bedfile_md5sum + "?column=other").then(({ data }) => data);
+        let data = await api.get("/api/bed/" + this.props.bedfile_md5sum + "/data?ids=other").then(({ data }) => data);
         this.setState(
             {
-                dict: data[0][0]
+                dict: data.data[0][0]
             })
         console.log("BED file info from the server:", this.state.dict)
     }

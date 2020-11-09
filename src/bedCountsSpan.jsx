@@ -5,7 +5,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
-  baseURL: bedhost_api_url + "/api",
+  baseURL: bedhost_api_url,
 });
 
 export default class BedCountsSpan extends React.Component {
@@ -20,7 +20,7 @@ export default class BedCountsSpan extends React.Component {
 
   async componentDidMount(){
     let bfcount = await api
-    .get("bed/count")
+    .get("/api/bed/all/data/count")
     .catch(function (error) {
       alert(error + "; is bedhost running at " + bedhost_api_url + "?");
     });
@@ -28,7 +28,7 @@ export default class BedCountsSpan extends React.Component {
     this.setState({ bed: bfcount.data });
 
     let bscount = await api
-      .get("bedset/count")
+      .get("/api/bedset/all/data/count")
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });

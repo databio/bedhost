@@ -11,7 +11,7 @@ import QueryResults from './queryResults';
 
 console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
-    baseURL: bedhost_api_url + "/api",
+    baseURL: bedhost_api_url,
 });
 
 const setRules = {
@@ -77,7 +77,7 @@ export default class QueryBuilderWrapper extends React.Component {
 
     async getfilter() {
         let filters_res = await api
-            .get("filters/" + this.props.table_name)
+            .get("/_private_api/filters/" + this.props.table_name)
             .catch(function (error) {
                 alert(error + "; is bedhost running at " + bedhost_api_url + "?");
             });

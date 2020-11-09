@@ -13,7 +13,7 @@ import Dropdown from 'react-bootstrap/Dropdown'
 import "./style/splash.css";
 
 const api = axios.create({
-  baseURL: bedhost_api_url + "/api",
+  baseURL: bedhost_api_url,
 });
 
 
@@ -29,23 +29,23 @@ export default class BedFileSplash extends React.Component {
   }
 
   async componentDidMount() {
-    let data = await api.get("/bedfiles/splash/" + this.props.match.params.bedfile_md5sum).then(({ data }) => data);
+    let data = await api.get("/api/bed/" + this.props.match.params.bedfile_md5sum+ "/data").then(({ data }) => data);
+    console.log("BED set data retrieved from the server: ", data);
     this.setState(
       {
-        bedName: data[0][3],
+        bedName: data.data[0][3],
         bedDownload: {
-          BED_File: bedhost_api_url + "/api/bedfiles/download/" + this.props.match.params.bedfile_md5sum + "?column=bedfile_path",
+          BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bedfile_md5sum + "/file/bedfile",
         },
       }
     );
-    const newbedFig = data[0][22].map((file) => {
+    const newbedFig = data.data[0][22].map((file) => {
       return {
-        ...file, src_pdf: bedhost_api_url + "/api/img/bedfiles/" + this.props.match.params.bedfile_md5sum + "/" + file.name + "/pdf",
-        src_png: bedhost_api_url + "/api/img/bedfiles/" + this.props.match.params.bedfile_md5sum + "/" + file.name + "/png"
+        ...file, src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bedfile_md5sum + "/img/" + file.name + "?format=pdf",
+        src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bedfile_md5sum + "/img/" + file.name + "?format=png"
       };
     });
     this.setState({ bedFig: newbedFig });
-    console.log("BED set data retrieved from the server: ", this.state.bedDownload);
   }
 
 

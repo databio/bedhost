@@ -53,7 +53,7 @@ const AccordionDetails = withStyles((theme) => ({
 }))(MuiAccordionDetails);
 
 const api = axios.create({
-    baseURL: bedhost_api_url + "/api",
+    baseURL: bedhost_api_url,
 });
 
 export default class QueryResults extends React.Component {
@@ -78,7 +78,7 @@ export default class QueryResults extends React.Component {
 
     async getQueryResult() {
         let my_query = JSON.parse(this.props.query)
-        let data = await api.get("/" + this.props.table_name + "/search/" + my_query + "?column=name")
+        let data = await api.get("/_private_api/query/" + this.props.table_name + "/" + my_query + "?column=name")
             .then(({ data }) => data)
 
         console.log(data)
@@ -90,7 +90,7 @@ export default class QueryResults extends React.Component {
 
     async getBedFileNames(id) {
         let data = await api
-            .get("/bedset/" + id + "/data")
+            .get("/api/bedset/" + id + "/data")
             .then(({ data }) => data)
             .catch(function (error) {
                 alert(error + "; is bedhost running at " + bedhost_api_url + "?");
@@ -99,7 +99,7 @@ export default class QueryResults extends React.Component {
             "BED files names retrieved from the server for BED set: ",
             data
         );
-        this.setState({ bedFileNames: data.data[11] });
+        this.setState({ bedFileNames: data.data[0][11] });
     };
 
     handleChange(panel) {
@@ -124,7 +124,7 @@ export default class QueryResults extends React.Component {
                                 <Link className="home-link" to={{
                                     pathname: '/bedfilesplash/' + bedFile[1]
                                 }}>
-                                    {bedFile[2]}
+                                    {bedFile[3]}
                                 </Link>
                             </ListGroup.Item>
                         );
