@@ -7,7 +7,7 @@ on:
     inputs: null   
     
 jobs:
-  buildUI-and-deploy:
+  build-UI-and-deploy:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout bedhost
