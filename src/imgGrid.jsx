@@ -20,28 +20,28 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ImgGrid(props) {
-    const classes = useStyles();
-    console.log("Img List: ", props.imgList)
+  const classes = useStyles();
+  console.log("Img List: ", props.imgList)
 
-    return (
-        <div className={classes.root}>
-            <GridList style={{width: props.cols*300}} cellHeight={350} cols={props.cols}>
-              {props.imgList.map((image, index) => {
-                return (
-                  <GridListTile key={index}>
-                    <img
-                      className={classes.imgSize}
-                      src={image.src_png}
-                      alt={image.name}
-                    />
-                    <a target="_blank" rel="noopener noreferrer" href={image.src_pdf} >
-                      <GridListTileBar title={image.caption} />
-                    </a>
-                  </GridListTile>
-                );
-              })}
-            </GridList>
-            
-          </div>
-    )
+  return (
+    <div className={classes.root}>
+      <GridList style={{ width: props.cols * 300 }} cellHeight={350} cols={props.cols}>
+        {props.imgList.map((image, index) => {
+          return (
+            <GridListTile key={index}>
+              <a target="_blank" rel="noopener noreferrer" href={image.src_pdf} >
+                <img
+                  className={classes.imgSize}
+                  src={image.src_png}
+                  alt={image.name}
+                />
+              </a>
+              <GridListTileBar title={image.caption} />
+            </GridListTile>
+          );
+        })}
+      </GridList>
+
+    </div>
+  )
 }
