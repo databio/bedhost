@@ -136,7 +136,8 @@ async def get_bedfiles_in_bedset(
             None,
             description="Bedfiles table column name")
 ):
-    assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+    if ids:
+        assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
     res = bbc.select_bedfiles_for_bedset(
         query=f"md5sum='{md5sum}'", bedfile_col=ids)
     if res:
