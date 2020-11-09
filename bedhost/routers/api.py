@@ -136,15 +136,17 @@ async def get_bedfiles_in_bedset(
             None,
             description="Bedfiles table column name")
 ):
-    avail_cols = [c[0] for c in bbc.get_bedfiles_table_columns_types()]
-    if ids and ids not in avail_cols:
-        msg = f"Column '{ids}' not found in '{BED_TABLE}' table"
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
-    res = bbc.select_bedfiles_for_bedset(query=f"md5sum='{md5sum}'", bedfile_col=ids)
-    colnames = list(res[0].keys())
-    values = list(res.values())
-    _LOGGER.info(f"Serving data for columns: {colnames}")
+    assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+    res = bbc.select_bedfiles_for_bedset(
+        query=f"md5sum='{md5sum}'", bedfile_col=ids)
+    if res:
+        colnames = list(res[0].keys())
+        values = [list(x.values()) for x in res]
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
     return {"columns": colnames, "data": values}
 
 
