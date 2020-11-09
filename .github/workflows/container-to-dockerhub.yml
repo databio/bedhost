@@ -2,7 +2,7 @@ name: Build React UI and push container to Dockerhub
 
 on:
   push:
-    branches: [master]
+    branches: [master, dev]
   workflow_dispatch:
     inputs: null   
     
@@ -44,5 +44,4 @@ jobs:
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
         repository: databio/bedhost
-        tags: latest
         tag_with_ref: true
