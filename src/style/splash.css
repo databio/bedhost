@@ -9,7 +9,6 @@
 
 .splash-link:hover {
   color:  #e76f51;
-  font-weight: bolder;
 }
 
 .primary-btn:not(:disabled):not(.disabled).active, 
@@ -22,12 +21,10 @@
 .dropdown-item:hover {
   color: white;
   background-color:  #e76f51;
-  font-weight: bolder;
 }
 
 
 .MuiGridListTileBar-title:hover{
-  font-weight: bolder;
   border-color:  #e76f51;
 }
 
