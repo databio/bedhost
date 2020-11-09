@@ -6,7 +6,6 @@ uvicorn
 python-multipart
 requests
 itsdangerous
-pandas
 logmuse
 #yacman
 #bbconf
