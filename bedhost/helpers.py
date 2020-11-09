@@ -1,5 +1,7 @@
 from logging import getLogger
 from urllib import parse
+from starlette.responses import RedirectResponse, FileResponse
+from starlette.exceptions import HTTPException
 
 from .const import *
 from ._version import __version__ as v
@@ -80,7 +82,6 @@ def get_search_setup(columns):
             _LOGGER.warning(f"Database column '{col['column_name']}' of type "
                             f"'{col['data_type']}' has no query builder "
                             f"settings predefined, skipping.")
-    _LOGGER.debug(f"search setup: {setup_dicts}")
     return setup_dicts
 
 
@@ -171,3 +172,75 @@ def get_openapi_version(app):
         return app.openapi()["openapi"]
     except Exception:
         return "3.0.2"
+
+
+def assert_table_columns_match(bbc, table_name, columns):
+    """
+    Verify that the selected list of columns exists in the database and react approprietly
+
+    :param str table_name: name of the table, either bedfiles or bedsets
+    :param str | list[str] columns: collection columns to check
+    :raises HTTPException: in case there is a columns mismatch
+    """
+    coldata_getter_by_table_name = {
+        BED_TABLE: bbc.get_bedfiles_table_columns_types,
+        BEDSET_TABLE: bbc.get_bedsets_table_columns_types,
+        REL_TABLE: bbc.get_bedset_bedfiles_table_columns_types,
+    }
+    if isinstance(columns, str):
+        columns = [columns]
+    coldata_getter = coldata_getter_by_table_name[table_name]
+    diff = set(columns).difference([c[0] for c in coldata_getter()])
+    if diff:
+        msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
+
+
+def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
+    """
+    Serve data from selected columns for selected table
+
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
+    :param str table_name: table name to query
+    :param list[str] columns: columns to return
+    :param str digest: entry digest to restrivt the results to
+    :return:
+    """
+    if columns:
+        assert_table_columns_match(
+            bbc=bbc, table_name=table_name, columns=columns)
+    res = bbc.select(
+        table_name=table_name,
+        condition=f"{JSON_MD5SUM_KEY}='{digest}'" if digest else None,
+        columns=columns
+    )
+    if res:
+        colnames = list(res[0].keys())
+        values = [list(x.values()) for x in res]
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+    return {"columns": colnames, "data": values}
+
+
+def serve_file(path, remote):
+    """
+    Serve local or remote file
+
+    :param str path: relative path to serve
+    :param bool remote: whether to redirect to a remote source or serve local
+    """
+    if remote:
+        _LOGGER.info(f"Redirecting to: {path}")
+        return RedirectResponse(path)
+    _LOGGER.info(f"Returning local: {path}")
+    if os.path.isfile(path):
+        return FileResponse(path,  headers={
+            "Content-Disposition": f"inline; filename={os.path.basename(path)}"})
+    else:
+        msg = f"File not found on server: {path}"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
