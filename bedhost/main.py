@@ -12,6 +12,7 @@ import bbconf
 
 from .const import *
 from .helpers import *
+from .data_models import DBResponse
 global _LOGGER
 
 app = FastAPI(
@@ -30,6 +31,29 @@ app.add_middleware(
 )
 
 
+def _assert_table_columns_match(table_name, columns):
+    """
+    Verify that the selected list of columns exists in the database and react approprietly
+
+    :param str table_name: name of the table, either bedfiles or bedsets
+    :param str | list[str] columns: collection columns to check
+    :raises HTTPException: in case there is a columns mismatch
+    """
+    coldata_getter_by_table_name = {
+        BED_TABLE: bbc.get_bedfiles_table_columns_types,
+        BEDSET_TABLE: bbc.get_bedsets_table_columns_types,
+        REL_TABLE: bbc.get_bedset_bedfiles_table_columns_types,
+    }
+    if isinstance(columns, str):
+        columns = [columns]
+    coldata_getter = coldata_getter_by_table_name[table_name]
+    diff = set(columns).difference([c[0] for c in coldata_getter()])
+    if diff:
+        msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
+        _LOGGER.warning(msg)
+        raise HTTPException(status_code=404, detail=msg)
+
+
 def _serve_columns_for_table(bbc, table_name, columns=None, digest=None):
     """
     Serve data from selected columns for selected table
@@ -40,16 +64,8 @@ def _serve_columns_for_table(bbc, table_name, columns=None, digest=None):
     :param str digest: entry digest to restrivt the results to
     :return:
     """
-    if isinstance(columns, str):
-        columns = [columns]
     if columns:
-        coldata_getter = bbc.get_bedfiles_table_columns_types \
-            if table_name == BED_TABLE else bbc.get_bedsets_table_columns_types
-        diff = set(columns).difference([c[0] for c in coldata_getter()])
-        if diff:
-            msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
-            _LOGGER.warning(msg)
-            raise HTTPException(status_code=404, detail=msg)
+        _assert_table_columns_match(table_name=table_name, columns=columns)
     res = bbc.select(
         table_name=table_name,
         condition=f"{JSON_MD5SUM_KEY}='{digest}'" if digest else None,
@@ -110,7 +126,7 @@ async def index():
 
 
 # bed endpoints
-@app.get("/api/bed/all/data/count")
+@app.get("/api/bed/all/data/count", response_model=int)
 async def get_bedfile_count():
     """
     Returns the number of bedfiles available in the database
@@ -118,7 +134,7 @@ async def get_bedfile_count():
     return int(bbc.count_bedfiles())
 
 
-@app.get("/api/bed/all/data")
+@app.get("/api/bed/all/data", response_model=DBResponse)
 async def get_all_bed_metadata(
         ids: Optional[List[str]] = Query(
             None,
@@ -131,7 +147,7 @@ async def get_all_bed_metadata(
     return _serve_columns_for_table(bbc=bbc, table_name=BED_TABLE, columns=ids)
 
 
-@app.get("/api/bed/{md5sum}/data")
+@app.get("/api/bed/{md5sum}/data", response_model=DBResponse)
 async def get_bedfile_data(
         md5sum: str = Path(
             ...,
@@ -194,7 +210,7 @@ async def get_image_for_bedfile(
 
 # bedset endpoints
 
-@app.get("/api/bedset/all/data/count")
+@app.get("/api/bedset/all/data/count", response_model=int)
 async def get_bedset_count():
     """
     Returns the number of bedsets available in the database
@@ -202,7 +218,7 @@ async def get_bedset_count():
     return int(bbc.count_bedsets())
 
 
-@app.get("/api/bedset/all/data")
+@app.get("/api/bedset/all/data", response_model=DBResponse)
 async def get_all_bedset_metadata(
         ids: Optional[List[str]] = Query(
             None,
@@ -216,7 +232,7 @@ async def get_all_bedset_metadata(
     return _serve_columns_for_table(bbc=bbc, table_name=BEDSET_TABLE, columns=ids)
 
 
-@app.get("/api/bedset/{md5sum}/bedfiles")
+@app.get("/api/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
         md5sum: str = Path(..., description="digest"),
         ids: Optional[List[str]] = Query(
@@ -239,7 +255,7 @@ async def get_bedfiles_in_bedset(
     return {"columns": colnames, "data": values}
 
 
-@app.get("/api/bedset/{md5sum}/data")
+@app.get("/api/bedset/{md5sum}/data", response_model=DBResponse)
 async def get_bedset_data(
         md5sum: str = Path(
             ...,
@@ -322,6 +338,8 @@ async def get_query_results(
     """
     Return query results with provided table name and query string
     """
+    if columns:
+        _assert_table_columns_match(table_name=table_name, columns=columns)
     return bbc.select(table_name=table_name, condition=query, columns=columns)
 
 

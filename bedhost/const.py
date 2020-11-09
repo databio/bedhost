@@ -64,6 +64,7 @@ class FileColumnBed(str, Enum):
 class TableName(str, Enum):
     bedfiles = "bedfiles"
     bedsets = "bedsets"
+    bedset_bedfiles = "bedset_bedfiles"
 
 
 file_map_bedset = {
