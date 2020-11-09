@@ -42,21 +42,27 @@ def _serve_columns_for_table(bbc, table_name, columns=None, digest=None):
     """
     if isinstance(columns, str):
         columns = [columns]
-    coldata_getter = bbc.get_bedfiles_table_columns_types \
-        if table_name == BED_TABLE else bbc.get_bedsets_table_columns_types
-    diff = set(columns).difference([c[0] for c in coldata_getter()])
-    if diff:
-        msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
+    if columns:
+        coldata_getter = bbc.get_bedfiles_table_columns_types \
+            if table_name == BED_TABLE else bbc.get_bedsets_table_columns_types
+        diff = set(columns).difference([c[0] for c in coldata_getter()])
+        if diff:
+            msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
+            _LOGGER.warning(msg)
+            raise HTTPException(status_code=404, detail=msg)
     res = bbc.select(
         table_name=table_name,
         condition=f"{JSON_MD5SUM_KEY}='{digest}'" if digest else None,
         columns=columns
     )
-    colnames = list(res[0].keys())
-    values = list(res.values())
-    _LOGGER.info(f"Serving data for columns: {colnames}")
+    if res:
+        colnames = list(res[0].keys())
+        values = [list(x.values()) for x in res]
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
     return {"columns": colnames, "data": values}
 
 
@@ -104,8 +110,6 @@ async def index():
 
 
 # bed endpoints
-
-
 @app.get("/api/bed/all/data/count")
 async def get_bedfile_count():
     """
@@ -128,7 +132,7 @@ async def get_all_bed_metadata(
 
 
 @app.get("/api/bed/{md5sum}/data")
-async def get_bedset_data(
+async def get_bedfile_data(
         md5sum: str = Path(
             ...,
             description="digest"),
