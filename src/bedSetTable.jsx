@@ -9,11 +9,16 @@ import axios from "axios";
 import { Label } from 'semantic-ui-react';
 import { Link } from "react-router-dom";
 
-
-
 const api = axios.create({
-    baseURL: bedhost_api_url + "/api",
+    baseURL: bedhost_api_url,
 });
+
+function toObject(names, values) {
+    var result = {};
+    for (var i = 0; i < names.length; i++)
+         result[names[i]] = values[i];
+    return result;
+}
 
 export default class BedSetTable extends React.Component {
     constructor(props) {
@@ -29,12 +34,27 @@ export default class BedSetTable extends React.Component {
     }
 
     async componentDidMount() {
-        let res = await api.get("/bedset/data/" + this.props.bedset_md5sum + "?column=bedset_bedfiles_gd_stats").then(({ data }) => data);
+        let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles").then(({ data }) => data);
         console.log('BED set summary from the server: ', res)
 
+        let cols = [res.columns[1], res.columns[3], res.columns[4], res.columns[5], res.columns[6],
+        res.columns[21], res.columns[7], res.columns[17], res.columns[8], res.columns[18],
+        res.columns[9], res.columns[16], res.columns[11], res.columns[20], res.columns[10],
+        res.columns[19], res.columns[12], res.columns[13], res.columns[14], res.columns[15]]
+
+        let data = []
+        data.push(res.data.map((row) => {
+            let value = [row[1], row[3], row[4], row[5], row[6],
+            row[21], row[7], row[17], row[8], row[18],
+            row[9], row[16], row[11], row[20], row[10],
+            row[19], row[12], row[13], row[14], row[15]]
+            let dict = toObject(cols, value)
+            return dict
+        }))
+
         this.setState({
-            columns: res.columns,
-            bedSetData: res.data
+            columns: cols,
+            bedSetData: data[0]
         })
     }
 
