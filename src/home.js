@@ -6,7 +6,6 @@ import VersionsSpan from "./versionsSpan";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./style/home.css"
 
 export default class Home extends React.Component {

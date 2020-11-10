@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./style/home.css"
 
 export default class BedFileList extends React.Component {
   render() {

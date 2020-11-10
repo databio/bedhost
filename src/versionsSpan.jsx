@@ -2,8 +2,6 @@ import React from "react";
 import axios from "axios";
 import bedhost_api_url from "./const";
 import { version } from "../package.json";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./style/home.css"
 
 const api = axios.create({
   baseURL: bedhost_api_url,

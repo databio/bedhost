@@ -9,8 +9,8 @@ import ListGroup from "react-bootstrap/ListGroup";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import bedhost_api_url from "./const";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./style/home.css"
+
+
 
 const Accordion = withStyles({
     root: {
