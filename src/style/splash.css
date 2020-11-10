@@ -1,6 +1,7 @@
 .splash-img {
   height: 300px;
-  width: 300px
+  width: 300px;
+  cursor:pointer
 }
 
 .splash-link {
@@ -73,4 +74,8 @@
 
 .container .bar-group:hover .value-label {
   font-size: 10pt;
+}
+
+.custom-modal {
+  max-width: 650px 
 }

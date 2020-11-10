@@ -11,23 +11,24 @@ export default function ModalImage(props) {
     <>
       <img
         onClick={handleShow}
-        style={{ height: 300, width: 300 }}
+        className='splash-img'
         src={props.image.src_png}
         alt={props.image.name}
       />
-
-      <Modal show={show} onHide={handleClose}>
+      <Modal
+        centered
+        dialogClassName="custom-modal"
+        show={show}
+        onHide={handleClose}
+      >
         <Modal.Header closeButton>
           <Modal.Title>{props.image.caption}</Modal.Title>
         </Modal.Header>
-        <Modal.Body><iframe src={props.image.src_pdf}></iframe></Modal.Body>
+        <Modal.Body><iframe style={{ height: 650, width: 600 }} src={props.image.src_pdf}></iframe></Modal.Body>
         <Modal.Footer>
-          <button variant="secondary" onClick={handleClose}>
+          <button className='btn btn-sm my-btn' onClick={handleClose}>
             Close
-            </button>
-          <button variant="primary" onClick={handleClose}>
-            Save Changes
-            </button>
+          </button>
         </Modal.Footer>
       </Modal>
     </>

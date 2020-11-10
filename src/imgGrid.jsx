@@ -3,7 +3,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import GridListTileBar from "@material-ui/core/GridListTileBar";
+import ModalImage from "./modalImage";
 import "./style/splash.css";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,18 +27,13 @@ export default function ImgGrid(props) {
 
   return (
     <div className={classes.root}>
-      <GridList style={{ width: props.cols * 300 }} cellHeight={350} cols={props.cols}>
+      <GridList style={{ width: props.cols * 300 }} cellHeight={350} spacing={30} cols={props.cols}>
         {props.imgList.map((image, index) => {
           return (
             <GridListTile key={index}>
-              <a target="_blank" rel="noopener noreferrer" href={image.src_pdf} >
-                <img
-                  className={classes.imgSize}
-                  src={image.src_png}
-                  alt={image.name}
-                />
-              </a>
-              <GridListTileBar title={image.caption} />
+              <ModalImage image={image} />
+              <p> <b>Fig. {index + 1} :</b> {image.caption}</p>
+              {/* <GridListTileBar title={image.caption} /> */}
             </GridListTile>
           );
         })}
