@@ -23,7 +23,7 @@ export default function ModalImage(props) {
         <Modal.Header closeButton>
           <Modal.Title>{props.image.caption}</Modal.Title>
         </Modal.Header>
-        <Modal.Body><iframe title="pdf" style={{ height: 650, width: 600 }} src={props.image.src_pdf}></iframe></Modal.Body>
+        <Modal.Body><iframe title="pdf" style={{ margin: 'auto', display:'block', height: 650, width: 600 }} src={props.image.src_pdf}></iframe></Modal.Body>
         <Modal.Footer>
           <button className='btn btn-sm my-btn' onClick={handleClose}>
             Close

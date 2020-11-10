@@ -1,6 +1,7 @@
 import React from 'react';
-import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel } from 'react-responsive-carousel';
+import Container from "react-bootstrap/Container";
 import Modal from 'react-bootstrap/Modal'
 // import ModalImage from "./modalImage";
 
@@ -22,7 +23,7 @@ export default class CarouselGallery extends React.Component {
 
   render() {
     return (
-      <div style={{ height: '490px', width: '500px' }}>
+      <Container >
         <Carousel onClickItem={(index, item) => {
           this.handleShow(index);
         }} >
@@ -33,7 +34,7 @@ export default class CarouselGallery extends React.Component {
                 <img
                   src={image.src_png}
                   alt={image.name} />
-                {/* <p> <b>Fig. {index + 1} :</b> {image.caption}</p> */}
+                <p style={{ background: "white" }}> <b>Fig. {index + 1} :</b> {image.caption}</p>
               </div>
 
             );
@@ -48,14 +49,14 @@ export default class CarouselGallery extends React.Component {
           <Modal.Header closeButton>
             <Modal.Title>{this.state.showFig.caption}</Modal.Title>
           </Modal.Header>
-          <Modal.Body><iframe title="pdf" style={{ height: 650, width: 600 }} src={this.state.showFig.src_pdf}></iframe></Modal.Body>
+          <Modal.Body><iframe title="pdf" style={{ margin: 'auto', display:'block', height: 650, width: 600 }} src={this.state.showFig.src_pdf}></iframe></Modal.Body>
           <Modal.Footer>
             <button className='btn btn-sm my-btn' onClick={() => this.handleClose()}>
               Close
           </button>
           </Modal.Footer>
         </Modal>
-      </div>
+      </Container>
     );
   }
 }

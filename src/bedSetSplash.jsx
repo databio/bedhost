@@ -10,7 +10,7 @@ import Col from "react-bootstrap/Col";
 import Dropdown from 'react-bootstrap/Dropdown'
 import axios from "axios";
 import bedhost_api_url from "./const";
-// import { Label } from 'semantic-ui-react';
+import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
 
 
@@ -78,7 +78,7 @@ export default class BedSetSplash extends React.Component {
                 </span>
               </Col>
               <Col>
-                <Dropdown>
+                {/* <Dropdown>
                   <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
                     DOWNLOADS
               </Dropdown.Toggle>
@@ -90,20 +90,58 @@ export default class BedSetSplash extends React.Component {
                           {key}
                         </Dropdown.Item>)}
                   </Dropdown.Menu>
-                </Dropdown>
+                </Dropdown> */}
               </Col>
             </Row>
           </Container>
           <Container style={{ width: "75%" }} fluid className="p-4">
             <Row>
-              <Col md={6}>
-                {/* <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+              <Col sm={4}>
+                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Plots
-              </Label> */}
+              </Label>
                 {this.state.bedSetFig ? (<BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} bedset_figs={this.state.bedSetFig} />) : null}
               </Col>
-              <Col md={6}>
+              <Col sm={6}>
                 {Object.keys(this.state.avgRegionD).length !== 0 ? (<BarChart stats={this.state.avgRegionD} />) : null}
+              </Col>
+              <Col sm={2} >
+              <Label style={{ marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                  BED Set Downloads
+                </Label>
+                {Object.entries(this.state.bedSetDownload)
+                  .map(([key, value], index) =>
+                    <p style={{ marginBottom: "5px"}} key={index}>
+                      <a href={value} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                        {key}
+                      </a>
+                    </p>
+                  )}
+
+              <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                  BED Set APIs
+                </Label>
+                <p style={{ marginBottom: "5px"}}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                   BED set data
+                  </a>
+                </p>
+                <p style={{ marginBottom: "5px"}}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/bedfiles'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                   BED files data
+                  </a>
+                </p>
+                <p style={{ marginBottom: "5px"}}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=bedset_means&ids=bedset_standard_deviation'} 
+                  className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                    BED set stats
+                  </a>
+                </p>
+                <p style={{ marginBottom: "5px"}}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=plots'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                    BED set plot
+                  </a>
+                </p>
               </Col>
             </Row>
             <Row>

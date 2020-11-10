@@ -80,14 +80,14 @@ export default class Example extends React.Component {
 
   render() {
     return (
-      <div>
-        <span style={{ marginLeft: "80px" }}>Mean Regional Distribution of the BED Set</span>
+      <div style={{ marginTop: "20px" }}>
+        <span style={{marginLeft: "80px" }}>Mean Regional Distribution of the BED Set</span>
         <BarChart
           width={500}
-          height={290}
+          height={300}
           data={this.state.data}
           margin={{
-            top: 5, right: 30, left: 20, bottom: 5,
+            top: 15, right: 30, left: 20, bottom: 5,
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />

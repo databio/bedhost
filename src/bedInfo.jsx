@@ -1,6 +1,7 @@
 import React from "react";
 import axios from "axios";
 import toObject from "./toObject";
+import { Label } from 'semantic-ui-react';
 import bedhost_api_url from "./const";
 
 const api = axios.create({
@@ -37,8 +38,11 @@ export default class BedInfo extends React.Component {
     render() {
         return (
             <div >
+                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                    BED File Info
+                </Label>
                 <table >
-                <caption style={{captionSide: "top", fontSize: "12pt", fontWeight: "bold", color: "#e76f51" }}>BED File Info</caption>
+                    {/* <caption style={{captionSide: "top", fontSize: "12pt", fontWeight: "bold", color: "#e76f51" }}>BED File Info</caption> */}
                     <tbody>
                         {Object.entries(this.state.bed_info)
                             .map(([key, value], index) =>
@@ -53,8 +57,11 @@ export default class BedInfo extends React.Component {
                             )}
                     </tbody>
                 </table>
+                <Label style={{ marginTop: "30px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                    BED File Stats
+                </Label>
                 <table >
-                <caption style={{captionSide: "top", fontSize: "12pt", fontWeight: "bold", color: "#e76f51" }}>BED File Stats</caption>
+                    {/* <caption style={{captionSide: "top", fontSize: "12pt", fontWeight: "bold", color: "#e76f51" }}>BED File Stats</caption> */}
                     <tbody>
                         {Object.entries(this.state.bed_stats)
                             .map(([key, value], index) =>
