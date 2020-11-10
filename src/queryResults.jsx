@@ -6,6 +6,7 @@ import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
 import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
 import Typography from '@material-ui/core/Typography';
 import ListGroup from "react-bootstrap/ListGroup";
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import bedhost_api_url from "./const";
 import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -133,7 +134,7 @@ export default class QueryResults extends React.Component {
                         this.state.bedSetNames.map((bedSet, index) => {
                             return (
                                 <Accordion key={index} square expanded={this.state.expanded === bedSet[1]} onChange={() => this.handleChange(bedSet[1])}>
-                                    <AccordionSummary style={{ minHeight: "50px" }} aria-controls="panel1d-content" id="panel1d-header">
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ minHeight: "50px" }} aria-controls="panel1d-content" id="panel1d-header">
                                         <Typography>
                                             <Link className="home-link" to={{
                                                 pathname: '/bedsetsplash/' + bedSet[1]
