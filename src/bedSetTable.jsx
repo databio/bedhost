@@ -4,6 +4,7 @@ import { Button, Paper } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
+import toObject from "./toObject";
 import bedhost_api_url from "./const";
 import axios from "axios";
 import { Label } from 'semantic-ui-react';
@@ -12,13 +13,6 @@ import { Link } from "react-router-dom";
 const api = axios.create({
     baseURL: bedhost_api_url,
 });
-
-function toObject(names, values) {
-    var result = {};
-    for (var i = 0; i < names.length; i++)
-         result[names[i]] = values[i];
-    return result;
-}
 
 export default class BedSetTable extends React.Component {
     constructor(props) {

@@ -22,7 +22,6 @@ export default class BedFileSplash extends React.Component {
     super();
     this.state = {
       bedName: "",
-      bedData: [],
       bedFig: [],
       bedDownload: {},
     };

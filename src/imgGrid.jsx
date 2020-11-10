@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
-import GridListTileBar from "@material-ui/core/GridListTileBar";
+// import GridListTileBar from "@material-ui/core/GridListTileBar";
 import ModalImage from "./modalImage";
 import "./style/splash.css";
 
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ImgGrid(props) {
   const classes = useStyles();
-  console.log("Img List: ", props.imgList)
+  // console.log("Img List: ", props.imgList)
 
   return (
     <div className={classes.root}>
