@@ -11,14 +11,17 @@ router = APIRouter()
 # private API
 
 
-@router.get("/query/{table_name}/{query}")
+@router.get("/query/{table_name}/{query}/{query_val}")
 async def get_query_results(
         table_name: TableName = Path(
             ...,
             description="DB Table name"),
         query: str = Path(
             None,
-            description="DB query to perform"),
+            description="DB query to perform with placeholders for values"),
+        query_val: str = Path(
+            None,
+            description="Values to populate DB query with"),
         columns: Optional[List[str]] = Query(
             None,
             description="Column names to include in the query result")
@@ -29,7 +32,7 @@ async def get_query_results(
     if columns:
         assert_table_columns_match(
             bbc=bbc, table_name=table_name, columns=columns)
-    return bbc.select(table_name=table_name, condition=query, columns=columns)
+    return bbc.select(table_name=table_name, condition=query, condition_val=query_val, columns=columns)
 
 
 @router.get("/filters/{table_name}")
