@@ -9,6 +9,7 @@ import bedhost_api_url from "./const";
 import ImgGrid from "./imgGrid";
 import BedInfo from "./bedInfo";
 import Dropdown from 'react-bootstrap/Dropdown'
+import CarouselGallery from './carouselGallery'
 // import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
 
@@ -81,7 +82,8 @@ export default class BedFileSplash extends React.Component {
               </Col>
               <Col md={8}>
                 {this.state.bedFig ?
-                  (<ImgGrid imgList={this.state.bedFig} cols={3} />) : null
+                  // (<ImgGrid imgList={this.state.bedFig} cols={3} />) : null
+                  (<CarouselGallery imgList={this.state.bedFig}/>) : null
                 }
               </Col>
             </Row>
