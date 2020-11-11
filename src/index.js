@@ -4,7 +4,7 @@ import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 import Home from "./home";
 import BedSetSplash from './bedSetSplash';
-import BedFileSplash from './bedFileSplash';
+import BedSplash from './bedSplash';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const styleLink = document.createElement("link");
@@ -17,7 +17,7 @@ ReactDOM.render(
       <Switch>
         <Route exact path="/" component={Home}/>
         <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash}/>
-        <Route path="/bedfilesplash/:bedfile_md5sum" component={BedFileSplash}/>
+        <Route path="/bedsplash/:bed_md5sum" component={BedSplash}/>
       </Switch>
   </Router>,
   document.getElementById('root')

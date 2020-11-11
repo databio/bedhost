@@ -69,7 +69,7 @@ export default class BedSetTable extends React.Component {
                     fontWeight: "bold",
                 },
                 render: rowData => <Link className="splash-link" to={{
-                    pathname: '/bedfilesplash/' + rowData.md5sum
+                    pathname: '/bedsplash/' + rowData.md5sum
                 }}>{rowData.name}
                 </Link>
             }
@@ -85,7 +85,7 @@ export default class BedSetTable extends React.Component {
         return tableColumns
     }
 
-    bedFileSelected(rows) {
+    bedSelected(rows) {
         console.log("Selected Row Data:", rows);
         this.state.selectedBedId.splice(0, this.state.selectedBedId.length);
         this.state.selectedBedName.splice(0, this.state.selectedBedName.length);
@@ -131,7 +131,7 @@ export default class BedSetTable extends React.Component {
                         }}
                         onSelectionChange={(rows) => {
                             rows.length > 0
-                                ? this.bedFileSelected(rows)
+                                ? this.bedSelected(rows)
                                 : (this.setState({
                                     selectedBedId: [],
                                     selectedBedName: []

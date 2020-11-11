@@ -4,7 +4,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Card from "react-bootstrap/Card";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-export default class BedFileList extends React.Component {
+export default class BedList extends React.Component {
   render() {
     return (
     <div>
@@ -18,13 +18,13 @@ export default class BedFileList extends React.Component {
           variant="flush"
           style={{ height: "19em", overflow: "scroll" }}
         >
-          {this.props.bedFileList.map((bedFile) => {
+          {this.props.bedList.map((bed) => {
             return (
-              <ListGroup.Item as="li" key={bedFile[0]}>
+              <ListGroup.Item as="li" key={bed[0]}>
                 <Link className="home-link" to={{
-                  pathname: '/bedfilesplash/' + bedFile[1]
+                  pathname: '/bedsplash/' + bed[1]
                 }}>
-                  {bedFile[0]}: {bedFile[2]}
+                  {bed[0]}: {bed[2]}
                 </Link>
               </ListGroup.Item>
             );

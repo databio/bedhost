@@ -9,6 +9,7 @@ import ListGroup from "react-bootstrap/ListGroup";
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import bedhost_api_url from "./const";
 import axios from "axios";
+import ResultsBed from './queryResultsBed'
 
 
 
@@ -61,9 +62,9 @@ export default class QueryResults extends React.Component {
     constructor() {
         super();
         this.state = {
-            bedSetNames: [],
-            bedFileNames: [],
-            expanded: false
+            expanded: false,
+            bedData: [],
+            bedSetData: []
         };
     }
 
@@ -80,27 +81,27 @@ export default class QueryResults extends React.Component {
     async getQueryResult() {
         let query = this.props.query.sql.replaceAll("?", "%s");
 
-        let query_val = this.props.query.params.map((val,index) => {
+        let query_val = this.props.query.params.map((val, index) => {
             let my_query_val = ''
             if (index === 0) {
                 my_query_val = "?query_val=" + val
-            } else {my_query_val = my_query_val + "&query_val="+ val}
+            } else { my_query_val = my_query_val + "&query_val=" + val }
             return my_query_val
         }).join('');
-        
-        let data = await api.get("/_private_api/query/" + this.props.table_name + "/" + query +query_val)
+
+        let data = await api.get("/_private_api/query/" + this.props.table_name + "/" + query + query_val)
             .then(({ data }) => data)
 
         console.log("Search results: ", data)
         if (this.props.table_name === "bedfiles") {
-            this.setState({ bedFileNames: data })
-        } else { this.setState({ bedSetNames: data }) }
+            this.setState({ bedData: data })
+        } else { this.setState({ bedSetData: data }) }
     }
 
 
-    async getBedFileNames(id) {
+    async getbedData(id) {
         let data = await api
-            .get("/api/bedset/" + id + "/data")
+            .get("/api/bedset/" + id + "/bedfiles")
             .then(({ data }) => data)
             .catch(function (error) {
                 alert(error + "; is bedhost running at " + bedhost_api_url + "?");
@@ -109,11 +110,11 @@ export default class QueryResults extends React.Component {
             "BED files names retrieved from the server for BED set: ",
             data
         );
-        this.setState({ bedFileNames: data.data[0][11] });
+        this.setState({ bedData: data.data });
     };
 
     handleChange(panel) {
-        this.getBedFileNames(panel);
+        this.getbedData(panel);
         if (this.state.expanded === panel) {
             this.setState({
                 expanded: false
@@ -126,21 +127,22 @@ export default class QueryResults extends React.Component {
     };
     render() {
         return (
-            <div style={{ marginTop: '30px' }}>
+            <div>
                 {this.props.table_name === "bedfiles" ? (
-                    this.state.bedFileNames.map((bedFile) => {
-                        return (
-                            <ListGroup.Item as="li" key={bedFile[0]}>
-                                <Link className="home-link" to={{
-                                    pathname: '/bedfilesplash/' + bedFile[1]
-                                }}>
-                                    {bedFile[3]}
-                                </Link>
-                            </ListGroup.Item>
-                        );
-                    })
+                    // this.state.bedData.map((bed) => {
+                    //     return (
+                    //         <ListGroup.Item as="li" key={bed[0]}>
+                    //             <Link className="home-link" to={{
+                    //                 pathname: '/bedsplash/' + bed[1]
+                    //             }}>
+                    //                 {bed[3]}
+                    //             </Link>
+                    //         </ListGroup.Item>
+                    //     );
+                    // })
+                    this.state.bedData.length!==0 ? (<ResultsBed data={this.state.bedData} /> ) :null
                 ) : (
-                        this.state.bedSetNames.map((bedSet, index) => {
+                        this.state.bedSetData.map((bedSet, index) => {
                             return (
                                 <Accordion key={index} square expanded={this.state.expanded === bedSet[1]} onChange={() => this.handleChange(bedSet[1])}>
                                     <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ minHeight: "50px" }} aria-controls="panel1d-content" id="panel1d-header">
@@ -154,26 +156,24 @@ export default class QueryResults extends React.Component {
                                     </AccordionSummary>
                                     <AccordionDetails>
                                         <Typography>
-                                            {Object.entries(this.state.bedFileNames)
-                                                .map(([key, value], index) => {
-                                                    return (
-                                                        <li as="li" key={index}>
-                                                            <Link className="home-link" to={{
-                                                                pathname: '/bedfilesplash/' + value
-                                                            }}>
-                                                                {key}
-                                                            </Link>
-                                                        </li>
-                                                    );
-                                                })}
+                                            {this.state.bedData.map((bed) => {
+                                                return (
+                                                    <li as="li" key={bed[0]}>
+                                                        <Link className="home-link" to={{
+                                                            pathname: '/bedsplash/' + bed[1]
+                                                        }}>
+                                                            {bed[3]}
+                                                        </Link>
+                                                    </li>
+                                                );
+                                            })}
+                                            {/* {this.state.bedData.length!==0 ? (<ResultsBed data={this.state.bedData} /> ) :null} */}
                                         </Typography>
                                     </AccordionDetails>
                                 </Accordion>
                             )
                         })
                     )}
-
-
             </div>
         );
     }

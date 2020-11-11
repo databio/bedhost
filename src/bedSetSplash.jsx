@@ -23,7 +23,7 @@ export default class BedSetSplash extends React.Component {
     super();
     this.state = {
       bedSetName: "",
-      bedFilesCount: "",
+      bedsCount: "",
       avgGC: [],
       avgRegionW: [],
       avgRegionD: {},
@@ -40,7 +40,7 @@ export default class BedSetSplash extends React.Component {
         bedSetName: data.data[0][2],
         bedSetDownload: {
           BED_Set_Rxiv: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar",
-          BED_Stats: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedfiles_stats",
+          BED_Stats: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/beds_stats",
           BED_Set_Summary: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/summary_stats",
           BED_Set_IGD: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
           BED_Set_PEP: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP"
@@ -60,7 +60,7 @@ export default class BedSetSplash extends React.Component {
     data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles?ids=id").then(({ data }) => data);
     this.setState(
       {
-        bedFilesCount: Object.keys(data.data).length,
+        bedsCount: Object.keys(data.data).length,
       })
   }
 
@@ -75,7 +75,7 @@ export default class BedSetSplash extends React.Component {
                 <h1>BED Set: {this.state.bedSetName}</h1>
                 <span style={{ fontSize: "12pt" }}>
                   {" "}
-                There are <b>{this.state.bedFilesCount}</b> BED files in this BED set.
+                There are <b>{this.state.bedsCount}</b> BED files in this BED set.
                 <br />
                 The mean GC content is  <b>{this.state.avgGC[0]}</b> (SD = {this.state.avgGC[1]} );
                 mean region width is <b>{this.state.avgRegionW[0]}</b> (SD = {this.state.avgRegionW[1]} ).
@@ -131,7 +131,7 @@ export default class BedSetSplash extends React.Component {
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px"}}>
-                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/bedfiles'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/beds'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                    BED files data
                   </a>
                 </p>

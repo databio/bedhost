@@ -28,7 +28,7 @@ export default function ShowFig(props) {
     <div style={{ marginLeft: "10px" }}>
       {props.bedIds.length === 0 ? (
         <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='orange' ribbon>
-          Please select a bedfile.
+          Please select a bed file.
         </Label>
       ) : (
           <div>

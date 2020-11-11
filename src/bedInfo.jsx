@@ -18,14 +18,14 @@ export default class BedInfo extends React.Component {
     }
 
     async componentDidMount() {
-        let data = await api.get("/api/bed/" + this.props.bedfile_md5sum + "/data?ids=other").then(({ data }) => data);
+        let data = await api.get("/api/bed/" + this.props.bed_md5sum + "/data?ids=other").then(({ data }) => data);
         this.setState(
             {
                 bed_info: data.data[0][0]
             })
         console.log("BED file info from the server:", this.state.bed_info)
 
-        data = await api.get("/api/bed/" + this.props.bedfile_md5sum +
+        data = await api.get("/api/bed/" + this.props.bed_md5sum +
             "/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage")
             .then(({ data }) => data);
         this.setState(

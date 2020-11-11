@@ -18,7 +18,7 @@ const api = axios.create({
 });
 
 
-export default class BedFileSplash extends React.Component {
+export default class BedSplash extends React.Component {
   constructor(props) {
     super();
     this.state = {
@@ -29,20 +29,20 @@ export default class BedFileSplash extends React.Component {
   }
 
   async componentDidMount() {
-    let data = await api.get("/api/bed/" + this.props.match.params.bedfile_md5sum + "/data").then(({ data }) => data);
+    let data = await api.get("/api/bed/" + this.props.match.params.bed_md5sum + "/data").then(({ data }) => data);
     console.log("BED set data retrieved from the server: ", data);
     this.setState(
       {
         bedName: data.data[0][3],
         bedDownload: {
-          BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bedfile_md5sum + "/file/bedfile",
+          BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bed",
         },
       }
     );
     const newbedFig = data.data[0][22].map((file) => {
       return {
-        ...file, src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bedfile_md5sum + "/img/" + file.name + "?format=pdf",
-        src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bedfile_md5sum + "/img/" + file.name + "?format=png"
+        ...file, src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + file.name + "?format=pdf",
+        src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + file.name + "?format=png"
       };
     });
     this.setState({ bedFig: newbedFig });
@@ -78,7 +78,7 @@ export default class BedFileSplash extends React.Component {
           <Container style={{ width: "75%" }} fluid className="p-4">
             <Row>
               <Col sm={6}>
-                <BedInfo bedfile_md5sum={this.props.match.params.bedfile_md5sum} />
+                <BedInfo bed_md5sum={this.props.match.params.bed_md5sum} />
                 <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED File Download
               </Label>
@@ -94,28 +94,28 @@ export default class BedFileSplash extends React.Component {
                   BED File APIs
                 </Label>
                 <p style={{ marginBottom: "5px"}}>
-                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bedfile_md5sum + '/data'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                     All data
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px"}}>
-                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bedfile_md5sum + '/data?ids=bedfile_path'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=bed_path'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                     BED file path
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px"}}>
-                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bedfile_md5sum + '/data?ids=other'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=other'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                     BED file info
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px"}}>
-                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bedfile_md5sum + '/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage'} 
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage'} 
                   className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                     BED file stats
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px"}}>
-                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bedfile_md5sum + '/data?ids=plots'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=plots'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                     BED file plots
                   </a>
                 </p>
