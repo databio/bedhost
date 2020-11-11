@@ -78,11 +78,20 @@ export default class QueryResults extends React.Component {
     }
 
     async getQueryResult() {
-        let my_query = JSON.parse(this.props.query)
-        let data = await api.get("/_private_api/query/" + this.props.table_name + "/" + my_query + "?column=name")
+        let query = this.props.query.sql.replaceAll("?", "%s");
+
+        let query_val = this.props.query.params.map((val,index) => {
+            let my_query_val = ''
+            if (index === 0) {
+                my_query_val = "?query_val=" + val
+            } else {my_query_val = my_query_val + "&query_val="+ val}
+            return my_query_val
+        }).join('');
+        
+        let data = await api.get("/_private_api/query/" + this.props.table_name + "/" + query +query_val)
             .then(({ data }) => data)
 
-        console.log(data)
+        console.log("Search results: ", data)
         if (this.props.table_name === "bedfiles") {
             this.setState({ bedFileNames: data })
         } else { this.setState({ bedSetNames: data }) }

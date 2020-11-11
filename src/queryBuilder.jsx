@@ -93,7 +93,8 @@ export default class QueryBuilderWrapper extends React.Component {
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
-        this.setState({ rules: rules.sql, query: JSON.stringify(rules.sql, undefined, 2), open: true });
+        const query = $(this.queryBuilder.current).queryBuilder('getSQL', 'question_mark');
+        this.setState({ rules: rules.sql, query: query, open: true });
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
@@ -116,7 +117,7 @@ export default class QueryBuilderWrapper extends React.Component {
         return (
             <div>
                 <div id='query-builder' ref={this.queryBuilder} />
-                <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={this.state.query} />
+                <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
                 <button className='btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>RESET RULES</button>
                 <button className='float-right btn btn-sm my-btn' onClick={this.handleGetResultClick.bind(this)}>SEARCH</button>
                 { this.state.query ? (<QueryResults table_name={this.props.table_name} query={this.state.query} />):null}
