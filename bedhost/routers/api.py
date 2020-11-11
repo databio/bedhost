@@ -73,7 +73,7 @@ async def get_file_for_bedfile(
 ):
     files = bbc.select(table_name=BED_TABLE,
                        condition=f"{JSON_MD5SUM_KEY}=%s",
-                       condition_val=md5sum,
+                       condition_val=[md5sum],
                        columns=file_map_bed[id.value])[0][0]
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedstat_output_path(remote), files)
@@ -97,7 +97,7 @@ async def get_image_for_bedfile(
     """
     imgs = bbc.select(table_name=BED_TABLE,
                       condition=f"{JSON_MD5SUM_KEY}=%s",
-                      condition_val=md5sum,
+                      condition_val=[md5sum],
                       columns=["name", "plots"])
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedstat_output_path(remote),
@@ -140,7 +140,7 @@ async def get_bedfiles_in_bedset(
 ):
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
-    res = bbc.select_bedfiles_for_bedset(condition=f"{JSON_MD5SUM_KEY}=%s", condition_val=md5sum, bedfile_col=ids)
+    res = bbc.select_bedfiles_for_bedset(condition=f"{JSON_MD5SUM_KEY}=%s", condition_val=[md5sum], bedfile_col=ids)
     if res:
         colnames = list(res[0].keys())
         values = [list(x.values()) for x in res]
@@ -179,7 +179,7 @@ async def get_file_for_bedset(
 ):
     files = bbc.select(table_name=BEDSET_TABLE,
                        condition=f"{JSON_MD5SUM_KEY}=%s",
-                       condition_val=md5sum,
+                       condition_val=[md5sum],
                        columns=file_map_bedset[id.value])[0][0]
     _LOGGER.debug(f"files: {files}")
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
@@ -204,7 +204,7 @@ async def get_image_for_bedset(
     """
     imgs = bbc.select(table_name=BEDSET_TABLE,
                       condition=f"{JSON_MD5SUM_KEY}=%s",
-                      condition_val=md5sum,
+                      condition_val=[md5sum],
                       columns=["name", "plots"])
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedbuncher_output_path(remote), md5sum,
