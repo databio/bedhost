@@ -212,7 +212,8 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
             bbc=bbc, table_name=table_name, columns=columns)
     res = bbc.select(
         table_name=table_name,
-        condition=f"{JSON_MD5SUM_KEY}='{digest}'" if digest else None,
+        condition=f"{JSON_MD5SUM_KEY}=%s" if digest else None,
+        condition_val=[digest] if digest else None,
         columns=columns
     )
     if res:
