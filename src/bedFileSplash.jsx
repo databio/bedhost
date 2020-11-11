@@ -8,7 +8,7 @@ import axios from "axios";
 import bedhost_api_url from "./const";
 // import ImgGrid from "./imgGrid";
 import BedInfo from "./bedInfo";
-import Dropdown from 'react-bootstrap/Dropdown'
+// import Dropdown from 'react-bootstrap/Dropdown'
 import CarouselGallery from './carouselGallery'
 import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
@@ -54,7 +54,7 @@ export default class BedFileSplash extends React.Component {
       <React.StrictMode >
         <Header />
         <div className="conten-body">
-          <Container style={{ width: "75%" }} fluid className="p-4">
+          <Container style={{ width: "75%"}} fluid className="p-4">
             <Row>
               <Col md="10">
                 <h1>BED File: {this.state.bedName}</h1>
@@ -119,7 +119,7 @@ export default class BedFileSplash extends React.Component {
                     BED file plots
                   </a>
                 </p>
-                
+
               </Col>
               <Col sm={6}>
                 {this.state.bedFig ?

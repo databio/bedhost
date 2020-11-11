@@ -7,7 +7,7 @@ import BedSetPlots from "./bedSetPlots";
 import BarChart from "./barChart";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import Dropdown from 'react-bootstrap/Dropdown'
+// import Dropdown from 'react-bootstrap/Dropdown'
 import axios from "axios";
 import bedhost_api_url from "./const";
 import { Label } from 'semantic-ui-react';
@@ -38,7 +38,6 @@ export default class BedSetSplash extends React.Component {
     this.setState(
       {
         bedSetName: data.data[0][2],
-        bedFilesCount: Object.keys(data.data[0][11]).length,
         bedSetDownload: {
           BED_Set_Rxiv: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar",
           BED_Stats: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedfiles_stats",
@@ -58,6 +57,11 @@ export default class BedSetSplash extends React.Component {
         }
       }
     );
+    data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles?ids=id").then(({ data }) => data);
+    this.setState(
+      {
+        bedFilesCount: Object.keys(data.data).length,
+      })
   }
 
   render() {
