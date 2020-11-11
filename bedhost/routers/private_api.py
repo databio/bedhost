@@ -11,7 +11,7 @@ router = APIRouter()
 # private API
 
 
-@router.get("/query/{table_name}/{query}/{query_val}")
+@router.get("/query/{table_name}/{query}")
 async def get_query_results(
         table_name: TableName = Path(
             ...,
@@ -19,7 +19,7 @@ async def get_query_results(
         query: str = Path(
             None,
             description="DB query to perform with placeholders for values"),
-        query_val: str = Path(
+        query_val: List[str] = Query(
             None,
             description="Values to populate DB query with"),
         columns: Optional[List[str]] = Query(
@@ -32,7 +32,15 @@ async def get_query_results(
     if columns:
         assert_table_columns_match(
             bbc=bbc, table_name=table_name, columns=columns)
-    return bbc.select(table_name=table_name, condition=query, condition_val=query_val, columns=columns)
+    if isinstance(query_val, str):
+        query_val = [query_val]
+    try:
+        return bbc.select(table_name=table_name, condition=query,
+                          condition_val=query_val, columns=columns)
+    except Exception as e:
+        msg = f"Caught exception while querying the DB: {str(e)}"
+        _LOGGER.error(msg)
+        raise HTTPException(status_code=404, detail=msg)
 
 
 @router.get("/filters/{table_name}")
