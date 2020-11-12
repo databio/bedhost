@@ -5,7 +5,9 @@ import 'jQuery-QueryBuilder';
 import axios from "axios";
 import bedhost_api_url from "./const";
 import "./style/queryBuilder.css";
-import QueryResults from './queryResults';
+// import QueryResults from './queryResults';
+import ResultsBed from './queryResultsBed'
+import ResultsBedSet from './queryResultsBedSet'
 
 
 
@@ -49,12 +51,13 @@ export default class QueryBuilderWrapper extends React.Component {
         this.queryBuilder = React.createRef()
         this.state = {
             rules: {},
-            query:"",
+            query: "",
             filters: {},
         };
     }
 
     async componentDidMount() {
+        console.log(this.props.table_name)
         await this.getfilter()
         const element = this.queryBuilder.current;
         this.initializeQueryBuilder(element, this.state.filters);
@@ -71,7 +74,7 @@ export default class QueryBuilderWrapper extends React.Component {
             await this.getfilter()
             $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
             this.handleSetRulesClick()
-            this.handleGetRulesClick()
+            console.log(this.state.query)
         }
     }
 
@@ -94,7 +97,7 @@ export default class QueryBuilderWrapper extends React.Component {
     handleGetRulesClick() {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
         const query = $(this.queryBuilder.current).queryBuilder('getSQL', 'question_mark');
-        this.setState({ rules: rules.sql, query: query, open: true });
+        this.setState({ rules: rules.sql, query: query});
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
@@ -107,9 +110,6 @@ export default class QueryBuilderWrapper extends React.Component {
         const newRules = { ...defaultRules };
         $(this.queryBuilder.current).queryBuilder('setRules', newRules);
         this.setState({ rules: newRules });
-    }
-
-    handleGetResultClick() {
         this.handleGetRulesClick()
     }
 
@@ -118,9 +118,16 @@ export default class QueryBuilderWrapper extends React.Component {
             <div>
                 <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
-                <button className='btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>RESET RULES</button>
-                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetResultClick.bind(this)}>SEARCH</button>
-                { this.state.query ? (<QueryResults table_name={this.props.table_name} query={this.state.query} />):null}
+                <button className='btn btn-sm my-btn' onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
+                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>SEARCH</button>
+                { this.state.query ? (
+                    this.props.table_name === 'bedfiles' ? (
+                    <ResultsBed query={this.state.query} />
+                    ) : (console.log("here:",this.state.query),
+                        <ResultsBedSet query={this.state.query} />
+                    )
+                // <QueryResults table_name={this.props.table_name} query={this.state.query} />
+                ):null}
             </div>
         );
     }

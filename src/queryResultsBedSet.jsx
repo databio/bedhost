@@ -1,5 +1,5 @@
 import React from "react";
-import MaterialTable, { MTableToolbar } from "material-table";
+import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
@@ -15,53 +15,57 @@ export default class ResultsBedSet extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            bedData: -1,
+            bedSetData: [],
             columns: [],
             data: []
         }
     }
 
     async componentDidMount() {
-        console.log("testing:", this.props.data)
-        let cols = ["name", "md5sum"]
-        cols = cols.concat(Object.keys(this.props.data[0][9]))
-
-        let data = []
-        data.push(this.props.data.map((bed, index) => {
-            console.log(index, this.state.bedData)
-            let row = { name: bed[2], md5sum: bed[1] }
-            row = Object.assign({}, row, bed[9]);
-            return row
-        }))
-
-        this.setState({
-            columns: cols,
-            data: data[0]
-        })
-
-        console.log("cols:", cols)
-        console.log("data:", data)
+        await this.getBedSetByQuery()
     }
 
-    async getBedData(id) {
-        let data = await api.get("/api/bedset/" + id + "/bedfiles")
+    async componentDidUpdate(prevProps, prevState) {
+        if (prevProps.query !== this.props.query) {
+            await this.getBedSetByQuery()
+        } 
+    }
+
+    async getBedSetByQuery(){
+        let query = this.props.query.sql.replaceAll("?", "%s");
+        let query_val = this.props.query.params.map((val, index) => {
+            let my_query_val = ''
+            if (index === 0) {
+                my_query_val = "?query_val=" + val
+            } else { my_query_val = my_query_val + "&query_val=" + val }
+            return my_query_val
+        }).join('');
+        
+        console.log(this.props.query.sql)
+        let res = await api.get("/_private_api/query/bedsets/" + query + query_val)
             .then(({ data }) => data)
 
-            this.setState({
-                bedData: data.data
-            })
+        this.setState({
+            bedSetData: res
+        })
+
+        this.getColumns()
+        this.getData()
     }
 
     getColumns() {
+        let cols = ["name", "md5sum"]
+        cols = cols.concat(Object.keys(this.state.bedSetData[0][9]))
+
         let tableColumns = []
 
-        for (var i = 0; i < this.state.columns.length; i++) {
-            if (this.state.columns[i] === 'md5sum') {
-                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], hidden: true })
-            } else if (this.state.columns[i] === 'name') {
+        for (var i = 0; i < cols.length; i++) {
+            if ((cols[i] === 'md5sum') ||   (cols[i].includes("_frequency"))) {
+                tableColumns.push({ title: cols[i], field: cols[i], hidden: true })
+            } else if (cols[i] === 'name') {
                 tableColumns.push({
-                    title: this.state.columns[i],
-                    field: this.state.columns[i],
+                    title: cols[i],
+                    field: cols[i],
                     width: 500,
                     render: rowData => <Link className="home-link" to={{
                         pathname: '/bedsetsplash/' + rowData.md5sum
@@ -69,19 +73,35 @@ export default class ResultsBedSet extends React.Component {
                     </Link>
                 })
             } else {
-                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i] })
+                tableColumns.push({ title: cols[i], field:cols[i] })
             }
         }
-        return tableColumns
+        this.setState({
+            columns: tableColumns
+        })
     }
 
+    getData(){
+        let data = []
+        data.push(this.state.bedSetData.map((bed, index) => {
+            console.log(index, this.state.bedSetData)
+            let row = { name: bed[2], md5sum: bed[1] }
+            row = Object.assign({}, row, bed[9]);
+            return row
+        }))
+
+        this.setState({
+            data: data[0]
+        })
+    }
+
+
     render() {
-        console.log('bedset props: ', this.props.data)
         return (
             <div style={{ maxWidth: '100%' }}>
                 <MaterialTable
                     icons={tableIcons}
-                    columns={this.getColumns()}
+                    columns={this.state.columns}
                     data={this.state.data}
                     title=""
                     options={{
@@ -94,10 +114,7 @@ export default class ResultsBedSet extends React.Component {
                         search: false,
                     }}
                     detailPanel={rowData => {
-                        this.getBedData(rowData.md5sum)
-                        return (
-                            this.state.bedData!==-1 ? (<ResultsBed data={this.state.bedData}/>) : null 
-                        )
+                        return(<ResultsBed bedset_md5sum={rowData.md5sum}/>)
                     }}
                     components={{
                         Container: props => <Paper {...props} elevation={0} />

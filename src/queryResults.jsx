@@ -72,7 +72,7 @@ export default class QueryResults extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if ((prevProps.query !== this.props.query) || (prevProps.table_name !== this.props.table_name)) {
+        if (prevProps.query !== this.props.query){
             this.setState({ bedSetData: [], bedData: [] })
             this.getQueryResult()
             console.log(prevProps.query, this.props.query)

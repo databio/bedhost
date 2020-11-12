@@ -12,7 +12,7 @@ export default class Home extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            search: "",
+            search: "bedfiles",
             setbtn: false,
             filebtn: true
         };
@@ -38,18 +38,18 @@ export default class Home extends React.Component {
                     <Container style={{ width: "75%" }} fluid className="p-4">
                         <Row>
                             <Col >
-                                <button className='btn btn-block btn-sm my-btn' disabled={this.state.filebtn} onClick={() => this.handleClick('beds')}> Search BED Files </button>
+                                <button className='btn btn-block btn-sm my-btn' disabled={this.state.filebtn} onClick={() => this.handleClick('bedfiles')}> Search BED Files </button>
                             </Col>
                             <Col md={6}>
                                 <button className='btn btn-block btn-sm my-btn' disabled={this.state.setbtn} onClick={() => this.handleClick('bedsets')}> Search BED Sets </button>
                             </Col>
                         </Row>
-
-                        {this.state.search === "bedsets" ? (
+                        <QueryBuilderWrapper table_name={this.state.search} />
+                        {/* {this.state.search === "bedsets" ? (
                             <QueryBuilderWrapper table_name='bedsets' />
                         ) : (
                                 <QueryBuilderWrapper table_name='bedfiles' />
-                            )}
+                            )} */}
                     </Container>
                 </div>
                 <VersionsSpan />
