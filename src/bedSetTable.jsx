@@ -20,6 +20,7 @@ export default class BedSetTable extends React.Component {
         this.state = {
             columns: [],
             bedSetData: [],
+            bedFigs: [],
             showFig: false,
             figType: "",
             selectedBedId: [],
@@ -48,7 +49,8 @@ export default class BedSetTable extends React.Component {
 
         this.setState({
             columns: cols,
-            bedSetData: data[0]
+            bedSetData: data[0],
+            bedFigs: res.data[0][22]
         })
     }
 
@@ -143,162 +145,28 @@ export default class BedSetTable extends React.Component {
                                 <div>
                                     <MTableToolbar {...props} />
                                     <div style={{ padding: "5px 5px" }}>
-                                        <Tooltip
-                                            title="Region-TSS distance distribution"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "tssdist",
-                                                        "Region-TSS distance distribution"
-                                                    );
-                                                }}
-                                            >
-                                                TSS dist
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title="Regions distribution over chromosomes"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "chrombins",
-                                                        "Regions distribution over chromosomes"
-                                                    );
-                                                }}
-                                            >
-                                                chrombins
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip title="GC Content" placement="top">
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked("gccontent", "GC Content");
-                                                }}
-                                            >
-                                                GC Content
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title="Regions distribution over genomic partitions"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "partitions",
-                                                        "Regions distribution over genomic partitions"
-                                                    );
-                                                }}
-                                            >
-                                                Partitions
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title="Expected distribution over genomic partitions"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "expected_partitions",
-                                                        "Expected distribution over genomic partitions"
-                                                    );
-                                                }}
-                                            >
-                                                Expected partitions
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title="Cumulative distribution over genomic partitions"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "cumulative_partitions",
-                                                        "Cumulative distribution over genomic partitions"
-                                                    );
-                                                }}
-                                            >
-                                                Cumulative partitions
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title="Quantile-Trimmed Histogram of Widths"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "widths_histogram",
-                                                        "Quantile-Trimmed Histogram of Widths"
-                                                    );
-                                                }}
-                                            >
-                                                Widths Histogram
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title="Distances between neighbor regions"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "neighbor_distances",
-                                                        "Distances between neighbor regions"
-                                                    );
-                                                }}
-                                            >
-                                                Neighbor Distances
-                                            </Button>
-                                        </Tooltip>
-                                        <Tooltip
-                                            title="Cell specific enrichment for open chromatin"
-                                            placement="top"
-                                        >
-                                            <Button
-                                                size="small"
-                                                variant="contained"
-                                                style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.figTypeClicked(
-                                                        "open_chromatin",
-                                                        "Cell specific enrichment for open chromatin"
-                                                    );
-                                                }}
-                                            >
-                                                Open chromatin
-                                            </Button>
-                                        </Tooltip>
+                                        {this.state.bedFigs.map((fig, index) => {
+                                            return (
+                                                <Tooltip
+                                                    title={fig.caption}
+                                                    placement="top"
+                                                >
+                                                    <Button
+                                                        size="small"
+                                                        variant="contained"
+                                                        style={{ padding: 5, margin: 5 }}
+                                                        onClick={() => {
+                                                            this.figTypeClicked(
+                                                                fig.name,
+                                                                fig.caption
+                                                            );
+                                                        }}
+                                                    >
+                                                        {fig.name}
+                                                    </Button>
+                                                </Tooltip>
+                                            )
+                                        })}
                                     </div>
                                 </div>
                             ),
