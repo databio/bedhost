@@ -10,8 +10,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import bedhost_api_url from "./const";
 import axios from "axios";
 import ResultsBed from './queryResultsBed'
-
-
+import ResultsBedSet from './queryResultsBedSet'
 
 const Accordion = withStyles({
     root: {
@@ -73,8 +72,11 @@ export default class QueryResults extends React.Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.query !== this.props.query) {
+        if ((prevProps.query !== this.props.query) || (prevProps.table_name !== this.props.table_name)) {
+            this.setState({ bedSetData: [], bedData: [] })
             this.getQueryResult()
+            console.log(prevProps.query, this.props.query)
+            console.log(prevProps.table_name, this.props.table_name)
         }
     }
 
@@ -95,7 +97,17 @@ export default class QueryResults extends React.Component {
         console.log("Search results: ", data)
         if (this.props.table_name === "bedfiles") {
             this.setState({ bedData: data })
-        } else { this.setState({ bedSetData: data }) }
+        } else {
+            // data.map(async (bedset, index) => {
+            //     let res = await api.get("/api/bedset/" + bedset[1] + "/bedfiles")
+            //     .then(({ data }) => data)
+            //     let bedCount = res.data.length
+            //     bedset.push(bedCount)             
+            // })
+            // console.log(data)
+            this.setState({ bedSetData: data })
+            console.log(this.state.bedSetData)
+        }
     }
 
 
@@ -125,6 +137,7 @@ export default class QueryResults extends React.Component {
             })
         }
     };
+
     render() {
         return (
             <div>
@@ -140,41 +153,43 @@ export default class QueryResults extends React.Component {
                     //         </ListGroup.Item>
                     //     );
                     // })
-                    this.state.bedData.length!==0 ? (<ResultsBed data={this.state.bedData} /> ) :null
-                ) : (
-                        this.state.bedSetData.map((bedSet, index) => {
-                            return (
-                                <Accordion key={index} square expanded={this.state.expanded === bedSet[1]} onChange={() => this.handleChange(bedSet[1])}>
-                                    <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ minHeight: "50px" }} aria-controls="panel1d-content" id="panel1d-header">
-                                        <Typography>
-                                            <Link className="home-link" to={{
-                                                pathname: '/bedsetsplash/' + bedSet[1]
-                                            }}>
-                                                {bedSet[2]}
-                                            </Link>
-                                        </Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <Typography>
-                                            {this.state.bedData.map((bed) => {
-                                                return (
-                                                    <li as="li" key={bed[0]}>
-                                                        <Link className="home-link" to={{
-                                                            pathname: '/bedsplash/' + bed[1]
-                                                        }}>
-                                                            {bed[3]}
-                                                        </Link>
-                                                    </li>
-                                                );
-                                            })}
-                                            {/* {this.state.bedData.length!==0 ? (<ResultsBed data={this.state.bedData} /> ) :null} */}
-                                        </Typography>
-                                    </AccordionDetails>
-                                </Accordion>
-                            )
-                        })
+                    this.state.bedData.length !== 0 ? (<ResultsBed data={this.state.bedData} />) : null
+                ) : (this.state.bedSetData.map((bedSet, index) => {
+                    return (
+                        <Accordion key={index} square expanded={this.state.expanded === bedSet[1]} onChange={() => this.handleChange(bedSet[1])}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} style={{ minHeight: "50px" }} aria-controls="panel1d-content" id="panel1d-header">
+                                <Typography>
+                                    <Link className="home-link" to={{
+                                        pathname: '/bedsetsplash/' + bedSet[1]
+                                    }}>
+                                        {bedSet[2]}
+                                    </Link>
+                                </Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography>
+                                    {this.state.bedData.map((bed) => {
+                                        return (
+                                            <li as="li" key={bed[0]}>
+                                                <Link className="home-link" to={{
+                                                    pathname: '/bedsplash/' + bed[1]
+                                                }}>
+                                                    {bed[3]}
+                                                </Link>
+                                            </li>
+                                        );
+                                    })}
+                                    {/* {this.state.bedData.length!==0 ? (<ResultsBed data={this.state.bedData} /> ) :null} */}
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                    )
+                })
                     )}
+                    {this.state.bedSetData.length!==0 ? (<ResultsBedSet data={this.state.bedSetData} /> ) :null}
             </div>
+
         );
+
     }
 }
