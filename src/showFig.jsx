@@ -8,11 +8,11 @@ export default function ShowFig(props) {
 
   const getFig = () => {
     if (figList.length !== 0) {
-      console.log("CLEAR image list");
+      // console.log("CLEAR image list");
       setFigList([]);
     }
     for (var i = 0; i < props.bedIds.length; i++) {
-      console.log("PUSH to image list");
+      // console.log("PUSH to image list");
       figList.push({
         id: i + 1,
         caption: props.bedNames[i],
@@ -35,7 +35,7 @@ export default function ShowFig(props) {
             <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
               {props.figType[1]}
             </Label>
-            <ImgGrid imgList={figList} cols={5}/>
+            <ImgGrid imgList={figList} page="bedset"/>
           </div>
         )}
     </div>

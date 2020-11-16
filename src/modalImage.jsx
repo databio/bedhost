@@ -10,7 +10,7 @@ export default function ModalImage(props) {
     <>
       <img
         onClick={handleShow}
-        className='splash-img'
+        className={ (props.page === "bed") ? "splash-img-bed" : "splash-img-bedset"}
         src={props.image.src_png}
         alt={props.image.name}
       />

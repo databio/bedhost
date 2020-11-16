@@ -4,6 +4,7 @@ import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 // import GridListTileBar from "@material-ui/core/GridListTileBar";
 import ModalImage from "./modalImage";
+import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -12,25 +13,23 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "space-around",
     overflow: "hidden",
     backgroundColor: theme.palette.background.paper,
-  },
-  imgSize: {
-    height: 300,
-    width: 300
-  },
+  }
 }));
 
 export default function ImgGrid(props) {
   const classes = useStyles();
+  const gridWidth = (props.page === "bed") ? 1000 : 1575;
+  const cellHeight = (props.page === "bed") ? 220 : 350;
   // console.log("Img List: ", props.imgList)
 
   return (
     <div className={classes.root}>
-      <GridList style={{ width: props.cols * 300 }} cellHeight={350} spacing={30} cols={props.cols}>
+      <GridList style={{ width: gridWidth }} cellHeight={cellHeight} spacing={25} cols={5}>
         {props.imgList.map((image, index) => {
           return (
             <GridListTile key={index}>
-              <ModalImage image={image} />
-              <p> <b>Fig. {index + 1} :</b> {image.caption}</p>
+              <ModalImage image={image} page={props.page}/>
+              <Tooltip title={image.caption} ><p><b>Fig. {index + 1}: </b> {image.caption}</p></Tooltip>
               {/* <GridListTileBar title={image.caption} /> */}
             </GridListTile>
           );
