@@ -1,5 +1,7 @@
 import React from "react";
-import MaterialTable from "material-table";
+import MaterialTable
+
+    from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
@@ -28,10 +30,10 @@ export default class ResultsBedSet extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.query !== this.props.query) {
             await this.getBedSetByQuery()
-        } 
+        }
     }
 
-    async getBedSetByQuery(){
+    async getBedSetByQuery() {
         let query = this.props.query.sql.replaceAll("?", "%s");
         let query_val = this.props.query.params.map((val, index) => {
             let my_query_val = ''
@@ -40,7 +42,7 @@ export default class ResultsBedSet extends React.Component {
             } else { my_query_val = my_query_val + "&query_val=" + val }
             return my_query_val
         }).join('');
-        
+
         console.log(this.props.query.sql)
         let res = await api.get("/_private_api/query/bedsets/" + query + query_val)
             .then(({ data }) => data)
@@ -60,20 +62,19 @@ export default class ResultsBedSet extends React.Component {
         let tableColumns = []
 
         for (var i = 0; i < cols.length; i++) {
-            if ((cols[i] === 'md5sum') ||   (cols[i].includes("_frequency"))) {
+            if ((cols[i] === 'md5sum') || (cols[i].includes("_frequency"))) {
                 tableColumns.push({ title: cols[i], field: cols[i], hidden: true })
             } else if (cols[i] === 'name') {
                 tableColumns.push({
                     title: cols[i],
                     field: cols[i],
-                    width: 500,
                     render: rowData => <Link className="home-link" to={{
                         pathname: '/bedsetsplash/' + rowData.md5sum
                     }}>{rowData.name}
                     </Link>
                 })
             } else {
-                tableColumns.push({ title: cols[i], field:cols[i] })
+                tableColumns.push({ title: cols[i].replaceAll("_percentage", "(%)"), field: cols[i] })
             }
         }
         this.setState({
@@ -81,11 +82,14 @@ export default class ResultsBedSet extends React.Component {
         })
     }
 
-    getData(){
+    getData() {
         let data = []
         data.push(this.state.bedSetData.map((bed, index) => {
             console.log(index, this.state.bedSetData)
             let row = { name: bed[2], md5sum: bed[1] }
+            for (var key in bed[9]) {
+                bed[9][key] = bed[9][key].toFixed(3)
+              }
             row = Object.assign({}, row, bed[9]);
             return row
         }))
@@ -114,7 +118,7 @@ export default class ResultsBedSet extends React.Component {
                         search: false,
                     }}
                     detailPanel={rowData => {
-                        return(<ResultsBed bedset_md5sum={rowData.md5sum}/>)
+                        return (<ResultsBed bedset_md5sum={rowData.md5sum} />)
                     }}
                     components={{
                         Container: props => <Paper {...props} elevation={0} />

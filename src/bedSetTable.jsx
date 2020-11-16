@@ -39,10 +39,10 @@ export default class BedSetTable extends React.Component {
 
         let data = []
         data.push(res.data.map((row) => {
-            let value = [row[1], row[3], row[4], row[5], row[6],
-            row[21], row[7], row[17], row[8], row[18],
-            row[9], row[16], row[11], row[20], row[10],
-            row[19], row[12], row[13], row[14], row[15]]
+            let value = [row[1], row[3], row[4].toFixed(3), row[5].toFixed(3), row[6].toFixed(3),
+            row[21], row[7], row[17].toFixed(3), row[8], row[18].toFixed(3),
+            row[9], row[16].toFixed(3), row[11], row[20].toFixed(3), row[10],
+            row[19].toFixed(3), row[12], row[13].toFixed(3), row[14], row[15].toFixed(3)]
             let dict = toObject(cols, value)
             return dict
         }))

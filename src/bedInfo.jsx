@@ -41,8 +41,7 @@ export default class BedInfo extends React.Component {
                 <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                     BED File Info
                 </Label>
-                <table >
-                    {/* <caption style={{captionSide: "top", fontSize: "12pt", fontWeight: "bold", color: "#e76f51" }}>BED File Info</caption> */}
+                <table>
                     <tbody>
                         {Object.entries(this.state.bed_info)
                             .map(([key, value], index) =>
@@ -56,12 +55,12 @@ export default class BedInfo extends React.Component {
                                 </tr>
                             )}
                     </tbody>
-                </table>
+                </ table>
+
                 <Label style={{ marginTop: "30px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                     BED File Stats
                 </Label>
                 <table >
-                    {/* <caption style={{captionSide: "top", fontSize: "12pt", fontWeight: "bold", color: "#e76f51" }}>BED File Stats</caption> */}
                     <tbody>
                         {Object.entries(this.state.bed_stats)
                             .map(([key, value], index) =>
@@ -70,14 +69,13 @@ export default class BedInfo extends React.Component {
                                         {key.charAt(0).toUpperCase() + key.slice(1)}
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "12pt" }}>
-                                        {value}
+                                        {value.toFixed(3)}
                                     </td>
                                 </tr>
                             )}
                     </tbody>
                 </table>
-
-            </div >
+            </div>
         )
     }
 }

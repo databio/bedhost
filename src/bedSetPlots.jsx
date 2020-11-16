@@ -22,7 +22,7 @@ export default class BedSetPlots extends React.Component {
     render() {
         return (
             <div style={{ marginBottom: "10px" }}>
-                 {this.state.image ? (<ModalImage image={this.state.image} />) :null}
+                 {this.state.image ? (<ModalImage image={this.state.image} page="bedset"/>) :null}
             </div>
         );
     }
