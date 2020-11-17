@@ -7,7 +7,6 @@ import BedSetPlots from "./bedSetPlots";
 import BarChart from "./barChart";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-// import Dropdown from 'react-bootstrap/Dropdown'
 import axios from "axios";
 import bedhost_api_url from "./const";
 import { Label } from 'semantic-ui-react';
@@ -112,7 +111,7 @@ export default class BedSetSplash extends React.Component {
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px" }}>
-                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/beds'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/bedfiles'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
                     BED files data
                   </a>
                 </p>
@@ -131,11 +130,7 @@ export default class BedSetSplash extends React.Component {
             </Row>
           </Container>
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
-                {/* <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
-                  BED Files Stats
-              </Label> */}
                 <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
-            
           </Container>
         </div>
         <VersionsSpan />
