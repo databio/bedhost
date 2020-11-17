@@ -8,7 +8,7 @@ import bedhost_api_url from "./const";
 export default function Header() {
 
     return (
-        <Navbar className="header" bg="dark" variant="dark" style={{ minWidth: "970px" }}>
+        <Navbar className="header" bg="dark" variant="dark" style={{ minWidth: "900px" }}>
             <Navbar.Brand style={{ marginLeft: "30px" }} href="/#home">
                 <img
                     src="/bedbase_logo.svg"

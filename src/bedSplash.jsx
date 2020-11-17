@@ -8,8 +8,6 @@ import axios from "axios";
 import bedhost_api_url from "./const";
 import ImgGrid from "./imgGrid";
 import BedInfo from "./bedInfo";
-// import Dropdown from 'react-bootstrap/Dropdown'
-// import CarouselGallery from './carouselGallery'
 import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
 
@@ -83,7 +81,7 @@ export default class BedSplash extends React.Component {
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px" }}>
-                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=bed_path'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=bedfile_path'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
                     BED file path
                   </a>
                 </p>
@@ -108,7 +106,6 @@ export default class BedSplash extends React.Component {
               <Col sm={8} md={8}>
                 {this.state.bedFig ?
                   (<ImgGrid imgList={this.state.bedFig} page="bed" />) : null
-                  // (<CarouselGallery imgList={this.state.bedFig} />) : null
                 }
               </Col>
             </Row>
