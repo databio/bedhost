@@ -1,7 +1,5 @@
 import React from "react";
-import MaterialTable
-
-    from "material-table";
+import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
@@ -44,7 +42,7 @@ export default class ResultsBedSet extends React.Component {
         }).join('');
 
         console.log(this.props.query.sql)
-        let res = await api.get("/_private_api/query/bedsets/" + query + query_val)
+        let res = await api.get("/_private_api/query/bedsets/" + encodeURIComponent(query) + query_val)
             .then(({ data }) => data)
 
         this.setState({

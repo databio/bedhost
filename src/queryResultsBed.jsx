@@ -47,7 +47,7 @@ export default class ResultsBed extends React.Component {
             return my_query_val
         }).join('');
 
-        let res = await api.get("/_private_api/query/bedfiles/" + query + query_val)
+        let res = await api.get("/_private_api/query/bedfiles/" + encodeURIComponent(query) + query_val)
             .then(({ data }) => data)
 
         this.setState({

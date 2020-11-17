@@ -5,7 +5,6 @@ import 'jQuery-QueryBuilder';
 import axios from "axios";
 import bedhost_api_url from "./const";
 import "./style/queryBuilder.css";
-// import QueryResults from './queryResults';
 import ResultsBed from './queryResultsBed'
 import ResultsBedSet from './queryResultsBedSet'
 
@@ -126,7 +125,6 @@ export default class QueryBuilderWrapper extends React.Component {
                     ) : (console.log("here:",this.state.query),
                         <ResultsBedSet query={this.state.query} />
                     )
-                // <QueryResults table_name={this.props.table_name} query={this.state.query} />
                 ):null}
             </div>
         );
