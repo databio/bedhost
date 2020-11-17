@@ -16,8 +16,9 @@
 .conten-body{
     margin-top: 70px;
     height: 88%;
-    overflow: scroll 
+    overflow: scroll ;
 }
+
 
 .list-group-item.active {
     z-index: 2;

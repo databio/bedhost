@@ -1,6 +1,12 @@
-.splash-img {
-  height: 300px;
-  width: 300px;
+.splash-img-bedset {
+  height: 250px;
+  width: 250px;
+  cursor:pointer
+}
+
+.splash-img-bed {
+  height: 150px;
+  width: 150px;
   cursor:pointer
 }
 
@@ -30,7 +36,11 @@
 }
 
 .MuiTableCell-root {
-  padding: 0px !important;
+  padding: 5px !important;
+}
+
+.MuiButtonBase-root:hover{
+  color: white;
 }
 
 
@@ -78,4 +88,9 @@
 
 .custom-modal {
   max-width: fit-content 
+}
+
+.paper{
+  padding: 15px;
+  margin: 5px;
 }
