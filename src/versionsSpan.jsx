@@ -38,7 +38,7 @@ export default class VersionsSpan extends React.Component {
 
   render() {
     return (
-      <footer className="footer mt-auto py-3 bg-light text-black small p-4">
+      <footer className="footer mt-auto py-3 bg-light text-black small p-4" style={{ minWidth: "970px" }}>
         {this.state["python_version"] !== "" ? (
           <span style={{ marginLeft: "30px" }}>
             | openAPI: <code style={{ color:"#e76f51" }}>{this.state.openapi_version}</code> | Python:{" "}

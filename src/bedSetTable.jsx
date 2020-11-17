@@ -148,6 +148,7 @@ export default class BedSetTable extends React.Component {
                                         {this.state.bedFigs.map((fig, index) => {
                                             return (
                                                 <Tooltip
+                                                    key={index}
                                                     title={fig.caption}
                                                     placement="top"
                                                 >

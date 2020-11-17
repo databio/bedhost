@@ -69,93 +69,73 @@ export default class BedSetSplash extends React.Component {
       <React.StrictMode >
         <Header />
         <div className="conten-body">
-          <Container style={{ width: "75%" }} fluid className="p-4">
-            <Row>
-              <Col md="10">
-                <h1>BED Set: {this.state.bedSetName}</h1>
-                <span style={{ fontSize: "12pt" }}>
-                  {" "}
+          <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
+            <h1>BED Set: {this.state.bedSetName}</h1>
+            <span style={{ fontSize: "12pt" }}>
+              {" "}
                 There are <b>{this.state.bedsCount}</b> BED files in this BED set.
                 <br />
                 The mean GC content is  <b>{this.state.avgGC[0]}</b> (SD = {this.state.avgGC[1]} );
                 mean region width is <b>{this.state.avgRegionW[0]}</b> (SD = {this.state.avgRegionW[1]} ).
                 </span>
-              </Col>
-              <Col>
-                {/* <Dropdown>
-                  <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
-                    DOWNLOADS
-              </Dropdown.Toggle>
-
-                  <Dropdown.Menu>
-                    {Object.entries(this.state.bedSetDownload)
-                      .map(([key, value], index) =>
-                        <Dropdown.Item key={index} href={value}>
-                          {key}
-                        </Dropdown.Item>)}
-                  </Dropdown.Menu>
-                </Dropdown> */}
-              </Col>
-            </Row>
           </Container>
-          <Container style={{ width: "75%" }} fluid className="p-4">
+          <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
             <Row>
-              <Col sm={4}>
+              <Col sm={3} md={3}>
                 <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Plots
               </Label>
                 {this.state.bedSetFig ? (<BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} bedset_figs={this.state.bedSetFig} />) : null}
               </Col>
-              <Col sm={6}>
+              <Col sm={7} md={7}>
                 {Object.keys(this.state.avgRegionD).length !== 0 ? (<BarChart stats={this.state.avgRegionD} />) : null}
               </Col>
-              <Col sm={2} >
-              <Label style={{ marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+              <Col sm={2} md={2}>
+                <Label style={{ marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Downloads
                 </Label>
                 {Object.entries(this.state.bedSetDownload)
                   .map(([key, value], index) =>
-                    <p style={{ marginBottom: "5px"}} key={index}>
+                    <p style={{ marginBottom: "5px" }} key={index}>
                       <a href={value} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                         {key}
                       </a>
                     </p>
                   )}
 
-              <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set APIs
                 </Label>
-                <p style={{ marginBottom: "5px"}}>
+                <p style={{ marginBottom: "5px" }}>
                   <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                   BED set data
+                    BED set data
                   </a>
                 </p>
-                <p style={{ marginBottom: "5px"}}>
+                <p style={{ marginBottom: "5px" }}>
                   <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/beds'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                   BED files data
+                    BED files data
                   </a>
                 </p>
-                <p style={{ marginBottom: "5px"}}>
-                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=bedset_means&ids=bedset_standard_deviation'} 
-                  className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                <p style={{ marginBottom: "5px" }}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=bedset_means&ids=bedset_standard_deviation'}
+                    className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                     BED set stats
                   </a>
                 </p>
-                <p style={{ marginBottom: "5px"}}>
+                <p style={{ marginBottom: "5px" }}>
                   <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=plots'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
                     BED set plot
                   </a>
                 </p>
               </Col>
             </Row>
-            <Row>
-              <Col>
+          </Container>
+          <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
                 {/* <Label style={{ marginLeft: '15px', fontSize: '15px' }} as='a' color='teal' ribbon>
                   BED Files Stats
               </Label> */}
                 <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
-              </Col>
-            </Row>
+            
           </Container>
         </div>
         <VersionsSpan />
