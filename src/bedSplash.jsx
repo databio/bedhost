@@ -72,7 +72,7 @@ export default class BedSplash extends React.Component {
                   )}
 
                 <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                  BED File APIs
+                  BED File API Endpoints
                 </Label>
 
                 <p style={{ marginBottom: "5px" }}>
