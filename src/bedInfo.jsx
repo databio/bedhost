@@ -46,10 +46,10 @@ export default class BedInfo extends React.Component {
                         {Object.entries(this.state.bed_info)
                             .map(([key, value], index) =>
                                 <tr style={{ verticalAlign: "top" }} key={index}>
-                                    <td style={{ padding: "3px 15px", fontSize: "12pt", fontWeight: "bold", color: "teal" }}>
+                                    <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
                                         {key.charAt(0).toUpperCase() + key.slice(1)}
                                     </td>
-                                    <td style={{ padding: "3px 15px", fontSize: "12pt" }}>
+                                    <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {value}
                                     </td>
                                 </tr>
@@ -65,10 +65,10 @@ export default class BedInfo extends React.Component {
                         {Object.entries(this.state.bed_stats)
                             .map(([key, value], index) =>
                                 <tr style={{ verticalAlign: "top" }} key={index}>
-                                    <td style={{ padding: "3px 15px", fontSize: "12pt", fontWeight: "bold", color: "teal" }}>
-                                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                                    <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
+                                        {key.replaceAll("_percentage", " (%)")}
                                     </td>
-                                    <td style={{ padding: "3px 15px", fontSize: "12pt" }}>
+                                    <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {value.toFixed(3)}
                                     </td>
                                 </tr>

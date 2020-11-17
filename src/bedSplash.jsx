@@ -54,76 +54,58 @@ export default class BedSplash extends React.Component {
       <React.StrictMode >
         <Header />
         <div className="conten-body">
-          <Container style={{ width: "75%" }} fluid className="p-4">
-            <Row>
-              <Col md="10">
-                <h1>BED File: {this.state.bedName}</h1>
-              </Col>
-              <Col>
-                {/* <Dropdown>
-                  <Dropdown.Toggle className='float-right btn primary-btn' id="dropdown-basic">
-                    DOWNLOADS
-              </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {Object.entries(this.state.bedDownload)
-                      .map(([key, value], index) =>
-                        <Dropdown.Item key={index} href={value}>
-                          {key}
-                        </Dropdown.Item>)}
-                  </Dropdown.Menu>
-                </Dropdown> */}
-              </Col>
-            </Row>
+          <Container style={{ width: "75%", minWidth: '900px'}} fluid className="p-4">
+            <h1>BED File: {this.state.bedName}</h1>
           </Container>
-          <Container style={{ width: "75%" }} fluid className="p-4">
+          <Container style={{ width: "75%" , minWidth: '900px'}} fluid className="p-4">
             <Row>
-              <Col style={{ width: '30%' }}>
+              <Col sm={4} md={4}>
                 <BedInfo bed_md5sum={this.props.match.params.bed_md5sum} />
                 <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED File Download
               </Label>
-                  {Object.entries(this.state.bedDownload)
-                    .map(([key, value], index) =>
-                      <p key={index}>
-                        <a href={value} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                          {key}
-                        </a>
-                      </p>
-                    )}
+                {Object.entries(this.state.bedDownload)
+                  .map(([key, value], index) =>
+                    <p key={index}>
+                      <a href={value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                        {key}
+                      </a>
+                    </p>
+                  )}
 
                 <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED File APIs
                 </Label>
 
-                  <p style={{ marginBottom: "5px" }}>
-                    <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                      All data
+                <p style={{ marginBottom: "5px" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                    All data
                   </a>
-                  </p>
-                  <p style={{ marginBottom: "5px" }}>
-                    <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=bed_path'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                      BED file path
+                </p>
+                <p style={{ marginBottom: "5px" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=bed_path'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                    BED file path
                   </a>
-                  </p>
-                  <p style={{ marginBottom: "5px" }}>
-                    <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=other'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                      BED file info
+                </p>
+                <p style={{ marginBottom: "5px" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=other'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                    BED file info
                   </a>
-                  </p>
-                  <p style={{ marginBottom: "5px" }}>
-                    <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage'}
-                      className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                      BED file stats
+                </p>
+                <p style={{ marginBottom: "5px" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage'}
+                    className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
+                    BED file stats
                   </a>
-                  </p>
-                  <p style={{ marginBottom: "5px" }}>
-                    <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=plots'} className="home-link" style={{ marginLeft: '15px', fontSize: "12pt", fontWeight: "bold" }}>
-                      BED file plots
+                </p>
+                <p style={{ marginBottom: "5px" }}>
+                  <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=plots'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                    BED file plots
                   </a>
-                  </p>
+                </p>
 
               </Col>
-              <Col style={{ width: '70%' }}>
+              <Col sm={8} md={8}>
                 {this.state.bedFig ?
                   (<ImgGrid imgList={this.state.bedFig} page="bed" />) : null
                   // (<CarouselGallery imgList={this.state.bedFig} />) : null
