@@ -32,7 +32,7 @@ app.add_middleware(
 
 
 @app.get("/")
-@app.get("/bedfilesplash/{md5sum}", include_in_schema=False)
+@app.get("/bedsplash/{md5sum}", include_in_schema=False)
 @app.get("/bedsetsplash/{md5sum}", include_in_schema=False)
 @app.get("/index")
 async def index():
