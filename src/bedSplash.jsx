@@ -27,6 +27,7 @@ export default class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
+
     let data = await api.get("/api/bed/" + this.props.match.params.bed_md5sum + "/data").then(({ data }) => data);
     console.log("BED set data retrieved from the server: ", data);
     this.setState(
@@ -45,7 +46,6 @@ export default class BedSplash extends React.Component {
     });
     this.setState({ bedFig: newbedFig });
   }
-
 
   render() {
     return (

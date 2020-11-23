@@ -37,7 +37,6 @@ export default class ResultsBed extends React.Component {
     }
 
     async getBedByQuery(){
-        console.log("here:")
         let query = this.props.query.sql.replaceAll("?", "%s");
         let query_val = this.props.query.params.map((val, index) => {
             let my_query_val = ''
@@ -53,8 +52,7 @@ export default class ResultsBed extends React.Component {
         this.setState({
             bedData: res
         })
-        console.log(this.state.bedData)
-
+        
         this.getColumns()
         this.getData()
     }
@@ -74,7 +72,6 @@ export default class ResultsBed extends React.Component {
     getColumns() {
         let tableColumns = []
         let cols = ["name", "md5sum"]
-        console.log(this.state.bedData)
         cols = cols.concat(Object.keys(this.state.bedData[0][23]))
 
         for (var i = 0; i < cols.length; i++) {

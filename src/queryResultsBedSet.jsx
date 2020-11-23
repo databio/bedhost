@@ -41,7 +41,6 @@ export default class ResultsBedSet extends React.Component {
             return my_query_val
         }).join('');
 
-        console.log(this.props.query.sql)
         let res = await api.get("/_private_api/query/bedsets/" + encodeURIComponent(query) + query_val)
             .then(({ data }) => data)
 
@@ -83,7 +82,6 @@ export default class ResultsBedSet extends React.Component {
     getData() {
         let data = []
         data.push(this.state.bedSetData.map((bed, index) => {
-            console.log(index, this.state.bedSetData)
             let row = { name: bed[2], md5sum: bed[1] }
             for (var key in bed[9]) {
                 bed[9][key] = bed[9][key].toFixed(3)

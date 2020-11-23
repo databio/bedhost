@@ -3,7 +3,6 @@ import axios from "axios";
 import bedhost_api_url from "./const";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
   baseURL: bedhost_api_url,
 });

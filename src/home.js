@@ -45,11 +45,6 @@ export default class Home extends React.Component {
                             </Col>
                         </Row>
                         <QueryBuilderWrapper table_name={this.state.search} />
-                        {/* {this.state.search === "bedsets" ? (
-                            <QueryBuilderWrapper table_name='bedsets' />
-                        ) : (
-                                <QueryBuilderWrapper table_name='bedfiles' />
-                            )} */}
                     </Container>
                 </div>
                 <VersionsSpan />

@@ -50,7 +50,9 @@ export default class BedInfo extends React.Component {
                                         {key.charAt(0).toUpperCase() + key.slice(1)}
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                                        {value}
+                                        {key === "genome" ? 
+                                        (<><span>{value}</span><a href={"http://refgenomes.databio.org/#" + value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
+                                        : value}
                                     </td>
                                 </tr>
                             )}

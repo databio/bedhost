@@ -56,7 +56,6 @@ export default class QueryBuilderWrapper extends React.Component {
     }
 
     async componentDidMount() {
-        console.log(this.props.table_name)
         await this.getfilter()
         const element = this.queryBuilder.current;
         this.initializeQueryBuilder(element, this.state.filters);
@@ -73,7 +72,6 @@ export default class QueryBuilderWrapper extends React.Component {
             await this.getfilter()
             $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
             this.handleSetRulesClick()
-            console.log(this.state.query)
         }
     }
 
@@ -122,7 +120,7 @@ export default class QueryBuilderWrapper extends React.Component {
                 { this.state.query ? (
                     this.props.table_name === 'bedfiles' ? (
                     <ResultsBed query={this.state.query} />
-                    ) : (console.log("here:",this.state.query),
+                    ) :(
                         <ResultsBedSet query={this.state.query} />
                     )
                 ):null}
