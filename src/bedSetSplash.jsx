@@ -63,12 +63,6 @@ export default class BedSetSplash extends React.Component {
       })
   }
 
-  componentDidUpdate(){
-    window.onpopstate  = (e) => {
-      window.location.reload();
-    }
-    }
-
   render() {
     return (
       <React.StrictMode >

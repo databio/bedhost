@@ -47,13 +47,22 @@ export default class ResultsBedSet extends React.Component {
         this.setState({
             bedSetData: res
         })
-
+        
         this.getColumns()
-        this.getData()
+        let data = await this.getData()
+        this.setState({
+            data: data
+        })
+    }
+
+    async getBedCount(id) {
+        let count = await api.get("/api/bedset/" + id + "/bedfiles")
+            .then(({ data }) => data.data.length)
+        return count
     }
 
     getColumns() {
-        let cols = ["name", "md5sum"]
+        let cols = ["name", "md5sum", "bed_file_count"]
         cols = cols.concat(Object.keys(this.state.bedSetData[0][9]))
 
         let tableColumns = []
@@ -79,22 +88,19 @@ export default class ResultsBedSet extends React.Component {
         })
     }
 
-    getData() {
+    async getData() {
         let data = []
-        data.push(this.state.bedSetData.map((bed, index) => {
-            let row = { name: bed[2], md5sum: bed[1] }
+        data.push(this.state.bedSetData.map( async (bed, index) => {
+            let count = await this.getBedCount(bed[1])
+            let row = { name: bed[2], md5sum: bed[1], bed_file_count: count }
             for (var key in bed[9]) {
                 bed[9][key] = bed[9][key].toFixed(3)
-              }
+            }
             row = Object.assign({}, row, bed[9]);
             return row
         }))
-
-        this.setState({
-            data: data[0]
-        })
+        return Promise.all(data[0])
     }
-
 
     render() {
         return (

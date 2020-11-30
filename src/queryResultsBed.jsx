@@ -16,7 +16,8 @@ export default class ResultsBed extends React.Component {
         this.state = {
             bedData: [],
             columns: [],
-            data: []
+            data: [], 
+            title: ""
         }
     }
 
@@ -62,7 +63,8 @@ export default class ResultsBed extends React.Component {
             .then(({ data }) => data)
 
         this.setState({
-            bedData: res.data
+            bedData: res.data,
+            title: "There are "+ res.data.length + " BED files in this BED set."
         })
 
         this.getColumns()
