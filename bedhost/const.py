@@ -18,18 +18,19 @@ UI_PATH = os.path.join(os.path.dirname(__file__), "static", "bedhost-ui")
 
 BEDFILE_API_ENDPOINT = "bedfile"
 BEDSET_API_ENDPOINT = "bedset"
-TYPES_MAPPING = {"integer": "integer", "double precision": "double", "character varying": "string"}
+TYPES_MAPPING = {"integer": "integer", "number": "double", "string": "string"}
 VALIDATIONS_MAPPING = {
     "integer": {"min": 0, "step": 1},
-    "double precision": {"min": 0, "step": 0.01},
-    "character varying": None
+    "number": {"min": 0, "step": 0.01},
+    "string": None
 }
 NUMERIC_OPERATORS = ["equal", "not_equal", "greater", "greater_or_equal",
                      "between", "less", "less_or_equal", "is_null",
                      "is_not_null"]
-TEXT_OPERATORS = ["equal", "not_equal", "in", "not_in", "is_null", "is_not_null"]
-OPERATORS_MAPPING = {"character varying": TEXT_OPERATORS,
-                     "double precision": NUMERIC_OPERATORS,
+TEXT_OPERATORS = ["equal", "not_equal", "in", "not_in", "is_null",
+                  "is_not_null"]
+OPERATORS_MAPPING = {"string": TEXT_OPERATORS,
+                     "number": NUMERIC_OPERATORS,
                      "integer": NUMERIC_OPERATORS}
 INIT_POSTGRES_CONDITION = "gc_content>0.5"
 INIT_QUERYBUILDER = {'condition': 'AND', 'rules': [

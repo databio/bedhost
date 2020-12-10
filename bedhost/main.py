@@ -54,8 +54,8 @@ def main():
     log_level = DEBUG if args.debug else INFO
     _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
     logmuse.init_logger(name="bbconf", level=log_level)
-    bbc = bbconf.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
-    bbc.establish_postgres_connection()
+    bbc = bbconf.bbconf_new.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
+    bbc.bed.establish_postgres_connection()
     if args.command == "serve":
         from .routers import api, private_api
         app.include_router(api.router, prefix="/api")
