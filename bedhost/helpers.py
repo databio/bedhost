@@ -97,8 +97,8 @@ def construct_search_data(hits, request):
     template_data = []
     for h in hits:
         bed_data_url_template = request.url_for("bedfile") + \
-                                "?md5sum={}&format=".format(h[JSON_MD5SUM_KEY])
-        template_data.append([h[JSON_NAME_KEY]] +
+                                "?md5sum={}&format=".format(h["md5sum"])
+        template_data.append([h["name"]] +
                              [bed_data_url_template + ext
                               for ext in ["html", "bed", "json"]])
     return template_data
@@ -141,8 +141,8 @@ def get_all_bedset_urls_mapping(bbc, request):
     if not hits:
         return
     # TODO: don't hardcode url path element name, use operationID?
-    return {hit[JSON_NAME_KEY]: get_param_url(
-        request.url_for("bedsetsplash"), {"md5sum": hit[JSON_MD5SUM_KEY]})
+    return {hit["name"]: get_param_url(
+        request.url_for("bedsetsplash"), {"md5sum": hit["md5sum"]})
         for hit in hits}
 
 
@@ -214,7 +214,7 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
     res = table_manager.select(
-        condition=f"{JSON_MD5SUM_KEY}=%s" if digest else None,
+        condition="md5sum=%s" if digest else None,
         condition_val=[digest] if digest else None,
         columns=columns
     )
