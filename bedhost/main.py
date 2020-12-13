@@ -9,7 +9,7 @@ from logging import INFO, DEBUG
 
 import logmuse
 import bbconf
-from bbconf.bbconf_new import BedBaseConf
+from bbconf import BedBaseConf
 
 from .const import *
 from .helpers import *
