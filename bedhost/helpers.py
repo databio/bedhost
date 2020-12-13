@@ -97,8 +97,8 @@ def construct_search_data(hits, request):
     template_data = []
     for h in hits:
         bed_data_url_template = request.url_for("bedfile") + \
-                                "?md5sum={}&format=".format(h[JSON_MD5SUM_KEY])
-        template_data.append([h[JSON_NAME_KEY]] +
+                                "?md5sum={}&format=".format(h["md5sum"])
+        template_data.append([h["name"]] +
                              [bed_data_url_template + ext
                               for ext in ["html", "bed", "json"]])
     return template_data
@@ -141,8 +141,8 @@ def get_all_bedset_urls_mapping(bbc, request):
     if not hits:
         return
     # TODO: don't hardcode url path element name, use operationID?
-    return {hit[JSON_NAME_KEY]: get_param_url(
-        request.url_for("bedsetsplash"), {"md5sum": hit[JSON_MD5SUM_KEY]})
+    return {hit["name"]: get_param_url(
+        request.url_for("bedsetsplash"), {"md5sum": hit["md5sum"]})
         for hit in hits}
 
 
@@ -182,7 +182,7 @@ def assert_table_columns_match(bbc, table_name, columns):
     """
     if isinstance(columns, str):
         columns = [columns]
-    schema = getattr(getattr(bbc, table_name, None), "schema", None)
+    schema = getattr(getattr(bbc, table_name2attr(table_name), None), "schema", None)
     if schema is None:
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
@@ -207,14 +207,14 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
     if columns:
         assert_table_columns_match(
             bbc=bbc, table_name=table_name, columns=columns)
-    table_manager = getattr(bbc, table_name, None)
+    table_manager = getattr(bbc, table_name2attr(table_name), None)
     if table_manager is None:
         msg = f"Failed to serve columns for '{table_name}' table, " \
               f"PipestatManager object not accessible."
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
     res = table_manager.select(
-        condition=f"{JSON_MD5SUM_KEY}=%s" if digest else None,
+        condition="md5sum=%s" if digest else None,
         condition_val=[digest] if digest else None,
         columns=columns
     )
@@ -227,6 +227,22 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
         colnames = []
         values = [[]]
     return {"columns": colnames, "data": values}
+
+
+def table_name2attr(table_name):
+    """
+    Convert the table name to attribute that can be used to refer to the
+    table managers
+
+    :param str table_name: name to convert
+    :return str: name of the BedBaseConf attribute to use
+    """
+    # TODO: just switch to the actual bbconf attributes?
+    if table_name == "bedfiles":
+        return "bed"
+    elif table_name == "bedsets":
+        return "bedset"
+    return table_name
 
 
 def serve_file(path, remote):
