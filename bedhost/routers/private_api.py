@@ -35,7 +35,7 @@ async def get_query_results(
     if isinstance(query_val, str):
         query_val = [query_val]
     try:
-        return getattr(bbc, table_name).select(
+        return getattr(bbc, table_name2attr(table_name)).select(
             condition=query, condition_val=query_val, columns=columns)
     except Exception as e:
         msg = f"Caught exception while querying the DB: {str(e)}"

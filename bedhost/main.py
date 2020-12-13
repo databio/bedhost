@@ -9,6 +9,7 @@ from logging import INFO, DEBUG
 
 import logmuse
 import bbconf
+from bbconf.bbconf_new import BedBaseConf
 
 from .const import *
 from .helpers import *
@@ -54,15 +55,15 @@ def main():
     log_level = DEBUG if args.debug else INFO
     _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
     logmuse.init_logger(name="bbconf", level=log_level)
-    bbc = bbconf.bbconf_new.BedBaseConf(bbconf.get_bedbase_cfg(args.config))
+    bbc = BedBaseConf(bbconf.get_bedbase_cfg(args.config))
     bbc.bed.establish_postgres_connection()
     if args.command == "serve":
         from .routers import api, private_api
         app.include_router(api.router, prefix="/api")
         app.include_router(private_api.router, prefix="/_private_api")
-        if not bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]:
+        if not bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]:
             _LOGGER.debug(f"Using local files for serving: "
-                          f"{bbc[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY]}")
+                          f"{bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY]}")
             app.mount(bbc.get_bedstat_output_path(),
                       StaticFiles(directory=bbc.get_bedstat_output_path()),
                       name=BED_TABLE)
@@ -71,7 +72,7 @@ def main():
                       name=BEDSET_TABLE)
         else:
             _LOGGER.debug(f"Using remote files for serving: "
-                          f"{bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]}")
+                          f"{bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]}")
         if os.path.exists(UI_PATH):
             _LOGGER.debug(f"Determined React UI path: {UI_PATH}")
         else:
@@ -80,5 +81,5 @@ def main():
         app.mount("/", StaticFiles(directory=UI_PATH))
 
         _LOGGER.info("running {} app".format(PKG_NAME))
-        uvicorn.run(app, host=bbc[CFG_SERVER_KEY][CFG_HOST_KEY],
-                    port=bbc[CFG_SERVER_KEY][CFG_PORT_KEY])
+        uvicorn.run(app, host=bbc.config[CFG_SERVER_KEY][CFG_HOST_KEY],
+                    port=bbc.config[CFG_SERVER_KEY][CFG_PORT_KEY])

@@ -71,8 +71,7 @@ async def get_file_for_bedfile(
             ...,
             description="File identifier")
 ):
-    files = bbc.select(table_name=BED_TABLE,
-                       condition=f"{JSON_MD5SUM_KEY}=%s",
+    files = bbc.bed.select(condition=f"{JSON_MD5SUM_KEY}=%s",
                        condition_val=[md5sum],
                        columns=file_map_bed[id.value])[0][0]
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
@@ -95,10 +94,10 @@ async def get_image_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    imgs = bbc.select(table_name=BED_TABLE,
-                      condition=f"{JSON_MD5SUM_KEY}=%s",
-                      condition_val=[md5sum],
-                      columns=["name", "plots"])
+    imgs = bbc.bed.select(
+        condition=f"{JSON_MD5SUM_KEY}=%s",
+        condition_val=[md5sum],
+        columns=["name", "plots"])
     remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedstat_output_path(remote),
                         md5sum, f"{imgs[0][0]}_{id}.{format}")

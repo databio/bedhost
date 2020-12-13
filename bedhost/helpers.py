@@ -182,7 +182,7 @@ def assert_table_columns_match(bbc, table_name, columns):
     """
     if isinstance(columns, str):
         columns = [columns]
-    schema = getattr(getattr(bbc, table_name, None), "schema", None)
+    schema = getattr(getattr(bbc, table_name2attr(table_name), None), "schema", None)
     if schema is None:
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
@@ -207,7 +207,7 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
     if columns:
         assert_table_columns_match(
             bbc=bbc, table_name=table_name, columns=columns)
-    table_manager = getattr(bbc, table_name, None)
+    table_manager = getattr(bbc, table_name2attr(table_name), None)
     if table_manager is None:
         msg = f"Failed to serve columns for '{table_name}' table, " \
               f"PipestatManager object not accessible."
@@ -227,6 +227,22 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
         colnames = []
         values = [[]]
     return {"columns": colnames, "data": values}
+
+
+def table_name2attr(table_name):
+    """
+    Convert the table name to attribute that can be used to refer to the
+    table managers
+
+    :param str table_name: name to convert
+    :return str: name of the BedBaseConf attribute to use
+    """
+    # TODO: just switch to the actual bbconf attributes?
+    if table_name == "bedfiles":
+        return "bed"
+    elif table_name == "bedsets":
+        return "bedset"
+    return table_name
 
 
 def serve_file(path, remote):
