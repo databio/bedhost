@@ -74,7 +74,7 @@ async def get_file_for_bedfile(
     files = bbc.bed.select(condition="md5sum=%s",
                        condition_val=[md5sum],
                        columns=file_map_bed[id.value])[0][0]
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedstat_output_path(remote), files)
     return serve_file(path, remote)
 
@@ -98,7 +98,7 @@ async def get_image_for_bedfile(
         condition="md5sum=%s",
         condition_val=[md5sum],
         columns=["name", "plots"])
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedstat_output_path(remote),
                         md5sum, f"{imgs[0][0]}_{id}.{format}")
     return serve_file(path, remote)
@@ -181,7 +181,7 @@ async def get_file_for_bedset(
         condition="md5sum=%s", condition_val=[md5sum],
         columns=file_map_bedset[id.value])[0][0]
     _LOGGER.debug(f"files: {files}")
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedbuncher_output_path(remote), files)
     return serve_file(path, remote)
 
@@ -204,7 +204,7 @@ async def get_image_for_bedset(
     imgs = bbc.bedset.select(
         condition="md5sum=%s", condition_val=[md5sum],
         columns=["name", "plots"])
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedbuncher_output_path(remote), md5sum,
                         f"{imgs[0][0]}_{id}.{format}")
     return serve_file(path, remote)
