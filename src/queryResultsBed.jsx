@@ -53,7 +53,7 @@ export default class ResultsBed extends React.Component {
         this.setState({
             bedData: res
         })
-        
+        console.log(res)
         this.getColumns()
         this.getData()
     }
@@ -73,24 +73,32 @@ export default class ResultsBed extends React.Component {
 
     getColumns() {
         let tableColumns = []
-        let cols = ["name", "md5sum"]
-        cols = cols.concat(Object.keys(this.state.bedData[0][23]))
-
+        let cols = ['name', 'md5sum', 'genome', 'cell_type', 'tissue','antibody','trestment','exp_protocol','description', 'GSE', 'data_source']
+        // cols = cols.concat(Object.keys(this.state.bedData[0][32]))
         for (var i = 0; i < cols.length; i++) {
-            if (cols[i] === 'md5sum'||cols[i] === 'description') {
+            if (cols[i] === 'md5sum'||cols[i] === 'GSE') {
                 tableColumns.push({ title: cols[i], field: cols[i], hidden: true })
             } else if (cols[i] === 'name') {
                 tableColumns.push({
                     title: cols[i],
                     field: cols[i],
-                    width: 550,
+                    // width: 550,
                     render: rowData => <Link className="home-link" to={{
                         pathname: '/bedsplash/' + rowData.md5sum
                     }}>{rowData.name}
                     </Link>
                 })
-            } else {
-                tableColumns.push({ title: cols[i], field: cols[i], width: 100 })
+            } else if (cols[i] === 'data_source') {
+                tableColumns.push({
+                    title: cols[i],
+                    field: cols[i],
+                    // width: 550,
+                    render: rowData => rowData.data_source === 'GEO' ? <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc="+rowData.GSE} className="home-link" >
+                    {rowData.data_source}
+                  </a> : null   
+                })
+            }else {
+                tableColumns.push({ title: cols[i], field: cols[i] })
             }
         }
         this.setState({
@@ -101,8 +109,8 @@ export default class ResultsBed extends React.Component {
     getData(){
         let data = []
         data.push(this.state.bedData.map((bed) => {
-            let row = { name: bed[3], md5sum: bed[1] }
-            row = Object.assign({}, row, bed[23]);
+            let row = { name: bed[2], md5sum: bed[1] }
+            row = Object.assign({}, row, bed[32]);
             return row
         }))
         this.setState({
