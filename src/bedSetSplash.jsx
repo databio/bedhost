@@ -44,7 +44,7 @@ export default class BedSetSplash extends React.Component {
           BED_Set_IGD: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
           BED_Set_PEP: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP"
         },
-        bedSetFig: data.data[0][8][0],
+        // bedSetFig: data.data[0][8][0],
         avgGC: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
         avgRegionW: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)],
         avgRegionD: {
@@ -56,7 +56,22 @@ export default class BedSetSplash extends React.Component {
         }
       }
     );
-    data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles?ids=id").then(({ data }) => data);
+
+    let newbedSetFig = data.data[0].map((img, index) => {
+      if (index >= 11 && index <= data.columns.length - 1){
+        return {
+          ...img, 
+          id: data.columns[index],
+          src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=pdf",
+          src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=png"
+        };
+      }
+    });
+    newbedSetFig = newbedSetFig.slice(11, data.columns.length)
+    console.log(newbedSetFig)
+    this.setState({ bedSetFig: newbedSetFig });
+
+    data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles").then(({ data }) => data);
     this.setState(
       {
         bedsCount: Object.keys(data.data).length,
@@ -84,7 +99,7 @@ export default class BedSetSplash extends React.Component {
                 <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Plots
               </Label>
-                {this.state.bedSetFig ? (<BedSetPlots bedset_md5sum={this.props.match.params.bedset_md5sum} bedset_figs={this.state.bedSetFig} />) : null}
+                {this.state.bedSetFig ? (<BedSetPlots bedset_figs={this.state.bedSetFig} />) : null}
               </Col>
               <Col sm={7} md={7}>
                 {Object.keys(this.state.avgRegionD).length !== 0 ? (<BarChart stats={this.state.avgRegionD} />) : null}

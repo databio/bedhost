@@ -32,33 +32,57 @@ export default class BedSetTable extends React.Component {
         let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles").then(({ data }) => data);
         console.log('BED set summary from the server: ', res)
 
-        let cols = [res.columns[1], res.columns[3], res.columns[4], res.columns[5], res.columns[6],
-        res.columns[21], res.columns[7], res.columns[17], res.columns[8], res.columns[18],
-        res.columns[9], res.columns[16], res.columns[11], res.columns[20], res.columns[10],
-        res.columns[19], res.columns[12], res.columns[13], res.columns[14], res.columns[15]]
+        let cols = [
+            res.columns[0], res.columns[1], // name, md5sum
+            res.columns[3], res.columns[4], res.columns[5], res.columns[6], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
+            res.columns[7], res.columns[17], // exon
+            res.columns[8], res.columns[18], // intron
+            res.columns[9], res.columns[16], // promoterprox
+            res.columns[11], res.columns[20], // promotercore
+            res.columns[10], res.columns[19], // intergenic
+            res.columns[12], res.columns[14], // fiveutr
+            res.columns[13], res.columns[15]] //threeutr
 
         let data = []
         data.push(res.data.map((row) => {
-            let value = [row[1], row[3], row[4].toFixed(3), row[5].toFixed(3), row[6].toFixed(3),
-            row[21], row[7], row[17].toFixed(3), row[8], row[18].toFixed(3),
-            row[9], row[16].toFixed(3), row[11], row[20].toFixed(3), row[10],
-            row[19].toFixed(3), row[12], row[13].toFixed(3), row[14], row[15].toFixed(3)]
+            let value = [
+                row[0], row[1],
+                row[3], row[4].toFixed(3), row[5].toFixed(3), row[6].toFixed(3),
+                row[7], row[17].toFixed(3),
+                row[8], row[18].toFixed(3),
+                row[9], row[16].toFixed(3),
+                row[10], row[20].toFixed(3),
+                row[11], row[19].toFixed(3),
+                row[12], row[14].toFixed(3),
+                row[13], row[15].toFixed(3)
+            ]
             let dict = toObject(cols, value)
             return dict
         }))
 
+        let newbedFig = res.data[0].map((img, index) => {
+            if (index >= 21 && index <= res.columns.length - 2) {
+                return {
+                    id: res.columns[index],
+                    title: res.data[0][index].title
+                };
+            }
+        });
+        newbedFig = newbedFig.slice(21, res.columns.length - 1)
+        console.log(newbedFig)
+
         this.setState({
             columns: cols,
             bedSetData: data[0],
-            bedFigs: res.data[0][22]
+            bedFigs: newbedFig
         })
     }
 
     getColumns() {
         let tableColumns = [
             {
-                title: this.state.columns[1],
-                field: this.state.columns[1],
+                title: this.state.columns[0],
+                field: this.state.columns[0],
                 width: 550,
                 cellStyle: {
                     backgroundColor: "#333535",
@@ -78,9 +102,9 @@ export default class BedSetTable extends React.Component {
         ]
 
         for (var i = 0; i < this.state.columns.length; i++) {
-            if (i === 0) {
+            if (i === 1) {
                 tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 300 })
-            } else if (i !== 1) {
+            } else if (i !== 0) {
                 tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 200 })
             }
         }
@@ -149,7 +173,7 @@ export default class BedSetTable extends React.Component {
                                             return (
                                                 <Tooltip
                                                     key={index}
-                                                    title={fig.caption}
+                                                    title={fig.title}
                                                     placement="top"
                                                 >
                                                     <Button
@@ -158,12 +182,12 @@ export default class BedSetTable extends React.Component {
                                                         style={{ padding: 5, margin: 5 }}
                                                         onClick={() => {
                                                             this.figTypeClicked(
-                                                                fig.name,
-                                                                fig.caption
+                                                                fig.id,
+                                                                fig.title
                                                             );
                                                         }}
                                                     >
-                                                        {fig.name}
+                                                        {fig.id}
                                                     </Button>
                                                 </Tooltip>
                                             )
