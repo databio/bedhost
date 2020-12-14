@@ -137,7 +137,7 @@ export default class BedSetSplash extends React.Component {
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px" }}>
-                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=plots'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                  <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=region_commonality'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
                     BED set plot
                   </a>
                 </p>

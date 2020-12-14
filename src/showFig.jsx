@@ -5,7 +5,7 @@ import { Label } from 'semantic-ui-react';
 
 export default function ShowFig(props) {
   const [figList, setFigList] = useState([]);
-
+  console.log("props", props);
   const getFig = () => {
     if (figList.length !== 0) {
       // console.log("CLEAR image list");
@@ -14,8 +14,8 @@ export default function ShowFig(props) {
     for (var i = 0; i < props.bedIds.length; i++) {
       // console.log("PUSH to image list");
       figList.push({
-        id: i + 1,
-        caption: props.bedNames[i],
+        id:  props.figType[0],
+        title: props.bedNames[i],
         src_pdf: bedhost_api_url + "/api/bed/" + props.bedIds[i] + "/img/" + props.figType[0] + "?format=pdf",
         src_png: bedhost_api_url + "/api/bed/" + props.bedIds[i] + "/img/" + props.figType[0] + "?format=png"
       });
