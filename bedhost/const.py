@@ -77,5 +77,5 @@ file_map_bedset = {
 }
 
 file_map_bed = {
-    "bedfile": "bedfile_path",
+    "bedfile": "bedfile"
 }
