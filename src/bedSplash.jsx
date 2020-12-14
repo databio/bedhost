@@ -32,18 +32,24 @@ export default class BedSplash extends React.Component {
     console.log("BED set data retrieved from the server: ", data);
     this.setState(
       {
-        bedName: data.data[0][3],
+        bedName: data.data[0][2],
         bedDownload: {
           BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile",
         },
       }
     );
-    const newbedFig = data.data[0][22].map((file) => {
-      return {
-        ...file, src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + file.name + "?format=pdf",
-        src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + file.name + "?format=png"
-      };
+    let newbedFig = data.data[0].map((img, index) => {
+      if (index >= 23 && index <= data.columns.length - 2){
+        return {
+          ...img, 
+          id: data.columns[index],
+          src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=pdf",
+          src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=png"
+        };
+      }
     });
+    newbedFig = newbedFig.slice(23, data.columns.length - 1)
+    console.log(newbedFig)
     this.setState({ bedFig: newbedFig });
   }
 

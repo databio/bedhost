@@ -47,7 +47,7 @@ export default class ResultsBedSet extends React.Component {
         this.setState({
             bedSetData: res
         })
-        
+        console.log('BED sets retrieved from the server: ', res)
         this.getColumns()
         let data = await this.getData()
         this.setState({

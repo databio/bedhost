@@ -12,7 +12,7 @@ export default function ModalImage(props) {
         onClick={handleShow}
         className={ (props.page === "bed") ? "splash-img-bed" : "splash-img-bedset"}
         src={props.image.src_png}
-        alt={props.image.name}
+        alt={props.image.title}
       />
       <Modal
         centered
@@ -21,7 +21,7 @@ export default function ModalImage(props) {
         onHide={handleClose}
       >
         <Modal.Header closeButton>
-          <Modal.Title>{props.image.caption}</Modal.Title>
+          <Modal.Title>{props.image.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body><iframe title="pdf" style={{ margin: 'auto', display:'block', height: 650, width: 600 }} src={props.image.src_pdf}></iframe></Modal.Body>
         <Modal.Footer>

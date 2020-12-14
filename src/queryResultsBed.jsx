@@ -53,7 +53,7 @@ export default class ResultsBed extends React.Component {
         this.setState({
             bedData: res
         })
-        console.log(res)
+        console.log('BED files retrieved from the server: ', res)
         this.getColumns()
         this.getData()
     }

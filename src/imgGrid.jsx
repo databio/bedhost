@@ -29,7 +29,7 @@ export default function ImgGrid(props) {
           return (
             <GridListTile key={index}>
               <ModalImage image={image} page={props.page}/>
-              <Tooltip title={image.caption} ><p><b>Fig. {index + 1}: </b> {image.caption}</p></Tooltip>
+              <Tooltip title={image.title} ><p><b>Fig. {index + 1}: </b> {image.title}</p></Tooltip>
               {/* <GridListTileBar title={image.caption} /> */}
             </GridListTile>
           );
