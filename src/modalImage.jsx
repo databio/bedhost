@@ -12,7 +12,7 @@ export default function ModalImage(props) {
         onClick={handleShow}
         className={ (props.page === "bed") ? "splash-img-bed" : "splash-img-bedset"}
         src={props.image.src_png}
-        alt={props.image.title}
+        alt={props.image.id}
       />
       <Modal
         centered

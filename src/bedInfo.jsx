@@ -41,11 +41,13 @@ export default class BedInfo extends React.Component {
                 <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                     BED File Info
                 </Label>
-                <table>
+                <table >
                     <tbody>
                         {Object.entries(this.state.bed_info)
-                            .map(([key, value], index) =>
-                                <tr style={{ verticalAlign: "top" }} key={index}>
+                            .map(([key, value], index) => {
+                                const hide = ['file_name', 'yaml_file', 'bedbase_config', 'output_file_path', 'open_signal_matrix', 'pipeline_interfaces','pipeline_interfaces']
+
+                                return(!hide.includes(key) ? <tr style={{ verticalAlign: "top" }} key={index}>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
                                         {key.charAt(0).toUpperCase() + key.slice(1)}
                                     </td>
@@ -54,7 +56,8 @@ export default class BedInfo extends React.Component {
                                         (<><span>{value}</span><a href={"http://refgenomes.databio.org/#" + value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
                                         : value}
                                     </td>
-                                </tr>
+                                </tr> : null)
+                                }
                             )}
                     </tbody>
                 </ table>
