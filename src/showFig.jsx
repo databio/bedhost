@@ -5,7 +5,6 @@ import { Label } from 'semantic-ui-react';
 
 export default function ShowFig(props) {
   const [figList, setFigList] = useState([]);
-  console.log("props", props);
   const getFig = () => {
     if (figList.length !== 0) {
       // console.log("CLEAR image list");

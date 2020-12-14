@@ -44,7 +44,6 @@ export default class BedSetSplash extends React.Component {
           BED_Set_IGD: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
           BED_Set_PEP: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP"
         },
-        // bedSetFig: data.data[0][8][0],
         avgGC: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
         avgRegionW: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)],
         avgRegionD: {
@@ -58,17 +57,16 @@ export default class BedSetSplash extends React.Component {
     );
 
     let newbedSetFig = data.data[0].map((img, index) => {
-      if (index >= 11 && index <= data.columns.length - 1){
-        return {
-          ...img, 
+      return (
+        (index >= 11 && index <= data.columns.length - 1) ? {
+          ...img,
           id: data.columns[index],
           src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=pdf",
           src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=png"
-        };
-      }
+        } : null
+      )
     });
     newbedSetFig = newbedSetFig.slice(11, data.columns.length)
-    console.log(newbedSetFig)
     this.setState({ bedSetFig: newbedSetFig });
 
     data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles").then(({ data }) => data);
@@ -145,7 +143,7 @@ export default class BedSetSplash extends React.Component {
             </Row>
           </Container>
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
-                <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
+            <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
           </Container>
         </div>
         <VersionsSpan />

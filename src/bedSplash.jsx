@@ -39,17 +39,17 @@ export default class BedSplash extends React.Component {
       }
     );
     let newbedFig = data.data[0].map((img, index) => {
-      if (index >= 23 && index <= data.columns.length - 2){
-        return {
-          ...img, 
+      return (
+        (index >= 23 && index <= data.columns.length - 2) ? {
+          ...img,
           id: data.columns[index],
           src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=pdf",
           src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=png"
-        };
-      }
+        } : null
+      )
     });
     newbedFig = newbedFig.slice(23, data.columns.length - 1)
-    console.log(newbedFig)
+
     this.setState({ bedFig: newbedFig });
   }
 
@@ -58,10 +58,10 @@ export default class BedSplash extends React.Component {
       <React.StrictMode >
         <Header />
         <div className="conten-body">
-          <Container style={{ width: "75%", minWidth: '900px'}} fluid className="p-4">
+          <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
             <h1>BED File: {this.state.bedName}</h1>
           </Container>
-          <Container style={{ width: "75%" , minWidth: '900px'}} fluid className="p-4">
+          <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
             <Row>
               <Col sm={4} md={4}>
                 <BedInfo bed_md5sum={this.props.match.params.bed_md5sum} />

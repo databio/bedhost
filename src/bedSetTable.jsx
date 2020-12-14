@@ -61,15 +61,14 @@ export default class BedSetTable extends React.Component {
         }))
 
         let newbedFig = res.data[0].map((img, index) => {
-            if (index >= 21 && index <= res.columns.length - 2) {
-                return {
+            return (
+                (index >= 21 && index <= res.columns.length - 2) ? {
                     id: res.columns[index],
                     title: res.data[0][index].title
-                };
-            }
+                } : null
+            )
         });
         newbedFig = newbedFig.slice(21, res.columns.length - 1)
-        console.log(newbedFig)
 
         this.setState({
             columns: cols,

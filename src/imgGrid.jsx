@@ -20,8 +20,7 @@ export default function ImgGrid(props) {
   const classes = useStyles();
   const gridWidth = (props.page === "bed") ? 1000 : 1575;
   const cellHeight = (props.page === "bed") ? 220 : 350;
-  // console.log("Img List: ", props.imgList)
-
+  
   return (
     <div className={classes.root}>
       <GridList style={{ width: gridWidth }} cellHeight={cellHeight} spacing={25} cols={5}>
