@@ -73,7 +73,6 @@ async def get_file_for_bedfile(
 ):
     file = bbc.bed.select(condition="md5sum=%s", condition_val=[md5sum],
                          columns=["name", file_map_bed[id.value]])[0][1]
-    print(f"file: {file}")
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedstat_output_path(remote), md5sum, file["path"])
     return serve_file(path, remote)
