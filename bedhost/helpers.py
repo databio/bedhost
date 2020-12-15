@@ -187,7 +187,7 @@ def assert_table_columns_match(bbc, table_name, columns):
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
-    diff = set(columns).difference([c for c in list(schema.keys())])
+    diff = set(columns).difference(list(schema.keys()))
     if diff:
         msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
         _LOGGER.warning(msg)
