@@ -34,27 +34,27 @@ export default class BedSetTable extends React.Component {
 
         let cols = [
             res.columns[0], res.columns[1], // name, md5sum
-            res.columns[3], res.columns[4], res.columns[5], res.columns[6], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
-            res.columns[7], res.columns[17], // exon
-            res.columns[8], res.columns[18], // intron
-            res.columns[9], res.columns[16], // promoterprox
-            res.columns[11], res.columns[20], // promotercore
-            res.columns[10], res.columns[19], // intergenic
-            res.columns[12], res.columns[14], // fiveutr
-            res.columns[13], res.columns[15]] //threeutr
+            res.columns[4], res.columns[5], res.columns[6], res.columns[7], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
+            res.columns[8], res.columns[18], // exon
+            res.columns[9], res.columns[19], // intron
+            res.columns[10], res.columns[17], // promoterprox
+            res.columns[12], res.columns[21], // promotercore
+            res.columns[11], res.columns[20], // intergenic
+            res.columns[13], res.columns[15], // fiveutr
+            res.columns[14], res.columns[16]] //threeutr
 
         let data = []
         data.push(res.data.map((row) => {
             let value = [
                 row[0], row[1],
-                row[3], row[4].toFixed(3), row[5].toFixed(3), row[6].toFixed(3),
-                row[7], row[17].toFixed(3),
+                row[4], row[5].toFixed(3), row[6].toFixed(3), row[7].toFixed(3),
                 row[8], row[18].toFixed(3),
-                row[9], row[16].toFixed(3),
-                row[10], row[20].toFixed(3),
-                row[11], row[19].toFixed(3),
-                row[12], row[14].toFixed(3),
-                row[13], row[15].toFixed(3)
+                row[9], row[19].toFixed(3),
+                row[10], row[17].toFixed(3),
+                row[11], row[21].toFixed(3),
+                row[12], row[20].toFixed(3),
+                row[13], row[15].toFixed(3),
+                row[14], row[16].toFixed(3)
             ]
             let dict = toObject(cols, value)
             return dict
@@ -62,13 +62,13 @@ export default class BedSetTable extends React.Component {
 
         let newbedFig = res.data[0].map((img, index) => {
             return (
-                (index >= 21 && index <= res.columns.length - 2) ? {
+                (index >= 22 && index <= res.columns.length - 2) ? {
                     id: res.columns[index],
                     title: res.data[0][index].title
                 } : null
             )
         });
-        newbedFig = newbedFig.slice(21, res.columns.length - 1)
+        newbedFig = newbedFig.slice(22, res.columns.length - 1)
 
         this.setState({
             columns: cols,

@@ -58,7 +58,7 @@ export default class BedSetSplash extends React.Component {
 
     let newbedSetFig = data.data[0].map((img, index) => {
       return (
-        (index >= 11 && index <= data.columns.length - 1) ? {
+        (index >= 11 && index <= data.columns.length - 2) ? {
           ...img,
           id: data.columns[index],
           src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=pdf",
