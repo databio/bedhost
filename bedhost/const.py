@@ -56,10 +56,12 @@ class FileColumnBedset(str, Enum):
     bedset_tar = "bedset_tar"
     summary_stats = "summary_stats"
     bedfiles_stats = "bedfiles_stats"
+    trackdb = "trackdb"
 
 
 class FileColumnBed(str, Enum):
     bedfile = "bedfile"
+    bigbedfile = "bigbedfile"
 
 
 class TableName(str, Enum):
@@ -73,9 +75,11 @@ file_map_bedset = {
     "iGD_database": "bedset_igd_database_path",
     "bedset_tar": "bedset_tar_archive_path",
     "summary_stats": "bedset_gd_stats",
-    "bedfiles_stats": "bedset_bedfiles_gd_stats"
+    "bedfiles_stats": "bedset_bedfiles_gd_stats",
+    "trackdb": 'bedset_trackdb_path'
 }
 
 file_map_bed = {
-    "bedfile": "bedfile"
+    "bedfile": "bedfile",
+    "bigbedfile": "bigbedfile"
 }
