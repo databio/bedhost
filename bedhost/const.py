@@ -56,7 +56,7 @@ class FileColumnBedset(str, Enum):
     bedset_tar = "bedset_tar"
     summary_stats = "summary_stats"
     bedfiles_stats = "bedfiles_stats"
-    trackdb = "trackdb"
+    hubfile = "hubfile"
 
 
 class FileColumnBed(str, Enum):
@@ -76,7 +76,7 @@ file_map_bedset = {
     "bedset_tar": "bedset_tar_archive_path",
     "summary_stats": "bedset_gd_stats",
     "bedfiles_stats": "bedset_bedfiles_gd_stats",
-    "trackdb": 'bedset_trackdb_path'
+    "hubfile": 'hubfile_path'
 }
 
 file_map_bed = {
