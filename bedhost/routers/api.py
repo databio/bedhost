@@ -26,7 +26,7 @@ async def get_bedfile_count():
     """
     Returns the number of bedfiles available in the database
     """
-    return int(bbc.count_bedfiles())
+    return int(bbc.bed.record_count)
 
 
 @router.get("/bed/all/data", response_model=DBResponse)
@@ -71,12 +71,10 @@ async def get_file_for_bedfile(
             ...,
             description="File identifier")
 ):
-    files = bbc.select(table_name=BED_TABLE,
-                       condition=f"{JSON_MD5SUM_KEY}=%s",
-                       condition_val=[md5sum],
-                       columns=file_map_bed[id.value])[0][0]
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    path = os.path.join(bbc.get_bedstat_output_path(remote), files)
+    file = bbc.bed.select(condition="md5sum=%s", condition_val=[md5sum],
+                         columns=["name", file_map_bed[id.value]])[0][1]
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    path = os.path.join(bbc.get_bedstat_output_path(remote), md5sum, file["path"])
     return serve_file(path, remote)
 
 
@@ -95,13 +93,11 @@ async def get_image_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    imgs = bbc.select(table_name=BED_TABLE,
-                      condition=f"{JSON_MD5SUM_KEY}=%s",
-                      condition_val=[md5sum],
-                      columns=["name", "plots"])
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    path = os.path.join(bbc.get_bedstat_output_path(remote),
-                        md5sum, f"{imgs[0][0]}_{id}.{format}")
+    img = bbc.bed.select(condition="md5sum=%s", condition_val=[md5sum],
+                         columns=["name", id])[0][1]
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    path = os.path.join(bbc.get_bedstat_output_path(remote), md5sum, 
+                        img["path" if format == "pdf" else "thumbnail_path"])
     return serve_file(path, remote)
 
 
@@ -112,7 +108,7 @@ async def get_bedset_count():
     """
     Returns the number of bedsets available in the database
     """
-    return int(bbc.count_bedsets())
+    return int(bbc.bedset.record_count)
 
 
 @router.get("/bedset/all/data", response_model=DBResponse)
@@ -128,7 +124,6 @@ async def get_all_bedset_metadata(
     return serve_columns_for_table(bbc=bbc, table_name=BEDSET_TABLE,
                                     columns=ids)
 
-
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
         md5sum: str = Path(
@@ -140,7 +135,8 @@ async def get_bedfiles_in_bedset(
 ):
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
-    res = bbc.select_bedfiles_for_bedset(condition=f"{JSON_MD5SUM_KEY}=%s", condition_val=[md5sum], bedfile_col=ids)
+    res = bbc.select_bedfiles_for_bedset(
+        condition="md5sum=%s", condition_val=[md5sum], bedfile_col=ids)
     if res:
         colnames = list(res[0].keys())
         values = [list(x.values()) for x in res]
@@ -177,13 +173,10 @@ async def get_file_for_bedset(
             ...,
             description="File identifier")
 ):
-    files = bbc.select(table_name=BEDSET_TABLE,
-                       condition=f"{JSON_MD5SUM_KEY}=%s",
-                       condition_val=[md5sum],
-                       columns=file_map_bedset[id.value])[0][0]
-    _LOGGER.debug(f"files: {files}")
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    path = os.path.join(bbc.get_bedbuncher_output_path(remote), files)
+    file = bbc.bedset.select(condition="md5sum=%s", condition_val=[md5sum],
+                         columns=["name", file_map_bedset[id.value]])[0][1]
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    path = os.path.join(bbc.get_bedbuncher_output_path(remote), md5sum, file["path"])
     return serve_file(path, remote)
 
 
@@ -202,11 +195,9 @@ async def get_image_for_bedset(
     """
     Returns the img with provided ID
     """
-    imgs = bbc.select(table_name=BEDSET_TABLE,
-                      condition=f"{JSON_MD5SUM_KEY}=%s",
-                      condition_val=[md5sum],
-                      columns=["name", "plots"])
-    remote = True if bbc[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    img = bbc.bedset.select(condition="md5sum=%s", condition_val=[md5sum],
+                             columns=["name", id])[0][1]
+    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = os.path.join(bbc.get_bedbuncher_output_path(remote), md5sum,
-                        f"{imgs[0][0]}_{id}.{format}")
+                        img["path" if format == "pdf" else "thumbnail_path"])
     return serve_file(path, remote)
