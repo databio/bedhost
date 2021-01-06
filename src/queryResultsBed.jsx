@@ -66,15 +66,16 @@ export default class ResultsBed extends React.Component {
             bedData: res.data,
             title: "There are "+ res.data.length + " BED files in this BED set."
         })
-
+        console.log('BED files retrieved from the server: ', res)
         this.getColumns()
+        console.log('BED files retrieved from the server: ', this.state.columns)
         this.getData()
     }
 
     getColumns() {
         let tableColumns = []
         let cols = ['name', 'md5sum', 'genome', 'cell_type', 'tissue','antibody','trestment','exp_protocol','description', 'GSE', 'data_source']
-        // cols = cols.concat(Object.keys(this.state.bedData[0][32]))
+        // cols = cols.concat(Object.keys(this.state.bedData[0][33]))
         for (var i = 0; i < cols.length; i++) {
             if (cols[i] === 'md5sum'||cols[i] === 'GSE') {
                 tableColumns.push({ title: cols[i], field: cols[i], hidden: true })
@@ -82,7 +83,7 @@ export default class ResultsBed extends React.Component {
                 tableColumns.push({
                     title: cols[i],
                     field: cols[i],
-                    // width: 550,
+                    width: 500,
                     render: rowData => <Link className="home-link" to={{
                         pathname: '/bedsplash/' + rowData.md5sum
                     }}>{rowData.name}
@@ -92,7 +93,6 @@ export default class ResultsBed extends React.Component {
                 tableColumns.push({
                     title: cols[i],
                     field: cols[i],
-                    // width: 550,
                     render: rowData => rowData.data_source === 'GEO' ? <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc="+rowData.GSE} className="home-link" >
                     {rowData.data_source}
                   </a> : null   
@@ -108,9 +108,21 @@ export default class ResultsBed extends React.Component {
 
     getData(){
         let data = []
+        let name_idx = 0
+        let md5sum_idx = 0
+        let data_idx = 0
         data.push(this.state.bedData.map((bed) => {
-            let row = { name: bed[2], md5sum: bed[1] }
-            row = Object.assign({}, row, bed[32]);
+            if (this.props.query){
+                name_idx = 2
+                md5sum_idx = 1
+                data_idx = 33
+            } else  {
+                name_idx = 0
+                md5sum_idx = 1
+                data_idx = 31
+            }
+            let row = { name: bed[name_idx], md5sum: bed[md5sum_idx] }
+            row = Object.assign({}, row, bed[data_idx]);
             return row
         }))
         this.setState({

@@ -45,7 +45,7 @@ export default class BedInfo extends React.Component {
                     <tbody>
                         {Object.entries(this.state.bed_info)
                             .map(([key, value], index) => {
-                                const hide = ['file_name', 'yaml_file', 'bedbase_config', 'output_file_path', 'open_signal_matrix', 'pipeline_interfaces','pipeline_interfaces']
+                                const hide = ['bigbed', 'file_name', 'yaml_file', 'bedbase_config', 'output_file_path', 'open_signal_matrix', 'pipeline_interfaces','pipeline_interfaces']
 
                                 return(!hide.includes(key) ? <tr style={{ verticalAlign: "top" }} key={index}>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
