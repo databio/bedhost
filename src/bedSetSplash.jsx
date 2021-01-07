@@ -38,7 +38,7 @@ export default class BedSetSplash extends React.Component {
     this.setState(
       {
         bedSetName: data.data[0][2],
-        hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=' + bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/hubfile",
+        hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
         bedSetDownload: {
           BED_Set_Rxiv: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar",
           BED_Stats: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/beds_stats",
