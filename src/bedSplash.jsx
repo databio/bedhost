@@ -23,6 +23,7 @@ export default class BedSplash extends React.Component {
       bedName: "",
       bedFig: [],
       bedDownload: {},
+      trackPath:""
     };
   }
 
@@ -33,6 +34,7 @@ export default class BedSplash extends React.Component {
     this.setState(
       {
         bedName: data.data[0][2],
+        trackPath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/' + data.data[0][2] + ".bigBed",
         bedDownload: {
           BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile",
           bigBED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile",
@@ -60,7 +62,16 @@ export default class BedSplash extends React.Component {
         <Header />
         <div className="conten-body">
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
+          <Row>
+          <Col>
             <h1>BED File: {this.state.bedName}</h1>
+            </Col>
+            <Col>
+                <a href={this.state.trackPath}>
+                  <button className='float-right btn primary-btn' >Genome Browser</button>
+                </a>
+              </Col>
+            </Row>
           </Container>
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
             <Row>
