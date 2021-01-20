@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import bedhost_api_url from "./const";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -14,6 +15,8 @@ export default class BedCountsSpan extends React.Component {
     this.state = {
       bed: -1,
       bedSet: -1,
+      sampleBed: "",
+      sampleBedSet: ""
     };
   }
 
@@ -33,16 +36,38 @@ export default class BedCountsSpan extends React.Component {
       });
     console.log("BED set count retrieved from the server: ", bscount.data);
     this.setState({ bedSet: bscount.data });
+
+    let bed = await api.get("/api/bed/all/data").then(({ data }) => data);
+    let bedurl = '/bedsplash/' + bed.data[0][1]
+    this.setState({ sampleBed: bedurl });
+
+    let bedset = await api.get("/api/bedset/all/data").then(({ data }) => data);
+    let bedseturl = '/bedsetsplash/' + bedset.data[0][1]
+    this.setState({ sampleBedSet: bedseturl });
+    
   }
+
   
   render() {
     return this.state["bed"] + this.state["bedSet"] !== -2 ? (
       <div>
         <h1>Welcome to BEDBASE</h1>
         <span style={{fontSize : "12pt"}}>
-          {" "}
-          We currently have <b>{this.state.bed}</b> BED files and{" "}
-          <b>{this.state.bedSet}</b> BED sets in the database
+          Here we provide a web interface and a RESTful API to access the statistics and plots of BED files and BED sets 
+          that produced by the bedstat and bedbuncher pipeline. {" "}
+          We currently have <b>{this.state.bed}</b> BED files and {" "}
+          <b>{this.state.bedSet}</b> BED sets in the database.{" "}
+          Please check out an example BED splash page {" "}
+          <Link className="home-link" to={{
+                    pathname: this.state.sampleBed
+                }}>HERE
+          </Link>
+          {" "} and an example BED set splash page {" "}
+          <Link className="home-link" to={{
+                    pathname: this.state.sampleBedSet
+                }}>HERE
+          </Link>
+          .
         </span>
       </div>
     ) : (
