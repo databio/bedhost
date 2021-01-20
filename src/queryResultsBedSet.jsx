@@ -90,7 +90,7 @@ export default class ResultsBedSet extends React.Component {
 
     async getData() {
         let data = []
-        data.push(this.state.bedSetData.map( async (bed, index) => {
+        data.push(this.state.bedSetData.map(async (bed, index) => {
             let count = await this.getBedCount(bed[1])
             let row = { name: bed[2], md5sum: bed[1], bed_file_count: count }
             for (var key in bed[9]) {
@@ -117,13 +117,18 @@ export default class ResultsBedSet extends React.Component {
                             fontWeight: "bold",
                         },
                         paging: true,
-                        pageSize:50,
-                        pageSizeOptions:[25, 50,100],
+                        pageSize: 50,
+                        pageSizeOptions: [25, 50, 100],
                         search: false,
                     }}
-                    detailPanel={rowData => {
-                        return (<ResultsBed bedset_md5sum={rowData.md5sum} />)
-                    }}
+                    detailPanel={[
+                        {
+                            tooltip: 'Show bedfiles',
+                            render: rowData => {
+                                return (<ResultsBed bedset_md5sum={rowData.md5sum} />)
+                            },
+                        },
+                    ]}
                     components={{
                         Container: props => <Paper {...props} elevation={0} />
                     }}

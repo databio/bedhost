@@ -3,6 +3,7 @@ import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
+import Tooltip from "@material-ui/core/Tooltip";
 import bedhost_api_url from "./const";
 import axios from "axios";
 
@@ -16,15 +17,15 @@ export default class ResultsBed extends React.Component {
         this.state = {
             bedData: [],
             columns: [],
-            data: [], 
+            data: [],
             title: ""
         }
     }
 
     async componentDidMount() {
-        if (this.props.query){
+        if (this.props.query) {
             await this.getBedByQuery()
-        } else  {
+        } else {
             await this.getBedByBedSet()
         }
     }
@@ -32,12 +33,12 @@ export default class ResultsBed extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.query !== this.props.query) {
             await this.getBedByQuery()
-        } else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum){
+        } else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
             await this.getBedByBedSet()
-        } 
+        }
     }
 
-    async getBedByQuery(){
+    async getBedByQuery() {
         let query = this.props.query.sql.replaceAll("?", "%s");
         let query_val = this.props.query.params.map((val, index) => {
             let my_query_val = ''
@@ -58,13 +59,13 @@ export default class ResultsBed extends React.Component {
         this.getData()
     }
 
-    async getBedByBedSet(){
+    async getBedByBedSet() {
         let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles")
             .then(({ data }) => data)
 
         this.setState({
             bedData: res.data,
-            title: "There are "+ res.data.length + " BED files in this BED set."
+            title: "There are " + res.data.length + " BED files in this BED set."
         })
         console.log('BED files retrieved from the server: ', res)
         this.getColumns()
@@ -74,30 +75,59 @@ export default class ResultsBed extends React.Component {
 
     getColumns() {
         let tableColumns = []
-        let cols = ['name', 'md5sum', 'genome', 'cell_type', 'tissue','antibody','trestment','exp_protocol','description', 'GSE', 'data_source']
+        let cols = ['name', 'md5sum', 'genome', 'cell_type', 'tissue', 'antibody', 'trestment', 'exp_protocol', 'description', 'GSE', 'data_source']
         // cols = cols.concat(Object.keys(this.state.bedData[0][33]))
         for (var i = 0; i < cols.length; i++) {
-            if (cols[i] === 'md5sum'||cols[i] === 'GSE') {
+            if (cols[i] === 'md5sum' || cols[i] === 'GSE') {
                 tableColumns.push({ title: cols[i], field: cols[i], hidden: true })
             } else if (cols[i] === 'name') {
                 tableColumns.push({
                     title: cols[i],
                     field: cols[i],
-                    width: 500,
-                    render: rowData => <Link className="home-link" to={{
-                        pathname: '/bedsplash/' + rowData.md5sum
-                    }}>{rowData.name}
-                    </Link>
+                    cellStyle: {
+                        width: 150,
+                        maxWidth: 150,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                    },
+                    headerStyle: {
+                        width: 150,
+                        maxWidth: 150
+                    },
+                    render: rowData =>
+                        <Tooltip
+                            key={rowData.name}
+                            title={rowData.name}
+                            placement="top"
+                        >
+                            <Link className="home-link" to={{
+                                pathname: '/bedsplash/' + rowData.md5sum
+                            }}>{rowData.name}
+                            </Link>
+                        </Tooltip>
+                })
+            } else if (cols[i] === 'description') {
+                tableColumns.push({
+                    title: cols[i],
+                    field: cols[i],
+                    cellStyle: {
+                        width: 500,
+                        minWidth: 500
+                    },
+                    headerStyle: {
+                        width: 500,
+                        minWidth: 500
+                    }
                 })
             } else if (cols[i] === 'data_source') {
                 tableColumns.push({
                     title: cols[i],
-                    field: cols[i],
-                    render: rowData => rowData.data_source === 'GEO' ? <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc="+rowData.GSE} className="home-link" >
-                    {rowData.data_source}
-                  </a> : null   
+                    field: cols[i],   
+                    render: rowData => rowData.data_source === 'GEO' ? <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + rowData.GSE} className="home-link" >
+                        {rowData.data_source}
+                    </a> : null
                 })
-            }else {
+            } else {
                 tableColumns.push({ title: cols[i], field: cols[i] })
             }
         }
@@ -106,17 +136,17 @@ export default class ResultsBed extends React.Component {
         })
     }
 
-    getData(){
+    getData() {
         let data = []
         let name_idx = 0
         let md5sum_idx = 0
         let data_idx = 0
         data.push(this.state.bedData.map((bed) => {
-            if (this.props.query){
+            if (this.props.query) {
                 name_idx = 2
                 md5sum_idx = 1
                 data_idx = 33
-            } else  {
+            } else {
                 name_idx = 0
                 md5sum_idx = 1
                 data_idx = 31
@@ -146,8 +176,8 @@ export default class ResultsBed extends React.Component {
                             fontWeight: "bold",
                         },
                         paging: true,
-                        pageSize:50,
-                        pageSizeOptions:[25, 50,100],
+                        pageSize: 50,
+                        pageSizeOptions: [25, 50, 100],
                         search: false,
                     }}
                     // detailPanel={rowData => {
@@ -156,7 +186,7 @@ export default class ResultsBed extends React.Component {
                     //     )
                     // }}
                     components={{
-                        Container: props => <Paper {...props} elevation={0}/>
+                        Container: props => <Paper {...props} elevation={0} />
                     }}
                 />
             </div>

@@ -43,6 +43,9 @@
   color: white;
 }
 
+.MuiIconButton-root {
+  padding: 3px !important;
+}
 
 .title {
   font-size: 12pt;
