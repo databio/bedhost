@@ -146,6 +146,8 @@ export default class ResultsBed extends React.Component {
                             fontWeight: "bold",
                         },
                         paging: true,
+                        pageSize:50,
+                        pageSizeOptions:[25, 50,100],
                         search: false,
                     }}
                     // detailPanel={rowData => {
