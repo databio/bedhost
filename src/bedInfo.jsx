@@ -74,7 +74,9 @@ export default class BedInfo extends React.Component {
                                         {key.replaceAll("_percentage", " (%)")}
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                                        {value.toFixed(3)}
+                                        {key === "regions_no" ?  
+                                        (<>{value.toFixed(0)}</>) : (<>{value.toFixed(3)}</>)}
+                                        
                                     </td>
                                 </tr>
                             )}
