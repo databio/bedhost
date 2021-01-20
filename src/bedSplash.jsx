@@ -23,7 +23,7 @@ export default class BedSplash extends React.Component {
       bedName: "",
       bedFig: [],
       bedDownload: {},
-      trackPath:""
+      trackPath: ""
     };
   }
 
@@ -62,11 +62,11 @@ export default class BedSplash extends React.Component {
         <Header />
         <div className="conten-body">
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
-          <Row>
-          <Col>
-            <h1>BED File: {this.state.bedName}</h1>
-            </Col>
-            <Col>
+            <Row>
+              <Col>
+                <h1>BED File: {this.state.bedName}</h1>
+              </Col>
+              <Col>
                 <a href={this.state.trackPath}>
                   <button className='float-right btn primary-btn' >Genome Browser</button>
                 </a>
@@ -122,6 +122,9 @@ export default class BedSplash extends React.Component {
 
               </Col>
               <Col sm={8} md={8}>
+                <Label style={{ marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                  GenomicDistribution Plots
+                </Label>
                 {this.state.bedFig ?
                   (<ImgGrid imgList={this.state.bedFig} page="bed" />) : null
                 }
