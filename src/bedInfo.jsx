@@ -43,21 +43,29 @@ export default class BedInfo extends React.Component {
                 </Label>
                 <table >
                     <tbody>
+                        <tr style={{ verticalAlign: "top" }} >
+                            <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
+                                md5sum
+                            </td>
+                            <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                                {this.props.bed_md5sum}
+                            </td>
+                        </tr>
                         {Object.entries(this.state.bed_info)
                             .map(([key, value], index) => {
-                                const hide = ['bigbed', 'file_name', 'yaml_file', 'bedbase_config', 'output_file_path', 'open_signal_matrix', 'pipeline_interfaces','pipeline_interfaces']
+                                const hide = ['bigbed', 'file_name', 'yaml_file', 'bedbase_config', 'output_file_path', 'open_signal_matrix', 'pipeline_interfaces', 'pipeline_interfaces']
 
-                                return(!hide.includes(key) ? <tr style={{ verticalAlign: "top" }} key={index}>
+                                return (!hide.includes(key) ? <tr style={{ verticalAlign: "top" }} key={index}>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
                                         {key.charAt(0).toUpperCase() + key.slice(1)}
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                                        {key === "genome" ? 
-                                        (<><span>{value}</span><a href={"http://refgenomes.databio.org/#" + value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
-                                        : value}
+                                        {key === "genome" ?
+                                            (<><span>{value}</span><a href={"http://refgenomes.databio.org/#" + value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
+                                            : value}
                                     </td>
                                 </tr> : null)
-                                }
+                            }
                             )}
                     </tbody>
                 </ table>
@@ -74,9 +82,9 @@ export default class BedInfo extends React.Component {
                                         {key.replaceAll("_percentage", " (%)")}
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                                        {key === "regions_no" ?  
-                                        (<>{value.toFixed(0)}</>) : (<>{value.toFixed(3)}</>)}
-                                        
+                                        {key === "regions_no" ?
+                                            (<>{value.toFixed(0)}</>) : (<>{value.toFixed(3)}</>)}
+
                                     </td>
                                 </tr>
                             )}
