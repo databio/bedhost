@@ -18,6 +18,10 @@
   color:  #e76f51;
 }
 
+.new-line {
+  white-space: pre-line;
+}
+
 .primary-btn:not(:disabled):not(.disabled).active, 
 .primary-btn:not(:disabled):not(.disabled):active,
 .show>.primary-btn.dropdown-toggle {
