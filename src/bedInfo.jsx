@@ -3,7 +3,6 @@ import axios from "axios";
 import toObject from "./toObject";
 import SimplePopover from "./popover"
 import { Label } from 'semantic-ui-react';
-import { FaQuestionCircle } from "react-icons/fa";
 import bedhost_api_url from "./const";
 
 const api = axios.create({
@@ -89,7 +88,7 @@ export default class BedInfo extends React.Component {
                     </tbody>
                 </ table>
 
-                <Label style={{ marginTop: "30px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                     BED File Stats <SimplePopover onClick={this.handleGetDescription.bind(this)} message={this.state.description} />
                 </Label>
                 <table >

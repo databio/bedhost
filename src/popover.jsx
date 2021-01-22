@@ -1,17 +1,10 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import Popover from '@material-ui/core/Popover';
 import Typography from '@material-ui/core/Typography';
 import { FaQuestionCircle } from "react-icons/fa";
 
-const useStyles = makeStyles((theme) => ({
-    typography: {
-        padding: theme.spacing(2),
-    },
-}));
 
 export default function SimplePopover(props) {
-    const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const handleClick = (event) => {

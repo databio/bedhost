@@ -83,7 +83,7 @@ export default class Example extends React.Component {
       <div style={{ marginTop: "20px" }}>
         <span style={{marginLeft: "80px" }}>Mean Regional Distribution of the BED Set</span>
         <BarChart
-          width={500}
+          width={400}
           height={300}
           data={this.state.data}
           margin={{

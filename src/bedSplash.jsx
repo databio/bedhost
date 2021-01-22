@@ -77,7 +77,7 @@ export default class BedSplash extends React.Component {
             <Row>
               <Col sm={4} md={4}>
                 <BedInfo bed_md5sum={this.props.match.params.bed_md5sum} />
-                <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED File Download
               </Label>
                 {Object.entries(this.state.bedDownload)
@@ -89,7 +89,7 @@ export default class BedSplash extends React.Component {
                     </p>
                   )}
 
-                <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED File API Endpoints
                 </Label>
 

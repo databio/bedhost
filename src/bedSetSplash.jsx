@@ -8,6 +8,7 @@ import BarChart from "./barChart";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
+import SimplePopover from "./popover"
 import bedhost_api_url from "./const";
 import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
@@ -23,12 +24,15 @@ export default class BedSetSplash extends React.Component {
     this.state = {
       bedSetName: "",
       bedsCount: "",
-      avgGC: [],
-      avgRegionW: [],
+      genome: "",
+      bedSetStat: {},
+      // avgGC: [],
+      // avgRegionW: [],
       avgRegionD: {},
       bedSetDownload: {},
       bedSetFig: false,
-      hubFilePath:""
+      hubFilePath: "",
+      description: ""
     };
   }
 
@@ -46,8 +50,14 @@ export default class BedSetSplash extends React.Component {
           BED_Set_IGD: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
           BED_Set_PEP: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP"
         },
-        avgGC: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
-        avgRegionW: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)],
+        bedSetStat: {
+          "gc_content": [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
+          "mean_absolute_tss_dist": [data.data[0][9].mean_absolute_tss_dist.toFixed(3), data.data[0][10].mean_absolute_tss_dist.toFixed(3)],
+          "mean_region_width": [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)]
+        },
+        genome: data.data[0][13],
+        // avgGC: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
+        // avgRegionW: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)],
         avgRegionD: {
           exon: [data.data[0][9].exon_percentage.toFixed(3), data.data[0][10].exon_percentage.toFixed(3)],
           fiveutr: [data.data[0][9].fiveutr_percentage.toFixed(3), data.data[0][10].fiveutr_percentage.toFixed(3)],
@@ -78,6 +88,14 @@ export default class BedSetSplash extends React.Component {
       })
   }
 
+  handleGetDescription() {
+    this.setState({
+      description: 'gc_content: The average GC content of the BED set. \n \n \
+                    mean_region_width: The average region width of the BED set. \n \n \
+                    mean_absolute_tss_dist: The average absolute distance to the Transcription Start Sites (TSS) of the BED set.\n \n \
+    '});
+  }
+
   render() {
     return (
       <React.StrictMode >
@@ -87,13 +105,13 @@ export default class BedSetSplash extends React.Component {
             <Row>
               <Col md="10">
                 <h1>BED Set: {this.state.bedSetName}</h1>
-                <span style={{ fontSize: "12pt" }}>
+                {/* <span style={{ fontSize: "12pt" }}>
                   {" "}
                 There are <b>{this.state.bedsCount}</b> BED files in this BED set.
                 <br />
                 The mean GC content is  <b>{this.state.avgGC[0]}</b> (SD = {this.state.avgGC[1]} );
-                mean region width is <b>{this.state.avgRegionW[0]}</b> (SD = {this.state.avgRegionW[1]} ).
-                </span>
+                mean region width is <b>{this.state.avgRegionW[0]}</b> (SD = {this.state.avgRegionW[1]} ). 
+                </span>*/}
               </Col>
               <Col>
                 <a href={this.state.hubFilePath}>
@@ -104,17 +122,67 @@ export default class BedSetSplash extends React.Component {
           </Container>
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
             <Row>
-              <Col sm={3} md={3}>
+              <Col sm={5} md={5}>
                 <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                  BED Set Plots
-              </Label>
-                {this.state.bedSetFig ? (<BedSetPlots bedset_figs={this.state.bedSetFig} />) : null}
-              </Col>
-              <Col sm={7} md={7}>
-                {Object.keys(this.state.avgRegionD).length !== 0 ? (<BarChart stats={this.state.avgRegionD} />) : null}
-              </Col>
-              <Col sm={2} md={2}>
-                <Label style={{ marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                  BED Set Info
+                </Label>
+                <table >
+                  <tbody>
+                    <tr style={{ verticalAlign: "top" }} >
+                      <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
+                        md5sum
+                            </td>
+                      <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                        {this.props.match.params.bedset_md5sum}
+                      </td>
+                    </tr>
+                    <tr style={{ verticalAlign: "top" }} >
+                      <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
+                        genome
+                            </td>
+                      <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                        {this.state.genome}
+                      </td>
+                    </tr>
+                    <tr style={{ verticalAlign: "top" }} >
+                      <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
+                        total BED
+                            </td>
+                      <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                        {this.state.bedsCount}
+                      </td>
+                    </tr>
+                  </tbody>
+                </ table>
+
+                <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                  BED Set Stats <SimplePopover onClick={this.handleGetDescription.bind(this)} message={this.state.description} />
+                </Label>
+                <table >
+                  <tbody>
+                    <tr>
+                      <th> </th>
+                      <th style={{ padding: "3px 15px", fontSize: "10pt" }}>AVG</th>
+                      <th style={{ padding: "3px 15px", fontSize: "10pt" }}>SD</th>
+                    </tr>
+                    {Object.entries(this.state.bedSetStat)
+                      .map(([key, value], index) =>
+                        <tr style={{ verticalAlign: "top" }} key={index}>
+                          <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
+                            {key.replaceAll("_percentage", " (%)")}
+                          </td>
+                          <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                            {value[0]}
+                          </td>
+                          <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                            {value[1]}
+                          </td>
+                        </tr>
+                      )}
+                  </tbody>
+                </table>
+
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Downloads
                 </Label>
                 {Object.entries(this.state.bedSetDownload)
@@ -126,7 +194,7 @@ export default class BedSetSplash extends React.Component {
                     </p>
                   )}
 
-                <Label style={{ marginTop: "30px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set API Endpoints
                 </Label>
                 <p style={{ marginBottom: "5px" }}>
@@ -151,6 +219,20 @@ export default class BedSetSplash extends React.Component {
                   </a>
                 </p>
               </Col>
+              <Col sm={7} md={7}>
+                <Row>
+                  <Col>
+                    <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                      BED Set Plots
+                  </Label>
+                    {this.state.bedSetFig ? (<BedSetPlots bedset_figs={this.state.bedSetFig} />) : null}
+                  </Col>
+                  <Col>
+                    {Object.keys(this.state.avgRegionD).length !== 0 ? (<BarChart stats={this.state.avgRegionD} />) : null}
+                  </Col>
+                </Row>
+              </Col>
+
             </Row>
           </Container>
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
