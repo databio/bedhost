@@ -18,7 +18,8 @@ export default class ResultsBed extends React.Component {
             bedData: [],
             columns: [],
             data: [],
-            title: ""
+            pageSize: -1,
+            pageSizeOptions: []
         }
     }
 
@@ -54,6 +55,20 @@ export default class ResultsBed extends React.Component {
         this.setState({
             bedData: res
         })
+
+        if (res.length >= 50) {
+            this.setState({
+                pageSize: 50,
+                pageSizeOptions: [50, 100, 150]
+            })
+        } else {
+            this.setState({
+                pageSize: res.length,
+                pageSizeOptions: [res.length]
+            })
+        }
+
+
         console.log('BED files retrieved from the server: ', res)
         this.getColumns()
         this.getData()
@@ -64,9 +79,19 @@ export default class ResultsBed extends React.Component {
             .then(({ data }) => data)
 
         this.setState({
-            bedData: res.data,
-            title: "There are " + res.data.length + " BED files in this BED set."
+            bedData: res.data
         })
+
+        if (res.data.length >= 10) {
+            this.setState({ 
+                pageSize: 10,
+                pageSizeOptions: [10, 15, 20] })
+        } else {
+            this.setState({ 
+                pageSize: res.data.length,
+                pageSizeOptions: [res.data.length] })
+        }
+
         console.log('BED files retrieved from the server: ', res)
         this.getColumns()
         console.log('BED files retrieved from the server: ', this.state.columns)
@@ -75,7 +100,7 @@ export default class ResultsBed extends React.Component {
 
     getColumns() {
         let tableColumns = []
-        let cols = ['name', 'md5sum', 'genome', 'cell_type', 'tissue', 'antibody', 'trestment', 'exp_protocol', 'description', 'GSE', 'data_source']
+        let cols = ['name', 'md5sum', 'genome', 'GSE', 'data_source', 'description']
         // cols = cols.concat(Object.keys(this.state.bedData[0][33]))
         for (var i = 0; i < cols.length; i++) {
             if (cols[i] === 'md5sum' || cols[i] === 'GSE') {
@@ -85,14 +110,12 @@ export default class ResultsBed extends React.Component {
                     title: cols[i],
                     field: cols[i],
                     cellStyle: {
-                        width: 150,
-                        maxWidth: 150,
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
+                        width: 500,
+                        maxWidth: 500
                     },
                     headerStyle: {
-                        width: 150,
-                        maxWidth: 150
+                        width: 500,
+                        maxWidth: 500
                     },
                     render: rowData =>
                         <Tooltip
@@ -111,18 +134,18 @@ export default class ResultsBed extends React.Component {
                     title: cols[i],
                     field: cols[i],
                     cellStyle: {
-                        width: 500,
-                        minWidth: 500
+                        width: 700,
+                        minWidth: 700
                     },
                     headerStyle: {
-                        width: 500,
-                        minWidth: 500
+                        width: 700,
+                        minWidth: 700
                     }
                 })
             } else if (cols[i] === 'data_source') {
                 tableColumns.push({
                     title: cols[i],
-                    field: cols[i],   
+                    field: cols[i],
                     render: rowData => rowData.data_source === 'GEO' ? <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + rowData.GSE} className="home-link" >
                         {rowData.data_source}
                     </a> : null
@@ -162,7 +185,7 @@ export default class ResultsBed extends React.Component {
 
 
     render() {
-        return (
+        return (this.state.pageSize !== -1 ? (
             <div>
                 <MaterialTable
                     icons={tableIcons}
@@ -176,20 +199,15 @@ export default class ResultsBed extends React.Component {
                             fontWeight: "bold",
                         },
                         paging: true,
-                        pageSize: 50,
-                        pageSizeOptions: [25, 50, 100],
+                        pageSize: this.state.pageSize,
+                        pageSizeOptions: this.state.pageSizeOptions,
                         search: false,
                     }}
-                    // detailPanel={rowData => {
-                    //     return (
-                    //         <p>{rowData.description}</p>
-                    //     )
-                    // }}
                     components={{
                         Container: props => <Paper {...props} elevation={0} />
                     }}
                 />
-            </div>
+            </div>) : null
         );
     }
 }
