@@ -39,18 +39,8 @@ export default class BedInfo extends React.Component {
 
     handleGetDescription() {
         this.setState({
-            description: 'gc_content: The average GC content of the region set. \n \n \
-                        regions_no: The total number of regions in the BED file. \n \n \
-                        mean_absolute_tss_dist: The average absolute distance to the Transcription Start Sites (TSS). \n \n \
-                        mean_region_width: The average region width of the region set. \n \n \
-                        exon (%): The percentage of the regions in the BED file that are annotated as exon. \n \n \
-                        intron (%): The percentage of the regions in the BED file that are annotated as intron. \n \n \
-                        promoterprox (%):	 The percentage of the regions in the BED file that are annotated as promoter-prox. \n \n \
-                        intergenic (%)The percentage of the regions in the BED file that are annotated as intergenic. \n \
-                        promotercore (%):	The percentage of the regions in the BED file that are annotated as promoter-core. \n \n \
-                        fiveutr (%):	The percentage of the regions in the BED file that are annotated as 5\'-UTR. \n \n \
-                        threeutr(%): The percentage of the regions in the BED file that are annotated as 3\'-UTR. \n \n \
-        '});
+            description: 'gc_content: The average GC content of the region set. \n \n regions_no: The total number of regions in the BED file. \n \n  mean_absolute_tss_dist: The average absolute distance to the Transcription Start Sites (TSS). \n \n  mean_region_width: The average region width of the region set. \n \n  exon (%): The percentage of the regions in the BED file that are annotated as exon. \n \n  intron (%): The percentage of the regions in the BED file that are annotated as intron. \n \n promoterprox (%):	 The percentage of the regions in the BED file that are annotated as promoter-prox. \n \n  intergenic (%)The percentage of the regions in the BED file that are annotated as intergenic. \n \n promotercore (%):	The percentage of the regions in the BED file that are annotated as promoter-core. \n \n fiveutr (%):	The percentage of the regions in the BED file that are annotated as 5\'-UTR. \n \n threeutr(%): The percentage of the regions in the BED file that are annotated as 3\'-UTR. \n \n '
+        });
     }
 
     render() {

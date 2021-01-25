@@ -90,10 +90,8 @@ export default class BedSetSplash extends React.Component {
 
   handleGetDescription() {
     this.setState({
-      description: 'gc_content: The average GC content of the BED set. \n \n \
-                    mean_region_width: The average region width of the BED set. \n \n \
-                    mean_absolute_tss_dist: The average absolute distance to the Transcription Start Sites (TSS) of the BED set.\n \n \
-    '});
+      description: 'gc_content: The average GC content of the BED set. \n \n mean_region_width: The average region width of the BED set. \n \n mean_absolute_tss_dist: The average absolute distance to the Transcription Start Sites (TSS) of the BED set.\n \n '
+    });
   }
 
   render() {
