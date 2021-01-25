@@ -17,7 +17,9 @@ export default class ResultsBedSet extends React.Component {
         this.state = {
             bedSetData: [],
             columns: [],
-            data: []
+            data: [],
+            pageSize: -1,
+            pageSizeOptions: []
         }
     }
 
@@ -47,6 +49,19 @@ export default class ResultsBedSet extends React.Component {
         this.setState({
             bedSetData: res
         })
+
+        if (res.length >= 50) {
+            this.setState({
+                pageSize: 50,
+                pageSizeOptions: [50, 100, 150]
+            })
+        } else {
+            this.setState({
+                pageSize: res.length,
+                pageSizeOptions: [res.length]
+            })
+        }
+
         console.log('BED sets retrieved from the server: ', res)
         this.getColumns()
         let data = await this.getData()
@@ -68,7 +83,7 @@ export default class ResultsBedSet extends React.Component {
         let tableColumns = []
 
         for (var i = 0; i < cols.length; i++) {
-            if ((cols[i] === 'md5sum') || (cols[i].includes("_frequency"))) {
+            if ((cols[i] === 'md5sum') || (cols[i].includes("_frequency")) || (cols[i].includes("_percentage")) ){
                 tableColumns.push({ title: cols[i], field: cols[i], hidden: true })
             } else if (cols[i] === 'name') {
                 tableColumns.push({
@@ -103,7 +118,7 @@ export default class ResultsBedSet extends React.Component {
     }
 
     render() {
-        return (
+        return (this.state.pageSize !== -1 ? (
             <div style={{ maxWidth: '100%' }}>
                 <MaterialTable
                     icons={tableIcons}
@@ -117,8 +132,8 @@ export default class ResultsBedSet extends React.Component {
                             fontWeight: "bold",
                         },
                         paging: true,
-                        pageSize: 50,
-                        pageSizeOptions: [25, 50, 100],
+                        pageSize: this.state.pageSize,
+                        pageSizeOptions: this.state.pageSizeOptions,
                         search: false,
                     }}
                     detailPanel={[
@@ -133,7 +148,7 @@ export default class ResultsBedSet extends React.Component {
                         Container: props => <Paper {...props} elevation={0} />
                     }}
                 />
-            </div>
+            </div>):null
         );
     }
 }

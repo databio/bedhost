@@ -19,7 +19,8 @@ export default class ResultsBed extends React.Component {
             columns: [],
             data: [],
             pageSize: -1,
-            pageSizeOptions: []
+            pageSizeOptions: [],
+            toolBar: true
         }
     }
 
@@ -79,7 +80,8 @@ export default class ResultsBed extends React.Component {
             .then(({ data }) => data)
 
         this.setState({
-            bedData: res.data
+            bedData: res.data,
+            toolBar: false
         })
 
         if (res.data.length >= 10) {
@@ -202,6 +204,7 @@ export default class ResultsBed extends React.Component {
                         pageSize: this.state.pageSize,
                         pageSizeOptions: this.state.pageSizeOptions,
                         search: false,
+                        toolbar: this.state.toolBar
                     }}
                     components={{
                         Container: props => <Paper {...props} elevation={0} />
