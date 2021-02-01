@@ -103,13 +103,6 @@ export default class BedSetSplash extends React.Component {
             <Row>
               <Col md="10">
                 <h1>BED Set: {this.state.bedSetName}</h1>
-                {/* <span style={{ fontSize: "12pt" }}>
-                  {" "}
-                There are <b>{this.state.bedsCount}</b> BED files in this BED set.
-                <br />
-                The mean GC content is  <b>{this.state.avgGC[0]}</b> (SD = {this.state.avgGC[1]} );
-                mean region width is <b>{this.state.avgRegionW[0]}</b> (SD = {this.state.avgRegionW[1]} ). 
-                </span>*/}
               </Col>
               <Col>
                 <a href={this.state.hubFilePath}>
@@ -139,7 +132,7 @@ export default class BedSetSplash extends React.Component {
                         genome
                             </td>
                       <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                        {this.state.genome}
+                        <><span>{this.state.genome}</span><a href={"http://refgenomes.databio.org/#" + this.state.genome} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>
                       </td>
                     </tr>
                     <tr style={{ verticalAlign: "top" }} >
@@ -207,7 +200,7 @@ export default class BedSetSplash extends React.Component {
                 </p>
                 <p style={{ marginBottom: "5px" }}>
                   <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data?ids=bedset_means&ids=bedset_standard_deviation'}
-                    className="home-link" style={{ marginLeft: '15px', fontSize: "11pt", fontWeight: "bold" }}>
+                    className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
                     BED set stats
                   </a>
                 </p>
@@ -234,6 +227,18 @@ export default class BedSetSplash extends React.Component {
             </Row>
           </Container>
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
+            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+              BED File Comparison
+            </Label>
+            <div style={{marginLeft:'15px'}}>
+            <span className={'new-line'} >
+            {"\n"}
+              The table below shows the statistics of each BED file in this BED set. {"\n"}
+              You can compare the GenomicDistribution plots of multiple BED files by: {"\n"} 
+              1) select the BED files you want to compare using the select box in the left-most column, and {"\n"}
+              2) select one plot type you want to compare using the buttons below the table. {"\n"}
+            </span>
+            </div>
             <BedSetTable bedset_md5sum={this.props.match.params.bedset_md5sum} />
           </Container>
         </div>

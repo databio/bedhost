@@ -91,7 +91,10 @@ export default class BedInfo extends React.Component {
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {key === "regions_no" ?
-                                            (<>{value.toFixed(0)}</>) : (<>{value.toFixed(3)}</>)}
+                                            (<>{value.toFixed(0)}</>) :
+                                            key.includes("_percentage") ?
+                                                (<>{(value * 100).toFixed(3)}</>) :
+                                                (<>{value.toFixed(3)}</>)}
 
                                     </td>
                                 </tr>

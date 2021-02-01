@@ -24,7 +24,9 @@ export default class BedSetTable extends React.Component {
             showFig: false,
             figType: "",
             selectedBedId: [],
-            selectedBedName: []
+            selectedBedName: [],
+            pageSize: -1,
+            pageSizeOptions: []
         }
     }
 
@@ -75,6 +77,18 @@ export default class BedSetTable extends React.Component {
             bedSetData: data[0],
             bedFigs: newbedFig
         })
+
+        if (res.data.length >= 10) {
+            this.setState({
+                pageSize: 10,
+                pageSizeOptions: [10, 15, 20]
+            })
+        } else {
+            this.setState({
+                pageSize: res.data.length,
+                pageSizeOptions: [res.data.length]
+            })
+        }
     }
 
     getColumns() {
@@ -82,7 +96,7 @@ export default class BedSetTable extends React.Component {
             {
                 title: this.state.columns[0],
                 field: this.state.columns[0],
-                width: 550,
+                width: 500,
                 cellStyle: {
                     backgroundColor: "#333535",
                     color: "#FFF",
@@ -102,9 +116,13 @@ export default class BedSetTable extends React.Component {
 
         for (var i = 0; i < this.state.columns.length; i++) {
             if (i === 1) {
-                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 300 })
+                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 275 })
             } else if (i !== 0) {
-                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 200 })
+                if (this.state.columns[i] === "regions_no" || this.state.columns[i] === "gc_content") {
+                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 100 })
+                } else {
+                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 170 })
+                }
             }
         }
         return tableColumns
@@ -135,68 +153,96 @@ export default class BedSetTable extends React.Component {
         return (
             <div>
                 <div>
-                    <MaterialTable
-                        title=""
-                        columns={this.getColumns()} // <-- Set the columns on the table
-                        data={this.state.bedSetData} // <-- Set the data on the table
-                        icons={tableIcons}
-                        options={{
-                            fixedColumns: {
-                                left: 1,
-                            },
-                            headerStyle: {
-                                backgroundColor: "#333535",
-                                color: "#FFF",
-                                fontWeight: "bold",
-                            },
-                            paging: true,
-                            search: true,
-                            selection: true,
-                            showSelectAllCheckbox: true,
-                        }}
-                        onSelectionChange={(rows) => {
-                            rows.length > 0
-                                ? this.bedSelected(rows)
-                                : (this.setState({
-                                    selectedBedId: [],
-                                    selectedBedName: []
-                                }));
-                        }}
-                        components={{
-                            Container: props => <Paper {...props} elevation={0} />,
-                            Toolbar: (props) => (
-                                <div>
-                                    <MTableToolbar {...props} />
-                                    <div style={{ padding: "5px 5px" }}>
-                                        {this.state.bedFigs.map((fig, index) => {
-                                            return (
-                                                <Tooltip
-                                                    key={index}
-                                                    title={fig.title}
-                                                    placement="top"
-                                                >
-                                                    <Button
-                                                        size="small"
-                                                        variant="contained"
-                                                        style={{ padding: 5, margin: 5 }}
-                                                        onClick={() => {
-                                                            this.figTypeClicked(
-                                                                fig.id,
-                                                                fig.title
-                                                            );
-                                                        }}
+                    {this.state.pageSize !== -1 ? (
+                        <MaterialTable
+                            title=""
+                            columns={this.getColumns()} // <-- Set the columns on the table
+                            data={this.state.bedSetData} // <-- Set the data on the table
+                            icons={tableIcons}
+                            options={{
+                                fixedColumns: {
+                                    left: 1,
+                                },
+                                headerStyle: {
+                                    backgroundColor: "#333535",
+                                    color: "#FFF",
+                                    fontWeight: "bold",
+                                },
+                                paging: true,
+                                pageSize: this.state.pageSize,
+                                pageSizeOptions: this.state.pageSizeOptions,
+                                search: true,
+                                selection: true,
+                                showSelectAllCheckbox: true,
+                            }}
+                            onSelectionChange={(rows) => {
+                                rows.length > 0
+                                    ? this.bedSelected(rows)
+                                    : (this.setState({
+                                        selectedBedId: [],
+                                        selectedBedName: []
+                                    }));
+                            }}
+                            components={{
+                                Container: props => <Paper {...props} elevation={0} />,
+                                Toolbar: (props) => (
+                                    <div>
+                                        <MTableToolbar {...props} />
+                                        {/* <div style={{ padding: "5px 5px" }}>
+                                            {this.state.bedFigs.map((fig, index) => {
+                                                return (
+                                                    <Tooltip
+                                                        key={index}
+                                                        title={fig.title}
+                                                        placement="top"
                                                     >
-                                                        {fig.id}
-                                                    </Button>
-                                                </Tooltip>
-                                            )
-                                        })}
+                                                        <Button
+                                                            size="small"
+                                                            variant="contained"
+                                                            style={{ padding: 5, margin: 5 }}
+                                                            onClick={() => {
+                                                                this.figTypeClicked(
+                                                                    fig.id,
+                                                                    fig.title
+                                                                );
+                                                            }}
+                                                        >
+                                                            {fig.id}
+                                                        </Button>
+                                                    </Tooltip>
+                                                )
+                                            })}
+                                        </div> */}
                                     </div>
-                                </div>
-                            ),
-                        }}
-                    />
+                                ),
+                            }}
+                        />) : null}
                 </div>
+                <div style={{ padding: "5px 5px" }}>
+                                            {this.state.bedFigs.map((fig, index) => {
+                                                return (
+                                                    <Tooltip
+                                                        key={index}
+                                                        title={fig.title}
+                                                        placement="top"
+                                                    >
+                                                        <Button
+                                                            size="small"
+                                                            variant="contained"
+                                                            style={{ padding: 5, margin: 5 }}
+                                                            onClick={() => {
+                                                                this.figTypeClicked(
+                                                                    fig.id,
+                                                                    fig.title
+                                                                );
+                                                            }}
+                                                        >
+                                                            {fig.id}
+                                                        </Button>
+                                                    </Tooltip>
+                                                )
+                                            })}
+                                        </div>
                 <div style={{ padding: "10px 10px" }}>
                     {this.state.showFig ? (
                         <ShowFig

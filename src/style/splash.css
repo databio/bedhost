@@ -20,6 +20,8 @@
 
 .new-line {
   white-space: pre-line;
+  line-height: 1.5;
+  font-size: 12pt
 }
 
 .primary-btn:not(:disabled):not(.disabled).active, 

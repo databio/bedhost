@@ -3,7 +3,6 @@ import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
-import Tooltip from "@material-ui/core/Tooltip";
 import bedhost_api_url from "./const";
 import axios from "axios";
 
@@ -85,13 +84,15 @@ export default class ResultsBed extends React.Component {
         })
 
         if (res.data.length >= 10) {
-            this.setState({ 
+            this.setState({
                 pageSize: 10,
-                pageSizeOptions: [10, 15, 20] })
+                pageSizeOptions: [10, 15, 20]
+            })
         } else {
-            this.setState({ 
+            this.setState({
                 pageSize: res.data.length,
-                pageSizeOptions: [res.data.length] })
+                pageSizeOptions: [res.data.length]
+            })
         }
 
         console.log('BED files retrieved from the server: ', res)
@@ -120,16 +121,10 @@ export default class ResultsBed extends React.Component {
                         maxWidth: 500
                     },
                     render: rowData =>
-                        <Tooltip
-                            key={rowData.name}
-                            title={rowData.name}
-                            placement="top"
-                        >
-                            <Link className="home-link" to={{
-                                pathname: '/bedsplash/' + rowData.md5sum
-                            }}>{rowData.name}
-                            </Link>
-                        </Tooltip>
+                        <Link className="home-link" to={{
+                            pathname: '/bedsplash/' + rowData.md5sum
+                        }}>{rowData.name}
+                        </Link>
                 })
             } else if (cols[i] === 'description') {
                 tableColumns.push({

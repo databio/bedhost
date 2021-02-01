@@ -57,17 +57,18 @@ export default class BedCountsSpan extends React.Component {
           that produced by the bedstat and bedbuncher pipeline. {" "}
           We currently have <b>{this.state.bed}</b> BED files and {" "}
           <b>{this.state.bedSet}</b> BED sets in the database.{" "}
-          Please check out an example BED splash page {" "}
+          Please check out the {" "}
           <Link className="home-link" to={{
                     pathname: this.state.sampleBed
-                }}>HERE
-          </Link>
-          {" "} and an example BED set splash page {" "}
+                }}>BED splash page
+          </Link>          
+          {" "} to see all the statistics, plots, and avalible downloans for single BED file. {" "}
+           In addition to the statistics, plots, and downloads for the BED set, the{" "}
           <Link className="home-link" to={{
                     pathname: this.state.sampleBedSet
-                }}>HERE
+                }}>BED set splash page
           </Link>
-          .
+          {" "} also allows you to compare among BED files within the set. {" "}
         </span>
       </div>
     ) : (
