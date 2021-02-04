@@ -28,18 +28,17 @@ const fileRules = {
     condition: 'AND',
     rules: [{
         id: 'name',
-        operator: 'not_equal',
-        value: 'null'
+        operator: 'is_not_null'
     }, {
         condition: 'OR',
         rules: [{
             id: 'gc_content',
             operator: 'greater',
-            value: 0.4
+            value: 0.5
         }, {
-            id: 'md5sum',
-            operator: 'equal',
-            value: '23jhb4j324b32hj4b23hj4b23hb42'
+            id: 'regions_no',
+            operator: 'greater',
+            value: 300000
         }]
     }]
 };
