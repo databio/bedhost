@@ -49,7 +49,7 @@ export default class ResultsBed extends React.Component {
             return my_query_val
         }).join('');
 
-        let res = await api.get("/_private_api/query/bedfiles/" + encodeURIComponent(query) + query_val)
+        let res = await api.get("/_private_api/query/bedfiles/" + encodeURIComponent(query) + query_val + "&columns=name&columns=md5sum&columns=other")
             .then(({ data }) => data)
 
         this.setState({
@@ -75,7 +75,7 @@ export default class ResultsBed extends React.Component {
     }
 
     async getBedByBedSet() {
-        let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles")
+        let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles?ids=name&ids=md5sum&ids=other")
             .then(({ data }) => data)
 
         this.setState({
@@ -158,21 +158,9 @@ export default class ResultsBed extends React.Component {
 
     getData() {
         let data = []
-        let name_idx = 0
-        let md5sum_idx = 0
-        let data_idx = 0
         data.push(this.state.bedData.map((bed) => {
-            if (this.props.query) {
-                name_idx = 2
-                md5sum_idx = 1
-                data_idx = 33
-            } else {
-                name_idx = 0
-                md5sum_idx = 1
-                data_idx = 31
-            }
-            let row = { name: bed[name_idx], md5sum: bed[md5sum_idx] }
-            row = Object.assign({}, row, bed[data_idx]);
+            let row = { name: bed[0], md5sum: bed[1] }
+            row = Object.assign({}, row, bed[2]);
             return row
         }))
         this.setState({

@@ -43,7 +43,7 @@ export default class ResultsBedSet extends React.Component {
             return my_query_val
         }).join('');
 
-        let res = await api.get("/_private_api/query/bedsets/" + encodeURIComponent(query) + query_val)
+        let res = await api.get("/_private_api/query/bedsets/" + encodeURIComponent(query) + query_val + "&columns=name&columns=md5sum&columns=genome&columns=bedset_means")
             .then(({ data }) => data)
 
         this.setState({
@@ -77,8 +77,8 @@ export default class ResultsBedSet extends React.Component {
     }
 
     getColumns() {
-        let cols = ["name", "md5sum", "bed_file_count"]
-        cols = cols.concat(Object.keys(this.state.bedSetData[0][9]))
+        let cols = ["name", "md5sum", "bed_file_count", "genome"]
+        cols = cols.concat(Object.keys(this.state.bedSetData[0][3]))
 
         let tableColumns = []
 
@@ -94,9 +94,7 @@ export default class ResultsBedSet extends React.Component {
                     }}>{rowData.name}
                     </Link>
                 })
-            } else {
-                tableColumns.push({ title: cols[i].replaceAll("_percentage", "(%)"), field: cols[i] })
-            }
+            } 
         }
         this.setState({
             columns: tableColumns
@@ -107,11 +105,11 @@ export default class ResultsBedSet extends React.Component {
         let data = []
         data.push(this.state.bedSetData.map(async (bed, index) => {
             let count = await this.getBedCount(bed[1])
-            let row = { name: bed[2], md5sum: bed[1], bed_file_count: count }
-            for (var key in bed[9]) {
-                bed[9][key] = bed[9][key].toFixed(3)
+            let row = { name: bed[0], md5sum: bed[1], bed_file_count: count, genome:bed[2] }
+            for (var key in bed[3]) {
+                bed[3][key] = bed[3][key].toFixed(3)
             }
-            row = Object.assign({}, row, bed[9]);
+            row = Object.assign({}, row, bed[3]);
             return row
         }))
         return Promise.all(data[0])
