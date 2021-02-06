@@ -26,7 +26,7 @@ async def get_query_results(
             None,
             description="Column names to include in the query result"),
         limit: int = Query(
-            100,
+            None,
             description="number of rows returned by the query")
         
 
