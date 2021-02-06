@@ -7,6 +7,7 @@ import bedhost_api_url from "./const";
 import "./style/queryBuilder.css";
 import ResultsBed from './queryResultsBed'
 import ResultsBedSet from './queryResultsBedSet'
+import TextField from '@material-ui/core/TextField';
 
 
 
@@ -49,10 +50,11 @@ export default class QueryBuilderWrapper extends React.Component {
         super();
         this.queryBuilder = React.createRef()
         this.state = {
-            table_name:"",
+            table_name: "",
             rules: {},
             query: '',
-            filters: {}
+            filters: {},
+            limit: 500
         };
     }
 
@@ -71,10 +73,10 @@ export default class QueryBuilderWrapper extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         // only update query filter if the table_name has changed
         if (prevProps.table_name !== this.props.table_name) {
-            this.handleSetRulesClick()  
+            this.handleSetRulesClick()
             await this.getfilter()
-            $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters); 
-            this.setState({ table_name: this.props.table_name })    
+            $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
+            this.setState({ table_name: this.props.table_name })
         }
     }
 
@@ -97,7 +99,7 @@ export default class QueryBuilderWrapper extends React.Component {
     handleGetRulesClick() {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
         const query = $(this.queryBuilder.current).queryBuilder('getSQL', 'question_mark');
-        this.setState({ rules: rules.sql, query: query});
+        this.setState({ rules: rules.sql, query: query });
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
@@ -113,21 +115,28 @@ export default class QueryBuilderWrapper extends React.Component {
         this.handleGetRulesClick()
     }
 
+    setLimit(event){
+        this.setState({ limit: event.target.value });
+      };
+
     render() {
         return (
             <div>
                 <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
                 <button className='btn btn-sm my-btn' onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
-                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>SEARCH</button>
+                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this) }>SEARCH</button>
+                <input className='float-right' style={{width:'100px', height:'27px', marginLeft:'5px', padding: '5px', borderColor:'#ced4da', borderStyle:'solid', borderWidth: '1px', borderRadius: '.25rem'}} type="text" value={this.state.limit}  onChange={this.setLimit.bind(this)}/>
+                <label className='float-right' style={{marginTop: '3px', fontSize:'10pt'}}>Set limit: </label>
                 { this.props.table_name === this.state.table_name && this.state.query ? (
                     this.state.table_name === 'bedfiles' ? (
-                    <ResultsBed query={this.state.query} />
-                    ) :(
-                        <ResultsBedSet query={this.state.query} />
-                    )
-                ):null}
+                        <ResultsBed query={this.state.query} limit={this.state.limit} />
+                    ) : (
+                            <ResultsBedSet query={this.state.query} limit={this.state.limit}/>
+                        )
+                ) : null}
             </div>
+
         );
     }
 };

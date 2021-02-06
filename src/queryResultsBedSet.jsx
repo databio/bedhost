@@ -46,7 +46,7 @@ export default class ResultsBedSet extends React.Component {
             return my_query_val
         }).join('');
 
-        let res = await api.get("/_private_api/query/bedsets/" + encodeURIComponent(query) + query_val + "&columns=name&columns=md5sum&columns=genome&columns=bedset_means")
+        let res = await api.get("/_private_api/query/bedsets/" + encodeURIComponent(query) + query_val + "&columns=name&columns=md5sum&columns=genome&columns=bedset_means&limit=" + this.props.limit)
             .then(({ data }) => data)
 
         this.setState({

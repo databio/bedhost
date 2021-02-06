@@ -53,7 +53,7 @@ export default class ResultsBed extends React.Component {
             return my_query_val
         }).join('');
 
-        let res = await api.get("/_private_api/query/bedfiles/" + encodeURIComponent(query) + query_val + "&columns=name&columns=md5sum&columns=other")
+        let res = await api.get("/_private_api/query/bedfiles/" + encodeURIComponent(query) + query_val + "&columns=name&columns=md5sum&columns=other&limit=" + this.props.limit)
             .then(({ data }) => data)
 
         this.setState({
@@ -78,7 +78,7 @@ export default class ResultsBed extends React.Component {
     }
 
     async getBedByBedSet() {
-        let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles?ids=name&ids=md5sum&ids=other")
+        let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles?ids=name&ids=md5sum&ids=other&limit=" + this.props.limit)
             .then(({ data }) => data)
 
         this.setState({
