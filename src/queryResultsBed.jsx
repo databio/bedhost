@@ -14,8 +14,8 @@ export default class ResultsBed extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            query:"",
-            md5sum:"",
+            query: "",
+            md5sum: "",
             bedData: [],
             columns: [],
             data: [],
@@ -36,10 +36,10 @@ export default class ResultsBed extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.query !== this.props.query) {
             await this.getBedByQuery()
-            this.setState({ query: this.props.query })  
+            this.setState({ query: this.props.query })
         } else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
             await this.getBedByBedSet()
-            this.setState({ md5sum: this.props.md5sum })  
+            this.setState({ md5sum: this.props.md5sum })
         }
     }
 
@@ -97,7 +97,7 @@ export default class ResultsBed extends React.Component {
                 pageSizeOptions: [res.data.length]
             })
         }
-        this.setState({ md5sum: this.props.md5sum }) 
+        this.setState({ md5sum: this.props.md5sum })
         console.log('BED files retrieved from the server: ', res)
         this.getColumns()
         this.getData()
@@ -145,9 +145,15 @@ export default class ResultsBed extends React.Component {
                 tableColumns.push({
                     title: cols[i],
                     field: cols[i],
-                    render: rowData => rowData.data_source === 'GEO' ? <a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + rowData.GSE} className="home-link" >
-                        {rowData.data_source}
-                    </a> : null
+                    render: rowData => rowData.data_source === 'GEO' ?
+                        (<a href={"https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" + rowData.GSE} className="home-link" >
+                            {rowData.data_source}
+                        </a>) :
+                        (rowData.data_source === 'ENCODE' ?
+                            (<a href={"https://www.encodeproject.org/files/" + rowData.file_acc} className="home-link" >
+                                {rowData.data_source}
+                            </a>) :
+                            null)
                 })
             } else {
                 tableColumns.push({ title: cols[i], field: cols[i] })
@@ -172,31 +178,31 @@ export default class ResultsBed extends React.Component {
 
 
     render() {
-        return (this.props.md5sum === this.state.md5sum || this.props.query === this.state.query ?(
+        return (this.props.md5sum === this.state.md5sum || this.props.query === this.state.query ? (
             this.state.pageSize !== -1 ? (
-            <div>
-                <MaterialTable
-                    icons={tableIcons}
-                    columns={this.state.columns}
-                    data={this.state.data}
-                    title=""
-                    options={{
-                        headerStyle: {
-                            backgroundColor: "#264653",
-                            color: "#FFF",
-                            fontWeight: "bold",
-                        },
-                        paging: true,
-                        pageSize: this.state.pageSize,
-                        pageSizeOptions: this.state.pageSizeOptions,
-                        search: false,
-                        toolbar: this.state.toolBar
-                    }}
-                    components={{
-                        Container: props => <Paper {...props} elevation={0} />
-                    }}
-                />
-            </div>) : null):null
+                <div>
+                    <MaterialTable
+                        icons={tableIcons}
+                        columns={this.state.columns}
+                        data={this.state.data}
+                        title=""
+                        options={{
+                            headerStyle: {
+                                backgroundColor: "#264653",
+                                color: "#FFF",
+                                fontWeight: "bold",
+                            },
+                            paging: true,
+                            pageSize: this.state.pageSize,
+                            pageSizeOptions: this.state.pageSizeOptions,
+                            search: false,
+                            toolbar: this.state.toolBar
+                        }}
+                        components={{
+                            Container: props => <Paper {...props} elevation={0} />
+                        }}
+                    />
+                </div>) : null) : null
         );
     }
 }
