@@ -49,13 +49,15 @@ export default class QueryBuilderWrapper extends React.Component {
         super();
         this.queryBuilder = React.createRef()
         this.state = {
+            table_name:"",
             rules: {},
-            query: "",
-            filters: {},
+            query: '',
+            filters: {}
         };
     }
 
     async componentDidMount() {
+        this.setState({ table_name: this.props.table_name })
         await this.getfilter()
         const element = this.queryBuilder.current;
         this.initializeQueryBuilder(element, this.state.filters);
@@ -69,9 +71,10 @@ export default class QueryBuilderWrapper extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         // only update query filter if the table_name has changed
         if (prevProps.table_name !== this.props.table_name) {
+            this.handleSetRulesClick()  
             await this.getfilter()
-            $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
-            this.handleSetRulesClick()
+            $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters); 
+            this.setState({ table_name: this.props.table_name })    
         }
     }
 
@@ -95,7 +98,6 @@ export default class QueryBuilderWrapper extends React.Component {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
         const query = $(this.queryBuilder.current).queryBuilder('getSQL', 'question_mark');
         this.setState({ rules: rules.sql, query: query});
-        this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
     handleSetRulesClick() {
@@ -117,8 +119,8 @@ export default class QueryBuilderWrapper extends React.Component {
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
                 <button className='btn btn-sm my-btn' onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
                 <button className='float-right btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>SEARCH</button>
-                { this.state.query ? (
-                    this.props.table_name === 'bedfiles' ? (
+                { this.props.table_name === this.state.table_name && this.state.query ? (
+                    this.state.table_name === 'bedfiles' ? (
                     <ResultsBed query={this.state.query} />
                     ) :(
                         <ResultsBedSet query={this.state.query} />

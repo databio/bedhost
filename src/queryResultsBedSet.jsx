@@ -24,6 +24,7 @@ export default class ResultsBedSet extends React.Component {
     }
 
     async componentDidMount() {
+        console.log("debug:", this.props.query)
         await this.getBedSetByQuery()
     }
 
