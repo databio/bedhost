@@ -38,11 +38,13 @@ export default class BedCountsSpan extends React.Component {
     this.setState({ bedSet: bscount.data });
 
     let bed = await api.get("/api/bed/all/data?ids=md5sum").then(({ data }) => data);
-    let bedurl = '/bedsplash/' + bed.data[0][1]
+    
+    let bedurl = '/bedsplash/' + bed.data[0][0]
     this.setState({ sampleBed: bedurl });
 
-    let bedset = await api.get("/api/bedset/all/data?ids=md5sum").then(({ data }) => data);
-    let bedseturl = '/bedsetsplash/' + bedset.data[0][1]
+    let bedset = await api.get("/api/bedset/all/data?ids=md5sum").then(({ data }) => data)
+    console.log("BED set count retrieved from the server: ", bedset.data);
+    let bedseturl = '/bedsetsplash/' + bedset.data[0][0]
     this.setState({ sampleBedSet: bedseturl });
     
   }
