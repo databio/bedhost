@@ -15,6 +15,7 @@ export default class ResultsBedSet extends React.Component {
     constructor(props) {
         super();
         this.state = {
+            query:"",
             bedSetData: [],
             columns: [],
             data: [],
@@ -31,6 +32,7 @@ export default class ResultsBedSet extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.query !== this.props.query) {
             await this.getBedSetByQuery()
+            this.setState({ query: this.props.query })
         }
     }
 
@@ -63,6 +65,7 @@ export default class ResultsBedSet extends React.Component {
             })
         }
 
+        this.setState({ query: this.props.query })
         console.log('BED sets retrieved from the server: ', res)
         this.getColumns()
         let data = await this.getData()
@@ -119,7 +122,8 @@ export default class ResultsBedSet extends React.Component {
     }
 
     render() {
-        return (this.state.pageSize !== -1 ? (
+        return ( this.props.query === this.state.query ?(
+            this.state.pageSize !== -1 ? (
             <div style={{ maxWidth: '100%' }}>
                 <MaterialTable
                     icons={tableIcons}
@@ -149,7 +153,7 @@ export default class ResultsBedSet extends React.Component {
                         Container: props => <Paper {...props} elevation={0} />
                     }}
                 />
-            </div>):null
+            </div>):null):null
         );
     }
 }

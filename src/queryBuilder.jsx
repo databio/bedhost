@@ -98,6 +98,7 @@ export default class QueryBuilderWrapper extends React.Component {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
         const query = $(this.queryBuilder.current).queryBuilder('getSQL', 'question_mark');
         this.setState({ rules: rules.sql, query: query});
+        this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
     handleSetRulesClick() {

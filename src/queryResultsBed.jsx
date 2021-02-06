@@ -14,6 +14,8 @@ export default class ResultsBed extends React.Component {
     constructor(props) {
         super();
         this.state = {
+            query:"",
+            md5sum:"",
             bedData: [],
             columns: [],
             data: [],
@@ -34,8 +36,10 @@ export default class ResultsBed extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         if (prevProps.query !== this.props.query) {
             await this.getBedByQuery()
+            this.setState({ query: this.props.query })  
         } else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
             await this.getBedByBedSet()
+            this.setState({ md5sum: this.props.md5sum })  
         }
     }
 
@@ -67,8 +71,7 @@ export default class ResultsBed extends React.Component {
                 pageSizeOptions: [res.length]
             })
         }
-
-
+        this.setState({ query: this.props.query })
         console.log('BED files retrieved from the server: ', res)
         this.getColumns()
         this.getData()
@@ -94,10 +97,9 @@ export default class ResultsBed extends React.Component {
                 pageSizeOptions: [res.data.length]
             })
         }
-
+        this.setState({ md5sum: this.props.md5sum }) 
         console.log('BED files retrieved from the server: ', res)
         this.getColumns()
-        console.log('BED files retrieved from the server: ', this.state.columns)
         this.getData()
     }
 
@@ -170,7 +172,8 @@ export default class ResultsBed extends React.Component {
 
 
     render() {
-        return (this.state.pageSize !== -1 ? (
+        return (this.props.md5sum === this.state.md5sum || this.props.query === this.state.query ?(
+            this.state.pageSize !== -1 ? (
             <div>
                 <MaterialTable
                     icons={tableIcons}
@@ -193,7 +196,7 @@ export default class ResultsBed extends React.Component {
                         Container: props => <Paper {...props} elevation={0} />
                     }}
                 />
-            </div>) : null
+            </div>) : null):null
         );
     }
 }
