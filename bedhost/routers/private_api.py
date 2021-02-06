@@ -24,7 +24,12 @@ async def get_query_results(
             description="Values to populate DB query with"),
         columns: Optional[List[str]] = Query(
             None,
-            description="Column names to include in the query result")
+            description="Column names to include in the query result"),
+        limit: int = Query(
+            100,
+            description="number of rows returned by the query")
+        
+
 ):
     """
     Return query results with provided table name and query string
@@ -36,7 +41,7 @@ async def get_query_results(
         query_val = [query_val]
     try:
         return getattr(bbc, table_name2attr(table_name)).select(
-            condition=query, condition_val=query_val, columns=columns)
+            condition=query, condition_val=query_val, columns=columns, limit=limit)
     except Exception as e:
         msg = f"Caught exception while querying the DB: {str(e)}"
         _LOGGER.error(msg)
