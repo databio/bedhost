@@ -94,7 +94,9 @@ export default class ResultsBedSet extends React.Component {
                     }}>{rowData.name}
                     </Link>
                 })
-            } 
+            } else {
+                tableColumns.push({ title: cols[i].replaceAll("_percentage", "(%)"), field: cols[i] })
+            }
         }
         this.setState({
             columns: tableColumns
@@ -105,7 +107,7 @@ export default class ResultsBedSet extends React.Component {
         let data = []
         data.push(this.state.bedSetData.map(async (bed, index) => {
             let count = await this.getBedCount(bed[1])
-            let row = { name: bed[0], md5sum: bed[1], bed_file_count: count, genome:bed[2] }
+            let row = { name: bed[0], md5sum: bed[1], bed_file_count: count , genome:bed[2]}
             for (var key in bed[3]) {
                 bed[3][key] = bed[3][key].toFixed(3)
             }
