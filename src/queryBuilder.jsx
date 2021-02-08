@@ -72,9 +72,9 @@ export default class QueryBuilderWrapper extends React.Component {
     async componentDidUpdate(prevProps, prevState) {
         // only update query filter if the table_name has changed
         if (prevProps.table_name !== this.props.table_name) {
-            this.handleSetRulesClick()
             await this.getfilter()
             $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
+            this.handleSetRulesClick()
             this.setState({ table_name: this.props.table_name })
         }
     }
