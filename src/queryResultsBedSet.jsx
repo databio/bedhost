@@ -88,7 +88,7 @@ export default class ResultsBedSet extends React.Component {
 
         for (var i = 0; i < cols.length; i++) {
             if ((cols[i] === 'md5sum') || (cols[i].includes("_frequency")) || (cols[i].includes("_percentage")) ){
-                tableColumns.push({ title: cols[i], field: cols[i], hidden: true })
+                tableColumns.push({ title: cols[i], field: cols[i], hidden: true, width: 0 })
             } else if (cols[i] === 'name') {
                 tableColumns.push({
                     title: cols[i],
@@ -122,7 +122,7 @@ export default class ResultsBedSet extends React.Component {
     }
 
     render() {
-        return ( this.props.query === this.state.query ?(
+        return ( this.props.query === this.state.query && this.state.data ? (
             this.state.pageSize !== -1 ? (
             <div style={{ maxWidth: '100%' }}>
                 <MaterialTable
