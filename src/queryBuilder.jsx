@@ -7,7 +7,6 @@ import bedhost_api_url from "./const";
 import "./style/queryBuilder.css";
 import ResultsBed from './queryResultsBed'
 import ResultsBedSet from './queryResultsBedSet'
-import TextField from '@material-ui/core/TextField';
 
 
 
