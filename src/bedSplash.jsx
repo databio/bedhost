@@ -57,7 +57,7 @@ export default class BedSplash extends React.Component {
 
     this.setState({ bedFig: newbedFig });
 
-    const exists = await urlExist("http://data.bedbase.org/bigbed_files/" + data.data[0][2] + ".bigBed");
+    const exists = await urlExist(bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile");
     this.setState({
       bigbed: exists
     })
