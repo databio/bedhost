@@ -29,16 +29,18 @@ export default class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
-    // const response = await api.get(bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile");
-    //   if (response.status === 404) {
-    //     this.setState({
-    //       bigbed: false
-    //     })
-    //   }else{
-    //     this.setState({
-    //       bigbed: true
-    //     })
-    //   }
+    await api
+    .get(bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile")
+    .catch(err => {
+      if (!err.response){
+        this.setState({ bigbed: true })
+      }else if ( err.response.status === 404){
+        this.setState({ bigbed: false })
+      }
+    });
+   
+    
+    console.log(this.state.bigbed);
     
     let data = await api.get("/api/bed/" + this.props.match.params.bed_md5sum + "/data").then(({ data }) => data);
     console.log("BED file data retrieved from the server: ", data);
@@ -47,31 +49,27 @@ export default class BedSplash extends React.Component {
       {
         bedName: data.data[0][2],
         trackPath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/' + data.data[0][2] + ".bigBed",
-        bedDownload: {
-          BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile",
-          bigBED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile",
-        },
       }
     );
 
-    // if (this.state.bigbed){
-    //   this.setState(
-    //     {
-    //       bedDownload: {
-    //         BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile",
-    //         bigBED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile",
-    //       },
-    //     }
-    //   );
-    // }  else {
-    //   this.setState(
-    //     {
-    //      bedDownload: {
-    //         BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile",
-    //       },
-    //     }
-    //   );
-    // }
+    if (this.state.bigbed){
+      this.setState(
+        {
+          bedDownload: {
+            BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile",
+            bigBED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile",
+          },
+        }
+      );
+    }  else {
+      this.setState(
+        {
+         bedDownload: {
+            BED_File: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile",
+          },
+        }
+      );
+    }
 
     let newbedFig = data.data[0].map((img, index) => {
       return (
@@ -101,13 +99,10 @@ export default class BedSplash extends React.Component {
                 <h1>BED File: {this.state.bedName}</h1>
               </Col>
               <Col>
-              {/* {this.state.bigbed ?
+              {this.state.bigbed ?
                 (<a href={this.state.trackPath}>
                   <button className='float-right btn primary-btn' >Genome Browser</button>
-                </a>):null} */}
-                <a href={this.state.trackPath}>
-                  <button className='float-right btn primary-btn' >Genome Browser</button>
-                </a>
+                </a>):null}
               </Col>
             </Row>
           </Container>
