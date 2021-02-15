@@ -34,12 +34,15 @@ async def get_all_bed_metadata(
         ids: Optional[List[str]] = Query(
             None,
             description="Bedfiles table column name"
-        )
+        ),
+        limit: int = Query(
+            None,
+            description="number of rows returned by the query")
 ):
     """
     Get bedfiles data for selected columns
     """
-    return serve_columns_for_table(bbc=bbc, table_name=BED_TABLE, columns=ids)
+    return serve_columns_for_table(bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit)
 
 
 @router.get("/bed/{md5sum}/data", response_model=DBResponse)
@@ -115,14 +118,17 @@ async def get_bedset_count():
 async def get_all_bedset_metadata(
         ids: Optional[List[str]] = Query(
             None,
-            description="Bedsets table column name")
+            description="Bedsets table column name"),
+        limit: int = Query(
+            None,
+            description="number of rows returned by the query")
 ):
     """
     Get bedsets data for selected columns
     """
 
     return serve_columns_for_table(bbc=bbc, table_name=BEDSET_TABLE,
-                                    columns=ids)
+                                    columns=ids, limit=limit)
 
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(

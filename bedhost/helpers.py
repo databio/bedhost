@@ -194,7 +194,7 @@ def assert_table_columns_match(bbc, table_name, columns):
         raise HTTPException(status_code=404, detail=msg)
 
 
-def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
+def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
     """
     Serve data from selected columns for selected table
 
@@ -216,7 +216,8 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None):
     res = table_manager.select(
         condition="md5sum=%s" if digest else None,
         condition_val=[digest] if digest else None,
-        columns=columns
+        columns=columns,
+        limit=limit
     )
     if res:
         colnames = list(res[0].keys())
