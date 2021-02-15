@@ -6,6 +6,7 @@ import VersionsSpan from "./versionsSpan";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
+import { Label } from 'semantic-ui-react';
 import "./style/home.css"
 
 export default class Home extends React.Component {
@@ -31,11 +32,14 @@ export default class Home extends React.Component {
         return (
             <React.StrictMode >
                 <Header />
-                <div className = "conten-body">
+                <div className="conten-body">
                     <Container style={{ width: "75%" }} fluid className="p-4">
                         <BedCountsSpan />
                     </Container>
                     <Container style={{ width: "75%" }} fluid className="p-4">
+                        <Label style={{  marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                            Find BED Files
+                        </Label>
                         <Row>
                             <Col >
                                 <button className='btn btn-block btn-sm my-btn' disabled={this.state.filebtn} onClick={() => this.handleClick('bedfiles')}> Search BED Files </button>

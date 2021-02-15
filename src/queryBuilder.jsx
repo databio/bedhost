@@ -114,9 +114,9 @@ export default class QueryBuilderWrapper extends React.Component {
         this.handleGetRulesClick()
     }
 
-    setLimit(event){
+    setLimit(event) {
         this.setState({ limit: event.target.value });
-      };
+    };
 
     render() {
         return (
@@ -124,14 +124,14 @@ export default class QueryBuilderWrapper extends React.Component {
                 <div id='query-builder' ref={this.queryBuilder} />
                 <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
                 <button className='btn btn-sm my-btn' onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
-                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this) }>SEARCH</button>
-                <input className='float-right' style={{width:'100px', height:'27px', marginLeft:'5px', padding: '5px', borderColor:'#ced4da', borderStyle:'solid', borderWidth: '1px', borderRadius: '.25rem'}} type="text" value={this.state.limit}  onChange={this.setLimit.bind(this)}/>
-                <label className='float-right' style={{marginTop: '3px', fontSize:'10pt'}}>Set limit: </label>
+                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>SEARCH</button>
+                <input className='float-right' style={{ width: '100px', height: '27px', marginLeft: '5px', padding: '5px', borderColor: '#ced4da', borderStyle: 'solid', borderWidth: '1px', borderRadius: '.25rem' }} type="text" value={this.state.limit} onChange={this.setLimit.bind(this)} />
+                <label className='float-right' style={{ marginTop: '3px', fontSize: '10pt' }}>Set limit: </label>
                 { this.props.table_name === this.state.table_name && this.state.query ? (
                     this.state.table_name === 'bedfiles' ? (
                         <ResultsBed query={this.state.query} limit={this.state.limit} />
                     ) : (
-                            <ResultsBedSet query={this.state.query} limit={this.state.limit}/>
+                            <ResultsBedSet query={this.state.query} limit={this.state.limit} />
                         )
                 ) : null}
             </div>
