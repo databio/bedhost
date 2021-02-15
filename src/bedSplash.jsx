@@ -10,6 +10,7 @@ import ImgGrid from "./imgGrid";
 import BedInfo from "./bedInfo";
 import { Label } from 'semantic-ui-react';
 import "./style/splash.css";
+import urlExist from "url-exist"
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -23,12 +24,13 @@ export default class BedSplash extends React.Component {
       bedName: "",
       bedFig: [],
       bedDownload: {},
-      trackPath: ""
+      trackPath: "",
+      bigbed: false
     };
   }
 
   async componentDidMount() {
-
+    
     let data = await api.get("/api/bed/" + this.props.match.params.bed_md5sum + "/data").then(({ data }) => data);
     console.log("BED file data retrieved from the server: ", data);
     this.setState(
@@ -54,6 +56,12 @@ export default class BedSplash extends React.Component {
     newbedFig = newbedFig.slice(24, data.columns.length - 1)
 
     this.setState({ bedFig: newbedFig });
+
+    const exists = await urlExist("http://data.bedbase.org/bigbed_files/" + data.data[0][2] + ".bigBed");
+    this.setState({
+      bigbed: exists
+    })
+
   }
 
   render() {
@@ -67,9 +75,10 @@ export default class BedSplash extends React.Component {
                 <h1>BED File: {this.state.bedName}</h1>
               </Col>
               <Col>
-                <a href={this.state.trackPath}>
+              {this.state.bigbed ?
+                (<a href={this.state.trackPath}>
                   <button className='float-right btn primary-btn' >Genome Browser</button>
-                </a>
+                </a>):null}
               </Col>
             </Row>
           </Container>

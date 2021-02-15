@@ -28,8 +28,8 @@ const fileRules = {
     condition: 'AND',
     rules: [{
         id: 'name',
-        operator: 'equal',
-        value: 'GSE105587_ENCFF018NNF_conservative_idr_thresholded_peaks_GRCh38'
+        operator: 'not_equal',
+        value: 'test'
     }, {
         condition: 'OR',
         rules: [{
