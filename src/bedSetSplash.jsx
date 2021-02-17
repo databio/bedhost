@@ -186,11 +186,11 @@ export default class BedSetSplash extends React.Component {
                   )}
 
                 <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                  BED Set API Endpoints
+                  API Endpoint Examples
                 </Label>
                 <p style={{ marginBottom: "5px" }}>
                   <a href={bedhost_api_url + '/api/bedset/' + this.props.match.params.bedset_md5sum + '/data'} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
-                    BED set data
+                    All data
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px" }}>

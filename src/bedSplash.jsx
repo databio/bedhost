@@ -123,7 +123,7 @@ export default class BedSplash extends React.Component {
                   )}
 
                 <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                  BED File API Endpoints
+                  API Endpoint Examples
                 </Label>
 
                 <p style={{ marginBottom: "5px" }}>
@@ -141,7 +141,7 @@ export default class BedSplash extends React.Component {
                 <p style={{ marginBottom: "5px" }}>
                   <a href={bedhost_api_url + '/api/bed/' + this.props.match.params.bed_md5sum + '/data?ids=other'} 
                   className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
-                    BED file info
+                    BED file meta data
                   </a>
                 </p>
                 <p style={{ marginBottom: "5px" }}>

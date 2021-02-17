@@ -66,6 +66,8 @@ export default class BedCountsSpan extends React.Component {
               <tr>
                 <th style={{ padding: "3px 15px", fontSize: "10pt" }}>Table Name</th>
                 <th style={{ padding: "3px 15px", fontSize: "10pt" }}>Size</th>
+                <th style={{ padding: "3px 15px", fontSize: "10pt" }}>Reference Assemblies</th>
+                <th style={{ padding: "3px 15px", fontSize: "10pt" }}>Endpoints Served</th>
                 <th style={{ padding: "3px 15px", fontSize: "10pt" }}>Example</th>
               </tr>
               <tr style={{ verticalAlign: "top" }} >
@@ -74,6 +76,12 @@ export default class BedCountsSpan extends React.Component {
               </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   {this.state.bed}
+                </td>
+                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                  hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{ fontSize: "10pt" }}>[Refgenie]</a>
+                </td>
+                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                  5
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   <Link className="home-link" to={{
@@ -88,6 +96,12 @@ export default class BedCountsSpan extends React.Component {
               </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   {this.state.bedSet}
+                </td>
+                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                  hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{fontSize: "10pt" }}>[Refgenie]</a>
+                </td>
+                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                  6
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   <Link className="home-link" to={{
