@@ -206,7 +206,8 @@ def serve_schema_for_table(bbc, table_name):
     return table_manager.schema
 
 
-def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
+def serve_columns_for_table(
+        bbc, table_name, columns=None, digest=None, offset=None, limit=None):
     """
     Serve data from selected columns for selected table
 
@@ -229,6 +230,7 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=No
         condition="md5sum=%s" if digest else None,
         condition_val=[digest] if digest else None,
         columns=columns,
+        offset=offset,
         limit=limit
     )
     if res:

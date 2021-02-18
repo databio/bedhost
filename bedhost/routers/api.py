@@ -35,14 +35,18 @@ async def get_all_bed_metadata(
             None,
             description="Bedfiles table column name"
         ),
+        offset: int = Query(
+            0,
+            description="number of records to skip"),
         limit: int = Query(
-            None,
-            description="number of rows returned by the query")
+            100,
+            description="max number of records to return")
 ):
     """
     Get bedfiles data for selected columns
     """
-    return serve_columns_for_table(bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit)
+    return serve_columns_for_table(
+        bbc=bbc, table_name=BED_TABLE, columns=ids, offset=offset, limit=limit)
 
 
 @router.get("/bed/all/schema", response_model=Dict[str, SchemaElement])
@@ -127,16 +131,20 @@ async def get_all_bedset_metadata(
         ids: Optional[List[str]] = Query(
             None,
             description="Bedsets table column name"),
+        offset: int = Query(
+            0,
+            description="number of records to skip"),
         limit: int = Query(
-            None,
-            description="number of rows returned by the query")
+            100,
+            description="max number of records to return")
 ):
     """
     Get bedsets data for selected columns
     """
 
-    return serve_columns_for_table(bbc=bbc, table_name=BEDSET_TABLE,
-                                    columns=ids, limit=limit)
+    return serve_columns_for_table(
+        bbc=bbc, table_name=BEDSET_TABLE, columns=ids, offset=offset,
+        limit=limit)
 
 
 @router.get("/bedset/all/schema", response_model=Dict[str, SchemaElement])
