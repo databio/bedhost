@@ -10,9 +10,9 @@ class DBResponse(BaseModel):
     data: List[List]
 
 
-class Schema(BaseModel):
+class SchemaElement(BaseModel):
     """
-    Schema data mode
+    Schema element data model
     """
     type: Text
     description: Text

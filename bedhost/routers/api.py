@@ -45,7 +45,7 @@ async def get_all_bed_metadata(
     return serve_columns_for_table(bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit)
 
 
-@router.get("/bed/all/schema", response_model=Schema)
+@router.get("/bed/all/schema", response_model=Dict[str, Dict[str, SchemaElement]])
 async def get_bed_schema():
     """
     Get bedfiles pipestat schema
@@ -139,7 +139,7 @@ async def get_all_bedset_metadata(
                                     columns=ids, limit=limit)
 
 
-@router.get("/bedset/all/schema", response_model=Schema)
+@router.get("/bedset/all/schema", response_model=Dict[str, Dict[str, SchemaElement]])
 async def get_bedset_schema():
     """
     Get bedsets pipestat schema
