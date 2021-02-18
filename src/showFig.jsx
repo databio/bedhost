@@ -31,9 +31,6 @@ export default function ShowFig(props) {
         </Label>
       ) : (
           <div>
-            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-              {props.figType[1]}
-            </Label>
             <ImgGrid imgList={figList} page="bedset"/>
           </div>
         )}
