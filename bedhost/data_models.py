@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Text
 
 
 class DBResponse(BaseModel):
@@ -8,3 +8,11 @@ class DBResponse(BaseModel):
     """
     columns: List
     data: List[List]
+
+
+class Schema(BaseModel):
+    """
+    Schema data mode
+    """
+    type: Text
+    description: Text
