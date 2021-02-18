@@ -133,12 +133,12 @@ export default class ResultsBed extends React.Component {
                     title: cols[i],
                     field: cols[i],
                     cellStyle: {
-                        width: 700,
-                        minWidth: 700
+                        width: 600,
+                        minWidth: 600
                     },
                     headerStyle: {
-                        width: 700,
-                        minWidth: 700
+                        width: 600,
+                        minWidth: 600
                     }
                 })
             } else if (cols[i] === 'data_source') {
