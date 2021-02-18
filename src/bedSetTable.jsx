@@ -20,13 +20,15 @@ export default class BedSetTable extends React.Component {
         this.state = {
             columns: [],
             bedSetData: [],
+            tableColumns: [],
             bedFigs: [],
             showFig: false,
             figType: "",
             selectedBedId: [],
             selectedBedName: [],
             pageSize: -1,
-            pageSizeOptions: []
+            pageSizeOptions: [],
+            hideCol: '_percentage'
         }
     }
 
@@ -96,11 +98,11 @@ export default class BedSetTable extends React.Component {
             {
                 title: this.state.columns[0],
                 field: this.state.columns[0],
-                width: 500,
+                width: 200,
                 cellStyle: {
                     backgroundColor: "#333535",
                     color: "#FFF",
-                    fontWeight: "bold",
+                    fontWeight: "bold"
                 },
                 headerStyle: {
                     backgroundColor: "#333535",
@@ -118,14 +120,16 @@ export default class BedSetTable extends React.Component {
             if (i === 1) {
                 tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 275 })
             } else if (i !== 0) {
-                if (this.state.columns[i] === "regions_no" || this.state.columns[i] === "gc_content") {
-                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 100 })
+                if (this.state.columns[i] === "mean_absolute_tss_dist" || this.state.columns[i] === "mean_region_width") {
+                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 150 })
+                } else if (this.state.columns[i].includes(this.state.hideCol)){
+                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], hidden: true, width: 0 })
                 } else {
-                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 170 })
+                    tableColumns.push({ title: this.state.columns[i].replaceAll(/_frequency|_percentage/gi, ""), field: this.state.columns[i], width: 100 })
                 }
             }
         }
-        return tableColumns
+        return tableColumns 
     }
 
     bedSelected(rows) {
@@ -149,6 +153,36 @@ export default class BedSetTable extends React.Component {
         })
     };
 
+    getFigButton() {
+        return (
+            <div style={{ padding: "5px 5px" }}>
+                {this.state.bedFigs.map((fig, index) => {
+                    return (
+                        <Tooltip
+                            key={index}
+                            title={fig.title}
+                            placement="top"
+                        >
+                            <Button
+                                size="small"
+                                variant="contained"
+                                style={{ padding: 5, margin: 5 }}
+                                onClick={() => {
+                                    this.figTypeClicked(
+                                        fig.id,
+                                        fig.title
+                                    );
+                                }}
+                            >
+                                {fig.id}
+                            </Button>
+                        </Tooltip>
+                    )
+                })}
+            </div>
+        )
+    }
+
     render() {
         return (
             <div>
@@ -156,7 +190,8 @@ export default class BedSetTable extends React.Component {
                     {this.state.pageSize !== -1 ? (
                         <MaterialTable
                             title=""
-                            columns={this.getColumns()} // <-- Set the columns on the table
+                            columns={this.getColumns(this.state.hideCol)}
+                            // {this.state.tableColumns} // <-- Set the columns on the table
                             data={this.state.bedSetData} // <-- Set the data on the table
                             icons={tableIcons}
                             options={{
@@ -188,73 +223,51 @@ export default class BedSetTable extends React.Component {
                                 Toolbar: (props) => (
                                     <div>
                                         <MTableToolbar {...props} />
-                                        {/* <div style={{ padding: "5px 5px" }}>
-                                            {this.state.bedFigs.map((fig, index) => {
-                                                return (
-                                                    <Tooltip
-                                                        key={index}
-                                                        title={fig.title}
-                                                        placement="top"
-                                                    >
-                                                        <Button
-                                                            size="small"
-                                                            variant="contained"
-                                                            style={{ padding: 5, margin: 5 }}
-                                                            onClick={() => {
-                                                                this.figTypeClicked(
-                                                                    fig.id,
-                                                                    fig.title
-                                                                );
-                                                            }}
-                                                        >
-                                                            {fig.id}
-                                                        </Button>
-                                                    </Tooltip>
-                                                )
-                                            })}
-                                        </div> */}
+                                        <div style={{ padding: "5px 5px" }}>
+                                            <Button size="small" variant="contained" style={{ padding: 5, margin: 5 }}
+                                                onClick={() => {
+                                                    this.setState(
+                                                        { hideCol: '_frequency' }
+                                                    );
+                                                }}
+                                            >
+                                                show percentage
+                                            </Button>
+                                            <Button size="small" variant="contained" style={{ padding: 5, margin: 5 }}
+                                                onClick={() => {
+                                                    this.setState(
+                                                        { hideCol: '_percentage' }
+                                                    );
+                                                }}
+                                            >
+                                                show frequency
+                                            </Button>
+                                        </div>
                                     </div>
                                 ),
                             }}
                         />) : null}
                 </div>
-                <div style={{ padding: "5px 5px" }}>
-                                            {this.state.bedFigs.map((fig, index) => {
-                                                return (
-                                                    <Tooltip
-                                                        key={index}
-                                                        title={fig.title}
-                                                        placement="top"
-                                                    >
-                                                        <Button
-                                                            size="small"
-                                                            variant="contained"
-                                                            style={{ padding: 5, margin: 5 }}
-                                                            onClick={() => {
-                                                                this.figTypeClicked(
-                                                                    fig.id,
-                                                                    fig.title
-                                                                );
-                                                            }}
-                                                        >
-                                                            {fig.id}
-                                                        </Button>
-                                                    </Tooltip>
-                                                )
-                                            })}
-                                        </div>
+
                 <div style={{ padding: "10px 10px" }}>
                     {this.state.showFig ? (
-                        <ShowFig
-                            figType={this.state.figType}
-                            bedIds={this.state.selectedBedId}
-                            bedNames={this.state.selectedBedName}
-                        />
+                        <>
+                            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                                {this.state.figType[1]}
+                            </Label>
+                            {this.getFigButton()}
+                            <ShowFig
+                                figType={this.state.figType}
+                                bedIds={this.state.selectedBedId}
+                                bedNames={this.state.selectedBedName}
+                            />
+                        </>
                     ) : (
                             <div style={{ marginLeft: "10px" }}>
                                 <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='orange' ribbon>
                                     Please select plot type.
                       </Label>
+                                {this.getFigButton()}
                             </div>
                         )}
                 </div>

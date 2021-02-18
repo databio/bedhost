@@ -234,6 +234,8 @@ export default class BedSetSplash extends React.Component {
             <span className={'new-line'} >
             {"\n"}
               The table below shows the statistics of each BED file in this BED set. {"\n"}
+              The statistics of the reginal distributions are shown in frequency by default. {" "}
+              You can click on the <b> SHOW PERCENTAGE</b> button to show reginal distributions in percentage. {"\n"}
               You can compare the GenomicDistribution plots of multiple BED files by: {"\n"} 
               1) select the BED files you want to compare using the select box in the left-most column, and {"\n"}
               2) select one plot type you want to compare using the buttons below the table. {"\n"}
