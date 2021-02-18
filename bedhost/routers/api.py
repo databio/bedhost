@@ -45,6 +45,14 @@ async def get_all_bed_metadata(
     return serve_columns_for_table(bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit)
 
 
+@router.get("/bed/all/schema", response_model=DBResponse)
+async def get_bed_schema():
+    """
+    Get bedfiles pipestat results schemas
+    """
+    return serve_schema_for_table(bbc=bbc, table_name=BED_TABLE)
+
+
 @router.get("/bed/{md5sum}/data", response_model=DBResponse)
 async def get_bedfile_data(
         md5sum: str = Path(
@@ -129,6 +137,15 @@ async def get_all_bedset_metadata(
 
     return serve_columns_for_table(bbc=bbc, table_name=BEDSET_TABLE,
                                     columns=ids, limit=limit)
+
+
+@router.get("/bedset/all/schema", response_model=DBResponse)
+async def get_bedset_schema():
+    """
+    Get bedsets pipestat results schemas
+    """
+    return serve_schema_for_table(bbc=bbc, table_name=BEDSET_TABLE)
+
 
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(

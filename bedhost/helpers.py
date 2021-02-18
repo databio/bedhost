@@ -194,6 +194,18 @@ def assert_table_columns_match(bbc, table_name, columns):
         raise HTTPException(status_code=404, detail=msg)
 
 
+def serve_schema_for_table(bbc, table_name):
+    """
+    Serve the schema for the selected table
+
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
+    :param str table_name: table name to get schema for
+    :return:
+    """
+    table_manager = getattr(bbc, table_name2attr(table_name), None)
+    return table_manager.result_schemas
+
+
 def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
     """
     Serve data from selected columns for selected table
