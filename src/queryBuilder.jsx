@@ -53,7 +53,7 @@ export default class QueryBuilderWrapper extends React.Component {
             rules: {},
             query: '',
             filters: {},
-            limit: 500
+            limit: 50
         };
     }
 
