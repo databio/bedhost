@@ -203,7 +203,7 @@ def serve_schema_for_table(bbc, table_name):
     :return:
     """
     table_manager = getattr(bbc, table_name2attr(table_name), None)
-    return table_manager.result_schemas
+    return table_manager.schema
 
 
 def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
