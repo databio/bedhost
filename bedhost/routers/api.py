@@ -36,10 +36,13 @@ async def get_all_bed_metadata(
             description="Bedfiles table column name"
         ),
         offset: int = Query(
-            0,
+            default=0,
+            ge=0,
             description="number of records to skip"),
         limit: int = Query(
-            100,
+            default=100,
+            le=100,
+            ge=0,
             description="max number of records to return")
 ):
     """
@@ -132,10 +135,13 @@ async def get_all_bedset_metadata(
             None,
             description="Bedsets table column name"),
         offset: int = Query(
-            0,
+            default=0,
+            ge=0,
             description="number of records to skip"),
         limit: int = Query(
-            100,
+            default=100,
+            le=100,
+            ge=0,
             description="max number of records to return")
 ):
     """
