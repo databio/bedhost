@@ -81,7 +81,7 @@ export default class BedCountsSpan extends React.Component {
                   hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{ fontSize: "10pt" }}>[Refgenie]</a>
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  5
+                  6
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   <Link className="home-link" to={{
@@ -101,7 +101,7 @@ export default class BedCountsSpan extends React.Component {
                   hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{fontSize: "10pt" }}>[Refgenie]</a>
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  6
+                  7
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   <Link className="home-link" to={{

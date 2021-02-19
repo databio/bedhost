@@ -1,6 +1,7 @@
 import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
+import { Link } from "react-router-dom";
 import { FaGithub } from "react-icons/fa";
 import { FaBook } from "react-icons/fa";
 import bedhost_api_url from "./const";
@@ -24,9 +25,9 @@ export default function Header() {
                 </Nav.Link>
             </Nav>
             <Nav className="float-right" >
-                <Nav.Link href="/about">
+                <Link to="/about">
                     <FaBook size={30} style={{ fill: 'white' }} />
-                </Nav.Link>
+                </Link>
             </Nav>
             <Nav className="float-right">
                 <Nav.Link style={{ marginRight: "30px" }} href="https://github.com/databio/bedbase">

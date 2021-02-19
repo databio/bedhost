@@ -36,38 +36,38 @@ export default class Info extends React.Component {
                                 <div id='key-features' style={{ marginTop: '15px' }}>
                                     <h1>Key Features</h1>
                                     <p>
-                                        <b>Comprehensive statistics:{''}</b>
-                                    GC  content, genomic partitions distribution, distance to TSS, etc
+                                        <b>Comprehensive statistics:{' '}</b>
+                                        GC content, genomic partitions distribution, distance to TSS, etc.
                                     </p>
                                     <p>
-                                        <b>Bedsets:{''}</b>
-                                    Building of targeted collections of BED files (belonging to a specific source, protocol, tissue, publication, etc).
+                                        <b>Bedsets:{' '}</b>
+                                        Building of targeted collections of BED files based on genome assembly, experiment protocol, antibody, cell type, etc.
                                     </p>
                                     <p>
-                                        <b>Fast access:{''}</b>
-                                    PostgresQL backend for storing of BED files and Bedsets metadata, saving considerable disk space.
+                                        <b>Fast access:{' '}</b>
+                                        PostgresQL backend for storing of BED files and Bedsets metadata, saving considerable disk space.
                                     </p>
                                 </div>
                                 <div id='how-does-it-work' style={{ marginTop: '15px' }}>
                                     <h1>How does Bedbase work?</h1>
                                     <p>
-                                        <b>Bedmaker: {''}</b>
+                                        <b>Bedmaker: {' '}</b>
                                         Standardize heterogenous and numerous omics region data files into BED format. {" "}
                                         Generate bigBed files for visualization in Genome Browser. {" "}
                                         Current supported formats are bed, bedGraph, bigBed, bigWig, and wig.
                                     </p>
                                     <p>
-                                    <b>Bedstat: {''}</b>
+                                    <b>Bedstat: {' '}</b>
                                         Calculate and plot a wide variety of genomic region statistics, {" "}
                                         insert BED files metadata/plots into PostgresQL database. {" "}
                                     </p>
                                     <p>
-                                    <b>Bedbuncher: {''}</b>
+                                    <b>Bedbuncher: {' '}</b>
                                         Retrieve and group BED files according to biological or experimental attributes. {" "}
                                         Bedsets also contain group statistics and outputs for downstream analysis. {" "}
                                     </p>
                                     <p>
-                                        <b>Bedhost: {''}</b>
+                                        <b>Bedhost: {' '}</b>
                                         Search/download statistics, plots, Bed files, BEDsets and other useful outputs.
                                     </p>
                                     <p> Please go to our <a className="home-link" href = 'https://github.com/databio/bedbase'>GitHub repository</a> {' '}
@@ -204,12 +204,14 @@ export default class Info extends React.Component {
                                 </div>
                             </Col>
                             <Col md={3}>
+                                <div style={{ marginLeft: '55px' }}>
                                 <a className="home-link" href='#about'><p>About</p></a>
                                 <a className="home-link" href='#key-features'><p>Key Features</p></a>
                                 <a className="home-link" href='#how-does-it-work'><p>How does it work?</p></a>
                                 <a className="home-link" href='#stats-def'><p>Statistic Defination</p></a>
                                 <a className="home-link" href='#bedfile-stats'><p style={{ marginLeft: '20px' }}>BED File Statistics</p></a>
                                 <a className="home-link" href='#bedset-stats'><p style={{ marginLeft: '20px' }}>BED Set Statistics</p></a>
+                                </div>
                             </Col>
                         </Row>
                     </Container>
