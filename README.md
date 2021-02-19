@@ -6,16 +6,18 @@ It needs a path to the *bedbase configuration file*, which can be provided eithe
 
 ### Required
 
-The only required section in the config file is the path to the [`bedstat`](https://github.com/databio/bedstat) pipeline output, where all the BED file related statistics and figures live.
+The only required section in the config file are the paths to the [`bedstat`](https://github.com/databio/bedstat) pipeline outputs, where all the BED file related statistics and figures live, and the [`bedbuncher`](https://github.com/databio/bedbuncher) pipeline outputs, where the TAR ball containing the BED files that match the query criteria, iGD database created from the bedset, Bedset statistics, PEP of the bedset created using the pipeline, and the trackHub directory for the BED (for visualization on the UCSC Genome Browser) live.
 For example:
 
 ```yaml
 path:
-  bedstat_output: $HOME/results_pipeline
+  pipeline_output_path: $BEDBASE_DATA_PATH/outputs
+  bedstat_dir: bedstat_output
+  bedbuncher_dir: bedbuncher_output
 ```
 ### Optional
 
-The software also needs a working database, we use [Elasticsearch](https://www.elastic.co/). The config file can point to this database's host. By default `localhost` is used.
+The software also needs a working database, we use [PostgreSQL](https://www.postgresql.org/). The config file can point to this database's host. By default `localhost` is used.
 For example:
 
 ```yaml
@@ -32,9 +34,9 @@ server:
   port: 8000
 ```
 
-To run Elastic in docker, follow the instructions in the `bedstat` pipeline software [README.md](https://github.com/databio/bedstat#2-create-a-persistent-volume-to-house-elasticsearch-data), steps 2 and 3.
+To run Postgres in docker, follow the instructions in the `bedstat` pipeline software [README.md](https://github.com/databio/bedstat/tree/trackHub#2-run-postgresql), steps 2.
 
-After the elastic database has been run and the bedstat pipeline was used to populate it, see how to do it [here](https://github.com/databio/bedstat/blob/master/README.md#4-run-the-bedstat-pipeline-on-the-pep), one can just start the `bedhost` server like so:
+After the Postgres database has been run and the bedstat pipeline was used to populate it, see how to do it [here](https://github.com/databio/bedstat/tree/trackHub#3-run-the-bedstat-pipeline-on-the-pep), one can just start the `bedhost` server like so:
 
 ```
 bedhost serve -c /path/to/cfg.yaml
