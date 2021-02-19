@@ -8,9 +8,10 @@ import BarChart from "./barChart";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import axios from "axios";
-import SimplePopover from "./popover"
 import bedhost_api_url from "./const";
 import { Label } from 'semantic-ui-react';
+import { HashLink as Link } from 'react-router-hash-link';
+import { FaQuestionCircle } from "react-icons/fa";
 import "./style/splash.css";
 
 
@@ -26,8 +27,6 @@ export default class BedSetSplash extends React.Component {
       bedsCount: "",
       genome: "",
       bedSetStat: {},
-      // avgGC: [],
-      // avgRegionW: [],
       avgRegionD: {},
       bedSetDownload: {},
       bedSetFig: false,
@@ -56,8 +55,6 @@ export default class BedSetSplash extends React.Component {
           "mean_region_width": [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)]
         },
         genome: data.data[0][13],
-        // avgGC: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
-        // avgRegionW: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)],
         avgRegionD: {
           exon: [data.data[0][9].exon_percentage.toFixed(3), data.data[0][10].exon_percentage.toFixed(3)],
           fiveutr: [data.data[0][9].fiveutr_percentage.toFixed(3), data.data[0][10].fiveutr_percentage.toFixed(3)],
@@ -86,12 +83,6 @@ export default class BedSetSplash extends React.Component {
       {
         bedsCount: Object.keys(data.data).length,
       })
-  }
-
-  handleGetDescription() {
-    this.setState({
-      description: 'gc_content: The average GC content of the BED set. \n \n mean_region_width: The average region width of the BED set. \n \n mean_absolute_tss_dist: The average absolute distance to the Transcription Start Sites (TSS) of the BED set.\n \n '
-    });
   }
 
   render() {
@@ -147,7 +138,7 @@ export default class BedSetSplash extends React.Component {
                 </ table>
 
                 <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                  BED Set Stats <SimplePopover onClick={this.handleGetDescription.bind(this)} message={this.state.description} />
+                  BED Set Stats <Link to='/about#bedset-stats'> <FaQuestionCircle style={{ marginBottom: "3px", marginLeft: '10px', fontSize: '12px' }} color='white' /></Link>
                 </Label>
                 <table >
                   <tbody>

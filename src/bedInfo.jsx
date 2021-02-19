@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
 import toObject from "./toObject";
-import SimplePopover from "./popover"
 import { Label } from 'semantic-ui-react';
+import { HashLink as Link } from 'react-router-hash-link';
+import { FaQuestionCircle } from "react-icons/fa";
 import bedhost_api_url from "./const";
 
 const api = axios.create({
@@ -35,12 +36,6 @@ export default class BedInfo extends React.Component {
                 bed_stats: toObject(data.columns, data.data[0])
             })
         console.log("BED file stats from the server:", this.state.bed_stats)
-    }
-
-    handleGetDescription() {
-        this.setState({
-            description: 'gc_content: The average GC content of the region set. \n \n regions_no: The total number of regions in the BED file. \n \n  mean_absolute_tss_dist: The average absolute distance to the Transcription Start Sites (TSS). \n \n  mean_region_width: The average region width of the region set. \n \n  exon (%): The percentage of the regions in the BED file that are annotated as exon. \n \n  intron (%): The percentage of the regions in the BED file that are annotated as intron. \n \n promoterprox (%):	 The percentage of the regions in the BED file that are annotated as promoter-prox. \n \n  intergenic (%)The percentage of the regions in the BED file that are annotated as intergenic. \n \n promotercore (%):	The percentage of the regions in the BED file that are annotated as promoter-core. \n \n fiveutr (%):	The percentage of the regions in the BED file that are annotated as 5\'-UTR. \n \n threeutr(%): The percentage of the regions in the BED file that are annotated as 3\'-UTR. \n \n '
-        });
     }
 
     render() {
@@ -77,9 +72,8 @@ export default class BedInfo extends React.Component {
                             )}
                     </tbody>
                 </ table>
-
                 <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                    BED File Stats <SimplePopover onClick={this.handleGetDescription.bind(this)} message={this.state.description} />
+                    BED File Stats <Link to='/about#bedfile-stats'> <FaQuestionCircle style={{ marginBottom: "3px", marginLeft: '10px', fontSize: '12px' }} color='white' /></Link>
                 </Label>
                 <table >
                     <tbody>
