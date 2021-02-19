@@ -70,8 +70,13 @@ export default class Info extends React.Component {
                                         <b>Bedhost: {' '}</b>
                                         Search/download statistics, plots, Bed files, BEDsets and other useful outputs.
                                     </p>
-                                    <p> Please go to our <a className="home-link" href = 'https://github.com/databio/bedbase'>GitHub repository</a> {' '}
-                                    to see the full <a className="home-link" href = 'https://github.com/databio/bedbase/blob/trackHub/docs_jupyter/bedbase_tutorial.ipynb'>Bedbase tutorial</a>. </p>
+                                    <p> We use the standard <a className="home-link" href = 'http://pep.databio.org/en/latest/'>PEP</a> format for the annotation of the files to load. {' '} 
+                                        PEP consists of 1) a sample table (.csv) that annotates the files, and {' '}
+                                        2) a project config.yaml file that points to the sample annotation sheet.{' '}
+                                        The config file also has other components, such as derived and implied attributes.{' '}
+                                        To run the pipelines for Bedbase, we are use the pipeline submission engine <a className="home-link" href = 'http://looper.databio.org/en/latest/'>Looper</a>.{' '}
+                                        Please go to our <a className="home-link" href = 'https://github.com/databio/bedbase'>GitHub repository</a> {' '}
+                                        to see the full <a className="home-link" href = 'https://github.com/databio/bedbase/blob/trackHub/docs_jupyter/bedbase_tutorial.ipynb'>Bedbase tutorial</a>. </p>
                                 </div>
                                 <div id='stats-def' style={{ marginTop: '15px' }}>
                                     <h1>Statistic Definations</h1>

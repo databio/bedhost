@@ -1,5 +1,6 @@
 import React from "react";
 import MaterialTable from "material-table";
+import Spinner from 'react-bootstrap/Spinner'
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
@@ -27,6 +28,7 @@ export default class ResultsBedSet extends React.Component {
     async componentDidMount() {
         console.log("debug:", this.props.query)
         await this.getBedSetByQuery()
+        console.log(this.state.data)
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -151,6 +153,14 @@ export default class ResultsBedSet extends React.Component {
                     ]}
                     components={{
                         Container: props => <Paper {...props} elevation={0} />
+                    }}
+                    localization={{ 
+                        body:{ 
+                            emptyDataSourceMessage:< div style={{position: "absolute", top:'5%', left:'50%'}}>
+                            <Spinner animation="border" size="sm" style={{color:'lightgray'}} />
+                            <p style={{color:'lightgray'}}>Loading data </p> 
+                            </div>
+                        } 
                     }}
                 />
             </div>):null):null

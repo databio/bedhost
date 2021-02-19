@@ -2,6 +2,7 @@ import React from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { Button, Paper } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
+import Spinner from 'react-bootstrap/Spinner'
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
 import toObject from "./toObject";
@@ -245,6 +246,14 @@ export default class BedSetTable extends React.Component {
                                         </div>
                                     </div>
                                 ),
+                            }}
+                            localization={{ 
+                                body:{ 
+                                    emptyDataSourceMessage:< div style={{position: "absolute", top:'5%', left:'50%'}}>
+                                    <Spinner animation="border" size="sm" style={{color:'lightgray'}} />
+                                    <p style={{color:'lightgray'}}>Loading data </p> 
+                                    </div>
+                                } 
                             }}
                         />) : null}
                 </div>
