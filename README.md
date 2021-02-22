@@ -1,4 +1,6 @@
 # bedhost
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 
 This is a REST API for the bedstat pipeline produced statistics.
 It needs a path to the *bedbase configuration file*, which can be provided either via `-c`/`--config` argument or read from `$BEDBASE` environment variable. 

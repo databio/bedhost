@@ -7,5 +7,5 @@ python-multipart
 requests
 itsdangerous
 logmuse
-#yacman
-#bbconf
+yacman>=0.7.1
+bbconf>=0.1.0
