@@ -17,46 +17,52 @@ def build_parser():
 
     :return argparse.ArgumentParser
     """
-    env_var_val = get_first_env_var(CFG_ENV_VARS)[1] \
-        if get_first_env_var(CFG_ENV_VARS) is not None else "not set"
+    env_var_val = (
+        get_first_env_var(CFG_ENV_VARS)[1]
+        if get_first_env_var(CFG_ENV_VARS) is not None
+        else "not set"
+    )
     banner = "%(prog)s - REST API for the bedstat pipeline produced statistics"
-    additional_description = "For subcommand-specific options, type: '%(prog)s <subcommand> -h'"
+    additional_description = (
+        "For subcommand-specific options, type: '%(prog)s <subcommand> -h'"
+    )
     additional_description += "\nhttps://github.com/databio/bedhost"
 
     parser = VersionInHelpParser(
-        prog=PKG_NAME,
-        description=banner,
-        epilog=additional_description)
+        prog=PKG_NAME, description=banner, epilog=additional_description
+    )
 
     parser.add_argument(
-        "-V", "--version",
-        action="version",
-        version="%(prog)s {v}".format(v=v))
+        "-V", "--version", action="version", version="%(prog)s {v}".format(v=v)
+    )
 
-    msg_by_cmd = {
-        "serve": "run the server"
-    }
+    msg_by_cmd = {"serve": "run the server"}
 
     subparsers = parser.add_subparsers(dest="command")
 
     def add_subparser(cmd, description):
-        return subparsers.add_parser(
-            cmd, description=description, help=description)
+        return subparsers.add_parser(cmd, description=description, help=description)
 
     sps = {}
     # add arguments that are common for both subparsers
     for cmd, desc in msg_by_cmd.items():
         sps[cmd] = add_subparser(cmd, desc)
         sps[cmd].add_argument(
-            '-c', '--config', required=False, dest="config",
+            "-c",
+            "--config",
+            required=False,
+            dest="config",
             help="A path to the bedhost config file (YAML). If not provided, "
-                 "the first available environment variable among: \'{}\' will be used if set."
-                 " Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val))
+            "the first available environment variable among: '{}' will be used if set."
+            " Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val),
+        )
         sps[cmd].add_argument(
-            "-d", "--dbg",
+            "-d",
+            "--dbg",
             action="store_true",
             dest="debug",
-            help="Set logger verbosity to debug")
+            help="Set logger verbosity to debug",
+        )
     return parser
 
 
@@ -72,15 +78,18 @@ def get_search_setup(schema):
     for col_name, col_schema in schema.items():
         try:
             setup_dict = {
-                "id": col_name, "label": col_schema["description"],
+                "id": col_name,
+                "label": col_schema["description"],
                 "type": TYPES_MAPPING[col_schema["type"]],
                 "validation": VALIDATIONS_MAPPING[col_schema["type"]],
-                "operators": OPERATORS_MAPPING[col_schema["type"]]
+                "operators": OPERATORS_MAPPING[col_schema["type"]],
             }
         except (AttributeError, KeyError):
-            _LOGGER.warning(f"Database column '{col_name}' of type "
-                            f"'{col_schema['type']}' has no query builder "
-                            f"settings predefined, skipping.")
+            _LOGGER.warning(
+                f"Database column '{col_name}' of type "
+                f"'{col_schema['type']}' has no query builder "
+                f"settings predefined, skipping."
+            )
         else:
             setup_dicts.append(setup_dict)
     return setup_dicts
@@ -96,11 +105,13 @@ def construct_search_data(hits, request):
     """
     template_data = []
     for h in hits:
-        bed_data_url_template = request.url_for("bedfile") + \
-                                "?md5sum={}&format=".format(h["md5sum"])
-        template_data.append([h["name"]] +
-                             [bed_data_url_template + ext
-                              for ext in ["html", "bed", "json"]])
+        bed_data_url_template = request.url_for(
+            "bedfile"
+        ) + "?md5sum={}&format=".format(h["md5sum"])
+        template_data.append(
+            [h["name"]]
+            + [bed_data_url_template + ext for ext in ["html", "bed", "json"]]
+        )
     return template_data
 
 
@@ -112,6 +123,7 @@ def get_mounted_symlink_path(symlink):
     :param str symlink: absolute symlink path
     :return str: path to the symlink target on the mounted volume
     """
+
     def _find_mount_point(path):
         path = os.path.abspath(path)
         while not os.path.ismount(path):
@@ -141,9 +153,12 @@ def get_all_bedset_urls_mapping(bbc, request):
     if not hits:
         return
     # TODO: don't hardcode url path element name, use operationID?
-    return {hit["name"]: get_param_url(
-        request.url_for("bedsetsplash"), {"md5sum": hit["md5sum"]})
-        for hit in hits}
+    return {
+        hit["name"]: get_param_url(
+            request.url_for("bedsetsplash"), {"md5sum": hit["md5sum"]}
+        )
+        for hit in hits
+    }
 
 
 def get_param_url(url, params):
@@ -217,19 +232,20 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=No
     :return dict: servable DB search result, selected column names and data
     """
     if columns:
-        assert_table_columns_match(
-            bbc=bbc, table_name=table_name, columns=columns)
+        assert_table_columns_match(bbc=bbc, table_name=table_name, columns=columns)
     table_manager = getattr(bbc, table_name2attr(table_name), None)
     if table_manager is None:
-        msg = f"Failed to serve columns for '{table_name}' table, " \
-              f"PipestatManager object not accessible."
+        msg = (
+            f"Failed to serve columns for '{table_name}' table, "
+            f"PipestatManager object not accessible."
+        )
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
     res = table_manager.select(
         condition="md5sum=%s" if digest else None,
         condition_val=[digest] if digest else None,
         columns=columns,
-        limit=limit
+        limit=limit,
     )
     if res:
         colnames = list(res[0].keys())
@@ -270,8 +286,12 @@ def serve_file(path, remote):
         return RedirectResponse(path)
     _LOGGER.info(f"Returning local: {path}")
     if os.path.isfile(path):
-        return FileResponse(path,  headers={
-            "Content-Disposition": f"inline; filename={os.path.basename(path)}"})
+        return FileResponse(
+            path,
+            headers={
+                "Content-Disposition": f"inline; filename={os.path.basename(path)}"
+            },
+        )
     else:
         msg = f"File not found on server: {path}"
         _LOGGER.warning(msg)

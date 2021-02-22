@@ -31,18 +31,15 @@ async def get_bedfile_count():
 
 @router.get("/bed/all/data", response_model=DBResponse)
 async def get_all_bed_metadata(
-        ids: Optional[List[str]] = Query(
-            None,
-            description="Bedfiles table column name"
-        ),
-        limit: int = Query(
-            None,
-            description="number of rows returned by the query")
+    ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
+    limit: int = Query(None, description="number of rows returned by the query"),
 ):
     """
     Get bedfiles data for selected columns
     """
-    return serve_columns_for_table(bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit)
+    return serve_columns_for_table(
+        bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit
+    )
 
 
 @router.get("/bed/all/schema", response_model=Dict[str, SchemaElement])
@@ -55,64 +52,58 @@ async def get_bed_schema():
 
 @router.get("/bed/{md5sum}/data", response_model=DBResponse)
 async def get_bedfile_data(
-        md5sum: str = Path(
-            ...,
-            description="digest"),
-        ids: Optional[List[str]] = Query(
-            None,
-            description="Column name to select from the table")
+    md5sum: str = Path(..., description="digest"),
+    ids: Optional[List[str]] = Query(
+        None, description="Column name to select from the table"
+    ),
 ):
     """
     Returns data from selected columns for selected bedfile
     """
     return serve_columns_for_table(
-        bbc=bbc,
-        table_name=BED_TABLE,
-        columns=ids,
-        digest=md5sum
+        bbc=bbc, table_name=BED_TABLE, columns=ids, digest=md5sum
     )
 
 
 @router.get("/bed/{md5sum}/file/{id}")
 async def get_file_for_bedfile(
-        md5sum: str = Path(
-            ...,
-            description="digest"),
-        id: FileColumnBed = Path(
-            ...,
-            description="File identifier")
+    md5sum: str = Path(..., description="digest"),
+    id: FileColumnBed = Path(..., description="File identifier"),
 ):
-    file = bbc.bed.select(condition="md5sum=%s", condition_val=[md5sum],
-                         columns=["name", file_map_bed[id.value]])[0][1]
+    file = bbc.bed.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", file_map_bed[id.value]],
+    )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    path = os.path.join(bbc.get_bedstat_output_path(remote), "..", "..",  file["path"])
+    path = os.path.join(bbc.get_bedstat_output_path(remote), "..", "..", file["path"])
     return serve_file(path, remote)
 
 
 @router.get("/bed/{md5sum}/img/{id}")
 async def get_image_for_bedfile(
-        md5sum: str = Path(
-            ...,
-            description="digest"),
-        id: str = Path(
-            ...,
-            description="Figure identifier"),
-        format: FigFormat = Query(
-            "pdf",
-            description="Figure file format")
+    md5sum: str = Path(..., description="digest"),
+    id: str = Path(..., description="Figure identifier"),
+    format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    img = bbc.bed.select(condition="md5sum=%s", condition_val=[md5sum],
-                         columns=["name", id])[0][1]
+    img = bbc.bed.select(
+        condition="md5sum=%s", condition_val=[md5sum], columns=["name", id]
+    )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    path = os.path.join(bbc.get_bedstat_output_path(remote),  "..", "..",  
-                        img["path" if format == "pdf" else "thumbnail_path"])
+    path = os.path.join(
+        bbc.get_bedstat_output_path(remote),
+        "..",
+        "..",
+        img["path" if format == "pdf" else "thumbnail_path"],
+    )
     return serve_file(path, remote)
 
 
 # bedset endpoints
+
 
 @router.get("/bedset/all/data/count", response_model=int)
 async def get_bedset_count():
@@ -124,19 +115,16 @@ async def get_bedset_count():
 
 @router.get("/bedset/all/data", response_model=DBResponse)
 async def get_all_bedset_metadata(
-        ids: Optional[List[str]] = Query(
-            None,
-            description="Bedsets table column name"),
-        limit: int = Query(
-            None,
-            description="number of rows returned by the query")
+    ids: Optional[List[str]] = Query(None, description="Bedsets table column name"),
+    limit: int = Query(None, description="number of rows returned by the query"),
 ):
     """
     Get bedsets data for selected columns
     """
 
-    return serve_columns_for_table(bbc=bbc, table_name=BEDSET_TABLE,
-                                    columns=ids, limit=limit)
+    return serve_columns_for_table(
+        bbc=bbc, table_name=BEDSET_TABLE, columns=ids, limit=limit
+    )
 
 
 @router.get("/bedset/all/schema", response_model=Dict[str, SchemaElement])
@@ -149,17 +137,14 @@ async def get_bedset_schema():
 
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
-        md5sum: str = Path(
-            ...,
-            description="digest"),
-        ids: Optional[List[str]] = Query(
-            None,
-            description="Bedfiles table column name")
+    md5sum: str = Path(..., description="digest"),
+    ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
 ):
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
     res = bbc.select_bedfiles_for_bedset(
-        condition="md5sum=%s", condition_val=[md5sum], bedfile_col=ids)
+        condition="md5sum=%s", condition_val=[md5sum], bedfile_col=ids
+    )
     if res:
         colnames = list(res[0].keys())
         values = [list(x.values()) for x in res]
@@ -173,31 +158,29 @@ async def get_bedfiles_in_bedset(
 
 @router.get("/bedset/{md5sum}/data", response_model=DBResponse)
 async def get_bedset_data(
-        md5sum: str = Path(
-            ...,
-            description="digest"),
-        ids: Optional[List[str]] = Query(
-            None,
-            description="Column name to select from the table")
+    md5sum: str = Path(..., description="digest"),
+    ids: Optional[List[str]] = Query(
+        None, description="Column name to select from the table"
+    ),
 ):
     """
     Returns data from selected columns for selected bedset
     """
-    return serve_columns_for_table(bbc=bbc, table_name=BEDSET_TABLE,
-        columns=ids, digest=md5sum)
+    return serve_columns_for_table(
+        bbc=bbc, table_name=BEDSET_TABLE, columns=ids, digest=md5sum
+    )
 
 
 @router.get("/bedset/{md5sum}/file/{id}")
 async def get_file_for_bedset(
-        md5sum: str = Path(
-            ...,
-            description="digest"),
-        id: FileColumnBedset = Path(
-            ...,
-            description="File identifier")
+    md5sum: str = Path(..., description="digest"),
+    id: FileColumnBedset = Path(..., description="File identifier"),
 ):
-    file = bbc.bedset.select(condition="md5sum=%s", condition_val=[md5sum],
-                         columns=["name", file_map_bedset[id.value]])[0][1]
+    file = bbc.bedset.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", file_map_bedset[id.value]],
+    )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     # path = os.path.join(bbc.get_bedbuncher_output_path(remote), md5sum, file["path"])
     return serve_file(file["path"], remote)
@@ -205,22 +188,21 @@ async def get_file_for_bedset(
 
 @router.get("/bedset/{md5sum}/img/{id}")
 async def get_image_for_bedset(
-        md5sum: str = Path(
-            ...,
-            description="digest"),
-        id: str = Path(
-            ...,
-            description="Figure identifier"),
-        format: FigFormat = Query(
-            "pdf",
-            description="Figure file format")
+    md5sum: str = Path(..., description="digest"),
+    id: str = Path(..., description="Figure identifier"),
+    format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the img with provided ID
     """
-    img = bbc.bedset.select(condition="md5sum=%s", condition_val=[md5sum],
-                             columns=["name", id])[0][1]
+    img = bbc.bedset.select(
+        condition="md5sum=%s", condition_val=[md5sum], columns=["name", id]
+    )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    path = os.path.join(bbc.get_bedbuncher_output_path(remote),  "..", "..",
-                        img["path" if format == "pdf" else "thumbnail_path"])
+    path = os.path.join(
+        bbc.get_bedbuncher_output_path(remote),
+        "..",
+        "..",
+        img["path" if format == "pdf" else "thumbnail_path"],
+    )
     return serve_file(path, remote)
