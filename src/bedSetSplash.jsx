@@ -43,11 +43,11 @@ export default class BedSetSplash extends React.Component {
         bedSetName: data.data[0][2],
         hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
         bedSetDownload: {
-          BED_Set_Rxiv: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar",
-          BED_Stats: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/beds_stats",
-          BED_Set_Summary: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/summary_stats",
-          BED_Set_IGD: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database",
-          BED_Set_PEP: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP"
+          BED_Set_Rxiv: {label: 'BED set archive', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar"},
+          BED_Stats: {label: 'BED files statistics', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/beds_stats"},
+          BED_Set_Summary: {label: 'BED set statistics', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/summary_stats"},
+          BED_Set_IGD: {label: 'BED set iGD database', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database"},
+          BED_Set_PEP: {label: 'BED set PEP', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP"}
         },
         bedSetStat: {
           "gc_content": [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)],
@@ -170,8 +170,8 @@ export default class BedSetSplash extends React.Component {
                 {Object.entries(this.state.bedSetDownload)
                   .map(([key, value], index) =>
                     <p style={{ marginBottom: "5px" }} key={index}>
-                      <a href={value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
-                        {key}
+                      <a href={value.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                        {value.label}
                       </a>
                     </p>
                   )}
