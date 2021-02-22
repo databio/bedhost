@@ -11,7 +11,7 @@ router = APIRouter()
 # private API
 
 
-@router.get("/query/{table_name}/{query}")
+@router.get("/query/{table_name}/{query}", include_in_schema=False)
 async def get_query_results(
     table_name: TableName = Path(..., description="DB Table name"),
     query: str = Path(
@@ -40,23 +40,7 @@ async def get_query_results(
         raise HTTPException(status_code=404, detail=msg)
 
 
-# @router.get("/filters/{table_name}")
-# async def get_search_setup_for_table(
-#         table_name: TableName = Path(
-#             ...,
-#             description="DB Table name"
-#         )
-# ):
-#     """
-#     Returns the filters mapping to based on the selected table schema to
-#     construct the queryBuilder to interface the DB
-#     """
-#     if table_name.value == BED_TABLE:
-#         return get_search_setup(bbc.get_bedfiles_table_columns_types())
-#     return get_search_setup(bbc.get_bedsets_table_columns_types())
-
-
-@router.get("/filters/{table_name}")
+@router.get("/filters/{table_name}", include_in_schema=False)
 async def get_search_setup_for_table(
     table_name: TableName = Path(..., description="DB Table name")
 ):
