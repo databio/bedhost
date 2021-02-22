@@ -1,6 +1,5 @@
 import React from "react";
 import axios from "axios";
-import toObject from "./toObject";
 import { Label } from 'semantic-ui-react';
 import { HashLink as Link } from 'react-router-hash-link';
 import { FaQuestionCircle } from "react-icons/fa";
@@ -33,17 +32,18 @@ export default class BedInfo extends React.Component {
             .then(({ data }) => data);
         let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
 
-        let stat = []
+        let stats = []
         data.columns.map((value, index) => {
-            stat.push({
+            stats.push({
                 label: schema[data.columns[index]].description,
                 data: data.data[0][index]
             }
             )
+            return stats
         })
         this.setState(
             {
-                bed_stats: stat
+                bed_stats: stats
             })
         console.log("BED file stats from the server:", this.state.bed_stats)
     }
