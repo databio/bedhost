@@ -20,7 +20,7 @@ export default class Info extends React.Component {
                                 <div id='about'>
                                     <h1>About</h1>
                                     <p>
-                                    Bedbase is a unifying platform for aggregating, analyzing {" "}
+                                        Bedbase is a unifying platform for aggregating, analyzing {" "}
                                     and serving genomic region data as BED files. Input files are {" "}
                                     processed by a series of python pipelines. The output of {" "}
                                     these pipelines is displayed through a RESTful API where {" "}
@@ -57,12 +57,12 @@ export default class Info extends React.Component {
                                         Current supported formats are bed, bedGraph, bigBed, bigWig, and wig.
                                     </p>
                                     <p>
-                                    <b>Bedstat: {' '}</b>
+                                        <b>Bedstat: {' '}</b>
                                         Calculate and plot a wide variety of genomic region statistics, {" "}
                                         insert BED files metadata/plots into PostgresQL database. {" "}
                                     </p>
                                     <p>
-                                    <b>Bedbuncher: {' '}</b>
+                                        <b>Bedbuncher: {' '}</b>
                                         Retrieve and group BED files according to biological or experimental attributes. {" "}
                                         Bedsets also contain group statistics and outputs for downstream analysis. {" "}
                                     </p>
@@ -70,13 +70,13 @@ export default class Info extends React.Component {
                                         <b>Bedhost: {' '}</b>
                                         Search/download statistics, plots, Bed files, BEDsets and other useful outputs.
                                     </p>
-                                    <p> We use the standard <a className="home-link" href = 'http://pep.databio.org/en/latest/'>PEP</a> format for the annotation of the files to load. {' '} 
+                                    <p> We use the standard <a className="home-link" href='http://pep.databio.org/en/latest/'>PEP</a> format for the annotation of the files to load. {' '}
                                         PEP consists of 1) a sample table (.csv) that annotates the files, and {' '}
                                         2) a project config.yaml file that points to the sample annotation sheet.{' '}
                                         The config file also has other components, such as derived and implied attributes.{' '}
-                                        To run the pipelines for Bedbase, we are use the pipeline submission engine <a className="home-link" href = 'http://looper.databio.org/en/latest/'>Looper</a>.{' '}
-                                        Please go to our <a className="home-link" href = 'https://github.com/databio/bedbase'>GitHub repository</a> {' '}
-                                        to see the full <a className="home-link" href = 'https://github.com/databio/bedbase/blob/trackHub/docs_jupyter/bedbase_tutorial.ipynb'>Bedbase tutorial</a>. </p>
+                                        To run the pipelines for Bedbase, we are use the pipeline submission engine <a className="home-link" href='http://looper.databio.org/en/latest/'>Looper</a>.{' '}
+                                        Please go to our <a className="home-link" href='https://github.com/databio/bedbase'>GitHub repository</a> {' '}
+                                        to see the full <a className="home-link" href='https://github.com/databio/bedbase/blob/trackHub/docs_jupyter/bedbase_tutorial.ipynb'>Bedbase tutorial</a>. </p>
                                 </div>
                                 <div id='stats-def' style={{ marginTop: '15px' }}>
                                     <h1>Statistic Definations</h1>
@@ -86,7 +86,7 @@ export default class Info extends React.Component {
                                             <tbody>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        gc_content
+                                                        GC content
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The average GC content of the region set.
@@ -94,7 +94,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        regions_no
+                                                        Number of regions
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The total number of regions in the BED file.
@@ -102,7 +102,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        mean_absolute_tss_dist
+                                                        Mean absolute distance from TSS
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The average absolute distance to the Transcription Start Sites (TSS)
@@ -110,7 +110,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        mean_region_width
+                                                        Mean region width
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The average region width of the region set.
@@ -118,7 +118,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        exon (%)
+                                                        Exon percentage
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The percentage of the regions in the BED file that are annotated as exon.
@@ -126,7 +126,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        intron (%)
+                                                        Intron percentage
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The percentage of the regions in the BED file that are annotated as intron.
@@ -134,7 +134,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        promoterprox (%)
+                                                        Promoter proc percentage
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The percentage of the regions in the BED file that are annotated as promoter-prox.
@@ -142,7 +142,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        intergenic (%)
+                                                        Intergenic percentage
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The percentage of the regions in the BED file that are annotated as intergenic.
@@ -150,7 +150,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        promotercore (%)
+                                                        Promoter core percentage
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The percentage of the regions in the BED file that are annotated as promoter-core.
@@ -158,7 +158,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        fiveutr (%)
+                                                        5' UTR percentage
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The percentage of the regions in the BED file that are annotated as 5'-UTR.
@@ -166,7 +166,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        threeutr (%)
+                                                        3' UTR percentage
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The percentage of the regions in the BED file that are annotated as 3'-UTR.
@@ -181,7 +181,7 @@ export default class Info extends React.Component {
                                             <tbody>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        gc_content
+                                                        GC content
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The average GC content of the BED set.
@@ -189,7 +189,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        mean_absolute_tss_dist
+                                                        Mean absolute distance from TSS
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The average absolute distance to the Transcription Start Sites (TSS) of the BED set.
@@ -197,7 +197,7 @@ export default class Info extends React.Component {
                                                 </tr>
                                                 <tr style={{ verticalAlign: "top" }} >
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold" }}>
-                                                        mean_region_width
+                                                        Mean region width
                                                 </td>
                                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                                         The average region width of the BED set.
@@ -210,12 +210,12 @@ export default class Info extends React.Component {
                             </Col>
                             <Col md={3}>
                                 <div style={{ marginLeft: '55px' }}>
-                                <a className="home-link" href='#about'><p>About</p></a>
-                                <a className="home-link" href='#key-features'><p>Key Features</p></a>
-                                <a className="home-link" href='#how-does-it-work'><p>How does it work?</p></a>
-                                <a className="home-link" href='#stats-def'><p>Statistic Defination</p></a>
-                                <a className="home-link" href='#bedfile-stats'><p style={{ marginLeft: '20px' }}>BED File Statistics</p></a>
-                                <a className="home-link" href='#bedset-stats'><p style={{ marginLeft: '20px' }}>BED Set Statistics</p></a>
+                                    <a className="home-link" href='#about'><p>About</p></a>
+                                    <a className="home-link" href='#key-features'><p>Key Features</p></a>
+                                    <a className="home-link" href='#how-does-it-work'><p>How does it work?</p></a>
+                                    <a className="home-link" href='#stats-def'><p>Statistic Defination</p></a>
+                                    <a className="home-link" href='#bedfile-stats'><p style={{ marginLeft: '20px' }}>BED File Statistics</p></a>
+                                    <a className="home-link" href='#bedset-stats'><p style={{ marginLeft: '20px' }}>BED Set Statistics</p></a>
                                 </div>
                             </Col>
                         </Row>

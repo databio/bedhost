@@ -44,8 +44,7 @@ export default class BedSplash extends React.Component {
 
     let data = await api.get("/api/bed/" + this.props.match.params.bed_md5sum + "/data").then(({ data }) => data);
     console.log("BED file data retrieved from the server: ", data);
-    let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
-    console.log("BED file table schema: ", schema);
+    
     this.setState(
       {
         bedName: data.data[0][2],

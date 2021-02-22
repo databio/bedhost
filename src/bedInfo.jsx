@@ -15,7 +15,7 @@ export default class BedInfo extends React.Component {
         super();
         this.state = {
             bed_info: {},
-            bed_stats: {},
+            bed_stats: [],
             description: ""
         };
     }
@@ -31,9 +31,19 @@ export default class BedInfo extends React.Component {
         data = await api.get("/api/bed/" + this.props.bed_md5sum +
             "/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage")
             .then(({ data }) => data);
+        let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+
+        let stat = []
+        data.columns.map((value, index) => {
+            stat.push({
+                label: schema[data.columns[index]].description,
+                data: data.data[0][index]
+            }
+            )
+        })
         this.setState(
             {
-                bed_stats: toObject(data.columns, data.data[0])
+                bed_stats: stat
             })
         console.log("BED file stats from the server:", this.state.bed_stats)
     }
@@ -78,22 +88,20 @@ export default class BedInfo extends React.Component {
                 </Label>
                 <table >
                     <tbody>
-                        {Object.entries(this.state.bed_stats)
-                            .map(([key, value], index) =>
-                                <tr style={{ verticalAlign: "top" }} key={index}>
-                                    <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
-                                        {key.replaceAll("_percentage", " (%)")}
+                        {this.state.bed_stats.map((value, index) =>
+                            <tr style={{ verticalAlign: "top" }} key={index}>
+                                <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
+                                    {value.label === "Mean absolute distance from transcription start sites" ?
+                                        (<>Mean absolute distance from TSS</>) :
+                                        (<>{ value.label }</>)}              
                                     </td>
-                                    <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                                        {key === "regions_no" ?
-                                            (<>{value.toFixed(0)}</>) :
-                                            key.includes("_percentage") ?
-                                                (<>{(value * 100).toFixed(3)}</>) :
-                                                (<>{value.toFixed(3)}</>)}
-
-                                    </td>
-                                </tr>
-                            )}
+                                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                                    {value.label === "Number of regions" ?
+                                        (<>{value.data.toFixed(0)}</>) :
+                                        (<>{value.data.toFixed(3)}</>)}
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
