@@ -17,7 +17,9 @@ export default class BedCountsSpan extends React.Component {
       bed: -1,
       bedSet: -1,
       sampleBed: "",
-      sampleBedSet: ""
+      sampleBedSet: "",
+      bedAPI: '',
+      bedSetAPI: ''
     };
   }
 
@@ -45,6 +47,34 @@ export default class BedCountsSpan extends React.Component {
     let bedset = await api.get("/api/bedset/all/data?ids=md5sum&limt=1").then(({ data }) => data)
     let bedseturl = '/bedsetsplash/' + bedset.data[0][0]
     this.setState({ sampleBedSet: bedseturl });
+    this.getAPIcount()
+  }
+
+  async getAPIcount() {
+    let api_json = await fetch(bedhost_api_url + '/openapi.json')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        return responseJson.paths;
+      })
+
+    let bed_api = 0
+    let bedset_api = 0
+
+    Object.entries(api_json).map(([key, value]) => {
+      if (key.includes('/api/bed/')) {
+        bed_api++
+      } else if (key.includes('/api/bedset/')) {
+        bedset_api++
+      }
+      return [bed_api, bedset_api]
+    })
+
+    this.setState(
+      {
+        bedAPI: bed_api,
+        bedSetAPI: bedset_api
+      }
+    )
 
   }
 
@@ -81,7 +111,7 @@ export default class BedCountsSpan extends React.Component {
                   hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{ fontSize: "10pt" }}>[Refgenie]</a>
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  6
+                  {this.state.bedAPI}
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   <Link className="home-link" to={{
@@ -98,10 +128,10 @@ export default class BedCountsSpan extends React.Component {
                   {this.state.bedSet}
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{fontSize: "10pt" }}>[Refgenie]</a>
+                  hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{ fontSize: "10pt" }}>[Refgenie]</a>
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  7
+                  {this.state.bedSetAPI}
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   <Link className="home-link" to={{
