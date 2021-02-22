@@ -46,6 +46,7 @@ export default class BedInfo extends React.Component {
                 </Label>
                 <table >
                     <tbody>
+                        <tr>     <th class="absorbing-column"></th>     <th></th>   </tr>
                         <tr style={{ verticalAlign: "top" }} >
                             <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
                                 md5sum
@@ -60,7 +61,7 @@ export default class BedInfo extends React.Component {
 
                                 return (!hide.includes(key) ? <tr style={{ verticalAlign: "top" }} key={index}>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt", fontWeight: "bold", color: "teal" }}>
-                                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                                        {key.charAt(0).toUpperCase() + key.replaceAll("_", " ").slice(1)}
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {key === "genome" ?

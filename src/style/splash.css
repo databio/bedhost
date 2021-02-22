@@ -103,3 +103,7 @@
   padding: 15px;
   margin: 5px;
 }
+
+table .absorbing-column {
+  width: 100%;
+}
