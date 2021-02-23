@@ -20,6 +20,7 @@ export default function ResponsiveDialog(props) {
 
     const handleClose = () => {
         setOpen(false);
+        setCopied(false)
     };
 
     const handleClickCopy = () => {
@@ -29,9 +30,9 @@ export default function ResponsiveDialog(props) {
 
     return (
         <div className="float-left" onClick={props.onClick}>
-            <button className='btn btn-sm' style={{ marginRight: '5px', backgroundColor: '#264653', color: "white" }} onClick={handleClickOpen}>
+            <button className='btn btn-sm my-btn' style={{ marginRight: '5px' }} onClick={handleClickOpen}>
                 SQL
-      </button>
+            </button>
             <Dialog
                 fullScreen={fullScreen}
                 open={open}
@@ -46,10 +47,10 @@ export default function ResponsiveDialog(props) {
                 </DialogContent>
                 <DialogActions>
                     {copied ? <span style={{ color: 'red' }}>Copied.</span> : null}
-                    <button onClick={handleClickCopy} className='btn btn-sm' style={{ marginRight: '5px', backgroundColor: '#264653', color: "white" }}>
+                    <button onClick={handleClickCopy} className='btn btn-sm my-btn' style={{ marginRight: '5px'  }}>
                         Copy
                     </button>
-                    <button autoFocus onClick={handleClose} className='btn btn-sm' style={{ marginRight: '5px', backgroundColor: '#264653', color: "white" }}>
+                    <button autoFocus onClick={handleClose} className='btn btn-sm my-btn' style={{ marginRight: '5px'}}>
                         Cancel
                     </button>
                 </DialogActions>

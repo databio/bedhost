@@ -1,7 +1,7 @@
 import React from "react";
 import axios from "axios";
-import "bootstrap/dist/css/bootstrap.min.css";
 import bedhost_api_url from "./const";
+import { version } from "../package.json";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -22,7 +22,7 @@ export default class VersionsSpan extends React.Component {
 
   async componentDidMount(){
     let data = await api
-    .get("versions")
+    .get("/api/versions")
     .then(({ data }) => data)
     .catch(function (error) {
       alert(error + "; is bedhost running at " + bedhost_api_url + "?");
@@ -38,17 +38,21 @@ export default class VersionsSpan extends React.Component {
 
   render() {
     return (
-      <footer className="footer mt-auto py-3 bg-light text-black small p-4">
+      <footer className="footer mt-auto py-3 bg-light text-black small p-4" style={{ minWidth: "900px" }}>
         {this.state["python_version"] !== "" ? (
-          <span>
-            | openAPI: <code>{this.state.openapi_version}</code> | Python:{" "}
-            <code>{this.state.python_version}</code> | bedhost:{" "}
-            <code>{this.state.apiserver_version}</code> | bbconf:{" "}
-            <code>{this.state.bbconf_version}</code> |
+          <span style={{ marginLeft: "30px" }}>
+            | openAPI: <code style={{ color:"#e76f51" }}>{this.state.openapi_version}</code> | Python:{" "}
+            <code style={{ color:"#e76f51" }}>{this.state.python_version}</code> | bedhost:{" "}
+            <code style={{ color:"#e76f51" }}>{this.state.apiserver_version}</code> | bedhost-ui:{" "}
+            <code style={{ color:"#e76f51" }}>{version}</code> | bbconf:{" "}
+            <code style={{ color:"#e76f51" }}>{this.state.bbconf_version}</code> |
           </span>
         ) : (
-          <span>Couldn't fetch version info</span>
+          <span style={{ marginLeft: "30px" }}>Couldn't fetch version info</span>
         )}
+        <a className="float-right home-link" style={{ marginRight: "30px" }} href="http://databio.org/">
+        Sheffield Computational Biology Lab
+        </a>
       </footer>
     );
   }

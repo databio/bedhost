@@ -1,0 +1,109 @@
+.splash-img-bedset {
+  height: 300px;
+  width: 300px;
+  cursor:pointer
+}
+
+.splash-img-bed {
+  height: 150px;
+  width: 150px;
+  cursor: pointer
+}
+
+.splash-link {
+  color: #ffffff;
+}
+
+.splash-link:hover {
+  color:  #e76f51;
+}
+
+.new-line {
+  white-space: pre-line;
+  line-height: 1.5;
+  font-size: 12pt
+}
+
+.primary-btn:not(:disabled):not(.disabled).active, 
+.primary-btn:not(:disabled):not(.disabled):active,
+.show>.primary-btn.dropdown-toggle {
+  background-color:  #e76f51;
+  border-color: #e76f51
+}
+
+.dropdown-item:hover {
+  color: white;
+  background-color:  #e76f51;
+}
+
+
+.MuiGridListTileBar-title:hover{
+  border-color:  #e76f51;
+}
+
+.MuiTableCell-root {
+  padding: 5px !important;
+}
+
+.MuiButtonBase-root:hover{
+  color: white;
+}
+
+.MuiIconButton-root {
+  padding: 3px !important;
+}
+
+.title {
+  font-size: 12pt;
+  font-weight: 300;
+}
+
+.bar-group .name-label {
+  text-anchor: end;
+  font-weight: 300;
+  font-size: 11pt;
+  fill: #333;
+}
+
+.bar-group .value-label {
+  text-anchor: end;
+  fill: #333;
+  font-weight: 900;
+  font-size: 10pt;
+}
+
+.container .bar-group {
+  transition: opacity 0.3s;
+  fill: teal
+}
+
+/* Fade bars when the chart is hovered */
+.container:hover .bar-group {
+  opacity: 0.3;
+}
+
+/* But don't fade the hovered bar... */
+.container .bar-group:hover {
+  opacity: 1;
+}
+
+.container .bar-group:hover .name-label {
+  font-weight: 400;
+}
+
+.container .bar-group:hover .value-label {
+  font-size: 10pt;
+}
+
+.custom-modal {
+  max-width: fit-content 
+}
+
+.paper{
+  padding: 15px;
+  margin: 5px;
+}
+
+table .absorbing-column {
+  width: 100%;
+}

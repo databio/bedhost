@@ -1,15 +1,18 @@
 import React from 'react';
-import "./queryBuilder.css";
-import { FaSearch } from "react-icons/fa";
 import ResponsiveDialog from "./responsiveDialog"
-// import $ from 'jquery';
-// import QueryBuilder from '../utils/qb.js';
+import $ from 'jquery';
+import 'jQuery-QueryBuilder';
 import axios from "axios";
 import bedhost_api_url from "./const";
+import "./style/queryBuilder.css";
+import ResultsBed from './queryResultsBed'
+import ResultsBedSet from './queryResultsBedSet'
+
+
 
 console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
-  baseURL: bedhost_api_url,
+    baseURL: bedhost_api_url,
 });
 
 const setRules = {
@@ -26,83 +29,136 @@ const fileRules = {
     rules: [{
         id: 'name',
         operator: 'not_equal',
-        value: 'null'
+        value: 'test'
     }, {
         condition: 'OR',
         rules: [{
             id: 'gc_content',
             operator: 'greater',
-            value: 0.4
+            value: 0.5
         }, {
-            id: 'md5sum',
-            operator: 'equal',
-            value: '23jhb4j324b32hj4b23hj4b23hb42'
+            id: 'regions_no',
+            operator: 'greater',
+            value: 300000
         }]
     }]
 };
 
-
-async function initializeQueryBuilder(element, table_name, newRules) {
-    let filters_res = await api
-    .get("filters/" + table_name)
-    .catch(function (error) {
-      alert(error + "; is bedhost running at " + bedhost_api_url + "?");
-    });
-    let filters = filters_res.data
-    console.log(table_name, "filters retrieved from the server:", filters);
-    const defaultRules = table_name === "bedfiles" ? fileRules : setRules
-    const rules = newRules ? newRules : defaultRules;
-    window.$(element).queryBuilder({ filters, rules });
-}
-
-export default class QueryBuilder extends React.Component {
+export default class QueryBuilderWrapper extends React.Component {
     constructor(props) {
         super();
         this.queryBuilder = React.createRef()
         this.state = {
+            table_name: "",
             rules: {},
+            query: '',
+            filters: {},
+            bedlimit: 500,
+            setlimit: 50
         };
     }
 
-    componentDidMount() {
+    async componentDidMount() {
+        this.setState({ table_name: this.props.table_name })
+        await this.getfilter()
         const element = this.queryBuilder.current;
-        initializeQueryBuilder(element, this.props.table_name);
+        this.initializeQueryBuilder(element, this.state.filters);
+        this.handleGetRulesClick()
     }
 
     componentWillUnmount() {
-        window.$(this.queryBuilder.current).queryBuilder('destroy');
+        $(this.queryBuilder.current).queryBuilder('destroy');
     }
 
-    shouldComponentUpdate() {
-        return false;
+    async componentDidUpdate(prevProps, prevState) {
+        // only update query filter if the table_name has changed
+        if (prevProps.table_name !== this.props.table_name) {
+            await this.getfilter()
+            $(this.queryBuilder.current).queryBuilder('setFilters', true, this.state.filters);
+            this.handleSetRulesClick()
+            this.setState({ table_name: this.props.table_name })
+        }
+    }
+
+    async getfilter() {
+        let filters_res = await api
+            .get("/_private_api/filters/" + this.props.table_name)
+            .catch(function (error) {
+                alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+            });
+        this.setState({ filters: filters_res.data })
+    }
+
+    initializeQueryBuilder(element, filters, newRules) {
+        const defaultRules = this.props.table_name === "bedfiles" ? fileRules : setRules
+        const rules = newRules ? newRules : defaultRules;
+        $(element).queryBuilder({ filters, rules });
     }
 
     // get data from jQuery Query Builder and pass to the react component
     handleGetRulesClick() {
-        const rules = window.$(this.queryBuilder.current).queryBuilder('getSQL');
-        this.setState({ rules: rules.sql });
+        const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
+        const query = $(this.queryBuilder.current).queryBuilder('getSQL', 'question_mark');
+        this.setState({ rules: rules.sql, query: query });
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state
     handleSetRulesClick() {
-        if (this.props.table_name === 'bedsets'){
+        if (this.props.table_name === 'bedsets') {
             var defaultRules = setRules
         } else if (this.props.table_name === 'bedfiles') {
-            var defaultRules = fileRules
+            defaultRules = fileRules
         }
         const newRules = { ...defaultRules };
-        window.$(this.queryBuilder.current).queryBuilder('setRules', newRules);
+        $(this.queryBuilder.current).queryBuilder('setRules', newRules);
         this.setState({ rules: newRules });
+        this.handleGetRulesClick()
     }
+
+    setLimit(event) {
+        if (this.state.table_name === 'bedfiles') {
+            this.setState({ bedlimit: event.target.value });
+        } else {
+            this.setState({ setlimit: event.target.value });
+        }
+
+    };
 
     render() {
         return (
             <div>
                 <div id='query-builder' ref={this.queryBuilder} />
-                <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message = {JSON.stringify(this.state.rules, undefined, 2)}/>
-                <button className='btn btn-sm' style={{backgroundColor:'#264653', color:"white"}} onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
-                <button className='float-right btn btn-sm' style={{backgroundColor:'#264653'}}><FaSearch size={20} style={{ fill: 'white' }} /></button>
+                <ResponsiveDialog onClick={this.handleGetRulesClick.bind(this)} message={JSON.stringify(this.state.rules, undefined, 2)} />
+                <button className='btn btn-sm my-btn' onClick={this.handleSetRulesClick.bind(this)}>RESET RULES</button>
+                <button className='float-right btn btn-sm my-btn' onClick={this.handleGetRulesClick.bind(this)}>SEARCH</button>
+                {
+                    this.state.table_name === 'bedfiles' ? (
+                        <input
+                            className='float-right'
+                            style={{ width: '100px', height: '27px', marginLeft: '5px', padding: '5px', borderColor: '#ced4da', borderStyle: 'solid', borderWidth: '1px', borderRadius: '.25rem' }}
+                            type="text"
+                            value={this.state.bedlimit}
+                            onChange={this.setLimit.bind(this)}
+                        />
+                    ) : (
+                            <input className='float-right'
+                                style={{ width: '100px', height: '27px', marginLeft: '5px', padding: '5px', borderColor: '#ced4da', borderStyle: 'solid', borderWidth: '1px', borderRadius: '.25rem' }}
+                                type="text"
+                                value={this.state.setlimit}
+                                onChange={this.setLimit.bind(this)}
+                            />
+                        )
+                }
+                <label className='float-right' style={{ marginTop: '3px', fontSize: '10pt' }}>Set limit: </label>
+                { this.props.table_name === this.state.table_name && this.state.query ? (
+                    this.state.table_name === 'bedfiles' ? (
+                        <ResultsBed query={this.state.query} limit={this.state.bedlimit} />
+                    ) : (
+                            <ResultsBedSet query={this.state.query} limit={this.state.setlimit} />
+                        )
+                ) : null}
             </div>
+
         );
     }
 };

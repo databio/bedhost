@@ -1,32 +1,36 @@
 import React from "react";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
-import { FaGithub, FaBook } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaGithub } from "react-icons/fa";
+import { FaBook } from "react-icons/fa";
+import bedhost_api_url from "./const";
 
 
 export default function Header() {
 
     return (
-        <Navbar bg="dark" variant="dark">
-            <Navbar.Brand href="#home">
+        <Navbar className="header" bg="dark" variant="dark" style={{ minWidth: "900px" }}>
+            <Navbar.Brand style={{ marginLeft: "30px" }} href="/#home">
                 <img
                     src="/bedbase_logo.svg"
-                    width="200"
-                    height="30"
+                    height="45px"
                     className="d-inline-block align-top"
                     alt="BEDBASE logo"
                 />
             </Navbar.Brand>
             <Nav className="mr-auto">
-                <Nav.Link href="http://localhost:8000/docs">API documentation</Nav.Link>
-            </Nav>
-            {/* <Nav className="float-right" >
-                <Nav.Link href="https://github.com/databio/bedbase">
-                    <FaBook size={30} style={{ fill: 'white' }} />
+                <Nav.Link style={{ fontSize: "16px", color: "white" }} href={bedhost_api_url + "/docs"}>
+                    <b>API documentation</b>
                 </Nav.Link>
-            </Nav> */}
+            </Nav>
+            <Nav className="float-right" >
+                <Link to="/about">
+                    <FaBook size={30} style={{ fill: 'white' }} />
+                </Link>
+            </Nav>
             <Nav className="float-right">
-                <Nav.Link href="https://github.com/databio/bedbase">
+                <Nav.Link style={{ marginRight: "30px" }} href="https://github.com/databio/bedbase">
                     <FaGithub size={30} style={{ fill: 'white' }} />
                 </Nav.Link>
             </Nav>
