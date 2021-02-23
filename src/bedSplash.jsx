@@ -31,16 +31,12 @@ export default class BedSplash extends React.Component {
   async componentDidMount() {
     await api
       .get(bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile")
+      .then(this.setState({ bigbed: true }))
       .catch(err => {
-        if (!err.response) {
-          this.setState({ bigbed: true })
-        } else if (err.response.status === 404) {
+      if (err.response.status === 404) {
           this.setState({ bigbed: false })
         }
       });
-
-
-    console.log(this.state.bigbed);
 
     let data = await api.get("/api/bed/" + this.props.match.params.bed_md5sum + "/data").then(({ data }) => data);
     console.log("BED file data retrieved from the server: ", data);
@@ -56,8 +52,8 @@ export default class BedSplash extends React.Component {
       this.setState(
         {
           bedDownload: {
-            BED_File: { lable: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile" },
-            bigBED_File: { lable: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile" },
+            BED_File: { label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile" },
+            bigBED_File: { label: 'bigBed file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile" },
           },
         }
       );
@@ -115,7 +111,7 @@ export default class BedSplash extends React.Component {
               </Label>
                 {Object.entries(this.state.bedDownload)
                   .map(([key, value], index) =>
-                    <p key={index}>
+                    <p style={{ marginBottom: "5px" }} key={index}>
                       <a href={value.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
                         {value.label}
                       </a>
