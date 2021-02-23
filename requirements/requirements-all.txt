@@ -1,12 +1,11 @@
 pyyaml
-aiofiles
-fastapi
-jinja2
+fastapi>=0.61.2
 starlette
+aiofiles
 uvicorn
-elasticsearch-dsl>=7.0.0,<8.0.0
 python-multipart
 requests
-yacman
-bbconf>=0.0.2-dev
 itsdangerous
+logmuse
+yacman>=0.7.1
+bbconf>=0.1.0
