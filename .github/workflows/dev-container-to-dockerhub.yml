@@ -13,7 +13,7 @@ jobs:
     - name: Checkout bedhost
       uses: actions/checkout@v2
 
-    - name: Checkout bedhost-ui@dev_bing
+    - name: Checkout bedhost-ui@master
       uses: actions/checkout@v2
       with:
         repository: databio/bedhost-ui
@@ -38,7 +38,7 @@ jobs:
         cp -r bedhost-ui/build/* bedhost/static/bedhost-ui/
 
     - name: Push to DockerHub
-      uses: docker/build-push-action@v1
+      uses: docker/build-push-action@v2
       with:
         dockerfile: ./dev.Dockerfile
         username: ${{ secrets.DOCKER_USER }}
