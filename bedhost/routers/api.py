@@ -76,7 +76,7 @@ async def get_file_for_bedfile(
         columns=["name", file_map_bed[id.value]],
     )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
-    #path = os.path.join(bbc.get_bedstat_output_path(remote), "..", "..", file["path"])
+    # path = os.path.join(bbc.get_bedstat_output_path(remote), "..", "..", file["path"])
     return serve_file(file["path"], remote)
 
 
