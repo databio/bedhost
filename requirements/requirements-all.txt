@@ -9,3 +9,4 @@ itsdangerous
 logmuse
 yacman>=0.7.1
 bbconf>=0.1.0
+pyBigWig
