@@ -1,3 +1,4 @@
+import pyBigWig
 from fastapi import HTTPException, APIRouter, Path, Query
 from typing import Optional
 from ..main import bbc, _LOGGER, app
@@ -64,7 +65,7 @@ async def get_bedfile_data(
         bbc=bbc, table_name=BED_TABLE, columns=ids, digest=md5sum
     )
 
-
+@router.head("/bed/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bed/{md5sum}/file/{id}")
 async def get_file_for_bedfile(
     md5sum: str = Path(..., description="digest"),
@@ -84,7 +85,7 @@ async def get_file_for_bedfile(
 async def get_image_for_bedfile(
     md5sum: str = Path(..., description="digest"),
     id: str = Path(..., description="Figure identifier"),
-    format: FigFormat = Query("pdf", description="Figure file format"),
+    format: str = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the bedfile plot with provided ID in provided format
@@ -98,6 +99,35 @@ async def get_image_for_bedfile(
         img["path" if format == "pdf" else "thumbnail_path"],
     )
     return serve_file(path, remote)
+
+@router.get("/bed/{md5sum}/regions/")
+async def get_regions_for_bedfile(
+    md5sum: str = Path(..., description="digest"),
+    chr: str = Query(None, description="chromsome number"),
+    start: int = Query(None, description="query range: start coordinate"),
+    end: int = Query(None, description="query range: end coordinate")
+):
+    """
+    Returns the queried regions with provided ID and optional query parameters
+
+    """
+    file = bbc.bed.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", 'bigbedfile'],
+    )[0][1]
+    
+    path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
+    print (path)
+    bb = pyBigWig.open(path)
+    ranges = bb.entries(chr, start, end, withString=False)
+    coordinates = []
+    for r in ranges:
+        r = list(r)
+        r.insert(0,chr)
+        coordinates.append(r)
+
+    return coordinates
 
 
 # bedset endpoints
