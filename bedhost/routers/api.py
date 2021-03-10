@@ -1,5 +1,5 @@
-import pyBigWig
 from fastapi import HTTPException, APIRouter, Path, Query
+import subprocess
 from typing import Optional
 from ..main import bbc, _LOGGER, app
 from ..const import *
@@ -85,7 +85,7 @@ async def get_file_for_bedfile(
 async def get_image_for_bedfile(
     md5sum: str = Path(..., description="digest"),
     id: str = Path(..., description="Figure identifier"),
-    format: str = Query("pdf", description="Figure file format"),
+    format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the bedfile plot with provided ID in provided format
@@ -100,10 +100,10 @@ async def get_image_for_bedfile(
     )
     return serve_file(path, remote)
 
-@router.get("/bed/{md5sum}/regions/")
+@router.get("/bed/{md5sum}/regions/{chr}")
 async def get_regions_for_bedfile(
     md5sum: str = Path(..., description="digest"),
-    chr: str = Query(None, description="chromsome number"),
+    chr: str = Path(..., description="chromsome number"),
     start: int = Query(None, description="query range: start coordinate"),
     end: int = Query(None, description="query range: end coordinate"),
 ):
@@ -118,15 +118,21 @@ async def get_regions_for_bedfile(
     )[0][1]
     
     path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
-    bb = pyBigWig.open(path)
-    ranges = bb.entries(chr, start, end, withString=False)
-    coordinates = []
-    for r in ranges:
-        r = list(r)
-        r.insert(0, chr)
-        coordinates.append(r)
 
-    return coordinates
+    if start:
+        cmd =  ["bigBedToBed", f"-chrom={chr}", f"-start={start}", path, "stdout"]
+        # f"bigBedToBed -chrom={chr} -start={start} {path} stdout"
+    elif end:
+        cmd = ["bigBedToBed", f"-chrom={chr}", f"-end={end}", path, "stdout"]
+        # f"bigBedToBed -chrom={chr} -end={start} {path} stdout"
+    elif start and end:
+        cmd = ["bigBedToBed", f"-chrom={chr}", f"-start={start}", f"-end={end}", path, "stdout"] 
+        # f"bigBedToBed -chrom={chr} -start={start} -end={end} {path} stdout"
+    else:
+        cmd = ["bigBedToBed", f"-chrom={chr}", path, "stdout"]
+        # f"bigBedToBed -chrom={chr} {path} stdout"
+
+    return subprocess.check_output(cmd)
 
 
 # bedset endpoints
