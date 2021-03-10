@@ -1,5 +1,6 @@
 from fastapi import HTTPException, APIRouter, Path, Query
 import subprocess
+from fastapi.responses import PlainTextResponse
 from typing import Optional
 from ..main import bbc, _LOGGER, app
 from ..const import *
@@ -100,7 +101,7 @@ async def get_image_for_bedfile(
     )
     return serve_file(path, remote)
 
-@router.get("/bed/{md5sum}/regions/{chr}")
+@router.get("/bed/{md5sum}/regions/{chr}", response_class=PlainTextResponse)
 async def get_regions_for_bedfile(
     md5sum: str = Path(..., description="digest"),
     chr: str = Path(..., description="chromsome number"),
@@ -120,20 +121,22 @@ async def get_regions_for_bedfile(
     path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
 
     if start:
-        cmd =  ["bigBedToBed", f"-chrom={chr}", f"-start={start}", path, "stdout"]
-        # f"bigBedToBed -chrom={chr} -start={start} {path} stdout"
+        cmd = ["bigBedToBed", f"-chrom={chr}", f"-start={start}", path, "stdout"]
+        # cmd = f"bigBedToBed -chrom={chr} -start={start} {path} stdout | column -t"
     elif end:
         cmd = ["bigBedToBed", f"-chrom={chr}", f"-end={end}", path, "stdout"]
-        # f"bigBedToBed -chrom={chr} -end={start} {path} stdout"
+        # cmd = f"bigBedToBed -chrom={chr} -end={start} {path} stdout | column -t"
     elif start and end:
         cmd = ["bigBedToBed", f"-chrom={chr}", f"-start={start}", f"-end={end}", path, "stdout"] 
-        # f"bigBedToBed -chrom={chr} -start={start} -end={end} {path} stdout"
+        # cmd = f"bigBedToBed -chrom={chr} -start={start} -end={end} {path} stdout | column -t"
     else:
         cmd = ["bigBedToBed", f"-chrom={chr}", path, "stdout"]
-        # f"bigBedToBed -chrom={chr} {path} stdout"
+        # cmd =  f"bigBedToBed -chrom={chr} {path} stdout | column -t"
 
-    return subprocess.check_output(cmd)
-
+    out = subprocess.run(cmd, capture_output=True, text=True).stdout
+    print (out)
+    # return out.decode("utf-8")
+    return subprocess.run(cmd, capture_output=True, text=True).stdout
 
 # bedset endpoints
 
