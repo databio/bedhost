@@ -122,21 +122,16 @@ async def get_regions_for_bedfile(
 
     if start:
         cmd = ["bigBedToBed", f"-chrom={chr}", f"-start={start}", path, "stdout"]
-        # cmd = f"bigBedToBed -chrom={chr} -start={start} {path} stdout | column -t"
     elif end:
         cmd = ["bigBedToBed", f"-chrom={chr}", f"-end={end}", path, "stdout"]
-        # cmd = f"bigBedToBed -chrom={chr} -end={start} {path} stdout | column -t"
     elif start and end:
         cmd = ["bigBedToBed", f"-chrom={chr}", f"-start={start}", f"-end={end}", path, "stdout"] 
-        # cmd = f"bigBedToBed -chrom={chr} -start={start} -end={end} {path} stdout | column -t"
     else:
         cmd = ["bigBedToBed", f"-chrom={chr}", path, "stdout"]
-        # cmd =  f"bigBedToBed -chrom={chr} {path} stdout | column -t"
 
     out = subprocess.run(cmd, capture_output=True, text=True).stdout
-    print (out)
-    # return out.decode("utf-8")
-    return subprocess.run(cmd, capture_output=True, text=True).stdout
+
+    return subprocess.run(['cut', '-f1-3'], input=out, capture_output=True, text=True).stdout
 
 # bedset endpoints
 
