@@ -105,7 +105,7 @@ async def get_regions_for_bedfile(
     md5sum: str = Path(..., description="digest"),
     chr: str = Query(None, description="chromsome number"),
     start: int = Query(None, description="query range: start coordinate"),
-    end: int = Query(None, description="query range: end coordinate")
+    end: int = Query(None, description="query range: end coordinate"),
 ):
     """
     Returns the queried regions with provided ID and optional query parameters
@@ -114,17 +114,16 @@ async def get_regions_for_bedfile(
     file = bbc.bed.select(
         condition="md5sum=%s",
         condition_val=[md5sum],
-        columns=["name", 'bigbedfile'],
+        columns=["name", "bigbedfile"],
     )[0][1]
     
     path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
-    print (path)
     bb = pyBigWig.open(path)
     ranges = bb.entries(chr, start, end, withString=False)
     coordinates = []
     for r in ranges:
         r = list(r)
-        r.insert(0,chr)
+        r.insert(0, chr)
         coordinates.append(r)
 
     return coordinates
@@ -198,7 +197,7 @@ async def get_bedset_data(
         bbc=bbc, table_name=BEDSET_TABLE, columns=ids, digest=md5sum
     )
 
-
+@router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bedset/{md5sum}/file/{id}")
 async def get_file_for_bedset(
     md5sum: str = Path(..., description="digest"),
