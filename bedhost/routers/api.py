@@ -117,7 +117,7 @@ async def get_regions_for_bedfile(
         condition_val=[md5sum],
         columns=["name", "bigbedfile"],
     )[0][1]
-    
+
     path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
 
     if start:
@@ -125,16 +125,24 @@ async def get_regions_for_bedfile(
     elif end:
         cmd = ["bigBedToBed", f"-chrom={chr}", f"-end={end}", path, "stdout"]
     elif start and end:
-        cmd = ["bigBedToBed", f"-chrom={chr}", f"-start={start}", f"-end={end}", path, "stdout"] 
+        cmd = [
+            "bigBedToBed", 
+            f"-chrom={chr}", 
+            f"-start={start}",
+            f"-end={end}", 
+            path, 
+            "stdout",
+        ] 
     else:
         cmd = ["bigBedToBed", f"-chrom={chr}", path, "stdout"]
 
     out = subprocess.run(cmd, capture_output=True, text=True).stdout
 
-    return subprocess.run(['cut', '-f1-3'], input=out, capture_output=True, text=True).stdout
+    return subprocess.run(
+        ['cut', '-f1-3'], input=out, capture_output=True, text=True
+    ).stdout
 
 # bedset endpoints
-
 
 @router.get("/bedset/all/data/count", response_model=int)
 async def get_bedset_count():
