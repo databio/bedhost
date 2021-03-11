@@ -66,6 +66,7 @@ async def get_bedfile_data(
         bbc=bbc, table_name=BED_TABLE, columns=ids, digest=md5sum
     )
 
+
 @router.head("/bed/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bed/{md5sum}/file/{id}")
 async def get_file_for_bedfile(
@@ -100,6 +101,7 @@ async def get_image_for_bedfile(
         img["path" if format == "pdf" else "thumbnail_path"],
     )
     return serve_file(path, remote)
+
 
 @router.get("/bed/{md5sum}/regions/{chr}", response_class=PlainTextResponse)
 async def get_regions_for_bedfile(
@@ -142,7 +144,9 @@ async def get_regions_for_bedfile(
         ["cut", "-f1-3"], input=out, capture_output=True, text=True
     ).stdout
 
+
 # bedset endpoints
+
 
 @router.get("/bedset/all/data/count", response_model=int)
 async def get_bedset_count():
@@ -208,6 +212,7 @@ async def get_bedset_data(
     return serve_columns_for_table(
         bbc=bbc, table_name=BEDSET_TABLE, columns=ids, digest=md5sum
     )
+
 
 @router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bedset/{md5sum}/file/{id}")
