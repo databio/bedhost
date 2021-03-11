@@ -103,12 +103,12 @@ async def get_image_for_bedfile(
     return serve_file(path, remote)
 
 
-@router.get("/bed/{md5sum}/regions/{chr}", response_class=PlainTextResponse)
+@router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
 async def get_regions_for_bedfile(
     md5sum: str = Path(..., description="digest"),
-    chr: str = Path(..., description="chromsome number"),
-    start: int = Query(None, description="query range: start coordinate"),
-    end: int = Query(None, description="query range: end coordinate"),
+    chr_num: str = Path(..., description="chromsome number"),
+    start: Optional[str] = Query(None, description="query range: start coordinate"),
+    end: Optional[str] = Query(None, description="query range: end coordinate"),
 ):
     """
     Returns the queried regions with provided ID and optional query parameters
@@ -122,22 +122,14 @@ async def get_regions_for_bedfile(
 
     path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
 
+    cmd = ["bigBedToBed", f"-chrom={chr_num}"]
     if start:
-        cmd = ["bigBedToBed", f"-chrom={chr}", f"-start={start}", path, "stdout"]
-    elif end:
-        cmd = ["bigBedToBed", f"-chrom={chr}", f"-end={end}", path, "stdout"]
-    elif start and end:
-        cmd = [
-            "bigBedToBed",
-            f"-chrom={chr}",
-            f"-start={start}",
-            f"-end={end}",
-            path,
-            "stdout",
-        ]
-    else:
-        cmd = ["bigBedToBed", f"-chrom={chr}", path, "stdout"]
+        cmd.append(f"-start={start}")
+    if end:
+        cmd.append(f"-end={end}")
+    cmd.extend([path, "stdout"])
 
+    _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | cut -f1-3")
     out = subprocess.run(cmd, capture_output=True, text=True).stdout
 
     return subprocess.run(
