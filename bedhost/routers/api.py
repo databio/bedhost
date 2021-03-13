@@ -131,13 +131,13 @@ async def get_regions_for_bedfile(
 
     try:
         return subprocess.run(
-            ["cut", "-f1-3"], 
-            input=subprocess.run(cmd, capture_output=True, text=True).stdout, 
-            capture_output=True, 
+            ["cut", "-f1-3"],
+            input=subprocess.run(cmd, capture_output=True, text=True).stdout,
+            capture_output=True,
             text=True,
         ).stdout
 
-    except FileNotFoundError: 
+    except FileNotFoundError:
         _LOGGER.warning("bigBedToBed is not installed.")
         raise HTTPException(
             status_code=500, detail="ERROR: bigBedToBed is not installed."
