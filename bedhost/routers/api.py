@@ -128,17 +128,20 @@ async def get_regions_for_bedfile(
     if end:
         cmd.append(f"-end={end}")
     cmd.extend([path, "stdout"])
-    
+     
     try: 
         _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | cut -f1-3")
-        out = subprocess.run(cmd, capture_output=True, text=True).stdout
+        return subprocess.run(
+            ["cut", "-f1-3"], 
+            input=subprocess.run(cmd, capture_output=True, text=True).stdout, 
+            capture_output=True, 
+            text=True,
+        ).stdout
     except FileNotFoundError: 
         _LOGGER.warning("bigBedToBed is not installed.")
-        raise HTTPException(status_code=500, detail="ERROR: bigBedToBed is not installed.")
-
-    return subprocess.run(
-        ["cut", "-f1-3"], input=out, capture_output=True, text=True
-    ).stdout
+        raise HTTPException(
+            status_code=500, detail="ERROR: bigBedToBed is not installed."
+        )
 
 
 # bedset endpoints
