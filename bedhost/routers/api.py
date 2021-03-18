@@ -135,8 +135,8 @@ def get_regions_for_bedfile(
     _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | cut -f1-3")
     try:
         bbtob_process = subprocess.Popen(
-            cmd, 
-            stdout=subprocess.PIPE, 
+            cmd,
+            stdout=subprocess.PIPE,
             universal_newlines=True,
         )
 
