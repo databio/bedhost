@@ -1,6 +1,7 @@
 from fastapi import HTTPException, APIRouter, Path, Query
 import subprocess
-from fastapi.responses import PlainTextResponse
+import shlex
+from fastapi.responses import PlainTextResponse, StreamingResponse
 from typing import Optional
 from ..main import bbc, _LOGGER, app
 from ..const import *
@@ -103,10 +104,10 @@ async def get_image_for_bedfile(
     return serve_file(path, remote)
 
 
-@router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
-async def get_regions_for_bedfile(
+@router.get("/bed/{md5sum}/regions", response_class=PlainTextResponse)
+def get_regions_for_bedfile(
     md5sum: str = Path(..., description="digest"),
-    chr_num: str = Path(..., description="chromsome number"),
+    chr_num: Optional[str] = Query(None, description="chromsome number"),
     start: Optional[str] = Query(None, description="query range: start coordinate"),
     end: Optional[str] = Query(None, description="query range: end coordinate"),
 ):
@@ -122,20 +123,22 @@ async def get_regions_for_bedfile(
 
     path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
 
-    cmd = ["bigBedToBed", f"-chrom={chr_num}"]
+    cmd = ["bigBedToBed"]
+    if chr_num:
+        cmd.append(f"-chrom={chr_num}")
     if start:
         cmd.append(f"-start={start}")
     if end:
         cmd.append(f"-end={end}")
     cmd.extend([path, "stdout"])
 
+    _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | cut -f1-3")
     try:
-        return subprocess.run(
+        return subprocess.check_output(
             ["cut", "-f1-3"],
-            input=subprocess.run(cmd, capture_output=True, text=True).stdout,
-            capture_output=True,
+            input=subprocess.check_output(cmd, text=True),
             text=True,
-        ).stdout
+        )
 
     except FileNotFoundError:
         _LOGGER.warning("bigBedToBed is not installed.")
