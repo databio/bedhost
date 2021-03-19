@@ -146,7 +146,7 @@ def get_regions_for_bedfile(
             stdout=cut_process.stdin,
             text=True,
         )
-        
+
         return cut_process.communicate()[0]
 
     except FileNotFoundError:
