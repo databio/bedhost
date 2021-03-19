@@ -11,3 +11,6 @@ RUN pip install -r requirements/requirements-dev.txt
 RUN pip install -r requirements/requirements-all.txt
 RUN git clone https://github.com/vishnubob/wait-for-it.git
 RUN pip install .
+
+RUN wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed -P /usr/local/bin
+RUN chmod 755 /usr/local/bin/bigBedToBed
