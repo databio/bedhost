@@ -104,10 +104,10 @@ async def get_image_for_bedfile(
     return serve_file(path, remote)
 
 
-@router.get("/bed/{md5sum}/regions", response_class=PlainTextResponse)
+@router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
 def get_regions_for_bedfile(
     md5sum: str = Path(..., description="digest"),
-    chr_num: Optional[str] = Query(None, description="chromsome number"),
+    chr_num: str = Path(..., description="chromsome number"),
     start: Optional[str] = Query(None, description="query range: start coordinate"),
     end: Optional[str] = Query(None, description="query range: end coordinate"),
 ):
