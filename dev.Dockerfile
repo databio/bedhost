@@ -6,6 +6,7 @@ RUN apt-get update
 RUN apt-get install -y git
 RUN apt-get install -y libpq-dev
 RUN apt-get install -y gcc
+RUN apt-get install -y wget
 
 RUN pip install -r requirements/requirements-dev.txt
 RUN pip install -r requirements/requirements-all.txt
