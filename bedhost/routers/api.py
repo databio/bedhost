@@ -134,17 +134,20 @@ def get_regions_for_bedfile(
 
     _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | cut -f1-3")
     try:
-        bbtob_process = subprocess.Popen(
-            cmd,
+        cut_process = subprocess.Popen(
+            ["cut", "-f1-3"],
+            stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             universal_newlines=True,
         )
 
-        return subprocess.check_output(
-            ["cut", "-f1-3"],
-            stdin=bbtob_process.stdout,
+        subprocess.Popen(
+            cmd,
+            stdout=cut_process.stdin,
             text=True,
         )
+        
+        return cut_process.communicate()[0]
 
     except FileNotFoundError:
         _LOGGER.warning("bigBedToBed is not installed.")
