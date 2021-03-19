@@ -1,4 +1,7 @@
 from fastapi import HTTPException, APIRouter, Path, Query
+import subprocess
+import shlex
+from fastapi.responses import PlainTextResponse, StreamingResponse
 from typing import Optional
 from ..main import bbc, _LOGGER, app
 from ..const import *
@@ -65,6 +68,7 @@ async def get_bedfile_data(
     )
 
 
+@router.head("/bed/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bed/{md5sum}/file/{id}")
 async def get_file_for_bedfile(
     md5sum: str = Path(..., description="digest"),
@@ -98,6 +102,58 @@ async def get_image_for_bedfile(
         img["path" if format == "pdf" else "thumbnail_path"],
     )
     return serve_file(path, remote)
+
+
+@router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
+def get_regions_for_bedfile(
+    md5sum: str = Path(..., description="digest"),
+    chr_num: str = Path(..., description="chromsome number"),
+    start: Optional[str] = Query(None, description="query range: start coordinate"),
+    end: Optional[str] = Query(None, description="query range: end coordinate"),
+):
+    """
+    Returns the queried regions with provided ID and optional query parameters
+
+    """
+    file = bbc.bed.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", "bigbedfile"],
+    )[0][1]
+
+    path = os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
+
+    cmd = ["bigBedToBed"]
+    if chr_num:
+        cmd.append(f"-chrom={chr_num}")
+    if start:
+        cmd.append(f"-start={start}")
+    if end:
+        cmd.append(f"-end={end}")
+    cmd.extend([path, "stdout"])
+
+    _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | cut -f1-3")
+    try:
+        cut_process = subprocess.Popen(
+            ["cut", "-f1-3"],
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            universal_newlines=True,
+        )
+
+        subprocess.Popen(
+            cmd,
+            stdout=cut_process.stdin,
+            text=True,
+        )
+
+        return cut_process.communicate()[0]
+
+    except FileNotFoundError:
+        _LOGGER.warning("bigBedToBed is not installed.")
+        raise HTTPException(
+            status_code=500, detail="ERROR: bigBedToBed is not installed."
+        )
 
 
 # bedset endpoints
@@ -169,6 +225,7 @@ async def get_bedset_data(
     )
 
 
+@router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bedset/{md5sum}/file/{id}")
 async def get_file_for_bedset(
     md5sum: str = Path(..., description="digest"),
