@@ -31,7 +31,7 @@ app.add_middleware(
         "http://localhost:8000",
         "http://dev1.bedbase.org",
         "http://data.bedbase.org",
-        "http://bedbase.org/",
+        "http://bedbase.org",
     ],
     allow_credentials=True,
     allow_methods=["*"],
