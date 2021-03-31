@@ -25,7 +25,7 @@ export default class BedSetSplash extends React.Component {
     this.state = {
       bedSetName: "",
       bedsCount: "",
-      genome: "",
+      genome: {},
       bedSetStat: [],
       avgRegionD: {},
       bedSetDownload: {},
@@ -124,7 +124,7 @@ export default class BedSetSplash extends React.Component {
                         genome
                             </td>
                       <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                        <><span>{this.state.genome}</span><a href={"http://refgenomes.databio.org/#" + this.state.genome} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>
+                        <><span>{this.state.genome.alias}</span><a href={"http://refgenomes.databio.org/v3/genomes/splash/" + this.state.genome.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>
                       </td>
                     </tr>
                     <tr style={{ verticalAlign: "top" }} >

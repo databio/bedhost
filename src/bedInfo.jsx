@@ -15,6 +15,7 @@ export default class BedInfo extends React.Component {
         this.state = {
             bed_info: {},
             bed_stats: [],
+            genome_digest:'',
             description: ""
         };
     }
@@ -44,6 +45,14 @@ export default class BedInfo extends React.Component {
         this.setState(
             {
                 bed_stats: stats
+            })
+        data = await api.get("/api/bed/" + this.props.bed_md5sum +
+            "/data?ids=genome")
+            .then(({ data }) => data);
+        console.log("genmoe digest:", data.data[0][0])
+        this.setState(
+            {
+                genome_digest: data.data[0][0].digest
             })
         console.log("BED file stats from the server:", this.state.bed_stats)
     }
@@ -75,7 +84,7 @@ export default class BedInfo extends React.Component {
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {key === "genome" ?
-                                            (<><span>{value}</span><a href={"http://refgenomes.databio.org/#" + value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
+                                            (<><span>{value}</span><a href={"http://refgenomes.databio.org/v3/genomes/splash/" + this.state.genome_digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
                                             : value}
                                     </td>
                                 </tr> : null)
