@@ -1,5 +1,6 @@
+from typing import Dict, List, Text
+
 from pydantic import BaseModel
-from typing import List, Dict, Text
 
 
 class DBResponse(BaseModel):

@@ -1,12 +1,13 @@
 from logging import getLogger
 from urllib import parse
-from starlette.responses import RedirectResponse, FileResponse
-from starlette.exceptions import HTTPException
 
-from .const import *
-from ._version import __version__ as v
+from starlette.exceptions import HTTPException
+from starlette.responses import FileResponse, RedirectResponse
 from ubiquerg import VersionInHelpParser
 from yacman import get_first_env_var
+
+from ._version import __version__ as v
+from .const import *
 
 _LOGGER = getLogger(PKG_NAME)
 

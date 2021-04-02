@@ -1,9 +1,11 @@
-from bedhost._version import __version__ as server_v
-from bbconf._version import __version__ as bbconf_v
-from platform import python_version
-from bbconf.const import *
 import os
 from enum import Enum
+from platform import python_version
+
+from bbconf._version import __version__ as bbconf_v
+from bbconf.const import *
+
+from bedhost._version import __version__ as server_v
 
 PKG_NAME = "bedhost"
 LOG_FORMAT = "%(levelname)s in %(funcName)s: %(message)s"
