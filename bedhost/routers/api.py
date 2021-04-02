@@ -1,13 +1,14 @@
-from fastapi import HTTPException, APIRouter, Path, Query
-import subprocess
 import shlex
-from fastapi.responses import PlainTextResponse, StreamingResponse
+import subprocess
 from typing import Optional
-from ..main import bbc, _LOGGER, app
+
+from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi.responses import PlainTextResponse, StreamingResponse
+
 from ..const import *
 from ..data_models import *
 from ..helpers import *
-
+from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
@@ -82,7 +83,7 @@ async def get_file_for_bedfile(
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
-        if remote 
+        if remote
         else os.path.join(
             bc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
@@ -107,8 +108,8 @@ async def get_image_for_bedfile(
         os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
-        ) 
-        if remote 
+        )
+        if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
@@ -136,8 +137,8 @@ def get_regions_for_bedfile(
 
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
-        os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"]) 
-        if remote 
+        os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
+        if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
@@ -258,9 +259,9 @@ async def get_file_for_bedset(
     )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
-        os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"]) 
-    if remote 
-    else os.path.join(
+        os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
+        if remote
+        else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
     )
@@ -285,7 +286,7 @@ async def get_image_for_bedset(
             bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
-        if remote 
+        if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
