@@ -12,6 +12,29 @@ from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
+# API query path definitions
+m = Path(
+    ...,
+    description="Bed file/bed set digest",
+    regex=r"^\w+$",
+    max_length=32,
+    min_length=32,
+    example=ex_digest,
+)
+
+i = Path(
+    ...,
+    description="File/image id",
+    regex=r"^\S+$",
+    example=ex_id,
+)
+
+c = Path(
+    ...,
+    description="Chromosome number",
+    regex=r"^\S+$",
+    example=ex_chr,
+)
 
 # misc endpoints
 @router.get("/versions", response_model=Dict[str, str])
