@@ -12,21 +12,44 @@ from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
+ex_bed_digest = "78c0e4753d04b238fc07e4ebe5a02984"
+ex_bedset_digest = "48a1a8c1476fecb1961894f81d1afadd"
+ex_bed_img_id = "tssdist"
+ex_chr = "chr1"
+ex_bedset_img_id = "region_commonality"
+
+
 # API query path definitions
-m = Path(
+bd = Path(
     ...,
-    description="Bed file/bed set digest",
+    description="BED digest",
     regex=r"^\w+$",
     max_length=32,
     min_length=32,
-    example=ex_digest,
+    example=ex_bed_digest,
 )
 
-i = Path(
+bsd = Path(
     ...,
-    description="File/image id",
+    description="BED set digest",
+    regex=r"^\w+$",
+    max_length=32,
+    min_length=32,
+    example=ex_bedset_digest,
+)
+
+bii = Path(
+    ...,
+    description="BED image id",
     regex=r"^\S+$",
-    example=ex_id,
+    example=ex_bed_img_id,
+)
+
+bsii = Path(
+    ...,
+    description="BED set image id",
+    regex=r"^\S+$",
+    example=ex_bedset_img_id,
 )
 
 c = Path(
@@ -79,7 +102,7 @@ async def get_bed_schema():
 
 @router.get("/bed/{md5sum}/data", response_model=DBResponse)
 async def get_bedfile_data(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bd,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
@@ -95,7 +118,7 @@ async def get_bedfile_data(
 @router.head("/bed/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bed/{md5sum}/file/{id}")
 async def get_file_for_bedfile(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bd,
     id: FileColumnBed = Path(..., description="File identifier"),
 ):
     file = bbc.bed.select(
@@ -116,8 +139,8 @@ async def get_file_for_bedfile(
 
 @router.get("/bed/{md5sum}/img/{id}")
 async def get_image_for_bedfile(
-    md5sum: str = Path(..., description="digest"),
-    id: str = Path(..., description="Figure identifier"),
+    md5sum: str = bd,
+    id: str = bii,
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
@@ -143,8 +166,8 @@ async def get_image_for_bedfile(
 
 @router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
 def get_regions_for_bedfile(
-    md5sum: str = Path(..., description="digest"),
-    chr_num: str = Path(..., description="chromsome number"),
+    md5sum: str = bd,
+    chr_num: str = c,
     start: Optional[str] = Query(None, description="query range: start coordinate"),
     end: Optional[str] = Query(None, description="query range: end coordinate"),
 ):
@@ -235,7 +258,7 @@ async def get_bedset_schema():
 
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bsd,
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
 ):
     if ids:
@@ -256,7 +279,7 @@ async def get_bedfiles_in_bedset(
 
 @router.get("/bedset/{md5sum}/data", response_model=DBResponse)
 async def get_bedset_data(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bsd,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
@@ -272,7 +295,7 @@ async def get_bedset_data(
 @router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bedset/{md5sum}/file/{id}")
 async def get_file_for_bedset(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bsd,
     id: FileColumnBedset = Path(..., description="File identifier"),
 ):
     file = bbc.bedset.select(
@@ -293,8 +316,8 @@ async def get_file_for_bedset(
 
 @router.get("/bedset/{md5sum}/img/{id}")
 async def get_image_for_bedset(
-    md5sum: str = Path(..., description="digest"),
-    id: str = Path(..., description="Figure identifier"),
+    md5sum: str = bsd,
+    id: str = bsii,
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
