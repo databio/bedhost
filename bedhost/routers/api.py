@@ -14,10 +14,7 @@ router = APIRouter()
 
 ex_bed_digest = "78c0e4753d04b238fc07e4ebe5a02984"
 ex_bedset_digest = "48a1a8c1476fecb1961894f81d1afadd"
-ex_bed_img_id = "tssdist"
 ex_chr = "chr1"
-ex_bedset_img_id = "region_commonality"
-
 
 # API query path definitions
 bd = Path(
@@ -36,20 +33,6 @@ bsd = Path(
     max_length=32,
     min_length=32,
     example=ex_bedset_digest,
-)
-
-bii = Path(
-    ...,
-    description="BED image id",
-    regex=r"^\S+$",
-    example=ex_bed_img_id,
-)
-
-bsii = Path(
-    ...,
-    description="BED set image id",
-    regex=r"^\S+$",
-    example=ex_bedset_img_id,
 )
 
 c = Path(
@@ -140,14 +123,14 @@ async def get_file_for_bedfile(
 @router.get("/bed/{md5sum}/img/{id}")
 async def get_image_for_bedfile(
     md5sum: str = bd,
-    id: str = bii,
+    id: ImgColumnBed = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the bedfile plot with provided ID in provided format
     """
     img = bbc.bed.select(
-        condition="md5sum=%s", condition_val=[md5sum], columns=["name", id]
+        condition="md5sum=%s", condition_val=[md5sum], columns=["name", img_map_bed[id.value]]
     )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
@@ -317,14 +300,14 @@ async def get_file_for_bedset(
 @router.get("/bedset/{md5sum}/img/{id}")
 async def get_image_for_bedset(
     md5sum: str = bsd,
-    id: str = bsii,
+    id: ImgColumnBedset = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the img with provided ID
     """
     img = bbc.bedset.select(
-        condition="md5sum=%s", condition_val=[md5sum], columns=["name", id]
+        condition="md5sum=%s", condition_val=[md5sum], columns=["name", img_map_bedset[id.value]]
     )[0][1]
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (

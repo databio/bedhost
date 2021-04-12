@@ -87,6 +87,21 @@ class FileColumnBed(str, Enum):
     bedfile = "bedfile"
     bigbedfile = "bigbedfile"
 
+class ImgColumnBedset(str, Enum):
+    region_commonality = "region_commonality"
+
+
+class ImgColumnBed(str, Enum):
+    TSS_dist = "TSS_dist"
+    chrombins = "chrombins"
+    GC_content = "GC_content"
+    paritions = "paritions"
+    expected_partitions = "expected_partitions"
+    cumulative_partitions = "cumulative_partitions"
+    widths_histogram = "widths_histogram"
+    neighbor_distances = "neighbor_distances"
+    open_chromatin = "open_chromatin"
+
 
 class TableName(str, Enum):
     bedfiles = "bedfiles"
@@ -104,3 +119,17 @@ file_map_bedset = {
 }
 
 file_map_bed = {"bedfile": "bedfile", "bigbedfile": "bigbedfile"}
+
+img_map_bedset = { "region_commonality": "region_commonality"}
+
+img_map_bed = {    
+    "TSS_dist": "tssdist",
+    "chrombins": "chrombins",
+    "GC_content": "gccontent",
+    "paritions": "paritions",
+    "expected_partitions": "expected_partitions",
+    "cumulative_partitions": "cumulative_partitions",
+    "widths_histogram": "widths_histogram",
+    "neighbor_distances": "neighbor_distances",
+    "open_chromatin": "open_chromatin",
+}
