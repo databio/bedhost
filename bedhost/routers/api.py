@@ -12,8 +12,13 @@ from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
-ex_bed_digest = "78c0e4753d04b238fc07e4ebe5a02984"
-ex_bedset_digest = "48a1a8c1476fecb1961894f81d1afadd"
+ex_bed_digest = serve_columns_for_table(
+    bbc=bbc, table_name=BED_TABLE, columns="md5sum", limit=1
+).get("data")[0][0]
+ex_bedset_digest = serve_columns_for_table(
+    bbc=bbc, table_name=BEDSET_TABLE, columns="md5sum", limit=1
+).get("data")[0][0]
+print(ex_bedset_digest)
 ex_chr = "chr1"
 
 # API query path definitions
