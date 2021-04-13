@@ -297,3 +297,12 @@ def serve_file(path, remote):
         msg = f"File not found on server: {path}"
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
+
+def get_file_id(table_name, file_type):
+    """
+    Get a list of avalible file/figure ids
+
+    :param str table_name: table name to query
+    :param st file_type: "file" or "image"
+    :return str: name of the BedBaseConf attribute to use
+    """

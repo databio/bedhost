@@ -15,10 +15,11 @@ router = APIRouter()
 ex_bed_digest = serve_columns_for_table(
     bbc=bbc, table_name=BED_TABLE, columns="md5sum", limit=1
 ).get("data")[0][0]
+
 ex_bedset_digest = serve_columns_for_table(
     bbc=bbc, table_name=BEDSET_TABLE, columns="md5sum", limit=1
 ).get("data")[0][0]
-print(ex_bedset_digest)
+
 ex_chr = "chr1"
 
 # API query path definitions
@@ -135,8 +136,11 @@ async def get_image_for_bedfile(
     Returns the bedfile plot with provided ID in provided format
     """
     img = bbc.bed.select(
-        condition="md5sum=%s", condition_val=[md5sum], columns=["name", img_map_bed[id.value]]
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", img_map_bed[id.value]]
     )[0][1]
+
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(
@@ -312,8 +316,11 @@ async def get_image_for_bedset(
     Returns the img with provided ID
     """
     img = bbc.bedset.select(
-        condition="md5sum=%s", condition_val=[md5sum], columns=["name", img_map_bedset[id.value]]
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", img_map_bedset[id.value]]
     )[0][1]
+    
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(
