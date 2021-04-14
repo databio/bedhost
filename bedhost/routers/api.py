@@ -14,14 +14,14 @@ import enum
 router = APIRouter()
 
 FileColumnBedset = enum.Enum(
-    'FileColumnBedset', get_enum_map(bbc, BEDSET_TABLE, "file")
+    "FileColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "file")
 )
 
-FileColumnBed = enum.Enum('FileColumnBed', get_enum_map(bbc, BED_TABLE, "file"))
+FileColumnBed = enum.Enum("FileColumnBed", get_enum_map(bbc, BED_TABLE, "file"))
 
-ImgColumnBedset = enum.Enum('ImgColumnBedset', get_enum_map(bbc, BEDSET_TABLE, "image"))
+ImgColumnBedset = enum.Enum("ImgColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "image"))
 
-ImgColumnBed = enum.Enum('ImgColumnBed', get_enum_map(bbc, BED_TABLE, "image"))
+ImgColumnBed = enum.Enum("ImgColumnBed", get_enum_map(bbc, BED_TABLE, "image"))
 
 file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
 
