@@ -299,6 +299,7 @@ def serve_file(path, remote):
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
 
+
 def get_id_map(bbc, table_name, file_type):
     """
     Get a dict for avalible file/figure ids
@@ -317,14 +318,16 @@ def get_id_map(bbc, table_name, file_type):
 
     return id_map
 
+
 def get_enum_map(bbc, table_name, file_type):
     """
-    Get a list of file/figure labels
+    Get a dict of file/figure labels
 
     :param str table_name: table name to query
     :param st file_type: "file" or "image"
-    :return list
+    :return dict
     """
+    
     enum_map = {}
 
     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
