@@ -9,8 +9,26 @@ from ..const import *
 from ..data_models import *
 from ..helpers import *
 from ..main import _LOGGER, app, bbc
+import enum
 
 router = APIRouter()
+
+FileColumnBedset = enum.Enum('FileColumnBedset', get_enum_map(bbc, BEDSET_TABLE, "file"))
+
+FileColumnBed = enum.Enum('FileColumnBed', get_enum_map(bbc, BED_TABLE, "file"))
+
+ImgColumnBedset = enum.Enum('ImgColumnBedset', get_enum_map(bbc, BEDSET_TABLE, "image"))
+
+ImgColumnBed = enum.Enum('ImgColumnBed', get_enum_map(bbc, BED_TABLE, "image"))
+
+file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
+
+file_map_bed = get_id_map(bbc, BED_TABLE, "file")
+
+img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
+
+img_map_bed = get_id_map(bbc, BED_TABLE, "image")
+
 
 ex_bed_digest = serve_columns_for_table(
     bbc=bbc, table_name=BED_TABLE, columns="md5sum", limit=1
@@ -120,7 +138,7 @@ async def get_file_for_bedfile(
         os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
         if remote
         else os.path.join(
-            bc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
     )
     return serve_file(path, remote)
@@ -138,7 +156,7 @@ async def get_image_for_bedfile(
     img = bbc.bed.select(
         condition="md5sum=%s",
         condition_val=[md5sum],
-        columns=["name", img_map_bed[id.value]]
+        columns=["name", img_map_bed[id.value]],
     )[0][1]
 
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
@@ -318,9 +336,9 @@ async def get_image_for_bedset(
     img = bbc.bedset.select(
         condition="md5sum=%s",
         condition_val=[md5sum],
-        columns=["name", img_map_bedset[id.value]]
+        columns=["name", img_map_bedset[id.value]],
     )[0][1]
-    
+
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(
