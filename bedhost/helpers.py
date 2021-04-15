@@ -327,12 +327,12 @@ def get_enum_map(bbc, table_name, file_type):
     :param st file_type: "file" or "image"
     :return dict
     """
-    
+
     enum_map = {}
 
     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
     for key, value in schema.items():
         if value["type"] == file_type:
             enum_map[value["label"]] = value["label"]
-    
+
     return enum_map
