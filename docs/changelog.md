@@ -2,6 +2,12 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format. 
 
+## [0.0.5] -- 2021-04-15
+### add
+- Add examples of API endpoints
+### fix
+- resolve `/about` page not found when typing/editing url in the address bar. 
+
 ## [0.0.4] -- 2021-04-01
 ### add
 - add endpoint for region-based query 
