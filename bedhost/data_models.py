@@ -1,4 +1,4 @@
-from typing import Dict, List, Text
+from typing import Dict, List, Text, Optional
 
 from pydantic import BaseModel
 
@@ -18,4 +18,5 @@ class SchemaElement(BaseModel):
     """
 
     type: Text
+    label: Optional[Text]
     description: Text
