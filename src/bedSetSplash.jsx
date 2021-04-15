@@ -28,7 +28,7 @@ export default class BedSetSplash extends React.Component {
       genome: "",
       bedSetStat: [],
       avgRegionD: {},
-      bedSetDownload: {},
+      bedSetDownload: [],
       bedSetFig: false,
       hubFilePath: "",
       description: ""
@@ -38,22 +38,16 @@ export default class BedSetSplash extends React.Component {
   async componentDidMount() {
     let data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/data").then(({ data }) => data);
     console.log("BED set data retrieved from the server: ", data);
-    let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+    let bed_schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+    let bedset_schema = await api.get("/api/bedset/all/schema").then(({ data }) => data);
     this.setState(
       {
         bedSetName: data.data[0][2],
         hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
-        bedSetDownload: {
-          BED_Set_Rxiv: { label: 'BED set archive', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar" },
-          BED_Stats: { label: 'BED files statistics', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/beds_stats" },
-          BED_Set_Summary: { label: 'BED set statistics', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/summary_stats" },
-          BED_Set_IGD: { label: 'BED set iGD database', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database" },
-          BED_Set_PEP: { label: 'BED set PEP', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP" }
-        },
         bedSetStat: [
-          { label: schema['gc_content'].description, data: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)] },
-          { label: schema['mean_absolute_tss_dist'].description, data: [data.data[0][9].mean_absolute_tss_dist.toFixed(3), data.data[0][10].mean_absolute_tss_dist.toFixed(3)] },
-          { label: schema['mean_region_width'].description, data: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)] }
+          { label: bed_schema['gc_content'].description, data: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)] },
+          { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][9].mean_absolute_tss_dist.toFixed(3), data.data[0][10].mean_absolute_tss_dist.toFixed(3)] },
+          { label: bed_schema['mean_region_width'].description, data: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)] }
         ],
         genome: data.data[0][13],
         avgRegionD: {
@@ -66,13 +60,27 @@ export default class BedSetSplash extends React.Component {
       }
     );
 
+    let newbedSetFile = data.data[0].map((file, index) => {
+      return (
+        (index >= 4 && index <= 8) ? {
+          ...file,
+          id: data.columns[index],
+          label: bedset_schema[data.columns[index]].label.replaceAll("_", " "),
+          url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label
+        } : null
+      )
+    });
+
+    newbedSetFile = newbedSetFile.slice(4, 9)
+    this.setState({ bedSetDownload: newbedSetFile });
+    console.log(this.state.bedSetDownload)
     let newbedSetFig = data.data[0].map((img, index) => {
       return (
         (index >= 11 && index <= data.columns.length - 2) ? {
           ...img,
           id: data.columns[index],
-          src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=pdf",
-          src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=png"
+          src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=pdf",
+          src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=png"
         } : null
       )
     });
@@ -169,14 +177,15 @@ export default class BedSetSplash extends React.Component {
                 <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Downloads
                 </Label>
-                {Object.entries(this.state.bedSetDownload)
-                  .map(([key, value], index) =>
-                    <p style={{ marginBottom: "5px" }} key={index}>
-                      <a href={value.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
-                        {value.label}
+                {this.state.bedSetDownload.map((file, index) => {
+                  return (
+                    <p style={{ marginBottom: "5px" }} key={file.id}>
+                      <a href={file.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                        {file.label}
                       </a>
                     </p>
-                  )}
+                  );
+                })}
 
                 <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   API Endpoint Examples

@@ -15,7 +15,6 @@ const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-
 export default class BedSplash extends React.Component {
   constructor(props) {
     super();
@@ -29,8 +28,11 @@ export default class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
+    let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+
+    console.log ("schema: ", schema['bedfile'].label)
     await api
-      .get(bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile")
+      .get("/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigBed")
       .then(this.setState({ bigbed: true }))
       .catch(err => {
       if (err.response.status === 404) {
@@ -52,8 +54,8 @@ export default class BedSplash extends React.Component {
       this.setState(
         {
           bedDownload: {
-            BED_File: { label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile" },
-            bigBED_File: { label: 'bigBed file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile" },
+            BED_File: { label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bed" },
+            bigBED_File: { label: 'bigBed file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigBed" },
           },
         }
       );
@@ -61,7 +63,7 @@ export default class BedSplash extends React.Component {
       this.setState(
         {
           bedDownload: {
-            BED_File: { label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile" },
+            BED_File: { label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bed" },
           },
         }
       );
@@ -72,8 +74,8 @@ export default class BedSplash extends React.Component {
         (index >= 24 && index <= data.columns.length - 2) ? {
           ...img,
           id: data.columns[index],
-          src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=pdf",
-          src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=png"
+          src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + schema[data.columns[index]].label + "?format=pdf",
+          src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + schema[data.columns[index]].label + "?format=png"
         } : null
       )
     });
