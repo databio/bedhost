@@ -40,6 +40,7 @@ app.add_middleware(
 
 
 @app.get("/")
+@app.get("/about")
 @app.get("/bedsplash/{md5sum}", include_in_schema=False)
 @app.get("/bedsetsplash/{md5sum}", include_in_schema=False)
 @app.get("/index")

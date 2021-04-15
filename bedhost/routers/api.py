@@ -9,9 +9,64 @@ from ..const import *
 from ..data_models import *
 from ..helpers import *
 from ..main import _LOGGER, app, bbc
+import enum
 
 router = APIRouter()
 
+FileColumnBedset = enum.Enum(
+    "FileColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "file")
+)
+
+FileColumnBed = enum.Enum("FileColumnBed", get_enum_map(bbc, BED_TABLE, "file"))
+
+ImgColumnBedset = enum.Enum("ImgColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "image"))
+
+ImgColumnBed = enum.Enum("ImgColumnBed", get_enum_map(bbc, BED_TABLE, "image"))
+
+file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
+
+file_map_bed = get_id_map(bbc, BED_TABLE, "file")
+
+img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
+
+img_map_bed = get_id_map(bbc, BED_TABLE, "image")
+
+
+ex_bed_digest = serve_columns_for_table(
+    bbc=bbc, table_name=BED_TABLE, columns="md5sum", limit=1
+).get("data")[0][0]
+
+ex_bedset_digest = serve_columns_for_table(
+    bbc=bbc, table_name=BEDSET_TABLE, columns="md5sum", limit=1
+).get("data")[0][0]
+
+ex_chr = "chr1"
+
+# API query path definitions
+bd = Path(
+    ...,
+    description="BED digest",
+    regex=r"^\w+$",
+    max_length=32,
+    min_length=32,
+    example=ex_bed_digest,
+)
+
+bsd = Path(
+    ...,
+    description="BED set digest",
+    regex=r"^\w+$",
+    max_length=32,
+    min_length=32,
+    example=ex_bedset_digest,
+)
+
+c = Path(
+    ...,
+    description="Chromosome number",
+    regex=r"^\S+$",
+    example=ex_chr,
+)
 
 # misc endpoints
 @router.get("/versions", response_model=Dict[str, str])
@@ -56,7 +111,7 @@ async def get_bed_schema():
 
 @router.get("/bed/{md5sum}/data", response_model=DBResponse)
 async def get_bedfile_data(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bd,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
@@ -72,7 +127,7 @@ async def get_bedfile_data(
 @router.head("/bed/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bed/{md5sum}/file/{id}")
 async def get_file_for_bedfile(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bd,
     id: FileColumnBed = Path(..., description="File identifier"),
 ):
     file = bbc.bed.select(
@@ -85,7 +140,7 @@ async def get_file_for_bedfile(
         os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
         if remote
         else os.path.join(
-            bc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
     )
     return serve_file(path, remote)
@@ -93,16 +148,19 @@ async def get_file_for_bedfile(
 
 @router.get("/bed/{md5sum}/img/{id}")
 async def get_image_for_bedfile(
-    md5sum: str = Path(..., description="digest"),
-    id: str = Path(..., description="Figure identifier"),
+    md5sum: str = bd,
+    id: ImgColumnBed = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the bedfile plot with provided ID in provided format
     """
     img = bbc.bed.select(
-        condition="md5sum=%s", condition_val=[md5sum], columns=["name", id]
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", img_map_bed[id.value]],
     )[0][1]
+
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(
@@ -120,8 +178,8 @@ async def get_image_for_bedfile(
 
 @router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
 def get_regions_for_bedfile(
-    md5sum: str = Path(..., description="digest"),
-    chr_num: str = Path(..., description="chromsome number"),
+    md5sum: str = bd,
+    chr_num: str = c,
     start: Optional[str] = Query(None, description="query range: start coordinate"),
     end: Optional[str] = Query(None, description="query range: end coordinate"),
 ):
@@ -212,7 +270,7 @@ async def get_bedset_schema():
 
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bsd,
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
 ):
     if ids:
@@ -233,7 +291,7 @@ async def get_bedfiles_in_bedset(
 
 @router.get("/bedset/{md5sum}/data", response_model=DBResponse)
 async def get_bedset_data(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bsd,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
@@ -249,7 +307,7 @@ async def get_bedset_data(
 @router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bedset/{md5sum}/file/{id}")
 async def get_file_for_bedset(
-    md5sum: str = Path(..., description="digest"),
+    md5sum: str = bsd,
     id: FileColumnBedset = Path(..., description="File identifier"),
 ):
     file = bbc.bedset.select(
@@ -270,16 +328,19 @@ async def get_file_for_bedset(
 
 @router.get("/bedset/{md5sum}/img/{id}")
 async def get_image_for_bedset(
-    md5sum: str = Path(..., description="digest"),
-    id: str = Path(..., description="Figure identifier"),
+    md5sum: str = bsd,
+    id: ImgColumnBedset = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the img with provided ID
     """
     img = bbc.bedset.select(
-        condition="md5sum=%s", condition_val=[md5sum], columns=["name", id]
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", img_map_bedset[id.value]],
     )[0][1]
+
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(
