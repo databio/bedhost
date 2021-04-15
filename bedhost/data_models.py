@@ -18,4 +18,5 @@ class SchemaElement(BaseModel):
     """
 
     type: Text
+    label: Text
     description: Text
