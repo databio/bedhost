@@ -13,6 +13,11 @@ import enum
 
 router = APIRouter()
 
+RemoteClassEnum = Enum(
+    "RemoteClassEnum",
+    {r: r for r in bbc.config["remotes"]} if is_data_remote(bbc) else {"http": "http"},
+)
+
 FileColumnBedset = enum.Enum(
     "FileColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "file")
 )
@@ -129,15 +134,18 @@ async def get_bedfile_data(
 async def get_file_for_bedfile(
     md5sum: str = bd,
     id: FileColumnBed = Path(..., description="File identifier"),
+    remoteClass: RemoteClassEnum = Query(
+        "http", description="Remote data provider class"
+    ),
 ):
     file = bbc.bed.select(
         condition="md5sum=%s",
         condition_val=[md5sum],
         columns=["name", file_map_bed[id.value]],
     )[0][1]
-    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = is_data_remote(bbc)
     path = (
-        os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
+        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"], file["path"])
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -151,6 +159,9 @@ async def get_image_for_bedfile(
     md5sum: str = bd,
     id: ImgColumnBed = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
+    remoteClass: RemoteClassEnum = Query(
+        "http", description="Remote data provider class"
+    ),
 ):
     """
     Returns the bedfile plot with provided ID in provided format
@@ -161,10 +172,10 @@ async def get_image_for_bedfile(
         columns=["name", img_map_bed[id.value]],
     )[0][1]
 
-    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = is_data_remote(bbc)
     path = (
         os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY],
+            bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
         if remote
@@ -193,9 +204,9 @@ def get_regions_for_bedfile(
         columns=["name", "bigbedfile"],
     )[0][1]
 
-    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = is_data_remote(bbc)
     path = (
-        os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
+        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"], file["path"])
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -309,15 +320,18 @@ async def get_bedset_data(
 async def get_file_for_bedset(
     md5sum: str = bsd,
     id: FileColumnBedset = Path(..., description="File identifier"),
+    remoteClass: RemoteClassEnum = Query(
+        "http", description="Remote data provider class"
+    ),
 ):
     file = bbc.bedset.select(
         condition="md5sum=%s",
         condition_val=[md5sum],
         columns=["name", file_map_bedset[id.value]],
     )[0][1]
-    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = is_data_remote(bbc)
     path = (
-        os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
+        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"], file["path"])
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -331,6 +345,9 @@ async def get_image_for_bedset(
     md5sum: str = bsd,
     id: ImgColumnBedset = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
+    remoteClass: RemoteClassEnum = Query(
+        "http", description="Remote data provider class"
+    ),
 ):
     """
     Returns the img with provided ID
@@ -341,10 +358,10 @@ async def get_image_for_bedset(
         columns=["name", img_map_bedset[id.value]],
     )[0][1]
 
-    remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
+    remote = is_data_remote(bbc)
     path = (
         os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY],
+            bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
         if remote

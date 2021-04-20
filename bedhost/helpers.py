@@ -275,6 +275,25 @@ def table_name2attr(table_name):
         return "bedset"
     return table_name
 
+def is_data_remote(bbc):
+    """
+    Determine if server genome config defines a 'remotes' key, 'http is one of them and
+     additionally assert the correct structure -- 'prefix' key defined.
+    :param refgenconf.RefGenConf rgc: server genome config object
+    :return bool: whether remote data source is configured
+    """
+    return (
+        True
+        if "remotes" in bbc
+        and isinstance(bbc["remotes"], dict)
+        and all(
+            [
+                "prefix" in r and isinstance(r["prefix"], str)
+                for r in bbc["remotes"].values()
+            ]
+        )
+        else False
+    )
 
 def serve_file(path, remote):
     """
