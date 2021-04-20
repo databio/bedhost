@@ -70,7 +70,7 @@ def main():
 
         app.include_router(api.router, prefix="/api")
         app.include_router(private_api.router, prefix="/_private_api")
-        if not bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]:
+        if not bbc.config[CFG_REMOTE_KEY]:
             _LOGGER.debug(
                 f"Using local files for serving: "
                 f"{bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY]}"
@@ -88,7 +88,7 @@ def main():
         else:
             _LOGGER.debug(
                 f"Using remote files for serving: "
-                f"{bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]}"
+                f"{bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
             )
         if os.path.exists(UI_PATH):
             _LOGGER.debug(f"Determined React UI path: {UI_PATH}")

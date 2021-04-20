@@ -2,7 +2,7 @@ import shlex
 import subprocess
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, HTTPException, Path, Query, Response
 from fastapi.responses import PlainTextResponse, StreamingResponse
 
 from ..const import *
@@ -15,7 +15,7 @@ router = APIRouter()
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
-    {r: r for r in bbc.config["remotes"]} if is_data_remote(bbc) else {"http": "http"},
+    {r: r for r in bbc.config[CFG_REMOTE_KEY]} if is_data_remote(bbc) else {"http": "http"},
 )
 
 FileColumnBedset = enum.Enum(
@@ -144,14 +144,23 @@ async def get_file_for_bedfile(
         columns=["name", file_map_bed[id.value]],
     )[0][1]
     remote = is_data_remote(bbc)
+
     path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"], file["path"])
+        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
     )
-    return serve_file(path, remote)
+
+    # return serve_file(path, remote)
+
+    if remoteClass.value == "http":
+        return serve_file(path, remote)
+    else:
+        return (
+            Response(path, media_type="text/plain")
+        )
 
 
 @router.get("/bed/{md5sum}/img/{id}")
@@ -175,7 +184,7 @@ async def get_image_for_bedfile(
     remote = is_data_remote(bbc)
     path = (
         os.path.join(
-            bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"],
+            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
         if remote
@@ -184,7 +193,13 @@ async def get_image_for_bedfile(
             img["path" if format == "pdf" else "thumbnail_path"],
         )
     )
-    return serve_file(path, remote)
+    # return serve_file(path, remote)
+    if remoteClass.value == "http":
+        return serve_file(path, remote)
+    else:
+        return (
+            Response(path, media_type="text/plain")
+        )
 
 
 @router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
@@ -206,7 +221,7 @@ def get_regions_for_bedfile(
 
     remote = is_data_remote(bbc)
     path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"], file["path"])
+        os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], file["path"])
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -331,13 +346,21 @@ async def get_file_for_bedset(
     )[0][1]
     remote = is_data_remote(bbc)
     path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"], file["path"])
+        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
     )
-    return serve_file(path, remote)
+    
+    # return serve_file(path, remote)
+        
+    if remoteClass.value == "http":
+        return serve_file(path, remote)
+    else:
+        return (
+            Response(path, media_type="text/plain")
+        )
 
 
 @router.get("/bedset/{md5sum}/img/{id}")
@@ -361,7 +384,7 @@ async def get_image_for_bedset(
     remote = is_data_remote(bbc)
     path = (
         os.path.join(
-            bbc.config[CFG_REMOTE_KEY][remoteClass]["prefix"],
+            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
         if remote
@@ -370,4 +393,12 @@ async def get_image_for_bedset(
             img["path" if format == "pdf" else "thumbnail_path"],
         )
     )
-    return serve_file(path, remote)
+
+    # return serve_file(path, remote)
+
+    if remoteClass.value == "http":
+        return serve_file(path, remote)
+    else:
+        return (
+            Response(path, media_type="text/plain")
+        )
