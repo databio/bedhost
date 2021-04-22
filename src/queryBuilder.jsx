@@ -9,8 +9,6 @@ import ResultsBed from './queryResultsBed'
 import ResultsBedSet from './queryResultsBedSet'
 
 
-
-console.log("bedhost_api_url:", bedhost_api_url);
 const api = axios.create({
     baseURL: bedhost_api_url,
 });

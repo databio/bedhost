@@ -73,7 +73,7 @@ export default class BedSetSplash extends React.Component {
 
     newbedSetFile = newbedSetFile.slice(4, 9)
     this.setState({ bedSetDownload: newbedSetFile });
-    console.log(this.state.bedSetDownload)
+    
     let newbedSetFig = data.data[0].map((img, index) => {
       return (
         (index >= 11 && index <= data.columns.length - 2) ? {
