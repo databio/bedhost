@@ -70,7 +70,7 @@ def main():
 
         app.include_router(api.router, prefix="/api")
         app.include_router(private_api.router, prefix="/_private_api")
-        if not bbc.config[CFG_REMOTE_KEY]:
+        if not CFG_REMOTE_KEY in bbc.config:
             _LOGGER.debug(
                 f"Using local files for serving: "
                 f"{bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY]}"

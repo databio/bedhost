@@ -10,7 +10,25 @@ from ..main import _LOGGER, app, bbc
 router = APIRouter()
 
 # private API
-
+@router.get("/distance/{term}/bedfiles", response_model=DBResponse)
+async def get_bedfiles_in_distance(
+    term: str = Path(..., description="search term"),
+    ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
+):
+    if ids:
+        assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+    res = bbc.select_bedfiles_for_distance(
+        condition="terms=%s", condition_val=[term], bedfile_col=ids
+    )
+    if res:
+        colnames = list(res[0].keys())
+        values = [list(x.values()) for x in res]
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+    return {"columns": colnames, "data": values}
 
 @router.get("/query/{table_name}/{query}", include_in_schema=False)
 async def get_query_results(
