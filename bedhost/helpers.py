@@ -275,6 +275,7 @@ def table_name2attr(table_name):
         return "bedset"
     return table_name
 
+
 def is_data_remote(bbc):
     """
     Determine if server config defines a 'remotes' key, 'http is one of them and
@@ -282,7 +283,7 @@ def is_data_remote(bbc):
     :param BedBaseConf bbc: server config object
     :return bool: whether remote data source is configured
     """
-    
+
     return (
         True
         if CFG_REMOTE_KEY in bbc.config
@@ -295,6 +296,7 @@ def is_data_remote(bbc):
         )
         else False
     )
+
 
 def serve_file(path, remote):
     """

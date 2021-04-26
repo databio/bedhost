@@ -18,7 +18,7 @@ async def get_bedfiles_in_distance(
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
     res = bbc.select_bedfiles_for_distance(
-        condition="terms=%s", condition_val=[term], bedfile_col=ids
+        condition="terms ILIKE %s", condition_val=[term], bedfile_col=ids
     )
     if res:
         colnames = list(res[0].keys())
@@ -29,6 +29,7 @@ async def get_bedfiles_in_distance(
         colnames = []
         values = [[]]
     return {"columns": colnames, "data": values}
+
 
 @router.get("/query/{table_name}/{query}", include_in_schema=False)
 async def get_query_results(

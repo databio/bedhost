@@ -15,7 +15,9 @@ router = APIRouter()
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
-    {r: r for r in bbc.config[CFG_REMOTE_KEY]} if is_data_remote(bbc) else {"http": "http"},
+    {r: r for r in bbc.config[CFG_REMOTE_KEY]}
+    if is_data_remote(bbc)
+    else {"http": "http"},
 )
 
 FileColumnBedset = enum.Enum(
@@ -146,7 +148,9 @@ async def get_file_for_bedfile(
     remote = is_data_remote(bbc)
 
     path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
+        os.path.join(
+            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
+        )
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -158,9 +162,7 @@ async def get_file_for_bedfile(
     if remoteClass.value == "http":
         return serve_file(path, remote)
     else:
-        return (
-            Response(path, media_type="text/plain")
-        )
+        return Response(path, media_type="text/plain")
 
 
 @router.get("/bed/{md5sum}/img/{id}")
@@ -197,9 +199,7 @@ async def get_image_for_bedfile(
     if remoteClass.value == "http":
         return serve_file(path, remote)
     else:
-        return (
-            Response(path, media_type="text/plain")
-        )
+        return Response(path, media_type="text/plain")
 
 
 @router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
@@ -346,21 +346,21 @@ async def get_file_for_bedset(
     )[0][1]
     remote = is_data_remote(bbc)
     path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
+        os.path.join(
+            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
+        )
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
     )
-    
+
     # return serve_file(path, remote)
-        
+
     if remoteClass.value == "http":
         return serve_file(path, remote)
     else:
-        return (
-            Response(path, media_type="text/plain")
-        )
+        return Response(path, media_type="text/plain")
 
 
 @router.get("/bedset/{md5sum}/img/{id}")
@@ -399,6 +399,4 @@ async def get_image_for_bedset(
     if remoteClass.value == "http":
         return serve_file(path, remote)
     else:
-        return (
-            Response(path, media_type="text/plain")
-        )
+        return Response(path, media_type="text/plain")
