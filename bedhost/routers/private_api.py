@@ -14,11 +14,12 @@ router = APIRouter()
 async def get_bedfiles_in_distance(
     term: str = Path(..., description="search term"),
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
+    limit: int = Query(None, description="number of rows returned by the query"),
 ):
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
     res = bbc.select_bedfiles_for_distance(
-        condition="terms ILIKE %s", condition_val=[term], bedfile_col=ids
+        condition="terms ILIKE %s", condition_val=[term], bedfile_col=ids, limit=limit
     )
     if res:
         colnames = list(res[0].keys())
