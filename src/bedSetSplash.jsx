@@ -66,21 +66,21 @@ export default class BedSetSplash extends React.Component {
           ...file,
           id: data.columns[index],
           label: bedset_schema[data.columns[index]].label.replaceAll("_", " "),
-          url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label
+          url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label + "?remoteClass=http"
         } : null
       )
     });
 
     newbedSetFile = newbedSetFile.slice(4, 9)
     this.setState({ bedSetDownload: newbedSetFile });
-    
+
     let newbedSetFig = data.data[0].map((img, index) => {
       return (
         (index >= 11 && index <= data.columns.length - 2) ? {
           ...img,
           id: data.columns[index],
-          src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=pdf",
-          src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=png"
+          src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=pdf&remoteClass=http",
+          src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=png&remoteClass=http"
         } : null
       )
     });
