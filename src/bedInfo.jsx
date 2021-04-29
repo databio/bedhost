@@ -75,7 +75,7 @@ export default class BedInfo extends React.Component {
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {key === "genome" ?
-                                            (<><span>{value}</span><a href={"http://refgenomes.databio.org/#" + value} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
+                                            (<><span>{value.alias}</span><a href={"http://rg.databio.org/v3/genomes/splash/" + value.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
                                             : value}
                                     </td>
                                 </tr> : null)
