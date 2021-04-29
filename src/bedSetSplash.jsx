@@ -67,6 +67,7 @@ export default class BedSetSplash extends React.Component {
           ...file,
           id: data.columns[index],
           label: bedset_schema[data.columns[index]].label.replaceAll("_", " "),
+          size: file.size,
           url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label,
           http: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=http",
           s3: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=s3",
@@ -189,7 +190,7 @@ export default class BedSetSplash extends React.Component {
                       <a href={file.s3} className="home-link" style={{fontSize: "10pt", fontWeight: "bold" }}>
                         s3
                       </a>
-                      : {file.label}
+                      : {file.label} ( {file.size} )
                     </p>
                   );
                 })}
