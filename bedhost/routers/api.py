@@ -38,7 +38,6 @@ img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
 
 img_map_bed = get_id_map(bbc, BED_TABLE, "image")
 
-
 ex_bed_digest = serve_columns_for_table(
     bbc=bbc, table_name=BED_TABLE, columns="md5sum", limit=1
 ).get("data")[0][0]
@@ -136,6 +135,29 @@ async def get_bedfile_data(
 async def get_file_for_bedfile(
     md5sum: str = bd,
     id: FileColumnBed = Path(..., description="File identifier"),
+):
+    file = bbc.bed.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", file_map_bed[id.value]],
+    )[0][1]
+    remote = is_data_remote(bbc)
+
+    path = (
+        os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], file["path"])
+        if remote
+        else os.path.join(
+            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+        )
+    )
+
+    return serve_file(path, remote)
+
+
+@router.get("/bed/{md5sum}/file_path/{id}")
+async def get_file_for_bedfile(
+    md5sum: str = bd,
+    id: FileColumnBed = Path(..., description="File identifier"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),
@@ -157,15 +179,40 @@ async def get_file_for_bedfile(
         )
     )
 
-    # return serve_file(path, remote)
-
-    if remoteClass.value == "http":
-        return serve_file(path, remote)
-    else:
-        return Response(path, media_type="text/plain")
+    return Response(path, media_type="text/plain")
 
 
 @router.get("/bed/{md5sum}/img/{id}")
+async def get_image_for_bedfile(
+    md5sum: str = bd,
+    id: ImgColumnBed = Path(..., description="Figure identifier"),
+    format: FigFormat = Query("pdf", description="Figure file format"),
+):
+    """
+    Returns the bedfile plot with provided ID in provided format
+    """
+    img = bbc.bed.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", img_map_bed[id.value]],
+    )[0][1]
+
+    remote = is_data_remote(bbc)
+    path = (
+        os.path.join(
+            bbc.config[CFG_REMOTE_KEY]["http"]["prefix"],
+            img["path" if format == "pdf" else "thumbnail_path"],
+        )
+        if remote
+        else os.path.join(
+            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
+            img["path" if format == "pdf" else "thumbnail_path"],
+        )
+    )
+    return serve_file(path, remote)
+
+
+@router.get("/bed/{md5sum}/img_path/{id}")
 async def get_image_for_bedfile(
     md5sum: str = bd,
     id: ImgColumnBed = Path(..., description="Figure identifier"),
@@ -195,11 +242,7 @@ async def get_image_for_bedfile(
             img["path" if format == "pdf" else "thumbnail_path"],
         )
     )
-    # return serve_file(path, remote)
-    if remoteClass.value == "http":
-        return serve_file(path, remote)
-    else:
-        return Response(path, media_type="text/plain")
+    return Response(path, media_type="text/plain")
 
 
 @router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
@@ -335,6 +378,28 @@ async def get_bedset_data(
 async def get_file_for_bedset(
     md5sum: str = bsd,
     id: FileColumnBedset = Path(..., description="File identifier"),
+):
+    file = bbc.bedset.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", file_map_bedset[id.value]],
+    )[0][1]
+    remote = is_data_remote(bbc)
+    path = (
+        os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], file["path"])
+        if remote
+        else os.path.join(
+            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+        )
+    )
+
+    return serve_file(path, remote)
+
+
+@router.get("/bedset/{md5sum}/file_path/{id}")
+async def get_file_path_for_bedset(
+    md5sum: str = bsd,
+    id: FileColumnBedset = Path(..., description="File identifier"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),
@@ -355,15 +420,44 @@ async def get_file_for_bedset(
         )
     )
 
-    # return serve_file(path, remote)
-
-    if remoteClass.value == "http":
-        return serve_file(path, remote)
-    else:
-        return Response(path, media_type="text/plain")
+    return Response(path, media_type="text/plain")
 
 
 @router.get("/bedset/{md5sum}/img/{id}")
+async def get_image_for_bedset(
+    md5sum: str = bsd,
+    id: ImgColumnBedset = Path(..., description="Figure identifier"),
+    format: FigFormat = Query("pdf", description="Figure file format"),
+    remoteClass: RemoteClassEnum = Query(
+        "http", description="Remote data provider class"
+    ),
+):
+    """
+    Returns the img with provided ID
+    """
+    img = bbc.bedset.select(
+        condition="md5sum=%s",
+        condition_val=[md5sum],
+        columns=["name", img_map_bedset[id.value]],
+    )[0][1]
+
+    remote = is_data_remote(bbc)
+    path = (
+        os.path.join(
+            bbc.config[CFG_REMOTE_KEY]["http"]["prefix"],
+            img["path" if format == "pdf" else "thumbnail_path"],
+        )
+        if remote
+        else os.path.join(
+            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
+            img["path" if format == "pdf" else "thumbnail_path"],
+        )
+    )
+
+    return serve_file(path, remote)
+
+
+@router.get("/bedset/{md5sum}/img_path/{id}")
 async def get_image_for_bedset(
     md5sum: str = bsd,
     id: ImgColumnBedset = Path(..., description="Figure identifier"),
@@ -394,9 +488,4 @@ async def get_image_for_bedset(
         )
     )
 
-    # return serve_file(path, remote)
-
-    if remoteClass.value == "http":
-        return serve_file(path, remote)
-    else:
-        return Response(path, media_type="text/plain")
+    return Response(path, media_type="text/plain")
