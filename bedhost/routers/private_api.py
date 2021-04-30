@@ -63,7 +63,7 @@ async def get_query_results(
         raise HTTPException(status_code=404, detail=msg)
 
 
-@router.get("/filters/{table_name}", include_in_schema=False)
+@router.get("/filters/{table_name}")
 async def get_search_setup_for_table(
     table_name: TableName = Path(..., description="DB Table name")
 ):

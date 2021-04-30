@@ -84,6 +84,17 @@ async def get_version_info():
     versions.update({"openapi_version": get_openapi_version(app)})
     return versions
 
+# available genome assembly 
+@router.get("/genomes")
+async def get_genome_assemblies():
+    """
+    Returns available genome assemblies in the database
+    """
+
+    return bbc.select_unique(
+       table_name="bedfiles", column="genome"
+    ) 
+
 
 # bed endpoints
 @router.get("/bed/all/data/count", response_model=int)
