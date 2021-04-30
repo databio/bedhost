@@ -17,7 +17,7 @@ async def get_bedfiles_in_distance(
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
     term = term.replace(" ", ",").split(",")
-    
+
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
     res = bbc.select_bedfiles_for_distance(
