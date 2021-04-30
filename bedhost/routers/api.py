@@ -1,3 +1,4 @@
+import enum
 import shlex
 import subprocess
 from typing import Optional
@@ -9,7 +10,6 @@ from ..const import *
 from ..data_models import *
 from ..helpers import *
 from ..main import _LOGGER, app, bbc
-import enum
 
 router = APIRouter()
 
@@ -33,11 +33,11 @@ img_map_bed = get_id_map(bbc, BED_TABLE, "image")
 
 
 ex_bed_digest = serve_columns_for_table(
-    bbc=bbc, table_name=BED_TABLE, columns="md5sum", limit=1
+    bbc=bbc, table_name=BED_TABLE, columns=["md5sum"], limit=1
 ).get("data")[0][0]
 
 ex_bedset_digest = serve_columns_for_table(
-    bbc=bbc, table_name=BEDSET_TABLE, columns="md5sum", limit=1
+    bbc=bbc, table_name=BEDSET_TABLE, columns=["md5sum"], limit=1
 ).get("data")[0][0]
 
 ex_chr = "chr1"
@@ -130,11 +130,11 @@ async def get_file_for_bedfile(
     md5sum: str = bd,
     id: FileColumnBed = Path(..., description="File identifier"),
 ):
-    file = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", file_map_bed[id.value]],
-    )[0][1]
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=[file_map_bed[id.value]],
+    )[0]
+    file = getattr(hit, file_map_bed[id.value])
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
@@ -155,12 +155,11 @@ async def get_image_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    img = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
         columns=["name", img_map_bed[id.value]],
-    )[0][1]
-
+    )[0]
+    img = getattr(hit, img_map_bed[id.value])
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(
@@ -187,12 +186,11 @@ def get_regions_for_bedfile(
     Returns the queried regions with provided ID and optional query parameters
 
     """
-    file = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", "bigbedfile"],
-    )[0][1]
-
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=["bigbedfile"],
+    )[0]
+    file = getattr(hit, "bigbedfile")
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
@@ -201,7 +199,6 @@ def get_regions_for_bedfile(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
         )
     )
-
     cmd = ["bigBedToBed"]
     if chr_num:
         cmd.append(f"-chrom={chr_num}")
@@ -310,11 +307,11 @@ async def get_file_for_bedset(
     md5sum: str = bsd,
     id: FileColumnBedset = Path(..., description="File identifier"),
 ):
-    file = bbc.bedset.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", file_map_bedset[id.value]],
-    )[0][1]
+    hit = bbc.bedset.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=[file_map_bedset[id.value]],
+    )[0]
+    file = getattr(hit, file_map_bedset[id.value])
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
         os.path.join(bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY], file["path"])
@@ -335,11 +332,11 @@ async def get_image_for_bedset(
     """
     Returns the img with provided ID
     """
-    img = bbc.bedset.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
         columns=["name", img_map_bedset[id.value]],
-    )[0][1]
+    )[0]
+    img = getattr(hit, img_map_bedset[id.value])
 
     remote = True if bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY] else False
     path = (
