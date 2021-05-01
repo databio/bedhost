@@ -55,7 +55,7 @@ export default class BedCountsSpan extends React.Component {
 
     let bsgenome = await api.get("/api/bedset/genomes").then(({ data }) => data)
     this.setState({ genomesBedSet: bsgenome[0] });
-    console.log("test",bfgenome[0])
+
     this.getAPIcount()
   }
 

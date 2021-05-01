@@ -84,7 +84,7 @@ export default class ResultsBed extends React.Component {
     }
 
     async getBedBySearchTerm() {
-        let res = await api.get("_private_api/distance/" + this.props.term + "/bedfiles?ids=name&ids=md5sum&ids=other")
+        let res = await api.get("_private_api/distance/" + this.props.term + "/bedfiles/" + this.props.genome + "?ids=name&ids=md5sum&ids=other")
             .then(({ data }) => data)
 
         this.setState({
