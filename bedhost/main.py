@@ -96,12 +96,12 @@ def main():
         else:
             raise FileNotFoundError(f"React UI path to mount not found: {UI_PATH}")
 
-        app.mount("/", StaticFiles(directory=UI_PATH))
+        # app.mount("/ui", StaticFiles(directory=UI_PATH))
 
-        # psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset])
-        # graphql_schema = psr.generate_graphql_schema()
-        # _LOGGER.debug(f"graphql_schema: {graphql_schema}")
-        # app.mount("/graphql", GraphQLApp(schema=graphql_schema, graphiql=True))
+        psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset])
+        _LOGGER.info("Generating GraphQL schema")
+        graphql_schema = psr.generate_graphql_schema()
+        app.mount("/graphql", GraphQLApp(schema=graphql_schema, graphiql=True))
 
         _LOGGER.info(f"running {PKG_NAME} app")
         uvicorn.run(
