@@ -15,7 +15,7 @@ document.head.appendChild(styleLink);
 
 ReactDOM.render(
   <Router>
-      <Switch basename={'ui'}>
+      <Switch >
         <Route exact path="/" component={Home}/>
         <Route exact path="/about" component={About}/>
         <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash}/>
