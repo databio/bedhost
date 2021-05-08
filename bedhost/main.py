@@ -96,7 +96,7 @@ def main():
         else:
             raise FileNotFoundError(f"React UI path to mount not found: {UI_PATH}")
 
-        # app.mount("/", StaticFiles(directory=UI_PATH))
+        app.mount("/ui", StaticFiles(directory=UI_PATH))
 
         psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset])
         _LOGGER.info("Generating GraphQL schema")
