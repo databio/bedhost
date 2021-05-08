@@ -13,7 +13,7 @@ export default function Header() {
         <Navbar className="header" bg="dark" variant="dark" style={{ minWidth: "900px" }}>
             <Navbar.Brand style={{ marginLeft: "30px" }} href="/#home">
                 <img
-                    src="/bedbase_logo.svg"
+                    src="/ui/bedbase_logo.svg"
                     height="45px"
                     className="d-inline-block align-top"
                     alt="BEDBASE logo"

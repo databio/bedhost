@@ -28,9 +28,9 @@ export default class Info extends React.Component {
                                     plots.
                                     </p>
                                     <img
-                                        src="/workflow.svg"
+                                        src="/ui/workflow.svg"
                                         width='100%'
-                                        alt="BEDBASE logo"
+                                        alt="workflow"
                                     />
                                 </div>
                                 <div id='key-features' style={{ marginTop: '15px' }}>
