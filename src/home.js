@@ -9,6 +9,14 @@ import Col from "react-bootstrap/Col";
 import { Label } from 'semantic-ui-react';
 import "./style/home.css"
 
+import bedhost_api_url from "./const";
+import ApolloClient from "apollo-boost";
+import { ApolloProvider } from "react-apollo";
+
+const client = new ApolloClient({
+    uri: bedhost_api_url +"/graphql"
+});
+
 export default class Home extends React.Component {
     constructor(props) {
         super();
@@ -30,29 +38,31 @@ export default class Home extends React.Component {
 
     render() {
         return (
-            <React.StrictMode >
-                <Header />
-                <div className="conten-body">
-                    <Container style={{ width: "75%" }} fluid className="p-4">
-                        <BedCountsSpan />
-                    </Container>
-                    <Container style={{ width: "75%" }} fluid className="p-4">
-                        <Label style={{  marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
-                            Find BED Files
+            <ApolloProvider client={client}>
+                <React.StrictMode >
+                    <Header />
+                    <div className="conten-body">
+                        <Container style={{ width: "75%" }} fluid className="p-4">
+                            <BedCountsSpan />
+                        </Container>
+                        <Container style={{ width: "75%" }} fluid className="p-4">
+                            <Label style={{ marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                                Find BED Files
                         </Label>
-                        <Row>
-                            <Col >
-                                <button className='btn btn-block btn-sm my-btn' disabled={this.state.filebtn} onClick={() => this.handleClick('bedfiles')}> Search BED Files </button>
-                            </Col>
-                            <Col md={6}>
-                                <button className='btn btn-block btn-sm my-btn' disabled={this.state.setbtn} onClick={() => this.handleClick('bedsets')}> Search BED Sets </button>
-                            </Col>
-                        </Row>
-                        <QueryBuilderWrapper table_name={this.state.search} />
-                    </Container>
-                </div>
-                <VersionsSpan />
-            </React.StrictMode>
+                            <Row>
+                                <Col >
+                                    <button className='btn btn-block btn-sm my-btn' disabled={this.state.filebtn} onClick={() => this.handleClick('bedfiles')}> Search BED Files </button>
+                                </Col>
+                                <Col md={6}>
+                                    <button className='btn btn-block btn-sm my-btn' disabled={this.state.setbtn} onClick={() => this.handleClick('bedsets')}> Search BED Sets </button>
+                                </Col>
+                            </Row>
+                            <QueryBuilderWrapper table_name={this.state.search} />
+                        </Container>
+                    </div>
+                    <VersionsSpan />
+                </React.StrictMode>
+            </ApolloProvider>
         )
     }
 }
