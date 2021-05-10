@@ -23,6 +23,9 @@ export default function Header() {
                 <Nav.Link style={{ fontSize: "16px", color: "white" }} href={bedhost_api_url + "/docs"}>
                     <b>API documentation</b>
                 </Nav.Link>
+                <Nav.Link style={{ fontSize: "16px", color: "white" }} href={bedhost_api_url + "/graphql"}>
+                    <b>GraphiQL</b>
+                </Nav.Link>
             </Nav>
             <Nav className="float-right" >
                 <Link to="/about">

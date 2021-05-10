@@ -9,13 +9,8 @@ import Col from "react-bootstrap/Col";
 import { Label } from 'semantic-ui-react';
 import "./style/home.css"
 
-import bedhost_api_url from "./const";
-import ApolloClient from "apollo-boost";
-import { ApolloProvider } from "react-apollo";
-
-const client = new ApolloClient({
-    uri: bedhost_api_url +"/graphql"
-});
+import bedhost_api_url, {client} from "./const";
+import {ApolloProvider, HttpLink,} from "@apollo/client"
 
 export default class Home extends React.Component {
     constructor(props) {

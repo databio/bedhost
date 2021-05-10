@@ -3,7 +3,8 @@ import axios from "axios";
 import { Label } from 'semantic-ui-react';
 import { HashLink as Link } from 'react-router-hash-link';
 import { FaQuestionCircle } from "react-icons/fa";
-import bedhost_api_url from "./const";
+import bedhost_api_url, {client} from "./const";
+import { GET_BED_META, GET_BED_STATS } from "./graphql/queries";
 
 const api = axios.create({
     baseURL: bedhost_api_url,
@@ -20,31 +21,43 @@ export default class BedInfo extends React.Component {
     }
 
     async componentDidMount() {
-        let data = await api.get("/api/bed/" + this.props.bed_md5sum + "/data?ids=other").then(({ data }) => data);
+        // get meta data (`other` field) via Graphql 
+        let bed = await client.query({
+            query: GET_BED_META,
+            variables: {md5sum: this.props.bed_md5sum },
+          }).then(({ data }) => data)
+          
         this.setState(
             {
-                bed_info: data.data[0][0]
+                bed_info: JSON.parse(bed.bedfiles.edges[0].node.other)
             })
         console.log("BED file info from the server:", this.state.bed_info)
 
-        data = await api.get("/api/bed/" + this.props.bed_md5sum +
-            "/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage")
-            .then(({ data }) => data);
+        // get bed stats via Graphql 
+        const bed_stats = await client.query({
+            query: GET_BED_STATS,
+            variables: {md5sum: this.props.bed_md5sum },
+          }).then(({ data }) => data.bedfiles.edges[0].node)
+          
+        // get bedfiles table schema via fastapi endpoint
         let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
 
         let stats = []
-        data.columns.map((value, index) => {
+        Object.entries(bed_stats)
+        .map(([key, value], index) =>  {
             stats.push({
-                label: schema[data.columns[index]].description,
-                data: data.data[0][index]
+                label: schema[key.replace(/([A-Z])/g, '_$1').toLowerCase()].description,
+                data: value
             }
             )
             return stats
         })
+        
         this.setState(
             {
                 bed_stats: stats
             })
+
         console.log("BED file stats from the server:", this.state.bed_stats)
     }
 

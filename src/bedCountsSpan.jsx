@@ -2,8 +2,9 @@ import React from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Label } from 'semantic-ui-react';
-import bedhost_api_url from "./const";
+import bedhost_api_url, {client} from "./const";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { GET_SAMPLE_BED, GET_SAMPLE_BEDSET } from "./graphql/queries";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -40,13 +41,20 @@ export default class BedCountsSpan extends React.Component {
     console.log("BED set count retrieved from the server: ", bscount.data);
     this.setState({ bedSet: bscount.data });
 
-    let bed = await api.get("/api/bed/all/data?ids=md5sum&limit=1").then(({ data }) => data);
-    let bedurl = '/bedsplash/' + bed.data[0][0]
+    const bed = await client.query({
+      query: GET_SAMPLE_BED,
+      variables: {first: 1},
+    }).then(({ data }) => data)
+    let bedurl = '/bedsplash/' + bed.bedfiles.edges[0].node.md5sum
     this.setState({ sampleBed: bedurl });
 
-    let bedset = await api.get("/api/bedset/all/data?ids=md5sum&limt=1").then(({ data }) => data)
-    let bedseturl = '/bedsetsplash/' + bedset.data[0][0]
+    let bedset = await client.query({
+      query: GET_SAMPLE_BEDSET,
+      variables: {first: 1},
+    }).then(({ data }) => data)
+    let bedseturl = '/bedsetsplash/' + bedset.bedsets.edges[0].node.md5sum
     this.setState({ sampleBedSet: bedseturl });
+    
     this.getAPIcount()
   }
 

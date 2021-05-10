@@ -3,7 +3,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ErrorBar
 } from 'recharts';
 
-export default class Example extends React.Component {
+export default class BedSetBarChart extends React.Component {
   // static jsfiddleUrl = 'https://jsfiddle.net/alidingling/30763kr7/';
 
   constructor(props) {
