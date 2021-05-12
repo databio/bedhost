@@ -332,7 +332,7 @@ async def get_image_for_bedset(
     """
     Returns the img with provided ID
     """
-    hit = bbc.bed.select(
+    hit = bbc.bedset.select(
         filter_conditions=[("md5sum", "eq", md5sum)],
         columns=["name", img_map_bedset[id.value]],
     )[0]
