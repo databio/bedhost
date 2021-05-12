@@ -41,7 +41,7 @@ const fileRules = {
         }]
     }]
 };
-
+// and: [{ gcContentGt: 0.5 }, {or: [{regionsNoGt: 1000},{ nameNe: "2" }] }]
 export default class QueryBuilderWrapper extends React.Component {
     constructor(props) {
         super();
@@ -98,6 +98,8 @@ export default class QueryBuilderWrapper extends React.Component {
         const rules = $(this.queryBuilder.current).queryBuilder('getSQL');
         const query = $(this.queryBuilder.current).queryBuilder('getSQL', 'question_mark');
         this.setState({ rules: rules.sql, query: query });
+        const test = $(this.queryBuilder.current).queryBuilder('getMongo')
+        console.log(test)
         this.forceUpdate();
     }
     // reinitialize jQuery Query Builder based on react state

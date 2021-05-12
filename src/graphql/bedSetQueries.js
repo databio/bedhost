@@ -84,3 +84,55 @@ export const GET_BEDSET_FIGS = gql`
     }
   }
 `;
+
+export const GET_BEDSET_BEDFILES = gql`
+  query bedsets($md5sum: String!) {
+    bedsets(filters: { md5sum: $md5sum }) {
+      edges {
+        node {
+          bedfiles {
+            edges {
+              node {
+                name
+                md5sum
+                regionsNo
+                gcContent
+                meanRegionWidth
+                meanAbsoluteTssDist
+                exonFrequency
+                exonPercentage
+                intronFrequency
+                intronPercentage
+                promoterproxFrequency
+                promoterproxPercentage
+                promotercoreFrequency
+                promotercorePercentage
+                intergenicFrequency
+                intergenicPercentage
+                threeutrFrequency
+                threeutrPercentage
+                fiveutrFrequency
+                fiveutrPercentage
+              }
+            }
+            totalCount
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_BEDSET_BEDFILE_COUNT = gql`
+  query bedsets($md5sum: String!) {
+    bedsets(filters: { md5sum: $md5sum }) {
+      edges {
+        node {
+          bedfiles {
+            totalCount
+          }
+        }
+      }
+    }
+  }
+`;

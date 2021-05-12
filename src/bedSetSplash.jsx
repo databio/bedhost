@@ -18,6 +18,7 @@ import {
   GET_BEDSET_STATS,
   GET_BEDSET_DOWNLOADS,
   GET_BEDSET_FIGS,
+  GET_BEDSET_BEDFILE_COUNT,
 } from "./graphql/bedSetQueries";
 import "./style/splash.css";
 
@@ -188,12 +189,16 @@ export default class BedSetSplash extends React.Component {
     });
     this.setState({ bedSetFig: bedSetFig });
 
-    // const data = await api
-    //   .get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles")
-    //   .then(({ data }) => data);
-    // this.setState({
-    //   bedsCount: Object.keys(data.data).length,
-    // });
+    const bed_count = await client
+      .query({
+        query: GET_BEDSET_BEDFILE_COUNT,
+        variables: { md5sum: this.props.match.params.bedset_md5sum },
+      })
+      .then(({ data }) => data.bedsets.edges[0].node.bedfiles.totalCount);
+
+    this.setState({
+      bedsCount: bed_count,
+    });
   }
 
   render() {
