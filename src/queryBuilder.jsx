@@ -3,7 +3,7 @@ import ResponsiveDialog from "./responsiveDialog"
 import $ from 'jquery';
 import 'jQuery-QueryBuilder';
 import axios from "axios";
-import bedhost_api_url from "./const";
+import bedhost_api_url from "./const/server";
 import "./style/queryBuilder.css";
 import ResultsBed from './queryResultsBed'
 import ResultsBedSet from './queryResultsBedSet'

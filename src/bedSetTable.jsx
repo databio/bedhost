@@ -6,7 +6,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
 import toObject from "./toObject";
-import bedhost_api_url from "./const";
+import bedhost_api_url from "./const/server";
 import axios from "axios";
 import { Label } from 'semantic-ui-react';
 import { Link } from "react-router-dom";

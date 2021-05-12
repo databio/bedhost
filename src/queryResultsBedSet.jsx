@@ -5,7 +5,7 @@ import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
 import ResultsBed from './queryResultsBed'
-import bedhost_api_url from "./const";
+import bedhost_api_url from "./const/server";
 import axios from "axios";
 
 const api = axios.create({
