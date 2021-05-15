@@ -33,7 +33,6 @@ export default class SimpleSearch extends React.Component {
 
     setShowResults() {
         this.setState({ showResults: true });
-        console.log(this.state.searchTerm, this.state.showResults)
     }
 
     setSearchTerm(event) {
@@ -41,7 +40,6 @@ export default class SimpleSearch extends React.Component {
             showResults: false,
             searchTerm: event.target.value
         });
-        console.log(this.state.searchTerm, this.state.showResults)
         this.forceUpdate();
     }
 

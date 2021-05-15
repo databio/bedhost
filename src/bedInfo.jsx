@@ -15,7 +15,8 @@ export default class BedInfo extends React.Component {
         this.state = {
             bed_info: {},
             bed_stats: [],
-            description: ""
+            description: "",
+            genome:{}
         };
     }
 
@@ -26,7 +27,11 @@ export default class BedInfo extends React.Component {
                 bed_info: data.data[0][0]
             })
         console.log("BED file info from the server:", this.state.bed_info)
-
+        data = await api.get("/api/bed/" + this.props.bed_md5sum + "/data?ids=genome").then(({ data }) => data);
+        this.setState(
+            {
+                genome: data.data[0][0]
+            })
         data = await api.get("/api/bed/" + this.props.bed_md5sum +
             "/data?ids=gc_content&ids=regions_no&ids=mean_absolute_tss_dist&ids=mean_region_width&ids=exon_percentage&ids=intron_percentage&ids=promoterprox_percentage&ids=intergenic_percentage&ids=promotercore_percentage&ids=fiveutr_percentage&ids=threeutr_percentage")
             .then(({ data }) => data);
@@ -75,7 +80,7 @@ export default class BedInfo extends React.Component {
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {key === "genome" ?
-                                            (<><span>{value.alias}</span><a href={"http://rg.databio.org/v3/genomes/splash/" + value.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
+                                            (<><span>{this.state.genome.alias}</span><a href={"http://rg.databio.org/v3/genomes/splash/" + this.state.genome.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
                                             : value}
                                     </td>
                                 </tr> : null)
