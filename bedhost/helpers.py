@@ -276,6 +276,28 @@ def table_name2attr(table_name):
     return table_name
 
 
+def is_data_remote(bbc):
+    """
+    Determine if server config defines a 'remotes' key, 'http is one of them and
+     additionally assert the correct structure -- 'prefix' key defined.
+    :param BedBaseConf bbc: server config object
+    :return bool: whether remote data source is configured
+    """
+
+    return (
+        True
+        if CFG_REMOTE_KEY in bbc.config
+        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
+        and all(
+            [
+                "prefix" in r and isinstance(r["prefix"], str)
+                for r in bbc.config[CFG_REMOTE_KEY].values()
+            ]
+        )
+        else False
+    )
+
+
 def serve_file(path, remote):
     """
     Serve a local or remote file
