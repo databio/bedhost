@@ -4,7 +4,7 @@ import Spinner from 'react-bootstrap/Spinner'
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
-import ResultsBed from './queryResultsBed'
+import ResultsBed from './queryResultsBed';
 import bedhost_api_url from "./const";
 import axios from "axios";
 

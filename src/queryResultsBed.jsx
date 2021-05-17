@@ -29,7 +29,9 @@ export default class ResultsBed extends React.Component {
     async componentDidMount() {
         if (this.props.query) {
             await this.getBedByQuery()
-        } else {
+        } else if (this.props.term){
+            await this.getBedBySearchTerm()
+        }else {
             await this.getBedByBedSet()
         }
     }
@@ -38,7 +40,10 @@ export default class ResultsBed extends React.Component {
         if (prevProps.query !== this.props.query) {
             await this.getBedByQuery()
             this.setState({ query: this.props.query })
-        } else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
+        } else if (prevProps.term !== this.props.term) {
+            await this.getBedBySearchTerm()
+            this.setState({ term: this.props.term })
+        }else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
             await this.getBedByBedSet()
             this.setState({ md5sum: this.props.md5sum })
         }
@@ -73,6 +78,32 @@ export default class ResultsBed extends React.Component {
             })
         }
         this.setState({ query: this.props.query })
+        console.log('BED files retrieved from the server: ', res)
+        this.getColumns()
+        this.getData()
+    }
+
+    async getBedBySearchTerm() {
+        let res = await api.get("_private_api/distance/" + this.props.term + "/bedfiles/" + this.props.genome + "?ids=name&ids=md5sum&ids=other")
+            .then(({ data }) => data)
+
+        this.setState({
+            bedData: res.data,
+            toolBar: false
+        })
+
+        if (res.data.length >= 10) {
+            this.setState({
+                pageSize: 10,
+                pageSizeOptions: [10, 15, 20]
+            })
+        } else {
+            this.setState({
+                pageSize: res.data.length,
+                pageSizeOptions: [res.data.length]
+            })
+        }
+        this.setState({ term: this.props.term })
         console.log('BED files retrieved from the server: ', res)
         this.getColumns()
         this.getData()
@@ -179,7 +210,7 @@ export default class ResultsBed extends React.Component {
 
 
     render() {
-        return (this.props.md5sum === this.state.md5sum || this.props.query === this.state.query ? (
+        return (this.props.md5sum === this.state.md5sum || this.props.query === this.state.query || this.props.term === this.state.term? (
             this.state.pageSize !== -1 ? (
                 <div>
                     <MaterialTable

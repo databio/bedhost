@@ -25,7 +25,7 @@ export default class BedSetSplash extends React.Component {
     this.state = {
       bedSetName: "",
       bedsCount: "",
-      genome: "",
+      genome: {},
       bedSetStat: [],
       avgRegionD: {},
       bedSetDownload: [],
@@ -40,43 +40,47 @@ export default class BedSetSplash extends React.Component {
     console.log("BED set data retrieved from the server: ", data);
     let bed_schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
     let bedset_schema = await api.get("/api/bedset/all/schema").then(({ data }) => data);
+    console.log( bedset_schema);
     this.setState(
       {
         bedSetName: data.data[0][2],
         hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
         bedSetStat: [
-          { label: bed_schema['gc_content'].description, data: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)] },
-          { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][9].mean_absolute_tss_dist.toFixed(3), data.data[0][10].mean_absolute_tss_dist.toFixed(3)] },
-          { label: bed_schema['mean_region_width'].description, data: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)] }
+          { label: bed_schema['gc_content'].description, data: [data.data[0][11].gc_content.toFixed(3), data.data[0][12].gc_content.toFixed(3)] },
+          { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][11].mean_absolute_tss_dist.toFixed(3), data.data[0][12].mean_absolute_tss_dist.toFixed(3)] },
+          { label: bed_schema['mean_region_width'].description, data: [data.data[0][11].mean_region_width.toFixed(3), data.data[0][12].mean_region_width.toFixed(3)] }
         ],
         genome: data.data[0][13],
         avgRegionD: {
-          exon: [data.data[0][9].exon_percentage.toFixed(3), data.data[0][10].exon_percentage.toFixed(3)],
-          fiveutr: [data.data[0][9].fiveutr_percentage.toFixed(3), data.data[0][10].fiveutr_percentage.toFixed(3)],
-          intergenic: [data.data[0][9].intergenic_percentage.toFixed(3), data.data[0][10].intergenic_percentage.toFixed(3)],
-          intron: [data.data[0][9].intron_percentage.toFixed(3), data.data[0][10].intron_percentage.toFixed(3)],
-          threeutr: [data.data[0][9].threeutr_percentage.toFixed(3), data.data[0][10].threeutr_percentage.toFixed(3)]
+          exon: [data.data[0][11].exon_percentage.toFixed(3), data.data[0][12].exon_percentage.toFixed(3)],
+          fiveutr: [data.data[0][11].fiveutr_percentage.toFixed(3), data.data[0][12].fiveutr_percentage.toFixed(3)],
+          intergenic: [data.data[0][11].intergenic_percentage.toFixed(3), data.data[0][12].intergenic_percentage.toFixed(3)],
+          intron: [data.data[0][11].intron_percentage.toFixed(3), data.data[0][12].intron_percentage.toFixed(3)],
+          threeutr: [data.data[0][11].threeutr_percentage.toFixed(3), data.data[0][12].threeutr_percentage.toFixed(3)]
         }
       }
     );
 
     let newbedSetFile = data.data[0].map((file, index) => {
       return (
-        (index >= 4 && index <= 8) ? {
+        (index >= 5 && index <= 9) ? {
           ...file,
           id: data.columns[index],
           label: bedset_schema[data.columns[index]].label.replaceAll("_", " "),
-          url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label
+          size: file.size,
+          url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label,
+          http: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=http",
+          s3: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=s3",
         } : null
       )
     });
 
-    newbedSetFile = newbedSetFile.slice(4, 9)
+    newbedSetFile = newbedSetFile.slice(5, 10)
     this.setState({ bedSetDownload: newbedSetFile });
-    
+
     let newbedSetFig = data.data[0].map((img, index) => {
       return (
-        (index >= 11 && index <= data.columns.length - 2) ? {
+        (index >= 13 && index <= data.columns.length - 1) ? {
           ...img,
           id: data.columns[index],
           src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=pdf",
@@ -84,7 +88,7 @@ export default class BedSetSplash extends React.Component {
         } : null
       )
     });
-    newbedSetFig = newbedSetFig.slice(11, data.columns.length)
+    newbedSetFig = newbedSetFig.slice(13, data.columns.length)
     this.setState({ bedSetFig: newbedSetFig });
 
     data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles").then(({ data }) => data);
@@ -132,7 +136,7 @@ export default class BedSetSplash extends React.Component {
                         genome
                             </td>
                       <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                        <><span>{this.state.genome}</span><a href={"http://refgenomes.databio.org/#" + this.state.genome} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>
+                        <><span>{this.state.genome.alias}</span><a href={"http://refgenomes.databio.org/v3/genomes/splash/" + this.state.genome.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>
                       </td>
                     </tr>
                     <tr style={{ verticalAlign: "top" }} >
@@ -181,8 +185,12 @@ export default class BedSetSplash extends React.Component {
                   return (
                     <p style={{ marginBottom: "5px" }} key={file.id}>
                       <a href={file.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
-                        {file.label}
+                        http
+                      </a> |
+                      <a href={file.s3} className="home-link" style={{fontSize: "10pt", fontWeight: "bold" }}>
+                        s3
                       </a>
+                      : {file.label} ( {file.size} )
                     </p>
                   );
                 })}

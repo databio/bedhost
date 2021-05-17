@@ -19,7 +19,9 @@ export default class BedCountsSpan extends React.Component {
       sampleBed: "",
       sampleBedSet: "",
       bedAPI: '',
-      bedSetAPI: ''
+      bedSetAPI: '',
+      genomesBed: [],
+      genomesBedSet: []
     };
   }
 
@@ -47,6 +49,13 @@ export default class BedCountsSpan extends React.Component {
     let bedset = await api.get("/api/bedset/all/data?ids=md5sum&limt=1").then(({ data }) => data)
     let bedseturl = '/bedsetsplash/' + bedset.data[0][0]
     this.setState({ sampleBedSet: bedseturl });
+
+    let bfgenome = await api.get("/api/bed/genomes").then(({ data }) => data)
+    this.setState({ genomesBed: bfgenome[0] });
+
+    let bsgenome = await api.get("/api/bedset/genomes").then(({ data }) => data)
+    this.setState({ genomesBedSet: bsgenome[0] });
+
     this.getAPIcount()
   }
 
@@ -108,7 +117,16 @@ export default class BedCountsSpan extends React.Component {
                   {this.state.bed}
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{ fontSize: "10pt" }}>[Refgenie]</a>
+                  {this.state.genomesBedSet.map((value, index) => {
+                    return (
+                      <>
+                        {value.alias}
+                        <a href={"http://rg.databio.org/v3/genomes/splash/" + value.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                          [Refgenie]</a>
+                      </>
+
+                    );
+                  })}
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   {this.state.bedAPI}
@@ -128,7 +146,16 @@ export default class BedCountsSpan extends React.Component {
                   {this.state.bedSet}
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  hg38 <a href={"http://refgenomes.databio.org/#hg38"} className="home-link" style={{ fontSize: "10pt" }}>[Refgenie]</a>
+                  {this.state.genomesBed.map((value, index) => {
+                    return (
+                      <>
+                        {value.alias}
+                        <a href={"http://rg.databio.org/v3/genomes/splash/" + value.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                          [Refgenie]</a>
+                      </>
+
+                    );
+                  })}
                 </td>
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   {this.state.bedSetAPI}
@@ -145,10 +172,10 @@ export default class BedCountsSpan extends React.Component {
         </div>
       </div>
     ) : (
-        <span>
-          Could not fetch data from the server, is bedhost running at{" "}
-          {bedhost_api_url}?
-        </span>
-      );
+      <span>
+        Could not fetch data from the server, is bedhost running at{" "}
+        {bedhost_api_url}?
+      </span>
+    );
   }
 }

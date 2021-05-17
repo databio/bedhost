@@ -1,5 +1,6 @@
 import React from "react";
 import QueryBuilderWrapper from './queryBuilder.jsx';
+import SimpleSearch from './simpleSearch.jsx';
 import BedCountsSpan from "./bedCountsSpan";
 import Header from './header';
 import VersionsSpan from "./versionsSpan";
@@ -15,7 +16,9 @@ export default class Home extends React.Component {
         this.state = {
             search: "bedfiles",
             setbtn: false,
-            filebtn: true
+            filebtn: true,
+            searchType: "simple",
+            searchTerm: ""
         };
     }
 
@@ -28,6 +31,10 @@ export default class Home extends React.Component {
         }
     };
 
+    setSearchType(type) {
+        this.setState({ searchType: type })
+    }
+
     render() {
         return (
             <React.StrictMode >
@@ -37,18 +44,32 @@ export default class Home extends React.Component {
                         <BedCountsSpan />
                     </Container>
                     <Container style={{ width: "75%" }} fluid className="p-4">
-                        <Label style={{  marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                        <Label style={{ marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                             Find BED Files
                         </Label>
-                        <Row>
-                            <Col >
-                                <button className='btn btn-block btn-sm my-btn' disabled={this.state.filebtn} onClick={() => this.handleClick('bedfiles')}> Search BED Files </button>
-                            </Col>
-                            <Col md={6}>
-                                <button className='btn btn-block btn-sm my-btn' disabled={this.state.setbtn} onClick={() => this.handleClick('bedsets')}> Search BED Sets </button>
-                            </Col>
-                        </Row>
-                        <QueryBuilderWrapper table_name={this.state.search} />
+                        {
+                            this.state.searchType === "simple" ? (
+                                <Container>
+                                    <button style={{ marginBottom: "15px"}} className='btn btn-block btn-sm my-btn' onClick={() => this.setSearchType('advance')}> Advanced Search </button>
+                                    <SimpleSearch />
+                                </Container>
+                            ) : (
+                                <Container>
+                                    <button style={{ marginBottom: "15px"}} className='btn btn-block btn-sm my-btn' onClick={() => this.setSearchType('simple')}> Simple Search </button>
+
+                                    <Row>
+                                        <Col >
+                                            <button className='btn btn-block btn-sm my-btn' disabled={this.state.filebtn} onClick={() => this.handleClick('bedfiles')}> Search BED Files </button>
+                                        </Col>
+                                        <Col md={6}>
+                                            <button className='btn btn-block btn-sm my-btn' disabled={this.state.setbtn} onClick={() => this.handleClick('bedsets')}> Search BED Sets </button>
+                                        </Col>
+                                    </Row>
+                                    <QueryBuilderWrapper table_name={this.state.search} />
+                                </Container>
+                            )
+                        }
+
                     </Container>
                 </div>
                 <VersionsSpan />
