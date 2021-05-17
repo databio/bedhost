@@ -50,6 +50,7 @@ export default class BedInfo extends React.Component {
             {
                 bed_stats: stats
             }
+        )
           
         console.log("BED file stats from the server:", this.state.bed_stats)
     }
