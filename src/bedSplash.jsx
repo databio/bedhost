@@ -85,6 +85,7 @@ export default class BedSplash extends React.Component {
 
     let newbedFig = data.data[0].map((img, index) => {
       return (
+
         (index >= 25 && index <= data.columns.length - 2) ? {
           ...img,
           id: data.columns[index],
@@ -93,6 +94,7 @@ export default class BedSplash extends React.Component {
         } : null
       )
     });
+
     newbedFig = newbedFig.slice(26, data.columns.length - 1)
 
     this.setState({ bedFig: newbedFig });

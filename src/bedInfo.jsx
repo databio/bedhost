@@ -49,7 +49,8 @@ export default class BedInfo extends React.Component {
         this.setState(
             {
                 bed_stats: stats
-            })
+            }
+          
         console.log("BED file stats from the server:", this.state.bed_stats)
     }
 
@@ -80,7 +81,7 @@ export default class BedInfo extends React.Component {
                                     </td>
                                     <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                                         {key === "genome" ?
-                                            (<><span>{this.state.genome.alias}</span><a href={"http://rg.databio.org/v3/genomes/splash/" + this.state.genome.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
+                                            (<><span>{this.state.genome.alias}</span><a href={"http://refgenomes.databio.org/v3/genomes/splash/" + this.state.genome.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>)
                                             : value}
                                     </td>
                                 </tr> : null)

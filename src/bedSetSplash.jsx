@@ -50,7 +50,7 @@ export default class BedSetSplash extends React.Component {
           { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][11].mean_absolute_tss_dist.toFixed(3), data.data[0][12].mean_absolute_tss_dist.toFixed(3)] },
           { label: bed_schema['mean_region_width'].description, data: [data.data[0][11].mean_region_width.toFixed(3), data.data[0][12].mean_region_width.toFixed(3)] }
         ],
-        genome: data.data[0][4],
+        genome: data.data[0][13],
         avgRegionD: {
           exon: [data.data[0][11].exon_percentage.toFixed(3), data.data[0][12].exon_percentage.toFixed(3)],
           fiveutr: [data.data[0][11].fiveutr_percentage.toFixed(3), data.data[0][12].fiveutr_percentage.toFixed(3)],
@@ -136,7 +136,7 @@ export default class BedSetSplash extends React.Component {
                         genome
                             </td>
                       <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                        <><span>{this.state.genome.alias}</span><a href={"http://rg.databio.org/v3/genomes/splash/" + this.state.genome.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>
+                        <><span>{this.state.genome.alias}</span><a href={"http://refgenomes.databio.org/v3/genomes/splash/" + this.state.genome.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>[Refgenie]</a></>
                       </td>
                     </tr>
                     <tr style={{ verticalAlign: "top" }} >
