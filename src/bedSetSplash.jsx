@@ -28,7 +28,7 @@ export default class BedSetSplash extends React.Component {
       genome: {},
       bedSetStat: [],
       avgRegionD: {},
-      bedSetDownload: {},
+      bedSetDownload: [],
       bedSetFig: false,
       hubFilePath: "",
       description: ""
@@ -38,45 +38,57 @@ export default class BedSetSplash extends React.Component {
   async componentDidMount() {
     let data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/data").then(({ data }) => data);
     console.log("BED set data retrieved from the server: ", data);
-    let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+    let bed_schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+    let bedset_schema = await api.get("/api/bedset/all/schema").then(({ data }) => data);
+    console.log( bedset_schema);
     this.setState(
       {
         bedSetName: data.data[0][2],
         hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
-        bedSetDownload: {
-          BED_Set_Rxiv: { label: 'BED set archive', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/bedset_tar" },
-          BED_Stats: { label: 'BED files statistics', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/beds_stats" },
-          BED_Set_Summary: { label: 'BED set statistics', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/summary_stats" },
-          BED_Set_IGD: { label: 'BED set iGD database', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/iGD_database" },
-          BED_Set_PEP: { label: 'BED set PEP', url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/PEP" }
-        },
         bedSetStat: [
-          { label: schema['gc_content'].description, data: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)] },
-          { label: schema['mean_absolute_tss_dist'].description, data: [data.data[0][9].mean_absolute_tss_dist.toFixed(3), data.data[0][10].mean_absolute_tss_dist.toFixed(3)] },
-          { label: schema['mean_region_width'].description, data: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)] }
+          { label: bed_schema['gc_content'].description, data: [data.data[0][11].gc_content.toFixed(3), data.data[0][12].gc_content.toFixed(3)] },
+          { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][11].mean_absolute_tss_dist.toFixed(3), data.data[0][12].mean_absolute_tss_dist.toFixed(3)] },
+          { label: bed_schema['mean_region_width'].description, data: [data.data[0][11].mean_region_width.toFixed(3), data.data[0][12].mean_region_width.toFixed(3)] }
         ],
         genome: data.data[0][13],
         avgRegionD: {
-          exon: [data.data[0][9].exon_percentage.toFixed(3), data.data[0][10].exon_percentage.toFixed(3)],
-          fiveutr: [data.data[0][9].fiveutr_percentage.toFixed(3), data.data[0][10].fiveutr_percentage.toFixed(3)],
-          intergenic: [data.data[0][9].intergenic_percentage.toFixed(3), data.data[0][10].intergenic_percentage.toFixed(3)],
-          intron: [data.data[0][9].intron_percentage.toFixed(3), data.data[0][10].intron_percentage.toFixed(3)],
-          threeutr: [data.data[0][9].threeutr_percentage.toFixed(3), data.data[0][10].threeutr_percentage.toFixed(3)]
+          exon: [data.data[0][11].exon_percentage.toFixed(3), data.data[0][12].exon_percentage.toFixed(3)],
+          fiveutr: [data.data[0][11].fiveutr_percentage.toFixed(3), data.data[0][12].fiveutr_percentage.toFixed(3)],
+          intergenic: [data.data[0][11].intergenic_percentage.toFixed(3), data.data[0][12].intergenic_percentage.toFixed(3)],
+          intron: [data.data[0][11].intron_percentage.toFixed(3), data.data[0][12].intron_percentage.toFixed(3)],
+          threeutr: [data.data[0][11].threeutr_percentage.toFixed(3), data.data[0][12].threeutr_percentage.toFixed(3)]
         }
       }
     );
 
-    let newbedSetFig = data.data[0].map((img, index) => {
+    let newbedSetFile = data.data[0].map((file, index) => {
       return (
-        (index >= 11 && index <= data.columns.length - 2) ? {
-          ...img,
+        (index >= 5 && index <= 9) ? {
+          ...file,
           id: data.columns[index],
-          src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=pdf",
-          src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + data.columns[index] + "?format=png"
+          label: bedset_schema[data.columns[index]].label.replaceAll("_", " "),
+          size: file.size,
+          url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label,
+          http: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=http",
+          s3: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=s3",
         } : null
       )
     });
-    newbedSetFig = newbedSetFig.slice(11, data.columns.length)
+
+    newbedSetFile = newbedSetFile.slice(5, 10)
+    this.setState({ bedSetDownload: newbedSetFile });
+
+    let newbedSetFig = data.data[0].map((img, index) => {
+      return (
+        (index >= 13 && index <= data.columns.length - 1) ? {
+          ...img,
+          id: data.columns[index],
+          src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=pdf",
+          src_png: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=png"
+        } : null
+      )
+    });
+    newbedSetFig = newbedSetFig.slice(13, data.columns.length)
     this.setState({ bedSetFig: newbedSetFig });
 
     data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles").then(({ data }) => data);
@@ -169,14 +181,19 @@ export default class BedSetSplash extends React.Component {
                 <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   BED Set Downloads
                 </Label>
-                {Object.entries(this.state.bedSetDownload)
-                  .map(([key, value], index) =>
-                    <p style={{ marginBottom: "5px" }} key={index}>
-                      <a href={value.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
-                        {value.label}
+                {this.state.bedSetDownload.map((file, index) => {
+                  return (
+                    <p style={{ marginBottom: "5px" }} key={file.id}>
+                      <a href={file.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                        http
+                      </a> |
+                      <a href={file.s3} className="home-link" style={{fontSize: "10pt", fontWeight: "bold" }}>
+                        s3
                       </a>
+                      : {file.label} ( {file.size} )
                     </p>
-                  )}
+                  );
+                })}
 
                 <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
                   API Endpoint Examples

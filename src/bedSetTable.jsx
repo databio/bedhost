@@ -34,32 +34,34 @@ export default class BedSetTable extends React.Component {
     }
 
     async componentDidMount() {
+        let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+
         let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles").then(({ data }) => data);
         console.log('BED set summary from the server: ', res)
 
         let cols = [
             res.columns[0], res.columns[1], // name, md5sum
-            res.columns[4], res.columns[5], res.columns[6], res.columns[7], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
-            res.columns[8], res.columns[18], // exon
-            res.columns[9], res.columns[19], // intron
-            res.columns[10], res.columns[17], // promoterprox
-            res.columns[12], res.columns[21], // promotercore
-            res.columns[11], res.columns[20], // intergenic
-            res.columns[13], res.columns[15], // fiveutr
-            res.columns[14], res.columns[16]] //threeutr
+            res.columns[5], res.columns[6], res.columns[6], res.columns[7], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
+            res.columns[9], res.columns[19], // exon
+            res.columns[10], res.columns[20], // intron
+            res.columns[11], res.columns[18], // promoterprox
+            res.columns[13], res.columns[22], // promotercore
+            res.columns[12], res.columns[21], // intergenic
+            res.columns[14], res.columns[16], // fiveutr
+            res.columns[15], res.columns[17]] //threeutr
 
         let data = []
         data.push(res.data.map((row) => {
             let value = [
                 row[0], row[1],
-                row[4], row[5].toFixed(3), row[6].toFixed(3), row[7].toFixed(3),
-                row[8], row[18].toFixed(3),
+                row[5], row[6].toFixed(3), row[6].toFixed(3), row[7].toFixed(3),
                 row[9], row[19].toFixed(3),
-                row[10], row[17].toFixed(3),
-                row[11], row[21].toFixed(3),
-                row[12], row[20].toFixed(3),
-                row[13], row[15].toFixed(3),
-                row[14], row[16].toFixed(3)
+                row[10], row[20].toFixed(3),
+                row[11], row[18].toFixed(3),
+                row[12], row[22].toFixed(3),
+                row[13], row[21].toFixed(3),
+                row[14], row[16].toFixed(3),
+                row[15], row[17].toFixed(3)
             ]
             let dict = toObject(cols, value)
             return dict
@@ -67,13 +69,14 @@ export default class BedSetTable extends React.Component {
 
         let newbedFig = res.data[0].map((img, index) => {
             return (
-                (index >= 22 && index <= res.columns.length - 2) ? {
+                (index >= 23 && index <= res.columns.length - 2) ? {
                     id: res.columns[index],
-                    title: res.data[0][index].title
+                    title: img.title,
+                    label: schema[res.columns[index]].label
                 } : null
             )
         });
-        newbedFig = newbedFig.slice(22, res.columns.length - 1)
+        newbedFig = newbedFig.slice(23, res.columns.length - 1)
 
         this.setState({
             columns: cols,
@@ -171,11 +174,11 @@ export default class BedSetTable extends React.Component {
                                 onClick={() => {
                                     this.figTypeClicked(
                                         fig.id,
-                                        fig.title
+                                        fig.label
                                     );
                                 }}
                             >
-                                {fig.id}
+                                {fig.label}
                             </Button>
                         </Tooltip>
                     )

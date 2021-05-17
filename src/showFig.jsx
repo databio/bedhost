@@ -5,18 +5,17 @@ import { Label } from 'semantic-ui-react';
 
 export default function ShowFig(props) {
   const [figList, setFigList] = useState([]);
+
   const getFig = () => {
     if (figList.length !== 0) {
-      // console.log("CLEAR image list");
       setFigList([]);
     }
     for (var i = 0; i < props.bedIds.length; i++) {
-      // console.log("PUSH to image list");
       figList.push({
         id:  props.figType[0],
         title: props.bedNames[i],
-        src_pdf: bedhost_api_url + "/api/bed/" + props.bedIds[i] + "/img/" + props.figType[0] + "?format=pdf",
-        src_png: bedhost_api_url + "/api/bed/" + props.bedIds[i] + "/img/" + props.figType[0] + "?format=png"
+        src_pdf: bedhost_api_url + "/api/bed/" + props.bedIds[i] + "/img/" + props.figType[1] + "?format=pdf",
+        src_png: bedhost_api_url + "/api/bed/" + props.bedIds[i] + "/img/" + props.figType[1] + "?format=png"
       });
     }
   };

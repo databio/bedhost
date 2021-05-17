@@ -15,7 +15,6 @@ const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-
 export default class BedSplash extends React.Component {
   constructor(props) {
     super();
@@ -29,8 +28,10 @@ export default class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
+    let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+
     await api
-      .get(bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile")
+      .get("/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigBed")
       .then(this.setState({ bigbed: true }))
       .catch(err => {
       if (err.response.status === 404) {
@@ -52,8 +53,18 @@ export default class BedSplash extends React.Component {
       this.setState(
         {
           bedDownload: {
-            BED_File: { label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile" },
-            bigBED_File: { label: 'bigBed file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigbedfile" },
+            BED_File: { 
+              label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bed" , 
+              size: data.data[0][5].size,
+              http: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bed?remoteClass=http", 
+              s3: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bed?remoteClass=s3"
+            },
+            bigBED_File: { 
+              label: 'bigBed file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigBed", 
+              size: data.data[0][6].size,
+              http: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bigBed?remoteClass=http", 
+              s3: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bigBed?remoteClass=s3" 
+            },
           },
         }
       );
@@ -61,7 +72,12 @@ export default class BedSplash extends React.Component {
       this.setState(
         {
           bedDownload: {
-            BED_File: { label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bedfile" },
+            BED_File: { 
+              label: 'BED file', url: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file/bed", 
+              size: data.data[0][5].size,
+              http: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bed?remoteClass=http", 
+              s3: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bed?remoteClass=s3" 
+            },
           },
         }
       );
@@ -69,15 +85,17 @@ export default class BedSplash extends React.Component {
 
     let newbedFig = data.data[0].map((img, index) => {
       return (
-        (index >= 24 && index <= data.columns.length - 3) ? {
+
+        (index >= 25 && index <= data.columns.length - 2) ? {
           ...img,
           id: data.columns[index],
-          src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=pdf",
-          src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + data.columns[index] + "?format=png"
+          src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + schema[data.columns[index]].label + "?format=pdf",
+          src_png: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + schema[data.columns[index]].label + "?format=png"
         } : null
       )
     });
-    newbedFig = newbedFig.slice(24, data.columns.length - 2)
+
+    newbedFig = newbedFig.slice(26, data.columns.length - 1)
 
     this.setState({ bedFig: newbedFig });
 
@@ -113,8 +131,11 @@ export default class BedSplash extends React.Component {
                   .map(([key, value], index) =>
                     <p style={{ marginBottom: "5px" }} key={index}>
                       <a href={value.url} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
-                        {value.label}
+                        http
+                      </a> | <a href={value.s3} className="home-link" style={{ fontSize: "10pt", fontWeight: "bold" }}>
+                        s3
                       </a>
+                      : {value.label} ( {value.size} )
                     </p>
                   )}
 
