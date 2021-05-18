@@ -28,7 +28,7 @@ export default class Info extends React.Component {
                                     plots.
                                     </p>
                                     <img
-                                        src="/ui/workflow.svg"
+                                        src="/workflow.svg"
                                         width='100%'
                                         alt="workflow"
                                     />
