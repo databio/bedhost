@@ -119,11 +119,11 @@ export default class BedCountsSpan extends React.Component {
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   {this.state.genomesBedSet.map((value, index) => {
                     return (
-                      <>
+                      <div key={index}>
                         {value.alias}
-                        <a href={"http://rg.databio.org/v3/genomes/splash/" + value.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
+                        <a  href={"http://rg.databio.org/v3/genomes/splash/" + value.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
                           [Refgenie]</a>
-                      </>
+                      </div>
 
                     );
                   })}
@@ -148,11 +148,11 @@ export default class BedCountsSpan extends React.Component {
                 <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                   {this.state.genomesBed.map((value, index) => {
                     return (
-                      <>
+                      <div key={index}>
                         {value.alias}
                         <a href={"http://rg.databio.org/v3/genomes/splash/" + value.digest} className="home-link" style={{ marginLeft: '15px', fontSize: "10pt", fontWeight: "bold" }}>
                           [Refgenie]</a>
-                      </>
+                      </div>
 
                     );
                   })}

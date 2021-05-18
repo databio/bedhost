@@ -67,11 +67,14 @@ export default class ResultsBedSet extends React.Component {
 
         this.setState({ query: this.props.query })
         console.log('BED sets retrieved from the server: ', res)
+        
         this.getColumns()
+        
         let data = await this.getData()
         this.setState({
             data: data
         })
+        
     }
 
     async getBedCount(id) {
@@ -111,7 +114,7 @@ export default class ResultsBedSet extends React.Component {
         let data = []
         data.push(this.state.bedSetData.map(async (bed, index) => {
             let count = await this.getBedCount(bed[1])
-            let row = { name: bed[0], md5sum: bed[1], bed_file_count: count , genome:bed[2]}
+            let row = { name: bed[0], md5sum: bed[1], bed_file_count: count , genome:bed[2].alias}
             for (var key in bed[3]) {
                 bed[3][key] = bed[3][key].toFixed(3)
             }

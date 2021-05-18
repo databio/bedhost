@@ -78,7 +78,7 @@ export default class SimpleSearch extends React.Component {
                         >
                             {this.state.genomeList.map((value, index) => {
                                 return (
-                                    <Dropdown.Item eventKey={value.alias}>{value.alias}</Dropdown.Item>
+                                    <Dropdown.Item key={index} eventKey={value.alias}>{value.alias}</Dropdown.Item>
                                 )
                             })}
                         </DropdownButton>
