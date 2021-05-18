@@ -43,13 +43,13 @@ export default class BedSetSplash extends React.Component {
     this.setState(
       {
         bedSetName: data.data[0][2],
-        hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
+        hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13].alias + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
         bedSetStat: [
           { label: bed_schema['gc_content'].description, data: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)] },
           { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][9].mean_absolute_tss_dist.toFixed(3), data.data[0][10].mean_absolute_tss_dist.toFixed(3)] },
           { label: bed_schema['mean_region_width'].description, data: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)] }
         ],
-        genome: data.data[0][13],
+        genome: data.data[0][13].alias,
         avgRegionD: {
           exon: [data.data[0][9].exon_percentage.toFixed(3), data.data[0][10].exon_percentage.toFixed(3)],
           fiveutr: [data.data[0][9].fiveutr_percentage.toFixed(3), data.data[0][10].fiveutr_percentage.toFixed(3)],
@@ -73,7 +73,7 @@ export default class BedSetSplash extends React.Component {
 
     newbedSetFile = newbedSetFile.slice(4, 9)
     this.setState({ bedSetDownload: newbedSetFile });
-    console.log(this.state.bedSetDownload)
+    
     let newbedSetFig = data.data[0].map((img, index) => {
       return (
         (index >= 11 && index <= data.columns.length - 2) ? {
