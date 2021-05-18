@@ -13,7 +13,7 @@ jobs:
     - name: Checkout bedhost
       uses: actions/checkout@v2
 
-    - name: Checkout bedhost-ui@master
+    - name: Checkout bedhost-ui@dev
       uses: actions/checkout@v2
       with:
         repository: databio/bedhost-ui
