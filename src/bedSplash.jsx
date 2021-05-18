@@ -30,7 +30,6 @@ export default class BedSplash extends React.Component {
   async componentDidMount() {
     let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
 
-    console.log ("schema: ", schema['bedfile'].label)
     await api
       .get("/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigBed")
       .then(this.setState({ bigbed: true }))
@@ -71,7 +70,7 @@ export default class BedSplash extends React.Component {
 
     let newbedFig = data.data[0].map((img, index) => {
       return (
-        (index >= 24 && index <= data.columns.length - 2) ? {
+        (index >= 24 && index <= data.columns.length - 3) ? {
           ...img,
           id: data.columns[index],
           src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + schema[data.columns[index]].label + "?format=pdf",
@@ -79,7 +78,7 @@ export default class BedSplash extends React.Component {
         } : null
       )
     });
-    newbedFig = newbedFig.slice(24, data.columns.length - 1)
+    newbedFig = newbedFig.slice(24, data.columns.length - 2)
 
     this.setState({ bedFig: newbedFig });
 

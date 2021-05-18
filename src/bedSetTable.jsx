@@ -34,6 +34,8 @@ export default class BedSetTable extends React.Component {
     }
 
     async componentDidMount() {
+        let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+    
         let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles").then(({ data }) => data);
         console.log('BED set summary from the server: ', res)
 
@@ -68,8 +70,8 @@ export default class BedSetTable extends React.Component {
         let newbedFig = res.data[0].map((img, index) => {
             return (
                 (index >= 22 && index <= res.columns.length - 2) ? {
-                    id: res.columns[index],
-                    title: res.data[0][index].title
+                    id: schema[res.columns[index]].label,
+                    title: res.data[0][index].title,
                 } : null
             )
         });
