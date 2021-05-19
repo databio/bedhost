@@ -11,6 +11,7 @@ from ..data_models import *
 from ..helpers import *
 from ..main import _LOGGER, app, bbc
 
+
 router = APIRouter()
 
 RemoteClassEnum = Enum(
@@ -104,7 +105,7 @@ async def get_bedfile_count():
     return int(bbc.bed.record_count)
 
 
-@router.get("/bed/all/data", response_model=DBResponse)
+@router.get("/bed/all/data")
 async def get_all_bed_metadata(
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
@@ -112,9 +113,24 @@ async def get_all_bed_metadata(
     """
     Get bedfiles data for selected columns
     """
-    return serve_columns_for_table(
-        bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit
-    )
+
+    res = bbc.bed.select(columns=ids, limit=limit)
+
+    if res:
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(res[0].__dict__.keys())[1:-1]
+            values = [list(x.__dict__.values())[1:-1] for x in res]
+
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+
+    return {"columns": colnames, "data": values}
 
 
 @router.get("/bed/all/schema", response_model=Dict[str, SchemaElement])
@@ -328,7 +344,7 @@ async def get_bedset_count():
     return int(bbc.bedset.record_count)
 
 
-@router.get("/bedset/all/data", response_model=DBResponse)
+@router.get("/bedset/all/data")
 async def get_all_bedset_metadata(
     ids: Optional[List[str]] = Query(None, description="Bedsets table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
@@ -337,9 +353,23 @@ async def get_all_bedset_metadata(
     Get bedsets data for selected columns
     """
 
-    return serve_columns_for_table(
-        bbc=bbc, table_name=BEDSET_TABLE, columns=ids, limit=limit
-    )
+    res = bbc.bedset.select(columns=ids, limit=limit)
+
+    if res:
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(res[0].__dict__.keys())[1:-1]
+            values = [list(x.__dict__.values())[1:-1] for x in res]
+
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+
+    return {"columns": colnames, "data": values}
 
 
 @router.get("/bedset/all/schema", response_model=Dict[str, SchemaElement])
