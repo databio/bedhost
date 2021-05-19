@@ -68,6 +68,28 @@ def build_parser():
     return parser
 
 
+def is_data_remote(bbc):
+    """
+    Determine if server config defines a 'remotes' key, 'http is one of them and
+     additionally assert the correct structure -- 'prefix' key defined.
+    :param BedBaseConf bbc: server config object
+    :return bool: whether remote data source is configured
+    """
+
+    return (
+        True
+        if CFG_REMOTE_KEY in bbc.config
+        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
+        and all(
+            [
+                "prefix" in r and isinstance(r["prefix"], str)
+                for r in bbc.config[CFG_REMOTE_KEY].values()
+            ]
+        )
+        else False
+    )
+
+
 def get_search_setup(schema):
     """
     Create a query setup for QueryBuilder to interface the DB.
@@ -218,7 +240,9 @@ def serve_schema_for_table(bbc, table_name):
     :param str table_name: table name to get schema for
     :return:
     """
+
     table_manager = getattr(bbc, table_name2attr(table_name), None)
+
     return table_manager.schema
 
 
@@ -234,6 +258,7 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=No
     """
     if columns:
         assert_table_columns_match(bbc=bbc, table_name=table_name, columns=columns)
+
     table_manager = getattr(bbc, table_name2attr(table_name), None)
     if table_manager is None:
         msg = (
