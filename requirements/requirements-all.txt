@@ -1,5 +1,5 @@
 aiofiles
-bbconf>=0.1.1
+#bbconf>=0.1.1
 fastapi>=0.61.2
 itsdangerous
 logmuse
