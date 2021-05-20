@@ -21,7 +21,7 @@ export default class Home extends React.Component {
       setbtn: false,
       filebtn: true,
       searchType: "string",
-      searchTerm: ""
+      searchTerm: "",
     };
   }
 
@@ -32,6 +32,10 @@ export default class Home extends React.Component {
     } else {
       this.setState({ filebtn: true, setbtn: false });
     }
+  }
+
+  setSearchType(type) {
+    this.setState({ searchType: type });
   }
 
   render() {

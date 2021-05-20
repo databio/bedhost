@@ -110,3 +110,17 @@ export const GET_BED_FIGS = gql`
     }
   }
 `;
+
+export const QUERY_BED = gql`
+  query bedfiles($filters: BedfilesFilter!, $first: Int!) {
+    bedfiles(filters: $filters, first: $first) {
+      edges {
+        node {
+          name
+          md5sum
+          other
+        }
+      }
+    }
+  }
+`;
