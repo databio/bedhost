@@ -112,8 +112,18 @@ export default class QueryBuilderWrapper extends React.Component {
     const sql = $(this.queryBuilder.current).queryBuilder("getSQL");
     const rules = $(this.queryBuilder.current).queryBuilder("getRules");
     const graphql = this.getFilter(rules);
-    console.log(JSON.stringify(graphql).replace(/"(\w+)"\s*:/g, '$1:'));
-    this.setState({ rules: sql.sql, query: graphql});
+    const graphql_query = `
+    {bedfiles(filters: ${JSON.stringify(graphql).replace(/"(\w+)"\s*:/g, '$1:')}) {
+        edges {
+          node {
+            name
+            md5sum
+          }
+        }
+      }
+    }
+    `
+    this.setState({ rules: sql.sql, query: graphql, graphql: graphql_query});
     this.forceUpdate();
   }
   // reinitialize jQuery Query Builder based on react state
@@ -172,6 +182,12 @@ export default class QueryBuilderWrapper extends React.Component {
         <ResponsiveDialog
           onClick={this.handleGetRulesClick.bind(this)}
           message={JSON.stringify(this.state.rules, undefined, 2)}
+          btn={'SQL'}
+        />
+        <ResponsiveDialog
+          onClick={this.handleGetRulesClick.bind(this)}
+          message={this.state.graphql}
+          btn={'GraphQL'}
         />
         <button
           className="btn btn-sm my-btn"

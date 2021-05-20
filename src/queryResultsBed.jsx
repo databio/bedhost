@@ -4,13 +4,9 @@ import Spinner from "react-bootstrap/Spinner";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
-import axios from "axios";
-import bedhost_api_url, { client } from "./const/server";
+import { client } from "./const/server";
 import { QUERY_BED, GET_BEDSET_BEDFILES } from "./graphql/bedQueries";
 
-const api = axios.create({
-  baseURL: bedhost_api_url,
-});
 
 export default class ResultsBed extends React.Component {
   constructor(props) {

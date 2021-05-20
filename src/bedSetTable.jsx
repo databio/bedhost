@@ -5,7 +5,6 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Spinner from "react-bootstrap/Spinner";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-import toObject from "./toObject";
 import bedhost_api_url, { client } from "./const/server";
 import axios from "axios";
 import { Label } from "semantic-ui-react";
@@ -55,9 +54,10 @@ export default class BedSetTable extends React.Component {
 
     let cols = Object.keys(bed_stats[0].node);
     let data = [];
-    bed_stats.map((value) => {
-      data.push(value.node);
-    });
+    data.push(bed_stats.map((value) => {
+      return value.node;
+    }))
+    
     const editable = data.map((o) => ({ ...o }));
 
     let bedSetFig = [];
@@ -69,6 +69,7 @@ export default class BedSetTable extends React.Component {
           label: value.label,
         });
       }
+      return bedSetFig
     });
 
     this.setState({
@@ -90,7 +91,6 @@ export default class BedSetTable extends React.Component {
         pageSizeOptions: [bed_count],
       });
     }
-    console.log(this.state.pageSize);
   }
 
   async componentDidUpdate(prevProps, prevState) {
