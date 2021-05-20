@@ -6,7 +6,7 @@ import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import bedhost_api_url, { client } from "./const/server";
-import { QUERY_BED } from "./graphql/bedQueries";
+import { QUERY_BED, GET_BEDSET_BEDFILES } from "./graphql/bedQueries";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -39,45 +39,23 @@ export default class ResultsBed extends React.Component {
     if (prevProps.query !== this.props.query) {
       await this.getBedByQuery();
       this.setState({ query: this.props.query });
-    } else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
+    } else if (prevProps.md5sum !== this.props.md5sum) {
       await this.getBedByBedSet();
       this.setState({ md5sum: this.props.md5sum });
     }
   }
 
   async getBedByQuery() {
-    // get bed name via Graphql
+    // query bed via Graphql
     console.log(this.props.query, this.props.limit);
-    const gres = await client
+    const res = await client
       .query({
         query: QUERY_BED,
         variables: { filters: this.props.query, first: this.props.limit },
       })
-      .then(({ data }) => data);
+      .then(({ data }) => data.bedfiles.edges);
 
-    console.log(gres);
-    let query = this.props.query.sql.replaceAll("?", "%s");
-    let query_val = this.props.query.params
-      .map((val, index) => {
-        let my_query_val = "";
-        if (index === 0) {
-          my_query_val = "?query_val=" + val;
-        } else {
-          my_query_val = my_query_val + "&query_val=" + val;
-        }
-        return my_query_val;
-      })
-      .join("");
-
-    let res = await api
-      .get(
-        "/_private_api/query/bedfiles/" +
-          encodeURIComponent(query) +
-          query_val +
-          "&columns=name&columns=md5sum&columns=other&limit=" +
-          this.props.limit
-      )
-      .then(({ data }) => data);
+    console.log(res);
 
     this.setState({
       bedData: res,
@@ -101,29 +79,27 @@ export default class ResultsBed extends React.Component {
   }
 
   async getBedByBedSet() {
-    let res = await api
-      .get(
-        "/api/bedset/" +
-          this.props.bedset_md5sum +
-          "/bedfiles?ids=name&ids=md5sum&ids=other&limit=" +
-          this.props.limit
-      )
-      .then(({ data }) => data);
-
+    const res = await client
+    .query({
+      query: GET_BEDSET_BEDFILES,
+      variables: { md5sum: this.props.md5sum, first: this.props.limit},
+    })
+    .then(({ data }) => data.bedsets.edges[0].node.bedfiles.edges);
+    
     this.setState({
-      bedData: res.data,
+      bedData: res,
       toolBar: false,
     });
 
-    if (res.data.length >= 10) {
+    if (res.length >= 10) {
       this.setState({
         pageSize: 10,
         pageSizeOptions: [10, 15, 20],
       });
     } else {
       this.setState({
-        pageSize: res.data.length,
-        pageSizeOptions: [res.data.length],
+        pageSize: res.length,
+        pageSizeOptions: [res.length],
       });
     }
     this.setState({ md5sum: this.props.md5sum });
@@ -142,7 +118,6 @@ export default class ResultsBed extends React.Component {
       "data_source",
       "description",
     ];
-    // cols = cols.concat(Object.keys(this.state.bedData[0][33]))
     for (var i = 0; i < cols.length; i++) {
       if (cols[i] === "md5sum" || cols[i] === "GSE") {
         tableColumns.push({ title: cols[i], field: cols[i], hidden: true });
@@ -219,8 +194,8 @@ export default class ResultsBed extends React.Component {
     let data = [];
     data.push(
       this.state.bedData.map((bed) => {
-        let row = { name: bed[0], md5sum: bed[1] };
-        row = Object.assign({}, row, bed[2]);
+        let row = { name: bed.node.name, md5sum: bed.node.md5sum };
+        row = Object.assign({}, row, JSON.parse(bed.node.other));
         return row;
       })
     );

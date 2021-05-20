@@ -136,3 +136,18 @@ export const GET_BEDSET_BEDFILE_COUNT = gql`
     }
   }
 `;
+
+export const QUERY_BEDSET = gql`
+  query bedsets($filters: BedsetsFilter!, $first: Int!) {
+    bedsets(filters: $filters, first: $first) {
+      edges {
+        node {
+          name
+          md5sum
+          genome
+          bedsetMeans
+        }
+      }
+    }
+  }
+`;

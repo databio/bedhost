@@ -124,3 +124,23 @@ export const QUERY_BED = gql`
     }
   }
 `;
+
+export const GET_BEDSET_BEDFILES = gql`
+  query bedsets($md5sum: String!, $first: Int!) {
+    bedsets(filters: { md5sum: $md5sum }) {
+      edges {
+        node {
+          bedfiles (first: $first){
+            edges {
+              node {
+                name
+                md5sum
+                other
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;

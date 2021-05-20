@@ -5,6 +5,8 @@ export const FILE_MAP_BED = {
 
 // export const FILE_MAP_BEDSET = {};
 
+// export const IMG_MAP_BEDSET = {};
+
 export const IMG_MAP_BED = {
   chrombins: "Chromosome_bins",
   cumulativePartitions: "Cumulative_partitions",
@@ -17,4 +19,15 @@ export const IMG_MAP_BED = {
   widthsHistogram: "Widths_histogram",
 };
 
-// export const IMG_MAP_BEDSET = {};
+export const OP_MAP = {
+  equal:"",
+  not_equal: "Ne",
+  in:"In",
+  not_in: "NotIn",
+  null:"IsNull",
+  greater: "Gt",
+  greater_or_equal: "Gte",
+  less: "Lt",
+  less_or_equal: "Lte",
+  between:"Range",
+};

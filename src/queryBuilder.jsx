@@ -49,7 +49,6 @@ const fileRules = {
     },
   ],
 };
-// {and: [{ gcContentGt: 0.5 }, {or: [{regionsNoGt: 1000},{ nameNe: "2" }] }]}
 
 export default class QueryBuilderWrapper extends React.Component {
   constructor(props) {
@@ -59,6 +58,7 @@ export default class QueryBuilderWrapper extends React.Component {
       table_name: "",
       rules: {},
       query: {},
+      graphql: "",
       filters: {},
       bedlimit: 500,
       setlimit: 50,
