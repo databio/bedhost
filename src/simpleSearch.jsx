@@ -1,6 +1,6 @@
 import React from 'react';
 import "./style/queryBuilder.css";
-import ResultsBed from './queryResultsBed'
+import ResultsBed from './searchResult'
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import DropdownButton from 'react-bootstrap/DropdownButton';

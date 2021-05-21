@@ -29,9 +29,7 @@ export default class ResultsBed extends React.Component {
     async componentDidMount() {
         if (this.props.query) {
             await this.getBedByQuery()
-        } else if (this.props.term){
-            await this.getBedBySearchTerm()
-        }else {
+        } else {
             await this.getBedByBedSet()
         }
     }
@@ -40,10 +38,7 @@ export default class ResultsBed extends React.Component {
         if (prevProps.query !== this.props.query) {
             await this.getBedByQuery()
             this.setState({ query: this.props.query })
-        } else if (prevProps.term !== this.props.term) {
-            await this.getBedBySearchTerm()
-            this.setState({ term: this.props.term })
-        }else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
+        } else if (prevProps.md5sum !== this.props.md5sum) {
             await this.getBedByBedSet()
             this.setState({ md5sum: this.props.md5sum })
         }
@@ -83,34 +78,8 @@ export default class ResultsBed extends React.Component {
         this.getData()
     }
 
-    async getBedBySearchTerm() {
-        let res = await api.get("_private_api/distance/" + this.props.term + "/bedfiles/" + this.props.genome + "?ids=name&ids=md5sum&ids=other")
-            .then(({ data }) => data)
-
-        this.setState({
-            bedData: res.data,
-            toolBar: false
-        })
-
-        if (res.data.length >= 10) {
-            this.setState({
-                pageSize: 10,
-                pageSizeOptions: [10, 15, 20]
-            })
-        } else {
-            this.setState({
-                pageSize: res.data.length,
-                pageSizeOptions: [res.data.length]
-            })
-        }
-        this.setState({ term: this.props.term })
-        console.log('BED files retrieved from the server: ', res)
-        this.getColumns()
-        this.getData()
-    }
-
     async getBedByBedSet() {
-        let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles?ids=name&ids=md5sum&ids=other&limit=" + this.props.limit)
+        let res = await api.get("/api/bedset/" + this.props.md5sum + "/bedfiles?ids=name&ids=md5sum&ids=other&limit=" + this.props.limit)
             .then(({ data }) => data)
 
         this.setState({

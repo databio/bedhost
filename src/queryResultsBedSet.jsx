@@ -148,7 +148,7 @@ export default class ResultsBedSet extends React.Component {
                         {
                             tooltip: 'Show bedfiles',
                             render: rowData => {
-                                return (<ResultsBed bedset_md5sum={rowData.md5sum} />)
+                                return (<ResultsBed md5sum={rowData.md5sum} />)
                             },
                         },
                     ]}
