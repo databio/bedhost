@@ -49,6 +49,12 @@ export default class SimpleSearch extends React.Component {
         });
     }
 
+    handleKeyPress (event) {
+        if (event.key === 'Enter') {
+            console.log("Enter!")
+          this.setShowResults();
+        }
+    };
     // setLimit(event) {
     //     if (this.state.table_name === 'bedfiles') {
     //         this.setState({ bedlimit: event.target.value });
@@ -68,6 +74,7 @@ export default class SimpleSearch extends React.Component {
                             type="text"
                             value={this.searchTerm}
                             onChange={this.setSearchTerm.bind(this)}
+                            onKeyPress={this.handleKeyPress.bind(this)}
                         />
                         <DropdownButton
                             alignRight
@@ -75,6 +82,7 @@ export default class SimpleSearch extends React.Component {
                             id="select-genome"
                             onSelect={this.handleSelect.bind(this)}
                             style={{ marginRight: '2px'}}
+                            onKeyPress={this.handleKeyPress.bind(this)}
                         >
                             {this.state.genomeList.map((value, index) => {
                                 return (
