@@ -98,7 +98,7 @@ def main():
 
         app.mount("/ui", StaticFiles(directory=UI_PATH))
 
-        psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset])
+        psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset, bbc.dist])
         _LOGGER.info("Generating GraphQL schema")
         graphql_schema = psr.generate_graphql_schema()
         app.mount("/graphql", GraphQLApp(schema=graphql_schema, graphiql=True))
