@@ -43,7 +43,7 @@ export default class ResultsBed extends React.Component {
           this.props.term +
           "/bedfiles/" +
           this.props.genome +
-          "?ids=name&ids=md5sum&ids=other"
+          "?ids=name&ids=md5sum&ids=other&limit=200"
       )
       .then(({ data }) => data);
 
