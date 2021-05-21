@@ -52,10 +52,10 @@ export default class ResultsBed extends React.Component {
       toolBar: false,
     });
 
-    if (res.data.length >= 10) {
+    if (res.data.length >= 50) {
       this.setState({
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
+        pageSize: 50,
+        pageSizeOptions: [50, 100, 150],
       });
     } else {
       this.setState({
@@ -64,38 +64,6 @@ export default class ResultsBed extends React.Component {
       });
     }
     this.setState({ term: this.props.term });
-    console.log("BED files retrieved from the server: ", res);
-    this.getColumns();
-    this.getData();
-  }
-
-  async getBedByBedSet() {
-    let res = await api
-      .get(
-        "/api/bedset/" +
-          this.props.bedset_md5sum +
-          "/bedfiles?ids=name&ids=md5sum&ids=other&limit=" +
-          this.props.limit
-      )
-      .then(({ data }) => data);
-
-    this.setState({
-      bedData: res.data,
-      toolBar: false,
-    });
-
-    if (res.data.length >= 10) {
-      this.setState({
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
-      });
-    } else {
-      this.setState({
-        pageSize: res.data.length,
-        pageSizeOptions: [res.data.length],
-      });
-    }
-    this.setState({ md5sum: this.props.md5sum });
     console.log("BED files retrieved from the server: ", res);
     this.getColumns();
     this.getData();
@@ -188,8 +156,19 @@ export default class ResultsBed extends React.Component {
   }
 
   perc2Color(perc) {
-    const color1 = [0, 161, 5];
-    const color2 = [209, 14, 0];
+    const gradient = [
+      [209, 14, 0],
+      [255, 215, 0],
+      [0, 161, 5],
+    ];
+    if (perc < 0.5) {
+      var color1 = gradient[1];
+      var color2 = gradient[0];
+    } else {
+      var color1 = gradient[2];
+      var color2 = gradient[1];
+    }
+
     var p = perc;
     var w = p * 2 - 1;
     var w1 = (w / 1 + 1) / 2;
