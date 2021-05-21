@@ -18,7 +18,7 @@ export default class SimpleSearch extends React.Component {
         super();
         this.state = {
             showResults: false,
-            searchTerm: "",
+            searchTerm: "HEK293",
             genomeList: [],
             genome: ""
         };
@@ -72,7 +72,7 @@ export default class SimpleSearch extends React.Component {
                         <input className='float-left'
                             style={{ marginRight: '15px', width: '80%', height: '35px', padding: '5px', borderColor: '#ced4da', borderStyle: 'solid', borderWidth: '1px', borderRadius: '.25rem' }}
                             type="text"
-                            value={this.searchTerm}
+                            value={this.state.searchTerm }
                             onChange={this.setSearchTerm.bind(this)}
                             onKeyPress={this.handleKeyPress.bind(this)}
                         />
