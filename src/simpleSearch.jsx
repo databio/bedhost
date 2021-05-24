@@ -27,8 +27,6 @@ export default class SimpleSearch extends React.Component {
     async componentDidMount() {
         let genomes = await api.get("/api/bed/genomes").then(({ data }) => data)
         this.setState({ genomeList: genomes[0] });
-        console.log("test", this.state.genomeList)
-
     }
 
     setShowResults() {
