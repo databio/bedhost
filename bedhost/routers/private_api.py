@@ -12,8 +12,8 @@ router = APIRouter()
 # private API
 @router.get("/distance/{term}/bedfiles/{genome}", response_model=DBResponse)
 async def get_bedfiles_in_distance(
-    term: str = Path(..., description="search term"),
-    genome: str = Path(..., description="genome assemblies"),
+    term: str = Path(..., description="search term", example="HEK293"),
+    genome: str = Path(..., description="genome assemblies", example="hg38"),
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
@@ -64,7 +64,7 @@ async def get_query_results(
         raise HTTPException(status_code=404, detail=msg)
 
 
-@router.get("/filters/{table_name}")
+@router.get("/filters/{table_name}", include_in_schema=False)
 async def get_search_setup_for_table(
     table_name: TableName = Path(..., description="DB Table name")
 ):
