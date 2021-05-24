@@ -164,13 +164,20 @@ export default class ResultsBed extends React.Component {
     if (perc < 0.5) {
       var color1 = gradient[1];
       var color2 = gradient[0];
+      var upper = 0.5;
+      var lower = 0;
     } else {
       var color1 = gradient[2];
       var color2 = gradient[1];
+      var upper = 1;
+      var lower = 0.5;
     }
+    var firstcolor_x = lower;
+    var secondcolor_x = upper - firstcolor_x;
+    var slider_x = perc - firstcolor_x;
+    var ratio = slider_x / secondcolor_x;
 
-    var p = perc;
-    var w = p * 2 - 1;
+    var w = ratio * 2 - 1;
     var w1 = (w / 1 + 1) / 2;
     var w2 = 1 - w1;
     var rgb = [
@@ -184,6 +191,7 @@ export default class ResultsBed extends React.Component {
   getRelevance(score) {
     let color = this.perc2Color(1 - score);
     score = ((1 - score) * 100).toFixed(2).toString() + "%";
+    console.log("rgb(" + color.join() + ")");
     return (
       <p>
         <FaMinus
