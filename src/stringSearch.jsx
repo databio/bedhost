@@ -1,17 +1,12 @@
 import React from "react";
 import "./style/queryBuilder.css";
-import ResultsBed from "./queryResultsBed";
+import ResultsBed from "./searchResult";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Dropdown from "react-bootstrap/Dropdown";
 import axios from "axios";
-import bedhost_api_url, {client} from "./const/server";
-import {
-    GET_SAMPLE_BED ,
-    GET_BED_GENOME,
-    GET_BED_FIGS,
-  } from "./graphql/bedQueries";
+import bedhost_api_url from "./const/server";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -22,7 +17,7 @@ export default class Search extends React.Component {
     super();
     this.state = {
       showResults: false,
-      searchTerm: "",
+      searchTerms: "K562",
       genomeList: [],
       genome: "",
     };
@@ -31,17 +26,16 @@ export default class Search extends React.Component {
   async componentDidMount() {
     let genomes = await api.get("/api/bed/genomes").then(({ data }) => data);
     this.setState({ genomeList: genomes });
-    console.log("test", this.state.genomeList);
   }
 
   setShowResults() {
     this.setState({ showResults: true });
   }
 
-  setSearchTerm(event) {
+  setSearchTerms(event) {
     this.setState({
       showResults: false,
-      searchTerm: event.target.value,
+      searchTerms: event.target.value,
     });
     this.forceUpdate();
   }
@@ -52,6 +46,13 @@ export default class Search extends React.Component {
     });
   }
 
+  handleKeypress(e) {
+    //it triggers by pressing the enter key
+    if (e.key === 'Enter') {
+      console.log("enter!");
+      this.setShowResults();
+    }
+  }
   // setLimit(event) {
   //     if (this.state.table_name === 'bedfiles') {
   //         this.setState({ bedlimit: event.target.value });
@@ -79,8 +80,9 @@ export default class Search extends React.Component {
                 borderRadius: ".25rem",
               }}
               type="text"
-              value={this.searchTerm}
-              onChange={this.setSearchTerm.bind(this)}
+              value={this.state.searchTerms}
+              onChange={this.setSearchTerms.bind(this)}
+              onKeyPress={this.handleKeypress.bind(this)}
             />
             <DropdownButton
               alignRight
@@ -88,10 +90,10 @@ export default class Search extends React.Component {
               id="select-genome"
               onSelect={this.handleSelect.bind(this)}
               style={{ marginRight: "2px" }}
+              onKeyPress={this.handleKeypress.bind(this)}
             >
               {this.state.genomeList.map((value, index) => {
                 return (
-                  
                   <Dropdown.Item key={index} eventKey={value.genome.alias}>
                     {value.genome.alias}
                   </Dropdown.Item>
@@ -107,7 +109,7 @@ export default class Search extends React.Component {
           </Row>
           {this.state.showResults ? (
             <ResultsBed
-              term={this.state.searchTerm}
+              terms={this.state.searchTerms}
               genome={this.state.genome}
             />
           ) : null}

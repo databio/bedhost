@@ -130,7 +130,7 @@ export const GET_BEDSET_BEDFILES = gql`
     bedsets(filters: { md5sum: $md5sum }) {
       edges {
         node {
-          bedfiles (first: $first){
+          bedfiles(first: $first) {
             edges {
               node {
                 name
@@ -138,6 +138,25 @@ export const GET_BEDSET_BEDFILES = gql`
                 other
               }
             }
+          }
+        }
+      }
+    }
+  }
+`;
+
+export const GET_BED_DIST = gql`
+  query distances($filters: DistancesFilter!) {
+    distances (filters:$filters){
+      edges{
+        node{
+          bedId
+          score
+          searchTerm
+          bedfile{
+            name
+            md5sum
+            other
           }
         }
       }
