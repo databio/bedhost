@@ -152,7 +152,6 @@ export const GET_BED_DIST = gql`
         node{
           bedId
           score
-          searchTerm
           bedfile{
             name
             md5sum

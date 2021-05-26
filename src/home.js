@@ -68,8 +68,7 @@ export default class Home extends React.Component {
                     className="btn btn-block btn-sm my-btn"
                     onClick={() => this.setSearchType("advance")}
                   >
-                    {" "}
-                    Advanced Search{" "}
+                    Advanced Search
                   </button>
                   <Search />
                 </Container>
@@ -80,8 +79,7 @@ export default class Home extends React.Component {
                     className="btn btn-block btn-sm my-btn"
                     onClick={() => this.setSearchType("string")}
                   >
-                    {" "}
-                    String Search{" "}
+                    String Search
                   </button>
 
                   <Row>
@@ -91,8 +89,7 @@ export default class Home extends React.Component {
                         disabled={this.state.filebtn}
                         onClick={() => this.handleClick("bedfiles")}
                       >
-                        {" "}
-                        Search BED Files{" "}
+                        Search BED Files
                       </button>
                     </Col>
                     <Col md={6}>
@@ -101,8 +98,7 @@ export default class Home extends React.Component {
                         disabled={this.state.setbtn}
                         onClick={() => this.handleClick("bedsets")}
                       >
-                        {" "}
-                        Search BED Sets{" "}
+                        Search BED Sets
                       </button>
                     </Col>
                   </Row>
