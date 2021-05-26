@@ -96,12 +96,14 @@ export default class ResultsBed extends React.Component {
     const bedlist = bed_old.filter((value) => bed_new.includes(value));
     avg_res = editable.map((bed, index) => {
       if (bedlist.includes(bed.node.bedId)) {
-        var new_res_idx = new_res.findIndex(function (new_bed) {
-          return new_bed.node.bedId === bed.node.bedId;
-        });
-        bed.node.score =
-          (bed.node.score + new_res[new_res_idx].node.score) / len;
-        return bed;
+        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+          var new_res_idx = new_res.findIndex(function (new_bed) {
+            return new_bed.node.bedId === bed.node.bedId;
+          });
+          bed.node.score =
+            (bed.node.score + new_res[new_res_idx].node.score) / len;
+          return bed;
+        }
       }
     });
     return avg_res;
