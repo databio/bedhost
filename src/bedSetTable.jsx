@@ -41,7 +41,7 @@ export default class BedSetTable extends React.Component {
 
         let cols = [
             res.columns[0], res.columns[1], // name, md5sum
-            res.columns[5], res.columns[6], res.columns[6], res.columns[7], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
+            res.columns[5], res.columns[6], res.columns[7], res.columns[8], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
             res.columns[9], res.columns[19], // exon
             res.columns[10], res.columns[20], // intron
             res.columns[11], res.columns[18], // promoterprox
@@ -50,11 +50,10 @@ export default class BedSetTable extends React.Component {
             res.columns[14], res.columns[16], // fiveutr
             res.columns[15], res.columns[17]] //threeutr
 
-        let data = []
-        data.push(res.data.map((row) => {
+        let data = res.data.map((row) => {
             let value = [
                 row[0], row[1],
-                row[5], row[6].toFixed(3), row[6].toFixed(3), row[7].toFixed(3),
+                row[5], row[6].toFixed(3), row[7].toFixed(3), row[8].toFixed(3),
                 row[9], row[19].toFixed(3),
                 row[10], row[20].toFixed(3),
                 row[11], row[18].toFixed(3),
@@ -65,7 +64,7 @@ export default class BedSetTable extends React.Component {
             ]
             let dict = toObject(cols, value)
             return dict
-        }))
+        })
 
         let newbedFig = res.data[0].map((img, index) => {
             return (
@@ -77,10 +76,11 @@ export default class BedSetTable extends React.Component {
             )
         });
         newbedFig = newbedFig.slice(23, res.columns.length - 1)
-
+        
         this.setState({
             columns: cols,
-            bedSetData: data[0],
+            bedSetData: data,
+            tableColumns: this.getColumns(cols),
             bedFigs: newbedFig
         })
 
@@ -97,43 +97,76 @@ export default class BedSetTable extends React.Component {
         }
     }
 
-    getColumns() {
-        let tableColumns = [
-            {
-                title: this.state.columns[0],
-                field: this.state.columns[0],
-                width: 200,
-                cellStyle: {
-                    backgroundColor: "#333535",
-                    color: "#FFF",
-                    fontWeight: "bold"
-                },
-                headerStyle: {
-                    backgroundColor: "#333535",
-                    color: "#FFF",
-                    fontWeight: "bold",
-                },
-                render: rowData => <Link className="splash-link" to={{
-                    pathname: '/bedsplash/' + rowData.md5sum
-                }}>{rowData.name}
-                </Link>
-            }
-        ]
-
-        for (var i = 0; i < this.state.columns.length; i++) {
-            if (i === 1) {
-                tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 275 })
-            } else if (i !== 0) {
-                if (this.state.columns[i] === "mean_absolute_tss_dist" || this.state.columns[i] === "mean_region_width") {
-                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], width: 150 })
-                } else if (this.state.columns[i].includes(this.state.hideCol)){
-                    tableColumns.push({ title: this.state.columns[i], field: this.state.columns[i], hidden: true, width: 0 })
-                } else {
-                    tableColumns.push({ title: this.state.columns[i].replaceAll(/_frequency|_percentage/gi, ""), field: this.state.columns[i], width: 100 })
-                }
-            }
+    async componentDidUpdate(prevProps, prevState) {
+        if (prevState.hideCol !== this.state.hideCol) {
+          this.setState({
+            tableColumns: this.getColumns(this.state.columns),
+          });
         }
-        return tableColumns 
+      }
+
+    getColumns(cols) {
+        let tableColumns = [];
+
+    for (var i = 0; i < cols.length; i++) {
+      //   let title = this.state.schema[cols[i].replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].description;
+      if (i === 0) {
+        tableColumns.push({
+          title: cols[i],
+          field: cols[i],
+          width: 500,
+          cellStyle: {
+            backgroundColor: "#333535",
+            color: "#FFF",
+            fontWeight: "bold",
+          },
+          headerStyle: {
+            backgroundColor: "#333535",
+            color: "#FFF",
+            fontWeight: "bold",
+          },
+          render: (rowData) => (
+            <Link
+              className="splash-link"
+              to={{
+                pathname: "/bedsplash/" + rowData.md5sum,
+              }}
+            >
+              {rowData.name}
+            </Link>
+          ),
+        });
+      }
+      if (i === 1) {
+        tableColumns.push({
+          title: cols[i],
+          field: cols[i],
+          width: 275,
+        });
+      } else if (i !== 0) {
+        if (cols[i] === "mean_absolute_tss_dist" || cols[i] === "mean_region_width") {
+          tableColumns.push({
+            title: cols[i],
+            field: cols[i],
+            width: 150,
+          });
+        } else if (cols[i].includes(this.state.hideCol)) {
+          tableColumns.push({
+            title: cols[i],
+            field: cols[i],
+            hidden: true,
+            width: 0,
+          });
+        } else {
+          tableColumns.push({
+            title: cols[i].replaceAll(/_frequency|_percentage/gi, ""),
+            field: cols[i],
+            width: 100,
+          });
+        }
+      }
+    }
+    return tableColumns;
     }
 
     bedSelected(rows) {
@@ -194,8 +227,7 @@ export default class BedSetTable extends React.Component {
                     {this.state.pageSize !== -1 ? (
                         <MaterialTable
                             title=""
-                            columns={this.getColumns(this.state.hideCol)}
-                            // {this.state.tableColumns} // <-- Set the columns on the table
+                            columns={this.state.tableColumns} // <-- Set the columns on the table
                             data={this.state.bedSetData} // <-- Set the data on the table
                             icons={tableIcons}
                             options={{
@@ -264,7 +296,7 @@ export default class BedSetTable extends React.Component {
                 <div style={{ padding: "10px 10px" }}>
                     {this.state.showFig ? (
                         <>
-                            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} color='teal' ribbon>
                                 {this.state.figType[1]}
                             </Label>
                             {this.getFigButton()}
@@ -276,9 +308,9 @@ export default class BedSetTable extends React.Component {
                         </>
                     ) : (
                             <div style={{ marginLeft: "10px" }}>
-                                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='orange' ribbon>
+                                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} color='orange' ribbon>
                                     Please select plot type.
-                      </Label>
+                                </Label>
                                 {this.getFigButton()}
                             </div>
                         )}

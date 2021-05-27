@@ -86,7 +86,7 @@ export default class BedSplash extends React.Component {
     let newbedFig = data.data[0].map((img, index) => {
       return (
 
-        (index >= 25 && index <= data.columns.length - 2) ? {
+        (index >= 24 && index <= data.columns.length - 3) ? {
           ...img,
           id: data.columns[index],
           src_pdf: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/img/" + schema[data.columns[index]].label + "?format=pdf",
@@ -95,7 +95,7 @@ export default class BedSplash extends React.Component {
       )
     });
 
-    newbedFig = newbedFig.slice(26, data.columns.length - 1)
+    newbedFig = newbedFig.slice(24, data.columns.length - 2)
 
     this.setState({ bedFig: newbedFig });
 
@@ -124,7 +124,7 @@ export default class BedSplash extends React.Component {
             <Row>
               <Col sm={4} md={4}>
                 <BedInfo bed_md5sum={this.props.match.params.bed_md5sum} />
-                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                   BED File Download
               </Label>
                 {Object.entries(this.state.bedDownload)
@@ -135,11 +135,11 @@ export default class BedSplash extends React.Component {
                       </a> | <a href={value.s3} className="home-link" style={{ fontSize: "10pt", fontWeight: "bold" }}>
                         s3
                       </a>
-                      : {value.label} ( {value.size} )
+                      : {value.label}
                     </p>
                   )}
 
-                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                   API Endpoint Examples
                 </Label>
 
@@ -176,7 +176,7 @@ export default class BedSplash extends React.Component {
 
               </Col>
               <Col sm={8} md={8}>
-                <Label style={{ marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                   GenomicDistribution Plots
                 </Label>
                 {this.state.bedFig ?

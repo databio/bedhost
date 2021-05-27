@@ -40,34 +40,33 @@ export default class BedSetSplash extends React.Component {
     console.log("BED set data retrieved from the server: ", data);
     let bed_schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
     let bedset_schema = await api.get("/api/bedset/all/schema").then(({ data }) => data);
-    console.log( bedset_schema);
+  
     this.setState(
       {
         bedSetName: data.data[0][2],
         hubFilePath: 'http://genome.ucsc.edu/cgi-bin/hgTracks?db=' + data.data[0][13] + '&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/' + this.props.match.params.bedset_md5sum + "/bedsetHub/hub.txt",
         bedSetStat: [
-          { label: bed_schema['gc_content'].description, data: [data.data[0][11].gc_content.toFixed(3), data.data[0][12].gc_content.toFixed(3)] },
-          { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][11].mean_absolute_tss_dist.toFixed(3), data.data[0][12].mean_absolute_tss_dist.toFixed(3)] },
-          { label: bed_schema['mean_region_width'].description, data: [data.data[0][11].mean_region_width.toFixed(3), data.data[0][12].mean_region_width.toFixed(3)] }
+          { label: bed_schema['gc_content'].description, data: [data.data[0][9].gc_content.toFixed(3), data.data[0][10].gc_content.toFixed(3)] },
+          { label: bed_schema['mean_absolute_tss_dist'].description, data: [data.data[0][9].mean_absolute_tss_dist.toFixed(3), data.data[0][10].mean_absolute_tss_dist.toFixed(3)] },
+          { label: bed_schema['mean_region_width'].description, data: [data.data[0][9].mean_region_width.toFixed(3), data.data[0][10].mean_region_width.toFixed(3)] }
         ],
         genome: data.data[0][13],
         avgRegionD: {
-          exon: [data.data[0][11].exon_percentage.toFixed(3), data.data[0][12].exon_percentage.toFixed(3)],
-          fiveutr: [data.data[0][11].fiveutr_percentage.toFixed(3), data.data[0][12].fiveutr_percentage.toFixed(3)],
-          intergenic: [data.data[0][11].intergenic_percentage.toFixed(3), data.data[0][12].intergenic_percentage.toFixed(3)],
-          intron: [data.data[0][11].intron_percentage.toFixed(3), data.data[0][12].intron_percentage.toFixed(3)],
-          threeutr: [data.data[0][11].threeutr_percentage.toFixed(3), data.data[0][12].threeutr_percentage.toFixed(3)]
+          exon: [data.data[0][9].exon_percentage.toFixed(3), data.data[0][10].exon_percentage.toFixed(3)],
+          fiveutr: [data.data[0][9].fiveutr_percentage.toFixed(3), data.data[0][10].fiveutr_percentage.toFixed(3)],
+          intergenic: [data.data[0][9].intergenic_percentage.toFixed(3), data.data[0][10].intergenic_percentage.toFixed(3)],
+          intron: [data.data[0][9].intron_percentage.toFixed(3), data.data[0][10].intron_percentage.toFixed(3)],
+          threeutr: [data.data[0][9].threeutr_percentage.toFixed(3), data.data[0][10].threeutr_percentage.toFixed(3)]
         }
       }
     );
 
     let newbedSetFile = data.data[0].map((file, index) => {
       return (
-        (index >= 5 && index <= 9) ? {
+        (index >= 4 && index <= 8) ? {
           ...file,
           id: data.columns[index],
           label: bedset_schema[data.columns[index]].label.replaceAll("_", " "),
-          size: file.size,
           url: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file/" + bedset_schema[data.columns[index]].label,
           http: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=http",
           s3: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/file_path/" + bedset_schema[data.columns[index]].label + "?remoteClass=s3",
@@ -75,12 +74,12 @@ export default class BedSetSplash extends React.Component {
       )
     });
 
-    newbedSetFile = newbedSetFile.slice(5, 10)
+    newbedSetFile = newbedSetFile.slice(4, 9)
     this.setState({ bedSetDownload: newbedSetFile });
 
     let newbedSetFig = data.data[0].map((img, index) => {
       return (
-        (index >= 13 && index <= data.columns.length - 1) ? {
+        (index === 11) ? {
           ...img,
           id: data.columns[index],
           src_pdf: bedhost_api_url + "/api/bedset/" + this.props.match.params.bedset_md5sum + "/img/" + bedset_schema[data.columns[index]].label + "?format=pdf",
@@ -88,8 +87,9 @@ export default class BedSetSplash extends React.Component {
         } : null
       )
     });
-    newbedSetFig = newbedSetFig.slice(13, data.columns.length)
-    this.setState({ bedSetFig: newbedSetFig });
+    newbedSetFig = newbedSetFig.slice(11, 12)
+    this.setState({ bedSetFig: newbedSetFig })
+   
 
     data = await api.get("/api/bedset/" + this.props.match.params.bedset_md5sum + "/bedfiles").then(({ data }) => data);
     this.setState(
@@ -118,7 +118,7 @@ export default class BedSetSplash extends React.Component {
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
             <Row>
               <Col sm={5} md={5}>
-                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                   BED Set Info
                 </Label>
                 <table >
@@ -150,7 +150,7 @@ export default class BedSetSplash extends React.Component {
                   </tbody>
                 </ table>
 
-                <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                   BED Set Stats <Link to='/about#bedset-stats'> <FaQuestionCircle style={{ marginBottom: "3px", marginLeft: '10px', fontSize: '12px' }} color='white' /></Link>
                 </Label>
                 <table >
@@ -178,7 +178,7 @@ export default class BedSetSplash extends React.Component {
                   </tbody>
                 </table>
 
-                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                   BED Set Downloads
                 </Label>
                 {this.state.bedSetDownload.map((file, index) => {
@@ -190,12 +190,12 @@ export default class BedSetSplash extends React.Component {
                       <a href={file.s3} className="home-link" style={{fontSize: "10pt", fontWeight: "bold" }}>
                         s3
                       </a>
-                      : {file.label} ( {file.size} )
+                      : {file.label} 
                     </p>
                   );
                 })}
 
-                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                   API Endpoint Examples
                 </Label>
                 <p style={{ marginBottom: "5px" }}>
@@ -223,7 +223,7 @@ export default class BedSetSplash extends React.Component {
               <Col sm={7} md={7}>
                 <Row>
                   <Col>
-                    <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                    <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                       BED Set Plots
                   </Label>
                     {this.state.bedSetFig ? (<BedSetPlots bedset_figs={this.state.bedSetFig} />) : null}
@@ -237,7 +237,7 @@ export default class BedSetSplash extends React.Component {
             </Row>
           </Container>
           <Container style={{ width: "75%", minWidth: '900px' }} fluid className="p-4">
-            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
               BED File Comparison
             </Label>
             <div style={{ marginLeft: '15px' }}>
