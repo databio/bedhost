@@ -12,7 +12,7 @@
     "bootstrap": "^4.6.0",
     "copy-to-clipboard": "^3.3.1",
     "jQuery-QueryBuilder": "^2.6.0",
-    "material-table": "^1.69.3",
+    "material-table": "1.69.1",
     "react": "^16.14.0",
     "react-bootstrap": "^1.5.2",
     "react-dom": "^16.14.0",
