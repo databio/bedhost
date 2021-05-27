@@ -166,14 +166,13 @@ export default class ResultsBed extends React.Component {
     }
 
     getData() {
-        let data = []
-        data.push(this.state.bedData.map((bed) => {
+        let data = this.state.bedData.map((bed) => {
             let row = { name: bed[0], md5sum: bed[1] }
             row = Object.assign({}, row, bed[2]);
             return row
-        }))
+        })
         this.setState({
-            data: data[0]
+            data: data
         })
     }
 

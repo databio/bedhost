@@ -97,7 +97,7 @@ export default class BedCountsSpan extends React.Component {
           that produced by the bedstat and bedbuncher pipeline. {" "}
         </span>
         <div>
-          <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+          <Label style={{ marginTop: "15px", marginBottom: "5px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
             BEDBASE Status
           </Label>
           <table style={{ marginLeft: '15px' }}>

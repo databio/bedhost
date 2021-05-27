@@ -37,15 +37,12 @@ export default class BedInfo extends React.Component {
             .then(({ data }) => data);
         let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
 
-        let stats = []
-        data.columns.map((value, index) => {
-            stats.push({
+        let stats = data.columns.map((value, index) => {
+            return ({
                 label: schema[data.columns[index]].description,
                 data: data.data[0][index]
-            }
-            )
-            return stats
-        })
+            })
+         })
         this.setState(
             {
                 bed_stats: stats
@@ -58,7 +55,7 @@ export default class BedInfo extends React.Component {
     render() {
         return (
             <div >
-                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                     BED File Info
                 </Label>
                 <table >
@@ -90,7 +87,7 @@ export default class BedInfo extends React.Component {
                             )}
                     </tbody>
                 </ table>
-                <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                <Label style={{ marginTop: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                     BED File Stats <Link to='/about#bedfile-stats'> <FaQuestionCircle style={{ marginBottom: "3px", marginLeft: '10px', fontSize: '12px' }} color='white' /></Link>
                 </Label>
                 <table >

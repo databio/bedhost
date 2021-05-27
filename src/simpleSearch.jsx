@@ -49,7 +49,6 @@ export default class SimpleSearch extends React.Component {
 
     handleKeyPress (event) {
         if (event.key === 'Enter') {
-            console.log("Enter!")
           this.setShowResults();
         }
     };

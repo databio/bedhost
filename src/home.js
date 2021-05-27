@@ -44,7 +44,7 @@ export default class Home extends React.Component {
                         <BedCountsSpan />
                     </Container>
                     <Container style={{ width: "75%" }} fluid className="p-4">
-                        <Label style={{ marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} as='a' color='teal' ribbon>
+                        <Label style={{ marginBottom: "15px", marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }}  color='teal' ribbon>
                             Find BED Files
                         </Label>
                         {

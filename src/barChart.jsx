@@ -14,14 +14,13 @@ export default class Example extends React.Component {
   }
 
   async componentDidMount() {
-    let data_value = []
-    Object.entries(await this.props.stats).map(([key, value], index) => 
-      data_value.push({ name: key, 
+    let data_value = Object.entries(await this.props.stats).map(([key, value], index) => {
+      return ({ name: key, 
                         value: Number((value[0] * 100).toFixed(2)), 
                         std:[Number((value[0] * 100).toFixed(2))-Number((value[1] * 100).toFixed(2)),
                         Number((value[0] * 100).toFixed(2))+Number((value[1] * 100).toFixed(2))
                       ] 
-                    }))
+                    })})
     console.log("BED set stats: ", data_value)
     this.setState({ data: data_value })
   }

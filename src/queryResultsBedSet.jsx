@@ -111,8 +111,7 @@ export default class ResultsBedSet extends React.Component {
     }
 
     async getData() {
-        let data = []
-        data.push(this.state.bedSetData.map(async (bed, index) => {
+        let data = this.state.bedSetData.map(async (bed, index) => {
             let count = await this.getBedCount(bed[1])
             let row = { name: bed[0], md5sum: bed[1], bed_file_count: count , genome:bed[2].alias}
             for (var key in bed[3]) {
@@ -120,8 +119,8 @@ export default class ResultsBedSet extends React.Component {
             }
             row = Object.assign({}, row, bed[3]);
             return row
-        }))
-        return Promise.all(data[0])
+        })
+        return Promise.all(data)
     }
 
     render() {
