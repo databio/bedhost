@@ -4,7 +4,11 @@ import { Label } from "semantic-ui-react";
 import { HashLink as Link } from "react-router-hash-link";
 import { FaQuestionCircle } from "react-icons/fa";
 import bedhost_api_url, { client } from "./const/server";
-import { GET_BED_GENOME, GET_BED_META, GET_BED_STATS } from "./graphql/bedQueries";
+import {
+  GET_BED_GENOME,
+  GET_BED_META,
+  GET_BED_STATS,
+} from "./graphql/bedQueries";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -56,13 +60,11 @@ export default class BedInfo extends React.Component {
     // get bedfiles table schema via fastapi endpoint
     let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
 
-    let stats = [];
-    Object.entries(bed_stats).map(([key, value], index) => {
-      stats.push({
+    let stats = Object.entries(bed_stats).map(([key, value], index) => {
+      return {
         label: schema[key.replace(/([A-Z])/g, "_$1").toLowerCase()].description,
         data: value,
-      });
-      return stats;
+      };
     });
 
     this.setState({
@@ -137,7 +139,10 @@ export default class BedInfo extends React.Component {
                       <>
                         <span>{this.state.genome.alias}</span>
                         <a
-                          href={"http://rg.databio.org/v3/genomes/splash/" + this.state.genome.digest}
+                          href={
+                            "http://rg.databio.org/v3/genomes/splash/" +
+                            this.state.genome.digest
+                          }
                           className="home-link"
                           style={{
                             marginLeft: "15px",

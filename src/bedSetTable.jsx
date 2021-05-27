@@ -36,7 +36,7 @@ export default class BedSetTable extends React.Component {
 
   async componentDidMount() {
     let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
-    console.log(schema);
+
     this.setState({
       schema: schema,
     });
@@ -53,23 +53,19 @@ export default class BedSetTable extends React.Component {
     const bed_stats = bed_data.edges;
 
     let cols = Object.keys(bed_stats[0].node);
-    let data = [];
-    data.push(bed_stats.map((value) => {
+    let data = bed_stats.map((value) => {
       return value.node;
-    }))
-    
+    });
     const editable = data.map((o) => ({ ...o }));
 
-    let bedSetFig = [];
-    Object.entries(schema).map(([key, value], index) => {
+    let bedSetFig = Object.entries(schema).map(([key, value], index) => {
       if (value.type === "image") {
-        bedSetFig.push({
+        return {
           id: key,
           title: value.label,
           label: value.label,
-        });
+        };
       }
-      return bedSetFig
     });
 
     this.setState({
@@ -164,7 +160,6 @@ export default class BedSetTable extends React.Component {
         }
       }
     }
-    console.log(tableColumns);
     return tableColumns;
   }
 
@@ -194,18 +189,22 @@ export default class BedSetTable extends React.Component {
       <div style={{ padding: "5px 5px" }}>
         {this.state.bedFigs.map((fig, index) => {
           return (
-            <Tooltip key={index} title={fig.title} placement="top">
-              <Button
-                size="small"
-                variant="contained"
-                style={{ padding: 5, margin: 5 }}
-                onClick={() => {
-                  this.figTypeClicked(fig.id, fig.label);
-                }}
-              >
-                {fig.id}
-              </Button>
-            </Tooltip>
+            <>
+              {fig ? (
+                <Tooltip key={index} title={fig.title} placement="top">
+                  <Button
+                    size="small"
+                    variant="contained"
+                    style={{ padding: 5, margin: 5 }}
+                    onClick={() => {
+                      this.figTypeClicked(fig.id, fig.label);
+                    }}
+                  >
+                    {fig.id}
+                  </Button>
+                </Tooltip>
+              ) : null}
+            </>
           );
         })}
       </div>

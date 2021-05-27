@@ -155,6 +155,7 @@ export const GET_BED_DIST = gql`
           bedfile{
             name
             md5sum
+            genome
             other
           }
         }

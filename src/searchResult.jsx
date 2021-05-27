@@ -187,9 +187,7 @@ export default class ResultsBed extends React.Component {
   }
 
   getData() {
-    let data = [];
-    data.push(
-      this.state.bedData.map((bed) => {
+    let data = this.state.bedData.map((bed) => {
         let row = {
           name: bed.node.bedfile.name,
           md5sum: bed.node.bedfile.md5sum,
@@ -198,9 +196,9 @@ export default class ResultsBed extends React.Component {
         row = Object.assign({}, row, JSON.parse(bed.node.bedfile.other));
         return row;
       })
-    );
+   
     this.setState({
-      data: data[0],
+      data: data,
     });
   }
 

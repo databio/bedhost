@@ -43,15 +43,12 @@ export default class ResultsBed extends React.Component {
 
   async getBedByQuery() {
     // query bed via Graphql
-    console.log(this.props.query, this.props.limit);
     const res = await client
       .query({
         query: QUERY_BED,
         variables: { filters: this.props.query, first: this.props.limit },
       })
       .then(({ data }) => data.bedfiles.edges);
-
-    console.log(res);
 
     this.setState({
       bedData: res,
@@ -187,16 +184,14 @@ export default class ResultsBed extends React.Component {
   }
 
   getData() {
-    let data = [];
-    data.push(
-      this.state.bedData.map((bed) => {
+    let data = this.state.bedData.map((bed) => {
         let row = { name: bed.node.name, md5sum: bed.node.md5sum };
         row = Object.assign({}, row, JSON.parse(bed.node.other));
         return row;
       })
-    );
+    
     this.setState({
-      data: data[0],
+      data: data,
     });
   }
 

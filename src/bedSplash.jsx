@@ -77,7 +77,7 @@ export default class BedSplash extends React.Component {
         variables: { md5sum: this.props.match.params.bed_md5sum },
       })
       .then(({ data }) => data.bedfiles.edges[0].node);
-    console.log(bed_figs);
+
     if (this.state.bigbed) {
       this.setState({
         bedDownload: {

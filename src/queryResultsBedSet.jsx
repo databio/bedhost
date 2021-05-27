@@ -124,9 +124,7 @@ export default class ResultsBedSet extends React.Component {
   }
 
   async getData() {
-    let data = [];
-    data.push(
-      this.state.bedSetData.map(async (bed, index) => {
+    let data = this.state.bedSetData.map(async (bed, index) => {
         let count = await this.getBedCount(bed.node.md5sum);
         let row = {
           name: bed.node.name,
@@ -142,8 +140,8 @@ export default class ResultsBedSet extends React.Component {
         row = Object.assign({}, row,  bs_mean);
         return row;
       })
-    );
-    return Promise.all(data[0]);
+    
+    return Promise.all(data);
   }
 
   render() {

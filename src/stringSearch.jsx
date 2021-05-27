@@ -49,7 +49,6 @@ export default class Search extends React.Component {
   handleKeypress(e) {
     //it triggers by pressing the enter key
     if (e.key === 'Enter') {
-      console.log("enter!");
       this.setShowResults();
     }
   }
