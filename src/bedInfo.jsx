@@ -140,7 +140,7 @@ export default class BedInfo extends React.Component {
                         <span>{this.state.genome.alias}</span>
                         <a
                           href={
-                            "http://rg.databio.org/v3/genomes/splash/" +
+                            "http://refgenomes.databio.org/v3/genomes/splash/" +
                             this.state.genome.digest
                           }
                           className="home-link"

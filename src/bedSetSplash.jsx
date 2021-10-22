@@ -274,7 +274,7 @@ export default class BedSetSplash extends React.Component {
                         <>
                           <span>{this.state.genome.alias}</span>
                           <a
-                            href={"http://rg.databio.org/v3/genomes/splash/" + this.state.genome.digest}
+                            href={"http://refgenomes.databio.org/v3/genomes/splash/" + this.state.genome.digest}
                             className="home-link"
                             style={{
                               marginLeft: "15px",
