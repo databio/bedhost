@@ -74,37 +74,8 @@ class FigFormat(str, Enum):
     pdf = "pdf"
 
 
-# class FileColumnBedset(str, Enum):
-#     PEP = "PEP"
-#     iGD_database = "iGD_database"
-#     bedset_tar = "bedset_tar"
-#     summary_stats = "summary_stats"
-#     bedfiles_stats = "bedfiles_stats"
-#     hubfile = "hubfile"
-
-
-# class FileColumnBed(str, Enum):
-#     bedfile = "bedfile"
-#     bigbedfile = "bigbedfile"
-
-
-# class ImgColumnBedset(str, Enum):
-#     region_commonality = "region_commonality"
-
-
-# class ImgColumnBed(str, Enum):
-#     TSS_dist = "TSS_dist"
-#     chrombins = "chrombins"
-#     GC_content = "GC_content"
-#     paritions = "paritions"
-#     expected_partitions = "expected_partitions"
-#     cumulative_partitions = "cumulative_partitions"
-#     widths_histogram = "widths_histogram"
-#     neighbor_distances = "neighbor_distances"
-#     open_chromatin = "open_chromatin"
-
-
 class TableName(str, Enum):
     bedfiles = "bedfiles"
     bedsets = "bedsets"
     bedset_bedfiles = "bedset_bedfiles"
+    # distance = "distance"
