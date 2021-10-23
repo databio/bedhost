@@ -8,7 +8,7 @@ const bedhost_api_url = bedhost_api_address + ":" + bedhost_api_port;
 // const bedhost_api_url = 'http://dev1.bedbase.org'
 
 // production mode
-// const bedhost_api_url = `${ window.location.protocol }//${ window.location.host }`
+const bedhost_api_url = `${ window.location.protocol }//${ window.location.host }`
 
 const graphql = "/graphql"
 

@@ -393,6 +393,7 @@ export default class BedSetSplash extends React.Component {
                       >
                         {file.label}
                       </a>
+                      : {file.label} 
                     </p>
                   );
                 })}

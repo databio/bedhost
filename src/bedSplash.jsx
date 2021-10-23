@@ -201,6 +201,7 @@ export default class BedSplash extends React.Component {
                       >
                         {value.label}
                       </a>
+                      : {value.label}
                     </p>
                   )
                 )}
