@@ -214,14 +214,9 @@ async def get_file_for_bedfile(
     file = getattr(hit, file_map_bed[id.value])
     remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
     path = (
-<<<<<<< HEAD
         os.path.join(
             bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
         )
-=======
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
-
->>>>>>> b2a216b12a8c5753a6b4e80e90ba2f3b5c75513d
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -244,7 +239,7 @@ async def get_image_for_bedfile(
         filter_conditions=[("md5sum", "eq", md5sum)],
         columns=["name", img_map_bed[id.value]],
     )[0]
-    
+
     img = getattr(hit, img_map_bed[id.value])
     remote = True if bbc.config[CFG_REMOTE_KEY]["http"]["prefix"] else False
 
@@ -512,14 +507,9 @@ async def get_file_path_for_bedset(
     file = getattr(hit, file_map_bedset[id.value])
     remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
     path = (
-<<<<<<< HEAD
         os.path.join(
             bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
         )
-=======
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
-
->>>>>>> b2a216b12a8c5753a6b4e80e90ba2f3b5c75513d
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -546,7 +536,6 @@ async def get_image_for_bedset(
         columns=["name", img_map_bedset[id.value]],
     )[0]
     img = getattr(hit, img_map_bedset[id.value])
-
 
     remote = True if bbc.config[CFG_REMOTE_KEY]["http"]["prefix"] else False
 
