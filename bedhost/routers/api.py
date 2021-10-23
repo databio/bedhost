@@ -154,9 +154,9 @@ async def get_bedfile_data(
     """
     Returns data from selected columns for selected bedfile
     """
-    
+
     res = bbc.bed.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
-    
+
     if res:
         if ids:
             colnames = ids
@@ -170,7 +170,7 @@ async def get_bedfile_data(
         _LOGGER.warning("No records matched the query")
         colnames = []
         values = [[]]
-    
+
     return {"columns": colnames, "data": values}
 
 
@@ -211,7 +211,9 @@ async def get_file_for_bedfile(
     file = getattr(hit, file_map_bed[id.value])
     remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
     path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
+        os.path.join(
+            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
+        )
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
@@ -402,7 +404,7 @@ async def get_bedfiles_in_bedset(
 ):
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
-    
+
     res = bbc.select_bedfiles_for_bedset(
         bedfile_cols=ids, filter_conditions=[("md5sum", "eq", md5sum)]
     )
@@ -412,7 +414,9 @@ async def get_bedfiles_in_bedset(
             colnames = ids
             values = [list(x) for x in res]
         else:
-            colnames = list(serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys())
+            colnames = list(
+                serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys()
+            )
             values = [list(x) for x in res]
 
         _LOGGER.info(f"Serving data for columns: {colnames}")
@@ -435,7 +439,7 @@ async def get_bedset_data(
     Returns data from selected columns for selected bedset
     """
     res = bbc.bedset.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
-    
+
     if res:
         if ids:
             colnames = ids
@@ -449,7 +453,7 @@ async def get_bedset_data(
         _LOGGER.warning("No records matched the query")
         colnames = []
         values = [[]]
-    
+
     return {"columns": colnames, "data": values}
 
 
@@ -490,7 +494,9 @@ async def get_file_path_for_bedset(
     file = getattr(hit, file_map_bedset[id.value])
     remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
     path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"])
+        os.path.join(
+            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
+        )
         if remote
         else os.path.join(
             bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
