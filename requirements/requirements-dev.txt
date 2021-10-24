@@ -1,1 +1,4 @@
--e git+git://github.com/databio/bbconf@remote_file_serving#egg=bbconf
+-e git+git://github.com/databio/bbconf@orm#egg=bbconf
+-e git+git://github.com/pepkit/pipestat@dev#egg=pipestat
+-e git+git://github.com/pepkit/pipestat_reader@dev#egg=pipestat_reader
+

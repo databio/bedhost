@@ -1,6 +1,8 @@
+import enum
 import shlex
 import subprocess
 from typing import Optional
+from bbconf.const import BED_TABLE
 
 from fastapi import APIRouter, HTTPException, Path, Query, Response
 from fastapi.responses import PlainTextResponse, StreamingResponse
@@ -9,7 +11,7 @@ from ..const import *
 from ..data_models import *
 from ..helpers import *
 from ..main import _LOGGER, app, bbc
-import enum
+
 
 router = APIRouter()
 
@@ -39,11 +41,11 @@ img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
 img_map_bed = get_id_map(bbc, BED_TABLE, "image")
 
 ex_bed_digest = serve_columns_for_table(
-    bbc=bbc, table_name=BED_TABLE, columns="md5sum", limit=1
+    bbc=bbc, table_name=BED_TABLE, columns=["md5sum"], limit=1
 ).get("data")[0][0]
 
 ex_bedset_digest = serve_columns_for_table(
-    bbc=bbc, table_name=BEDSET_TABLE, columns="md5sum", limit=1
+    bbc=bbc, table_name=BEDSET_TABLE, columns=["md5sum"], limit=1
 ).get("data")[0][0]
 
 ex_chr = "chr1"
@@ -103,7 +105,7 @@ async def get_bedfile_count():
     return int(bbc.bed.record_count)
 
 
-@router.get("/bed/all/data", response_model=DBResponse)
+@router.get("/bed/all/data")
 async def get_all_bed_metadata(
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
@@ -111,9 +113,26 @@ async def get_all_bed_metadata(
     """
     Get bedfiles data for selected columns
     """
-    return serve_columns_for_table(
-        bbc=bbc, table_name=BED_TABLE, columns=ids, limit=limit
-    )
+    if ids:
+        assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+
+    res = bbc.bed.select(columns=ids, limit=limit)
+
+    if res:
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(res[0].__dict__.keys())[1:-1]
+            values = [list(x.__dict__.values())[1:-1] for x in res]
+
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+
+    return {"columns": colnames, "data": values}
 
 
 @router.get("/bed/all/schema", response_model=Dict[str, SchemaElement])
@@ -134,9 +153,24 @@ async def get_bedfile_data(
     """
     Returns data from selected columns for selected bedfile
     """
-    return serve_columns_for_table(
-        bbc=bbc, table_name=BED_TABLE, columns=ids, digest=md5sum
-    )
+
+    res = bbc.bed.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
+
+    if res:
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(res[0].__dict__.keys())[1:-1]
+            values = [list(x.__dict__.values())[1:-1] for x in res]
+
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+
+    return {"columns": colnames, "data": values}
 
 
 @router.head("/bed/{md5sum}/file/{id}", include_in_schema=False)
@@ -145,12 +179,13 @@ async def get_file_for_bedfile(
     md5sum: str = bd,
     id: FileColumnBed = Path(..., description="File identifier"),
 ):
-    file = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", file_map_bed[id.value]],
-    )[0][1]
-    remote = is_data_remote(bbc)
+
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=[file_map_bed[id.value]],
+    )[0]
+    file = getattr(hit, file_map_bed[id.value])
+    remote = True if bbc.config[CFG_REMOTE_KEY]["http"]["prefix"] else False
 
     path = (
         os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], file["path"])
@@ -171,13 +206,13 @@ async def get_file_for_bedfile(
         "http", description="Remote data provider class"
     ),
 ):
-    file = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", file_map_bed[id.value]],
-    )[0][1]
-    remote = is_data_remote(bbc)
 
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=[file_map_bed[id.value]],
+    )[0]
+    file = getattr(hit, file_map_bed[id.value])
+    remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
     path = (
         os.path.join(
             bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
@@ -200,13 +235,14 @@ async def get_image_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    img = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
         columns=["name", img_map_bed[id.value]],
-    )[0][1]
+    )[0]
 
-    remote = is_data_remote(bbc)
+    img = getattr(hit, img_map_bed[id.value])
+    remote = True if bbc.config[CFG_REMOTE_KEY]["http"]["prefix"] else False
+
     path = (
         os.path.join(
             bbc.config[CFG_REMOTE_KEY]["http"]["prefix"],
@@ -233,13 +269,14 @@ async def get_image_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    img = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", img_map_bed[id.value]],
-    )[0][1]
 
-    remote = is_data_remote(bbc)
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=["name", img_map_bed[id.value]],
+    )[0]
+    img = getattr(hit, img_map_bed[id.value])
+    remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
+
     path = (
         os.path.join(
             bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"],
@@ -265,13 +302,13 @@ def get_regions_for_bedfile(
     Returns the queried regions with provided ID and optional query parameters
 
     """
-    file = bbc.bed.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", "bigbedfile"],
-    )[0][1]
+    hit = bbc.bed.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=["bigbedfile"],
+    )[0]
+    file = getattr(hit, "bigbedfile")
+    remote = True if bbc.config[CFG_REMOTE_KEY]["http"]["prefix"] else False
 
-    remote = is_data_remote(bbc)
     path = (
         os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], file["path"])
         if remote
@@ -331,7 +368,7 @@ async def get_bedset_count():
     return int(bbc.bedset.record_count)
 
 
-@router.get("/bedset/all/data", response_model=DBResponse)
+@router.get("/bedset/all/data")
 async def get_all_bedset_metadata(
     ids: Optional[List[str]] = Query(None, description="Bedsets table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
@@ -339,10 +376,26 @@ async def get_all_bedset_metadata(
     """
     Get bedsets data for selected columns
     """
+    if ids:
+        assert_table_columns_match(bbc=bbc, table_name=BEDSET_TABLE, columns=ids)
 
-    return serve_columns_for_table(
-        bbc=bbc, table_name=BEDSET_TABLE, columns=ids, limit=limit
-    )
+    res = bbc.bedset.select(columns=ids, limit=limit)
+
+    if res:
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(res[0].__dict__.keys())[1:-1]
+            values = [list(x.__dict__.values())[1:-1] for x in res]
+
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+
+    return {"columns": colnames, "data": values}
 
 
 @router.get("/bedset/all/schema", response_model=Dict[str, SchemaElement])
@@ -360,17 +413,27 @@ async def get_bedfiles_in_bedset(
 ):
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+
     res = bbc.select_bedfiles_for_bedset(
-        condition="md5sum=%s", condition_val=[md5sum], bedfile_col=ids
+        bedfile_cols=ids, filter_conditions=[("md5sum", "eq", md5sum)]
     )
+
     if res:
-        colnames = list(res[0].keys())
-        values = [list(x.values()) for x in res]
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(
+                serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys()
+            )
+            values = [list(x) for x in res]
+
         _LOGGER.info(f"Serving data for columns: {colnames}")
     else:
         _LOGGER.warning("No records matched the query")
         colnames = []
         values = [[]]
+
     return {"columns": colnames, "data": values}
 
 
@@ -384,9 +447,23 @@ async def get_bedset_data(
     """
     Returns data from selected columns for selected bedset
     """
-    return serve_columns_for_table(
-        bbc=bbc, table_name=BEDSET_TABLE, columns=ids, digest=md5sum
-    )
+    res = bbc.bedset.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
+
+    if res:
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(res[0].__dict__.keys())[1:-1]
+            values = [list(x.__dict__.values())[1:-1] for x in res]
+
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+
+    return {"columns": colnames, "data": values}
 
 
 @router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
@@ -395,12 +472,14 @@ async def get_file_for_bedset(
     md5sum: str = bsd,
     id: FileColumnBedset = Path(..., description="File identifier"),
 ):
-    file = bbc.bedset.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", file_map_bedset[id.value]],
-    )[0][1]
-    remote = is_data_remote(bbc)
+
+    hit = bbc.bedset.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=[file_map_bedset[id.value]],
+    )[0]
+    file = getattr(hit, file_map_bedset[id.value])
+    remote = True if bbc.config[CFG_REMOTE_KEY]["http"]["prefix"] else False
+
     path = (
         os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], file["path"])
         if remote
@@ -420,12 +499,13 @@ async def get_file_path_for_bedset(
         "http", description="Remote data provider class"
     ),
 ):
-    file = bbc.bedset.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", file_map_bedset[id.value]],
-    )[0][1]
-    remote = is_data_remote(bbc)
+
+    hit = bbc.bedset.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=[file_map_bedset[id.value]],
+    )[0]
+    file = getattr(hit, file_map_bedset[id.value])
+    remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
     path = (
         os.path.join(
             bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
@@ -451,13 +531,14 @@ async def get_image_for_bedset(
     """
     Returns the img with provided ID
     """
-    img = bbc.bedset.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
+    hit = bbc.bedset.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
         columns=["name", img_map_bedset[id.value]],
-    )[0][1]
+    )[0]
+    img = getattr(hit, img_map_bedset[id.value])
 
-    remote = is_data_remote(bbc)
+    remote = True if bbc.config[CFG_REMOTE_KEY]["http"]["prefix"] else False
+
     path = (
         os.path.join(
             bbc.config[CFG_REMOTE_KEY]["http"]["prefix"],
@@ -485,13 +566,15 @@ async def get_image_for_bedset(
     """
     Returns the img with provided ID
     """
-    img = bbc.bedset.select(
-        condition="md5sum=%s",
-        condition_val=[md5sum],
-        columns=["name", img_map_bedset[id.value]],
-    )[0][1]
 
-    remote = is_data_remote(bbc)
+    hit = bbc.bedset.select(
+        filter_conditions=[("md5sum", "eq", md5sum)],
+        columns=["name", img_map_bedset[id.value]],
+    )[0]
+    img = getattr(hit, img_map_bedset[id.value])
+
+    remote = True if bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"] else False
+
     path = (
         os.path.join(
             bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"],
