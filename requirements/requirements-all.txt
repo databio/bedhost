@@ -3,7 +3,7 @@ aiofiles
 fastapi>=0.61.2
 itsdangerous
 logmuse
-pipestat_reader
+#pipestat_reader
 python-multipart
 pyyaml
 requests
