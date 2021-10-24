@@ -58,7 +58,7 @@ export default class BedSetTable extends React.Component {
     });
     const editable = data.map((o) => ({ ...o }));
 
-    let bedSetFig = Object.entries(schema).map(([key, value], index) => {
+    let bedSetFig = Object.entries(schema).forEach(([key, value], index) => {
       if (value.type === "image") {
         return {
           id: key,
@@ -241,9 +241,9 @@ export default class BedSetTable extends React.Component {
                 rows.length > 0
                   ? this.bedSelected(rows)
                   : this.setState({
-                      selectedBedId: [],
-                      selectedBedName: [],
-                    });
+                    selectedBedId: [],
+                    selectedBedName: [],
+                  });
               }}
               components={{
                 Container: (props) => <Paper {...props} elevation={0} />,

@@ -94,7 +94,8 @@ export default class ResultsBed extends React.Component {
       return bed.node.bedId;
     });
     const bedlist = bed_old.filter((value) => bed_new.includes(value));
-    avg_res = editable.map((bed, index) => {
+
+    avg_res = editable.forEach((bed, index) => {
       if (bedlist.includes(bed.node.bedId)) {
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
           var new_res_idx = new_res.findIndex(function (new_bed) {
@@ -106,6 +107,7 @@ export default class ResultsBed extends React.Component {
         }
       }
     });
+
     return avg_res;
   }
 
@@ -188,15 +190,15 @@ export default class ResultsBed extends React.Component {
 
   getData() {
     let data = this.state.bedData.map((bed) => {
-        let row = {
-          name: bed.node.bedfile.name,
-          md5sum: bed.node.bedfile.md5sum,
-          relevance: this.getRelevance(bed.node.score),
-        };
-        row = Object.assign({}, row, JSON.parse(bed.node.bedfile.other));
-        return row;
-      })
-   
+      let row = {
+        name: bed.node.bedfile.name,
+        md5sum: bed.node.bedfile.md5sum,
+        relevance: this.getRelevance(bed.node.score),
+      };
+      row = Object.assign({}, row, JSON.parse(bed.node.bedfile.other));
+      return row;
+    })
+
     this.setState({
       data: data,
     });
