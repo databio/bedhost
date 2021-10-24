@@ -2,111 +2,102 @@ import React from "react";
 import MaterialTable, { MTableToolbar } from "material-table";
 import { Button, Paper } from "@material-ui/core";
 import Tooltip from "@material-ui/core/Tooltip";
-import Spinner from 'react-bootstrap/Spinner'
+import Spinner from "react-bootstrap/Spinner";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-import toObject from "./toObject";
-import bedhost_api_url from "./const";
+import bedhost_api_url, { client } from "./const/server";
 import axios from "axios";
-import { Label } from 'semantic-ui-react';
+import { Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
+import { GET_BEDSET_BEDFILES } from "./graphql/bedSetQueries";
 
 const api = axios.create({
-    baseURL: bedhost_api_url,
+  baseURL: bedhost_api_url,
 });
 
 export default class BedSetTable extends React.Component {
-    constructor(props) {
-        super();
-        this.state = {
-            columns: [],
-            bedSetData: [],
-            tableColumns: [],
-            bedFigs: [],
-            showFig: false,
-            figType: "",
-            selectedBedId: [],
-            selectedBedName: [],
-            pageSize: -1,
-            pageSizeOptions: [],
-            hideCol: '_percentage'
-        }
-    }
+  constructor(props) {
+    super();
+    this.state = {
+      schema: {},
+      columns: [],
+      bedSetData: [],
+      tableColumns: [],
+      bedFigs: [],
+      showFig: false,
+      figType: "",
+      selectedBedId: [],
+      selectedBedName: [],
+      pageSize: -1,
+      pageSizeOptions: [],
+      hideCol: "Percentage",
+    };
+  }
 
-    async componentDidMount() {
-        let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+  async componentDidMount() {
+    let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
 
-        let res = await api.get("/api/bedset/" + this.props.bedset_md5sum + "/bedfiles").then(({ data }) => data);
-        console.log('BED set summary from the server: ', res)
+    this.setState({
+      schema: schema,
+    });
 
-        let cols = [
-            res.columns[0], res.columns[1], // name, md5sum
-            res.columns[5], res.columns[6], res.columns[7], res.columns[8], // regions_no, gc_content, mean_absolute_tss_dist, mean_region_width
-            res.columns[9], res.columns[19], // exon
-            res.columns[10], res.columns[20], // intron
-            res.columns[11], res.columns[18], // promoterprox
-            res.columns[13], res.columns[22], // promotercore
-            res.columns[12], res.columns[21], // intergenic
-            res.columns[14], res.columns[16], // fiveutr
-            res.columns[15], res.columns[17]] //threeutr
+    // get bed stats via Graphql
+    const bed_data = await client
+      .query({
+        query: GET_BEDSET_BEDFILES,
+        variables: { md5sum: this.props.bedset_md5sum },
+      })
+      .then(({ data }) => data.bedsets.edges[0].node.bedfiles);
 
-        let data = res.data.map((row) => {
-            let value = [
-                row[0], row[1],
-                row[5], row[6].toFixed(3), row[7].toFixed(3), row[8].toFixed(3),
-                row[9], row[19].toFixed(3),
-                row[10], row[20].toFixed(3),
-                row[11], row[18].toFixed(3),
-                row[12], row[22].toFixed(3),
-                row[13], row[21].toFixed(3),
-                row[14], row[16].toFixed(3),
-                row[15], row[17].toFixed(3)
-            ]
-            let dict = toObject(cols, value)
-            return dict
-        })
+    const bed_count = bed_data.totalCount;
+    const bed_stats = bed_data.edges;
 
-        let newbedFig = res.data[0].map((img, index) => {
-            return (
-                (index >= 23 && index <= res.columns.length - 2) ? {
-                    id: res.columns[index],
-                    title: img.title,
-                    label: schema[res.columns[index]].label
-                } : null
-            )
-        });
-        newbedFig = newbedFig.slice(23, res.columns.length - 1)
-        
-        this.setState({
-            columns: cols,
-            bedSetData: data,
-            tableColumns: this.getColumns(cols),
-            bedFigs: newbedFig
-        })
+    let cols = Object.keys(bed_stats[0].node);
+    let data = bed_stats.map((value) => {
+      return value.node;
+    });
+    const editable = data.map((o) => ({ ...o }));
 
-        if (res.data.length >= 10) {
-            this.setState({
-                pageSize: 10,
-                pageSizeOptions: [10, 15, 20]
-            })
-        } else {
-            this.setState({
-                pageSize: res.data.length,
-                pageSizeOptions: [res.data.length]
-            })
-        }
-    }
-
-    async componentDidUpdate(prevProps, prevState) {
-        if (prevState.hideCol !== this.state.hideCol) {
-          this.setState({
-            tableColumns: this.getColumns(this.state.columns),
-          });
-        }
+    let bedSetFig = Object.entries(schema).map(([key, value], index) => {
+      if (value.type === "image") {
+        return {
+          id: key,
+          title: value.label,
+          label: value.label,
+        };
       }
+    });
 
-    getColumns(cols) {
-        let tableColumns = [];
+    this.setState({
+      schema: schema,
+      columns: cols,
+      tableColumns: this.getColumns(cols),
+      bedSetData: editable,
+      bedFigs: bedSetFig,
+    });
+
+    if (bed_count >= 10) {
+      this.setState({
+        pageSize: 10,
+        pageSizeOptions: [10, 15, 20],
+      });
+    } else {
+      this.setState({
+        pageSize: bed_count,
+        pageSizeOptions: [bed_count],
+      });
+    }
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevState.hideCol !== this.state.hideCol) {
+      this.setState({
+        tableColumns: this.getColumns(this.state.columns),
+      });
+    }
+  }
+  getColumns(cols) {
+    let tableColumns = [];
 
     for (var i = 0; i < cols.length; i++) {
       //   let title = this.state.schema[cols[i].replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].description;
@@ -144,7 +135,10 @@ export default class BedSetTable extends React.Component {
           width: 275,
         });
       } else if (i !== 0) {
-        if (cols[i] === "mean_absolute_tss_dist" || cols[i] === "mean_region_width") {
+        if (
+          cols[i] === "meanAbsoluteTssDist" ||
+          cols[i] === "meanRegionWidth"
+        ) {
           tableColumns.push({
             title: cols[i],
             field: cols[i],
@@ -159,7 +153,7 @@ export default class BedSetTable extends React.Component {
           });
         } else {
           tableColumns.push({
-            title: cols[i].replaceAll(/_frequency|_percentage/gi, ""),
+            title: cols[i].replaceAll(/Frequency|Percentage/gi, ""),
             field: cols[i],
             width: 100,
           });
@@ -167,155 +161,181 @@ export default class BedSetTable extends React.Component {
       }
     }
     return tableColumns;
+  }
+
+  bedSelected(rows) {
+    console.log("Selected Row Data:", rows);
+    this.state.selectedBedId.splice(0, this.state.selectedBedId.length);
+    this.state.selectedBedName.splice(0, this.state.selectedBedName.length);
+    for (var i = 0; i < rows.length; i++) {
+      this.state.selectedBedId.push(rows[i].md5sum);
+      this.state.selectedBedName.push(rows[i].name);
     }
+    this.setState({
+      selectedBedId: this.state.selectedBedId,
+      selectedBedName: this.state.selectedBedName,
+    });
+  }
 
-    bedSelected(rows) {
-        console.log("Selected Row Data:", rows);
-        this.state.selectedBedId.splice(0, this.state.selectedBedId.length);
-        this.state.selectedBedName.splice(0, this.state.selectedBedName.length);
-        for (var i = 0; i < rows.length; i++) {
-            this.state.selectedBedId.push(rows[i].md5sum);
-            this.state.selectedBedName.push(rows[i].name);
-        }
-        this.setState({
-            selectedBedId: this.state.selectedBedId,
-            selectedBedName: this.state.selectedBedName
-        });
-    };
+  figTypeClicked(fig, name) {
+    this.setState({
+      showFig: true,
+      figType: [fig, name],
+    });
+  }
 
-    figTypeClicked(fig, name) {
-        this.setState({
-            showFig: true,
-            figType: [fig, name],
-        })
-    };
+  getFigButton() {
+    return (
+      <div style={{ padding: "5px 5px" }}>
+        {this.state.bedFigs.map((fig, index) => {
+          return (
+            <>
+              {fig ? (
+                <Tooltip key={index} title={fig.title} placement="top">
+                  <Button
+                    size="small"
+                    variant="contained"
+                    style={{ padding: 5, margin: 5 }}
+                    onClick={() => {
+                      this.figTypeClicked(fig.id, fig.label);
+                    }}
+                  >
+                    {fig.id}
+                  </Button>
+                </Tooltip>
+              ) : null}
+            </>
+          );
+        })}
+      </div>
+    );
+  }
 
-    getFigButton() {
-        return (
-            <div style={{ padding: "5px 5px" }}>
-                {this.state.bedFigs.map((fig, index) => {
-                    return (
-                        <Tooltip
-                            key={index}
-                            title={fig.title}
-                            placement="top"
-                        >
-                            <Button
-                                size="small"
-                                variant="contained"
-                                style={{ padding: 5, margin: 5 }}
-                                onClick={() => {
-                                    this.figTypeClicked(
-                                        fig.id,
-                                        fig.label
-                                    );
-                                }}
-                            >
-                                {fig.label}
-                            </Button>
-                        </Tooltip>
-                    )
-                })}
+  render() {
+    return (
+      <div>
+        <div>
+          {this.state.pageSize !== -1 ? (
+            <MaterialTable
+              title=""
+              columns={this.state.tableColumns} // <-- Set the columns on the table
+              data={this.state.bedSetData} // <-- Set the data on the table
+              icons={tableIcons}
+              options={{
+                fixedColumns: {
+                  left: 1,
+                },
+                headerStyle: {
+                  backgroundColor: "#333535",
+                  color: "#FFF",
+                  fontWeight: "bold",
+                },
+                paging: true,
+                pageSize: this.state.pageSize,
+                pageSizeOptions: this.state.pageSizeOptions,
+                search: true,
+                selection: true,
+                showSelectAllCheckbox: true,
+              }}
+              onSelectionChange={(rows) => {
+                rows.length > 0
+                  ? this.bedSelected(rows)
+                  : this.setState({
+                      selectedBedId: [],
+                      selectedBedName: [],
+                    });
+              }}
+              components={{
+                Container: (props) => <Paper {...props} elevation={0} />,
+                Toolbar: (props) => (
+                  <div>
+                    <MTableToolbar {...props} />
+                    <div style={{ padding: "5px 5px" }}>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        style={{ padding: 5, margin: 5 }}
+                        onClick={() => {
+                          this.setState({ hideCol: "Frequency" });
+                        }}
+                      >
+                        show percentage
+                      </Button>
+                      <Button
+                        size="small"
+                        variant="contained"
+                        style={{ padding: 5, margin: 5 }}
+                        onClick={() => {
+                          this.setState({ hideCol: "Percentage" });
+                        }}
+                      >
+                        show frequency
+                      </Button>
+                    </div>
+                  </div>
+                ),
+              }}
+              localization={{
+                body: {
+                  emptyDataSourceMessage: (
+                    <div
+                      style={{ position: "absolute", top: "5%", left: "50%" }}
+                    >
+                      <Spinner
+                        animation="border"
+                        size="sm"
+                        style={{ color: "lightgray" }}
+                      />
+                      <p style={{ color: "lightgray" }}>Loading data </p>
+                    </div>
+                  ),
+                },
+              }}
+            />
+          ) : null}
+        </div>
+
+        <div style={{ padding: "10px 10px" }}>
+          {this.state.showFig ? (
+            <>
+              <Label
+                style={{
+                  marginLeft: "15px",
+                  fontSize: "15px",
+                  padding: "6px 20px 6px 30px",
+                }}
+                as="a"
+                color="teal"
+                ribbon
+              >
+                {this.state.figType[1]}
+              </Label>
+              {this.getFigButton()}
+              <ShowFig
+                figType={this.state.figType}
+                bedIds={this.state.selectedBedId}
+                bedNames={this.state.selectedBedName}
+              />
+            </>
+          ) : (
+            <div style={{ marginLeft: "10px" }}>
+              <Label
+                style={{
+                  marginLeft: "15px",
+                  fontSize: "15px",
+                  padding: "6px 20px 6px 30px",
+                }}
+                as="a"
+                color="orange"
+                ribbon
+              >
+                Please select plot type.
+              </Label>
+              {this.getFigButton()}
             </div>
-        )
-    }
-
-    render() {
-        return (
-            <div>
-                <div>
-                    {this.state.pageSize !== -1 ? (
-                        <MaterialTable
-                            title=""
-                            columns={this.state.tableColumns} // <-- Set the columns on the table
-                            data={this.state.bedSetData} // <-- Set the data on the table
-                            icons={tableIcons}
-                            options={{
-                                fixedColumns: {
-                                    left: 1,
-                                },
-                                headerStyle: {
-                                    backgroundColor: "#333535",
-                                    color: "#FFF",
-                                    fontWeight: "bold",
-                                },
-                                paging: true,
-                                pageSize: this.state.pageSize,
-                                pageSizeOptions: this.state.pageSizeOptions,
-                                search: true,
-                                selection: true,
-                                showSelectAllCheckbox: true,
-                            }}
-                            onSelectionChange={(rows) => {
-                                rows.length > 0
-                                    ? this.bedSelected(rows)
-                                    : (this.setState({
-                                        selectedBedId: [],
-                                        selectedBedName: []
-                                    }));
-                            }}
-                            components={{
-                                Container: props => <Paper {...props} elevation={0} />,
-                                Toolbar: (props) => (
-                                    <div>
-                                        <MTableToolbar {...props} />
-                                        <div style={{ padding: "5px 5px" }}>
-                                            <Button size="small" variant="contained" style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.setState(
-                                                        { hideCol: '_frequency' }
-                                                    );
-                                                }}
-                                            >
-                                                show percentage
-                                            </Button>
-                                            <Button size="small" variant="contained" style={{ padding: 5, margin: 5 }}
-                                                onClick={() => {
-                                                    this.setState(
-                                                        { hideCol: '_percentage' }
-                                                    );
-                                                }}
-                                            >
-                                                show frequency
-                                            </Button>
-                                        </div>
-                                    </div>
-                                ),
-                            }}
-                            localization={{ 
-                                body:{ 
-                                    emptyDataSourceMessage:< div style={{position: "absolute", top:'5%', left:'50%'}}>
-                                    <Spinner animation="border" size="sm" style={{color:'lightgray'}} />
-                                    <p style={{color:'lightgray'}}>Loading data </p> 
-                                    </div>
-                                } 
-                            }}
-                        />) : null}
-                </div>
-
-                <div style={{ padding: "10px 10px" }}>
-                    {this.state.showFig ? (
-                        <>
-                            <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} color='teal' ribbon>
-                                {this.state.figType[1]}
-                            </Label>
-                            {this.getFigButton()}
-                            <ShowFig
-                                figType={this.state.figType}
-                                bedIds={this.state.selectedBedId}
-                                bedNames={this.state.selectedBedName}
-                            />
-                        </>
-                    ) : (
-                            <div style={{ marginLeft: "10px" }}>
-                                <Label style={{ marginLeft: '15px', fontSize: '15px', padding: "6px 20px 6px 30px" }} color='orange' ribbon>
-                                    Please select plot type.
-                                </Label>
-                                {this.getFigButton()}
-                            </div>
-                        )}
-                </div>
-            </div>
-        );
-    }
+          )}
+        </div>
+      </div>
+    );
+  }
 }
