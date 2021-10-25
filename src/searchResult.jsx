@@ -5,54 +5,67 @@ import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
 import { client } from "./const/server";
-import { QUERY_BED, GET_BEDSET_BEDFILES } from "./graphql/bedQueries";
-
+import { FaMinus } from "react-icons/fa";
+import { GET_BED_DIST } from "./graphql/bedQueries";
+import _ from "lodash";
 
 export default class ResultsBed extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      query: "",
-      md5sum: "",
       bedData: [],
       columns: [],
       data: [],
       pageSize: -1,
       pageSizeOptions: [],
-      toolBar: true,
     };
   }
 
   async componentDidMount() {
-    if (this.props.query) {
-      await this.getBedByQuery();
-    } else {
-      await this.getBedByBedSet();
-    }
+    await this.getBedBySearchTerms();
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.query !== this.props.query) {
-      await this.getBedByQuery();
-      this.setState({ query: this.props.query });
-    } else if (prevProps.md5sum !== this.props.md5sum) {
-      await this.getBedByBedSet();
-      this.setState({ md5sum: this.props.md5sum });
+    if (prevProps.term !== this.props.term) {
+      await this.getBedBySearchTerms();
+      this.setState({ term: this.props.term });
     }
   }
 
-  async getBedByQuery() {
-    // query bed via Graphql
-    const res = await client
-      .query({
-        query: QUERY_BED,
-        variables: { filters: this.props.query, first: this.props.limit },
-      })
-      .then(({ data }) => data.bedfiles.edges);
+  async getBedBySearchTerms() {
+    let terms = this.props.terms.split(/[\s,]+/);
 
-    this.setState({
-      bedData: res,
-    });
+    if (terms.length === 1) {
+      var res = await client
+        .query({
+          query: GET_BED_DIST,
+          variables: { filters: { searchTermIlike: terms[0] } },
+        })
+        .then(({ data }) => data.distances.edges);
+      res = res.slice().sort((a, b) => a.node.score - b.node.score);
+    } else {
+      res = [];
+      for (var j = 0; j < terms.length; j++) {
+        var new_res = await client
+          .query({
+            query: GET_BED_DIST,
+            variables: { filters: { searchTermIlike: terms[j] } },
+          })
+          .then(({ data }) => data.distances.edges);
+
+        if (j === 0) {
+          res = new_res;
+        } else if (j === terms.length - 1) {
+          res = this.getAvgDist(res, new_res, terms.length).sort(
+            (a, b) => a.node.score - b.node.score
+          );
+        } else {
+          res = this.getAvgDist(res, new_res, 1);
+        }
+      }
+    }
+
+    this.setState({ bedData: res });
 
     if (res.length >= 50) {
       this.setState({
@@ -65,56 +78,45 @@ export default class ResultsBed extends React.Component {
         pageSizeOptions: [res.length],
       });
     }
-    this.setState({ query: this.props.query });
+    this.setState({ terms: this.props.terms });
     console.log("BED files retrieved from the server: ", res);
     this.getColumns();
     this.getData();
   }
 
-  async getBedByBedSet() {
-    const res = await client
-      .query({
-        query: GET_BEDSET_BEDFILES,
-        variables: { md5sum: this.props.md5sum, first: this.props.limit },
-      })
-      .then(({ data }) => data.bedsets.edges[0].node.bedfiles.edges);
+  getAvgDist(old_res, new_res, len) {
+    var editable = _.cloneDeep(old_res);
+    var avg_res = [];
+    var bed_old = old_res.map((bed, index) => {
+      return bed.node.bedId;
+    });
+    var bed_new = new_res.map((bed, index) => {
+      return bed.node.bedId;
+    });
+    const bedlist = bed_old.filter((value) => bed_new.includes(value));
 
-    this.setState({
-      bedData: res,
-      toolBar: false,
+    avg_res = editable.forEach((bed, index) => {
+      if (bedlist.includes(bed.node.bedId)) {
+        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+          var new_res_idx = new_res.findIndex(function (new_bed) {
+            return new_bed.node.bedId === bed.node.bedId;
+          });
+          bed.node.score =
+            (bed.node.score + new_res[new_res_idx].node.score) / len;
+          return bed;
+        }
+      }
     });
 
-    if (res.length >= 10) {
-      this.setState({
-        pageSize: 10,
-        pageSizeOptions: [10, 15, 20],
-      });
-    } else {
-      this.setState({
-        pageSize: res.length,
-        pageSizeOptions: [res.length],
-      });
-    }
-    this.setState({ md5sum: this.props.md5sum });
-    console.log("BED files retrieved from the server: ", res);
-    this.getColumns();
-    this.getData();
+    return avg_res;
   }
 
   getColumns() {
     let tableColumns = [];
-    let cols = [
-      "name",
-      "md5sum",
-      "genome",
-      "GSE",
-      "data_source",
-      "description",
-    ];
+    let cols = ["name", "relevance", "data_source", "description"];
+
     for (var i = 0; i < cols.length; i++) {
-      if (cols[i] === "md5sum" || cols[i] === "GSE") {
-        tableColumns.push({ title: cols[i], field: cols[i], hidden: true });
-      } else if (cols[i] === "name") {
+      if (cols[i] === "name") {
         tableColumns.push({
           title: cols[i],
           field: cols[i],
@@ -175,7 +177,10 @@ export default class ResultsBed extends React.Component {
             ) : null,
         });
       } else {
-        tableColumns.push({ title: cols[i], field: cols[i] });
+        tableColumns.push({
+          title: cols[i],
+          field: cols[i],
+        });
       }
     }
     this.setState({
@@ -185,8 +190,12 @@ export default class ResultsBed extends React.Component {
 
   getData() {
     let data = this.state.bedData.map((bed) => {
-      let row = { name: bed.node.name, md5sum: bed.node.md5sum };
-      row = Object.assign({}, row, JSON.parse(bed.node.other));
+      let row = {
+        name: bed.node.bedfile.name,
+        md5sum: bed.node.bedfile.md5sum,
+        relevance: this.getRelevance(bed.node.score),
+      };
+      row = Object.assign({}, row, JSON.parse(bed.node.bedfile.other));
       return row;
     })
 
@@ -195,9 +204,57 @@ export default class ResultsBed extends React.Component {
     });
   }
 
+  perc2Color(perc) {
+    const gradient = [
+      [209, 14, 0],
+      [255, 215, 0],
+      [0, 161, 5],
+    ];
+    if (perc < 0.5) {
+      var color1 = gradient[1];
+      var color2 = gradient[0];
+      var upper = 0.5;
+      var lower = 0;
+    } else {
+      color1 = gradient[2];
+      color2 = gradient[1];
+      upper = 1;
+      lower = 0.5;
+    }
+    var firstcolor_x = lower;
+    var secondcolor_x = upper - firstcolor_x;
+    var slider_x = perc - firstcolor_x;
+    var ratio = slider_x / secondcolor_x;
+
+    var w = ratio * 2 - 1;
+    var w1 = (w / 1 + 1) / 2;
+    var w2 = 1 - w1;
+    var rgb = [
+      Math.round(color1[0] * w1 + color2[0] * w2),
+      Math.round(color1[1] * w1 + color2[1] * w2),
+      Math.round(color1[2] * w1 + color2[2] * w2),
+    ];
+    return rgb;
+  }
+
+  getRelevance(score) {
+    let color = this.perc2Color(1 - score);
+    score = ((1 - score) * 100).toFixed(2).toString() + "%";
+    return (
+      <p>
+        <FaMinus
+          style={{ marginRight: "5px", fontSize: "20px" }}
+          color={"rgb(" + color.join() + ")"}
+        />
+        {score}
+      </p>
+    );
+  }
+
   render() {
     return this.props.md5sum === this.state.md5sum ||
-      this.props.query === this.state.query ? (
+      this.props.query === this.state.query ||
+      this.props.term === this.state.term ? (
       this.state.pageSize !== -1 ? (
         <div>
           <MaterialTable
@@ -215,7 +272,7 @@ export default class ResultsBed extends React.Component {
               pageSize: this.state.pageSize,
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
-              toolbar: this.state.toolBar,
+              toolbar: false,
             }}
             components={{
               Container: (props) => <Paper {...props} elevation={0} />,

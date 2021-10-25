@@ -57,3 +57,20 @@
     border-color:teal;
 }
 
+.btn-primary{
+    color: #FFF;
+    background-color:teal;
+    border-color:teal;
+}
+
+.btn-primary.focus, 
+.btn-primary:focus,
+.btn-primary.hover, 
+.btn-primary:hover,
+.btn-primary:not(:disabled):not(.disabled).active, 
+.btn-primary:not(:disabled):not(.disabled):active,
+.show>.btn-primary.dropdown-toggle  {
+    color: #FFF;
+    background-color:#e76f51;
+    border-color:#e76f51;
+}
