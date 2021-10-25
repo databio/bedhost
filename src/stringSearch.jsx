@@ -17,7 +17,7 @@ export default class Search extends React.Component {
     super();
     this.state = {
       showResults: false,
-      searchTerms: "K562 ZEB2",
+      searchTerms: "K562",
       genomeList: [],
       genome: "",
     };
