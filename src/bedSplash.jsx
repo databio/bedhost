@@ -116,7 +116,7 @@ export default class BedSplash extends React.Component {
     let newbedFiles = {}
     Object.entries(files).map(([key, value], index) => {
       newbedFiles[key] = JSON.parse(value).size;
-      return
+      return newbedFiles
     });
 
     this.setState({ bedFiles: newbedFiles });
