@@ -42,7 +42,7 @@ export default class ResultsBedSet extends React.Component {
       })
       .then(({ data }) => data.bedsets.edges);
 
-    
+
     this.setState({
       bedSetData: res,
     });
@@ -76,7 +76,7 @@ export default class ResultsBedSet extends React.Component {
       })
       .then(({ data }) => data.bedsets.edges[0].node.bedfiles.totalCount);
 
-      return count
+    return count
   }
 
   getColumns() {
@@ -125,22 +125,22 @@ export default class ResultsBedSet extends React.Component {
 
   async getData() {
     let data = this.state.bedSetData.map(async (bed, index) => {
-        let count = await this.getBedCount(bed.node.md5sum);
-        let row = {
-          name: bed.node.name,
-          md5sum: bed.node.md5sum,
-          bed_file_count: count,
-          genome: JSON.parse(bed.node.genome).alias,
-        };
+      let count = await this.getBedCount(bed.node.md5sum);
+      let row = {
+        name: bed.node.name,
+        md5sum: bed.node.md5sum,
+        bed_file_count: count,
+        genome: JSON.parse(bed.node.genome).alias,
+      };
 
-        let bs_mean = JSON.parse(bed.node.bedsetMeans)
-        for (var key in  bs_mean) {
-            bs_mean[key] =  bs_mean[key].toFixed(3);
-        }
-        row = Object.assign({}, row,  bs_mean);
-        return row;
-      })
-    
+      let bs_mean = JSON.parse(bed.node.bedsetMeans)
+      for (var key in bs_mean) {
+        bs_mean[key] = bs_mean[key].toFixed(3);
+      }
+      row = Object.assign({}, row, bs_mean);
+      return row;
+    })
+
     return Promise.all(data);
   }
 
@@ -168,7 +168,7 @@ export default class ResultsBedSet extends React.Component {
               {
                 tooltip: "Show bedfiles",
                 render: (rowData) => {
-                  return <ResultsBed md5sum={rowData.md5sum} limit={10}/>;
+                  return <ResultsBed md5sum={rowData.md5sum} limit={10} />;
                 },
               },
             ]}

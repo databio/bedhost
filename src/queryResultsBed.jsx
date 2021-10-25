@@ -73,12 +73,12 @@ export default class ResultsBed extends React.Component {
 
   async getBedByBedSet() {
     const res = await client
-    .query({
-      query: GET_BEDSET_BEDFILES,
-      variables: { md5sum: this.props.md5sum, first: this.props.limit},
-    })
-    .then(({ data }) => data.bedsets.edges[0].node.bedfiles.edges);
-    
+      .query({
+        query: GET_BEDSET_BEDFILES,
+        variables: { md5sum: this.props.md5sum, first: this.props.limit },
+      })
+      .then(({ data }) => data.bedsets.edges[0].node.bedfiles.edges);
+
     this.setState({
       bedData: res,
       toolBar: false,
@@ -185,11 +185,11 @@ export default class ResultsBed extends React.Component {
 
   getData() {
     let data = this.state.bedData.map((bed) => {
-        let row = { name: bed.node.name, md5sum: bed.node.md5sum };
-        row = Object.assign({}, row, JSON.parse(bed.node.other));
-        return row;
-      })
-    
+      let row = { name: bed.node.name, md5sum: bed.node.md5sum };
+      row = Object.assign({}, row, JSON.parse(bed.node.other));
+      return row;
+    })
+
     this.setState({
       data: data,
     });

@@ -77,7 +77,7 @@ export default class BedSetSplash extends React.Component {
 
     const avg = JSON.parse(stats.bedsetMeans);
     const sd = JSON.parse(stats.bedsetStandardDeviation);
-    
+
     this.setState({
       bedSetName: bedset_name,
       genome: JSON.parse(genome),
@@ -136,7 +136,7 @@ export default class BedSetSplash extends React.Component {
       })
       .then(({ data }) => data.bedsets.edges[0].node);
 
-    
+
 
     let bedSetFile = Object.entries(files).map(([key, value], index) => {
       return {
@@ -349,7 +349,7 @@ export default class BedSetSplash extends React.Component {
                           }}
                         >
                           {value.label ===
-                          "Mean absolute distance from transcription start sites" ? (
+                            "Mean absolute distance from transcription start sites" ? (
                             <>Mean absolute distance from TSS</>
                           ) : (
                             <>{value.label}</>
@@ -393,7 +393,7 @@ export default class BedSetSplash extends React.Component {
                       >
                         {file.label}
                       </a>
-                      : {file.label} 
+                      : {file.label}
                     </p>
                   );
                 })}
