@@ -1,6 +1,6 @@
+import enum
 from logging import getLogger
 from urllib import parse
-import enum
 
 from starlette.exceptions import HTTPException
 from starlette.responses import FileResponse, RedirectResponse
@@ -66,6 +66,28 @@ def build_parser():
             help="Set logger verbosity to debug",
         )
     return parser
+
+
+def is_data_remote(bbc):
+    """
+    Determine if server config defines a 'remotes' key, 'http is one of them and
+     additionally assert the correct structure -- 'prefix' key defined.
+    :param BedBaseConf bbc: server config object
+    :return bool: whether remote data source is configured
+    """
+
+    return (
+        True
+        if CFG_REMOTE_KEY in bbc.config
+        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
+        and all(
+            [
+                "prefix" in r and isinstance(r["prefix"], str)
+                for r in bbc.config[CFG_REMOTE_KEY].values()
+            ]
+        )
+        else False
+    )
 
 
 def get_search_setup(schema):
@@ -151,14 +173,12 @@ def get_all_bedset_urls_mapping(bbc, request):
     :param starlette.requests.Request request: request context for url generation
     :return Mapping: a mapping of bedset ids and the urls to the corresponding splashpages
     """
-    hits = bbc.bedset.select()
+    hits = bbc.bedset.select(columns=["name", "md5sum"])
     if not hits:
         return
     # TODO: don't hardcode url path element name, use operationID?
     return {
-        hit["name"]: get_param_url(
-            request.url_for("bedsetsplash"), {"md5sum": hit["md5sum"]}
-        )
+        hit.name: get_param_url(request.url_for("bedsetsplash"), {"md5sum": hit.md5sum})
         for hit in hits
     }
 
@@ -199,7 +219,8 @@ def assert_table_columns_match(bbc, table_name, columns):
     """
     if isinstance(columns, str):
         columns = [columns]
-    schema = getattr(getattr(bbc, table_name2attr(table_name), None), "schema", None)
+    schema = serve_schema_for_table(bbc, table_name)
+    # schema = getattr(getattr(bbc, table_name2attr(table_name), None), "schema", None)
     if schema is None:
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
@@ -219,7 +240,9 @@ def serve_schema_for_table(bbc, table_name):
     :param str table_name: table name to get schema for
     :return:
     """
+
     table_manager = getattr(bbc, table_name2attr(table_name), None)
+
     return table_manager.schema
 
 
@@ -235,6 +258,7 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=No
     """
     if columns:
         assert_table_columns_match(bbc=bbc, table_name=table_name, columns=columns)
+
     table_manager = getattr(bbc, table_name2attr(table_name), None)
     if table_manager is None:
         msg = (
@@ -244,14 +268,13 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=No
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
     res = table_manager.select(
-        condition="md5sum=%s" if digest else None,
-        condition_val=[digest] if digest else None,
+        filter_conditions=[("md5sum", "eq", digest)] if digest else None,
         columns=columns,
         limit=limit,
     )
     if res:
         colnames = list(res[0].keys())
-        values = [list(x.values()) for x in res]
+        values = [list(x) for x in res]
         _LOGGER.info(f"Serving data for columns: {colnames}")
     else:
         _LOGGER.warning("No records matched the query")
@@ -274,6 +297,28 @@ def table_name2attr(table_name):
     elif table_name == "bedsets":
         return "bedset"
     return table_name
+
+
+def is_data_remote(bbc):
+    """
+    Determine if server config defines a 'remotes' key, 'http is one of them and
+     additionally assert the correct structure -- 'prefix' key defined.
+    :param BedBaseConf bbc: server config object
+    :return bool: whether remote data source is configured
+    """
+
+    return (
+        True
+        if CFG_REMOTE_KEY in bbc.config
+        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
+        and all(
+            [
+                "prefix" in r and isinstance(r["prefix"], str)
+                for r in bbc.config[CFG_REMOTE_KEY].values()
+            ]
+        )
+        else False
+    )
 
 
 def serve_file(path, remote):

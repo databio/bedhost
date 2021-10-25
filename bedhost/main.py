@@ -7,6 +7,8 @@ import logmuse
 import uvicorn
 from bbconf import BedBaseConf
 from fastapi import FastAPI, HTTPException, Path, Query
+from pipestat_reader import PipestatReader
+from starlette.graphql import GraphQLApp
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
@@ -64,13 +66,12 @@ def main():
     _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
     logmuse.init_logger(name="bbconf", level=log_level)
     bbc = BedBaseConf(bbconf.get_bedbase_cfg(args.config))
-    bbc.bed.establish_postgres_connection()
     if args.command == "serve":
         from .routers import api, private_api
 
         app.include_router(api.router, prefix="/api")
         app.include_router(private_api.router, prefix="/_private_api")
-        if not bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]:
+        if not CFG_REMOTE_KEY in bbc.config:
             _LOGGER.debug(
                 f"Using local files for serving: "
                 f"{bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY]}"
@@ -88,16 +89,21 @@ def main():
         else:
             _LOGGER.debug(
                 f"Using remote files for serving: "
-                f"{bbc.config[CFG_PATH_KEY][CFG_REMOTE_URL_BASE_KEY]}"
+                f"{bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
             )
         if os.path.exists(UI_PATH):
             _LOGGER.debug(f"Determined React UI path: {UI_PATH}")
         else:
             raise FileNotFoundError(f"React UI path to mount not found: {UI_PATH}")
 
-        app.mount("/", StaticFiles(directory=UI_PATH))
+        app.mount("/ui", StaticFiles(directory=UI_PATH))
 
-        _LOGGER.info("running {} app".format(PKG_NAME))
+        psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset, bbc.dist])
+        _LOGGER.info("Generating GraphQL schema")
+        graphql_schema = psr.generate_graphql_schema()
+        app.mount("/graphql", GraphQLApp(schema=graphql_schema, graphiql=True))
+
+        _LOGGER.info(f"running {PKG_NAME} app")
         uvicorn.run(
             app,
             host=bbc.config[CFG_SERVER_KEY][CFG_HOST_KEY],
