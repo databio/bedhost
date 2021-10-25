@@ -35,7 +35,7 @@ jobs:
       run: |
         mkdir -p bedhost/static/bedhost-ui
         rm -rf bedhost/static/bedhost-ui/*
-        cp -r bedhost-ui/build/* bedhost/static/bedhost-ui/
+        cp -r bedhost-ui/build/* bedhost/static/
 
     - name: Push to DockerHub
       uses: docker/build-push-action@v1
