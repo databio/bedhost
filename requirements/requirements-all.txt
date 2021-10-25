@@ -1,9 +1,10 @@
 aiofiles
-#bbconf>=0.1.1
+bbconf>=0.2.0
 fastapi>=0.61.2
 itsdangerous
 logmuse
-#pipestat_reader
+pipestat>=0.2.0
+pipestat_reader
 python-multipart
 pyyaml
 requests
