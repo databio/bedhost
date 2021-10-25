@@ -136,22 +136,36 @@ export default class BedSetSplash extends React.Component {
       })
       .then(({ data }) => data.bedsets.edges[0].node);
 
-
-
     let bedSetFile = Object.entries(files).map(([key, value], index) => {
       return {
         id: key,
         label: bedset_schema[
           key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
         ].label.replaceAll("_", " "),
-        url:
-          bedhost_api_url +
+        size: JSON.parse(value).size,
+        url: bedhost_api_url +
           "/api/bedset/" +
           this.props.match.params.bedset_md5sum +
           "/file/" +
           bedset_schema[
             key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
           ].label,
+        http: bedhost_api_url +
+          "/api/bedset/" +
+          this.props.match.params.bedset_md5sum +
+          "/file_path/" +
+          bedset_schema[
+            key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+          ].label +
+          "?remoteClass=http",
+        s3: bedhost_api_url +
+          "/api/bedset/" +
+          this.props.match.params.bedset_md5sum +
+          "/file_path/" +
+          bedset_schema[
+            key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+          ].label +
+          "?remoteClass=s3"
       };
     });
     this.setState({ bedSetDownload: bedSetFile });
@@ -391,9 +405,12 @@ export default class BedSetSplash extends React.Component {
                           fontWeight: "bold",
                         }}
                       >
-                        {file.label}
+                        http
+                      </a> |
+                      <a href={file.s3} className="home-link" style={{ fontSize: "10pt", fontWeight: "bold" }}>
+                        s3
                       </a>
-                      : {file.label}
+                      : {file.label} ({file.size})
                     </p>
                   );
                 })}

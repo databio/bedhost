@@ -27,9 +27,9 @@ export default class BedSetBarChart extends React.Component {
           value: Number((value[0] * 100).toFixed(2)),
           std: [
             Number((value[0] * 100).toFixed(2)) -
-              Number((value[1] * 100).toFixed(2)),
+            Number((value[1] * 100).toFixed(2)),
             Number((value[0] * 100).toFixed(2)) +
-              Number((value[1] * 100).toFixed(2)),
+            Number((value[1] * 100).toFixed(2)),
           ],
         };
       }

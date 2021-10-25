@@ -95,7 +95,7 @@ export default class ResultsBed extends React.Component {
     });
     const bedlist = bed_old.filter((value) => bed_new.includes(value));
 
-    avg_res = editable.forEach((bed, index) => {
+    avg_res = editable.map((bed, index) => {
       if (bedlist.includes(bed.node.bedId)) {
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
           var new_res_idx = new_res.findIndex(function (new_bed) {
@@ -106,8 +106,9 @@ export default class ResultsBed extends React.Component {
           return bed;
         }
       }
+      return {}
     });
-
+    avg_res = avg_res.filter(value => Object.keys(value).length !== 0);
     return avg_res;
   }
 

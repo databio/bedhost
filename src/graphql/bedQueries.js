@@ -111,6 +111,19 @@ export const GET_BED_FIGS = gql`
   }
 `;
 
+export const GET_BED_FILES = gql`
+  query bedfiles($md5sum: String!) {
+    bedfiles(filters: { md5sum: $md5sum }) {
+      edges {
+        node {
+          bedfile
+          bigbedfile
+        }
+      }
+    }
+  }
+`;
+
 export const QUERY_BED = gql`
   query bedfiles($filters: BedfilesFilter!, $first: Int!) {
     bedfiles(filters: $filters, first: $first) {

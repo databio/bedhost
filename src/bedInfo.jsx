@@ -197,7 +197,7 @@ export default class BedInfo extends React.Component {
                   }}
                 >
                   {value.label ===
-                  "Mean absolute distance from transcription start sites" ? (
+                    "Mean absolute distance from transcription start sites" ? (
                     <>Mean absolute distance from TSS</>
                   ) : (
                     <>{value.label}</>
