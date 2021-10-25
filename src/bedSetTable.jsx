@@ -58,13 +58,15 @@ export default class BedSetTable extends React.Component {
     });
     const editable = data.map((o) => ({ ...o }));
 
-    let bedSetFig = Object.entries(schema).forEach(([key, value], index) => {
+    let bedSetFig = []
+
+    Object.entries(schema).forEach(([key, value], index) => {
       if (value.type === "image") {
-        return {
+        bedSetFig.push({
           id: key,
           title: value.label,
           label: value.label,
-        };
+        })
       }
     });
 
@@ -100,7 +102,6 @@ export default class BedSetTable extends React.Component {
     let tableColumns = [];
 
     for (var i = 0; i < cols.length; i++) {
-      //   let title = this.state.schema[cols[i].replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].description;
       if (i === 0) {
         tableColumns.push({
           title: cols[i],
