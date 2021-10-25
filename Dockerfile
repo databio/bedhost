@@ -10,6 +10,7 @@ RUN apt-get install -y wget
 RUN apt-get install -y libcurl4
 
 RUN pip install -r requirements/requirements-all.txt
+RUN pip install -r requirements/requirements-dev.txt
 RUN git clone https://github.com/vishnubob/wait-for-it.git
 RUN pip install .
 
