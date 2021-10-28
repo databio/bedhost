@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Route, Switch, BrowserRouter as Router } from "react-router-dom";
+import { Route, Switch, HashRouter as Router } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 import Home from "./home";
 import About from "./about";
@@ -15,11 +15,11 @@ document.head.appendChild(styleLink);
 
 ReactDOM.render(
   <Router>
-    <Switch >
+    <Switch>
       <Route exact path="/" component={Home} />
       <Route exact path="/about" component={About} />
-      <Route exact path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash} />
-      <Route exact path="/bedsplash/:bed_md5sum" component={BedSplash} />
+      <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash} />
+      <Route path="/bedsplash/:bed_md5sum" component={BedSplash} />
     </Switch>
   </Router>,
   document.getElementById('root')
