@@ -5,21 +5,14 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Spinner from "react-bootstrap/Spinner";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-import bedhost_api_url, { client } from "./const/server";
-import axios from "axios";
 import { Label } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import { GET_BEDSET_BEDFILES } from "./graphql/bedSetQueries";
 
-const api = axios.create({
-  baseURL: bedhost_api_url,
-});
 
 export default class BedSetTable extends React.Component {
   constructor(props) {
     super();
     this.state = {
-      schema: {},
       columns: [],
       bedSetData: [],
       tableColumns: [],
@@ -35,23 +28,9 @@ export default class BedSetTable extends React.Component {
   }
 
   async componentDidMount() {
-    let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
-
-    this.setState({
-      schema: schema,
-    });
-
-    // get bed stats via Graphql
-    const bed_data = await client
-      .query({
-        query: GET_BEDSET_BEDFILES,
-        variables: { md5sum: this.props.bedset_md5sum },
-      })
-      .then(({ data }) => data.bedsets.edges[0].node.bedfiles);
-
-    const bed_count = bed_data.totalCount;
-    const bed_stats = bed_data.edges;
-
+    const bed_count = this.props.bedSetTableData.totalCount;
+    const bed_stats = this.props.bedSetTableData.edges;
+    console.log(Object.keys(this.props.bedSetTableData))
     let cols = Object.keys(bed_stats[0].node);
     let data = bed_stats.map((value) => {
       return value.node;
@@ -60,7 +39,7 @@ export default class BedSetTable extends React.Component {
 
     let bedSetFig = []
 
-    Object.entries(schema).forEach(([key, value], index) => {
+    Object.entries(this.props.schema).forEach(([key, value], index) => {
       if (value.type === "image") {
         bedSetFig.push({
           id: key,
@@ -71,7 +50,6 @@ export default class BedSetTable extends React.Component {
     });
 
     this.setState({
-      schema: schema,
       columns: cols,
       tableColumns: this.getColumns(cols),
       bedSetData: editable,

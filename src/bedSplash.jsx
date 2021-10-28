@@ -10,12 +10,7 @@ import BedInfo from "./bedInfo";
 import { Label } from "semantic-ui-react";
 import "./style/splash.css";
 import bedhost_api_url, { client } from "./const/server";
-import {
-  GET_BED_NAME,
-  GET_BED_GENOME,
-  GET_BED_FIGS,
-  GET_BED_FILES,
-} from "./graphql/bedQueries";
+import { GET_BED_SPLASH } from "./graphql/bedQueries";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -31,11 +26,16 @@ export default class BedSplash extends React.Component {
       bedDownload: {},
       trackPath: "",
       bigbed: false,
+      bedMeta: {},
+      bedGenome: {},
+      bedSchema: {},
+      bedStats: {}
     };
   }
 
   async componentDidMount() {
     let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
+    this.setState({ bedSchema: schema });
     console.log("schema: ", schema);
 
     await api
@@ -47,79 +47,75 @@ export default class BedSplash extends React.Component {
         }
       });
 
-    // get bed name via Graphql
-    const bed_name = await client
+    // get bedsplash data via Graphql
+    const res = await client
       .query({
-        query: GET_BED_NAME,
-        variables: { md5sum: this.props.match.params.bed_md5sum },
-      })
-      .then(({ data }) => data.bedfiles.edges[0].node.name);
-
-    const genome = await client
-      .query({
-        query: GET_BED_GENOME,
-        variables: { md5sum: this.props.match.params.bed_md5sum },
-      })
-      .then(({ data }) => data.bedfiles.edges[0].node.genome);
-
-    this.setState({
-      bedName: bed_name,
-      trackPath:
-        "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" +
-        genome +
-        "&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/" +
-        bed_name +
-        ".bigBed",
-    });
-
-    // get bed figures via Graphql
-    const bed_figs = await client
-      .query({
-        query: GET_BED_FIGS,
+        query: GET_BED_SPLASH,
         variables: { md5sum: this.props.match.params.bed_md5sum },
       })
       .then(({ data }) => data.bedfiles.edges[0].node);
 
-    let newbedFig = Object.entries(bed_figs).map(([key, value], index) => {
-      return {
-        id: key,
-        title: JSON.parse(value).title,
-        src_pdf:
-          bedhost_api_url +
-          "/api/bed/" +
-          this.props.match.params.bed_md5sum +
-          "/img/" +
-          schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)]
-            .label +
-          "?format=pdf",
-        src_png:
-          bedhost_api_url +
-          "/api/bed/" +
-          this.props.match.params.bed_md5sum +
-          "/img/" +
-          schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)]
-            .label +
-          "?format=png",
-      };
+    let bedStats = []
+    Object.entries(res).forEach(([key, value], index) => {
+      if (schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "number") {
+        bedStats.push(
+          {
+            label: schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].description,
+            data: res[key]
+          }
+        )
+      }
     });
 
-    this.setState({ bedFig: newbedFig });
-
-    // get bed files via Graphql
-    const files = await client
-      .query({
-        query: GET_BED_FILES,
-        variables: { md5sum: this.props.match.params.bed_md5sum },
-      })
-      .then(({ data }) => data.bedfiles.edges[0].node);
+    let newbedFig = []
+    Object.entries(schema).forEach(([key, value], index) => {
+      if (value.type === "image") {
+        newbedFig.push(
+          {
+            id: key,
+            title: value.description,
+            src_pdf:
+              bedhost_api_url +
+              "/api/bed/" +
+              this.props.match.params.bed_md5sum +
+              "/img/" +
+              schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)]
+                .label +
+              "?format=pdf",
+            src_png:
+              bedhost_api_url +
+              "/api/bed/" +
+              this.props.match.params.bed_md5sum +
+              "/img/" +
+              schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)]
+                .label +
+              "?format=png",
+          }
+        )
+      }
+    });
 
     let newbedFiles = {}
-    Object.entries(files).map(([key, value], index) => {
-      newbedFiles[key] = JSON.parse(value).size;
-      return newbedFiles
+    Object.entries(schema).forEach(([key, value], index) => {
+      if (value.type === "file") {
+        newbedFiles[key] = JSON.parse(res[key]).size;
+      }
     });
 
-    this.setState({ bedFiles: newbedFiles });
+    this.setState({
+      bedName: res.name,
+      bedGenome: JSON.parse(res.genome),
+      bedMeta: JSON.parse(res.other),
+      bedStats: bedStats,
+      bedFig: newbedFig,
+      bedFiles: newbedFiles,
+      trackPath:
+        "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" +
+        res.genome +
+        "&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/" +
+        res.bed_name +
+        ".bigBed",
+    });
 
     if (this.state.bigbed) {
       this.setState({
@@ -210,7 +206,14 @@ export default class BedSplash extends React.Component {
           >
             <Row>
               <Col sm={4} md={4}>
-                <BedInfo bed_md5sum={this.props.match.params.bed_md5sum} />
+                {Object.keys(this.state.bedStats).length > 0 ? (
+                  <BedInfo
+                    bed_md5sum={this.props.match.params.bed_md5sum}
+                    bed_genome={this.state.bedGenome}
+                    bed_info={this.state.bedMeta}
+                    bed_stats={this.state.bedStats}
+                  />
+                ) : null}
                 <Label
                   style={{
                     marginTop: "15px",

@@ -151,3 +151,51 @@ export const QUERY_BEDSET = gql`
     }
   }
 `;
+
+export const GET_BEDSET_SPLASH = gql`
+  query bedsets($md5sum: String!) {
+    bedsets(filters: { md5sum: $md5sum }) {
+      edges {
+        node {
+          name
+          genome
+          bedsetMeans
+          bedsetStandardDeviation
+          bedsetPep
+          bedsetTarArchivePath
+          bedsetIgdDatabasePath
+          bedsetBedfilesGdStats
+          bedsetGdStats
+          regionCommonality
+          bedfiles {
+            edges {
+              node {
+                name
+                md5sum
+                regionsNo
+                gcContent
+                meanRegionWidth
+                meanAbsoluteTssDist
+                exonFrequency
+                exonPercentage
+                intronFrequency
+                intronPercentage
+                promoterproxFrequency
+                promoterproxPercentage
+                promotercoreFrequency
+                promotercorePercentage
+                intergenicFrequency
+                intergenicPercentage
+                threeutrFrequency
+                threeutrPercentage
+                fiveutrFrequency
+                fiveutrPercentage
+              }
+            }
+            totalCount
+          }
+        }
+      }
+    }
+  }
+`;
