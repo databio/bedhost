@@ -43,5 +43,5 @@ jobs:
         dockerfile: ./dev.Dockerfile
         username: ${{ secrets.DOCKER_USER }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        repository: databio/bedhost
+        repository: databio/bedhost:dev
         tag_with_ref: true
