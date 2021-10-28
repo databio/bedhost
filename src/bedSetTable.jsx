@@ -30,7 +30,7 @@ export default class BedSetTable extends React.Component {
   async componentDidMount() {
     const bed_count = this.props.bedSetTableData.totalCount;
     const bed_stats = this.props.bedSetTableData.edges;
-    console.log(Object.keys(this.props.bedSetTableData))
+
     let cols = Object.keys(bed_stats[0].node);
     let data = bed_stats.map((value) => {
       return value.node;
@@ -143,7 +143,7 @@ export default class BedSetTable extends React.Component {
   }
 
   bedSelected(rows) {
-    console.log("Selected Row Data:", rows);
+    // console.log("Selected Row Data:", rows);
     this.state.selectedBedId.splice(0, this.state.selectedBedId.length);
     this.state.selectedBedName.splice(0, this.state.selectedBedName.length);
     for (var i = 0; i < rows.length; i++) {

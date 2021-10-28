@@ -36,7 +36,6 @@ export default class BedSplash extends React.Component {
   async componentDidMount() {
     let schema = await api.get("/api/bed/all/schema").then(({ data }) => data);
     this.setState({ bedSchema: schema });
-    console.log("schema: ", schema);
 
     await api
       .get("/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigBed")

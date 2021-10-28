@@ -34,7 +34,7 @@ export default class BedSetBarChart extends React.Component {
         };
       }
     );
-    console.log("BED set stats: ", data_value);
+    // console.log("BED set stats: ", data_value);
     this.setState({ data: data_value });
   }
 

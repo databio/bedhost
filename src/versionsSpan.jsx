@@ -25,7 +25,7 @@ export default class VersionsSpan extends React.Component {
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
-    console.log("versions retrieved from the server: ", data);
+
     this.setState({
       openapi_version: data["openapi_version"],
       python_version: data["python_version"],

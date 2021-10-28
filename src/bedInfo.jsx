@@ -5,9 +5,7 @@ import { FaQuestionCircle } from "react-icons/fa";
 
 export default function BedInfo(props) {
   return (
-
     <div>
-      {console.log("props:", props.bed_genome.alias, props.bed_genome.digest)}
       <Label
         style={{
           marginLeft: "15px",
