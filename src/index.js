@@ -14,13 +14,13 @@ styleLink.href = "https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css
 document.head.appendChild(styleLink);
 
 ReactDOM.render(
-  <Router>
-      <Switch >
-        <Route exact path="/" component={Home}/>
-        <Route exact path="/about" component={About}/>
-        <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash}/>
-        <Route path="/bedsplash/:bed_md5sum" component={BedSplash}/>
-      </Switch>
+  <Router history={Router.hashHistory}>
+    <Switch >
+      <Route exact path="/" component={Home} />
+      <Route exact path="/about" component={About} />
+      <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash} />
+      <Route path="/bedsplash/:bed_md5sum" component={BedSplash} />
+    </Switch>
   </Router>,
   document.getElementById('root')
 );
