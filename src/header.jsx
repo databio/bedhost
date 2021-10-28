@@ -14,7 +14,7 @@ export default function Header() {
       variant="dark"
       style={{ minWidth: "900px" }}
     >
-      <Navbar.Brand style={{ marginLeft: "30px" }} href="/#home">
+      <Navbar.Brand style={{ marginLeft: "30px" }} href="/">
         <img
           src="/ui/bedbase_logo.svg"
           height="45px"
