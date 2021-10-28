@@ -112,7 +112,7 @@ export default class BedSplash extends React.Component {
         "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" +
         res.genome +
         "&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/" +
-        res.bed_name +
+        res.name +
         ".bigBed",
     });
 
