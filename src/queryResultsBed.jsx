@@ -66,7 +66,7 @@ export default class ResultsBed extends React.Component {
       });
     }
     this.setState({ query: this.props.query });
-    console.log("BED files retrieved from the server: ", res);
+    // console.log("BED files retrieved from the server: ", res);
     this.getColumns();
     this.getData();
   }
@@ -96,7 +96,7 @@ export default class ResultsBed extends React.Component {
       });
     }
     this.setState({ md5sum: this.props.md5sum });
-    console.log("BED files retrieved from the server: ", res);
+    // console.log("BED files retrieved from the server: ", res);
     this.getColumns();
     this.getData();
   }

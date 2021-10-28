@@ -28,7 +28,7 @@ export default class BedCountsSpan extends React.Component {
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
-    console.log("BED file count retrieved from the server: ", bfcount.data);
+    // console.log("BED file count retrieved from the server: ", bfcount.data);
     this.setState({ bed: bfcount.data });
 
     let bscount = await api
@@ -36,7 +36,7 @@ export default class BedCountsSpan extends React.Component {
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
-    console.log("BED set count retrieved from the server: ", bscount.data);
+    // console.log("BED set count retrieved from the server: ", bscount.data);
     this.setState({ bedSet: bscount.data });
 
     let bed = await api.get("/api/bed/all/data?ids=md5sum&limit=1").then(({ data }) => data);

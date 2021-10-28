@@ -12,14 +12,7 @@ import { Label } from "semantic-ui-react";
 import { HashLink as Link } from "react-router-hash-link";
 import { FaQuestionCircle } from "react-icons/fa";
 import bedhost_api_url, { client } from "./const/server";
-import {
-  GET_BEDSET_NAME,
-  GET_BEDSET_GENOME,
-  GET_BEDSET_STATS,
-  GET_BEDSET_DOWNLOADS,
-  GET_BEDSET_FIGS,
-  GET_BEDSET_BEDFILE_COUNT,
-} from "./graphql/bedSetQueries";
+import { GET_BEDSET_SPLASH } from "./graphql/bedSetQueries";
 import "./style/splash.css";
 
 const api = axios.create({
@@ -39,6 +32,8 @@ export default class BedSetSplash extends React.Component {
       bedSetFig: false,
       hubFilePath: "",
       description: "",
+      bedSetTableData: {},
+      bedSchema: {}
     };
   }
 
@@ -51,39 +46,91 @@ export default class BedSetSplash extends React.Component {
       .get("/api/bedset/all/schema")
       .then(({ data }) => data);
 
-    // get bed name via Graphql
-    const bedset_name = await client
+    // get bedsetsplash data via Graphql
+    const res = await client
       .query({
-        query: GET_BEDSET_NAME,
-        variables: { md5sum: this.props.match.params.bedset_md5sum },
-      })
-      .then(({ data }) => data.bedsets.edges[0].node.name);
-
-    // get bedset genome via Graphql
-    const genome = await client
-      .query({
-        query: GET_BEDSET_GENOME,
-        variables: { md5sum: this.props.match.params.bedset_md5sum },
-      })
-      .then(({ data }) => data.bedsets.edges[0].node.genome);
-
-    // get bedset stats via Graphql
-    const stats = await client
-      .query({
-        query: GET_BEDSET_STATS,
+        query: GET_BEDSET_SPLASH,
         variables: { md5sum: this.props.match.params.bedset_md5sum },
       })
       .then(({ data }) => data.bedsets.edges[0].node);
 
-    const avg = JSON.parse(stats.bedsetMeans);
-    const sd = JSON.parse(stats.bedsetStandardDeviation);
+    const avg = JSON.parse(res.bedsetMeans);
+    const sd = JSON.parse(res.bedsetStandardDeviation);
+
+    let bedSetFile = []
+    Object.entries(res).forEach(([key, value], index) => {
+      if (bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)] &&
+        bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "file") {
+        bedSetFile.push({
+          id: key,
+          label: bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].label.replaceAll("_", " "),
+          size: JSON.parse(res[key]).size,
+          url: bedhost_api_url +
+            "/api/bedset/" +
+            this.props.match.params.bedset_md5sum +
+            "/file/" +
+            bedset_schema[
+              key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+            ].label,
+          http: bedhost_api_url +
+            "/api/bedset/" +
+            this.props.match.params.bedset_md5sum +
+            "/file_path/" +
+            bedset_schema[
+              key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+            ].label +
+            "?remoteClass=http",
+          s3: bedhost_api_url +
+            "/api/bedset/" +
+            this.props.match.params.bedset_md5sum +
+            "/file_path/" +
+            bedset_schema[
+              key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+            ].label +
+            "?remoteClass=s3"
+        })
+      }
+    });
+
+    let bedSetFig = []
+    Object.entries(res).forEach(([key, value], index) => {
+      if (bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)] &&
+        bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "image") {
+        bedSetFig.push({
+          id: key,
+          src_pdf:
+            bedhost_api_url +
+            "/api/bedset/" +
+            this.props.match.params.bedset_md5sum +
+            "/img/" +
+            bedset_schema[
+              key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+            ].label +
+            "?format=pdf",
+          src_png:
+            bedhost_api_url +
+            "/api/bedset/" +
+            this.props.match.params.bedset_md5sum +
+            "/img/" +
+            bedset_schema[
+              key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
+            ].label +
+            "?format=png",
+        })
+      }
+    });
 
     this.setState({
-      bedSetName: bedset_name,
-      genome: JSON.parse(genome),
+      bedSetName: res.name,
+      genome: JSON.parse(res.genome),
+      bedSetDownload: bedSetFile,
+      bedSetFig: bedSetFig,
+      bedsCount: res.bedfiles.totalCount,
+      bedSetTableData: res.bedfiles,
+      bedSchema: bed_schema,
       hubFilePath:
         "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" +
-        JSON.parse(genome).alias +
+        JSON.parse(res.genome).alias +
         "&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/" +
         this.props.match.params.bedset_md5sum +
         "/bedsetHub/hub.txt",
@@ -126,92 +173,6 @@ export default class BedSetSplash extends React.Component {
           sd.threeutr_percentage.toFixed(3),
         ],
       },
-    });
-
-    // get bedset files via Graphql
-    const files = await client
-      .query({
-        query: GET_BEDSET_DOWNLOADS,
-        variables: { md5sum: this.props.match.params.bedset_md5sum },
-      })
-      .then(({ data }) => data.bedsets.edges[0].node);
-
-    let bedSetFile = Object.entries(files).map(([key, value], index) => {
-      return {
-        id: key,
-        label: bedset_schema[
-          key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-        ].label.replaceAll("_", " "),
-        size: JSON.parse(value).size,
-        url: bedhost_api_url +
-          "/api/bedset/" +
-          this.props.match.params.bedset_md5sum +
-          "/file/" +
-          bedset_schema[
-            key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-          ].label,
-        http: bedhost_api_url +
-          "/api/bedset/" +
-          this.props.match.params.bedset_md5sum +
-          "/file_path/" +
-          bedset_schema[
-            key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-          ].label +
-          "?remoteClass=http",
-        s3: bedhost_api_url +
-          "/api/bedset/" +
-          this.props.match.params.bedset_md5sum +
-          "/file_path/" +
-          bedset_schema[
-            key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-          ].label +
-          "?remoteClass=s3"
-      };
-    });
-    this.setState({ bedSetDownload: bedSetFile });
-
-    // get bedset figures via Graphql
-    const figs = await client
-      .query({
-        query: GET_BEDSET_FIGS,
-        variables: { md5sum: this.props.match.params.bedset_md5sum },
-      })
-      .then(({ data }) => data.bedsets.edges[0].node);
-
-    let bedSetFig = Object.entries(figs).map(([key, value], index) => {
-      return {
-        id: key,
-        src_pdf:
-          bedhost_api_url +
-          "/api/bedset/" +
-          this.props.match.params.bedset_md5sum +
-          "/img/" +
-          bedset_schema[
-            key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-          ].label +
-          "?format=pdf",
-        src_png:
-          bedhost_api_url +
-          "/api/bedset/" +
-          this.props.match.params.bedset_md5sum +
-          "/img/" +
-          bedset_schema[
-            key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)
-          ].label +
-          "?format=png",
-      };
-    });
-    this.setState({ bedSetFig: bedSetFig });
-
-    const bed_count = await client
-      .query({
-        query: GET_BEDSET_BEDFILE_COUNT,
-        variables: { md5sum: this.props.match.params.bedset_md5sum },
-      })
-      .then(({ data }) => data.bedsets.edges[0].node.bedfiles.totalCount);
-
-    this.setState({
-      bedsCount: bed_count,
     });
   }
 
@@ -561,9 +522,12 @@ export default class BedSetSplash extends React.Component {
                 below the table. {"\n"}
               </span>
             </div>
-            <BedSetTable
-              bedset_md5sum={this.props.match.params.bedset_md5sum}
-            />
+            {Object.keys(this.state.bedSetTableData).length > 0 ? (
+              <BedSetTable
+                bedset_md5sum={this.props.match.params.bedset_md5sum}
+                bedSetTableData={this.state.bedSetTableData}
+                schema={this.state.bedSchema}
+              />) : null}
           </Container>
         </div>
         <VersionsSpan />

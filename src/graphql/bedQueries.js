@@ -176,3 +176,30 @@ export const GET_BED_DIST = gql`
     }
   }
 `;
+
+export const GET_BED_SPLASH = gql`
+  query bedfiles($md5sum: String!) {
+    bedfiles(filters: { md5sum: $md5sum }) {
+      edges {
+        node {
+          name
+          genome
+          bedfile
+          bigbedfile
+          gcContent
+          regionsNo
+          meanAbsoluteTssDist
+          meanRegionWidth
+          exonPercentage
+          intronPercentage
+          promoterproxPercentage
+          intergenicPercentage
+          promotercorePercentage
+          fiveutrPercentage
+          threeutrPercentage
+          other
+        }
+      }
+    }
+  }
+`;
