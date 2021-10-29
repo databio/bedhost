@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Label } from "semantic-ui-react";
+import Spinner from "react-bootstrap/Spinner";
 import axios from "axios";
 import bedhost_api_url from "./const/server";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -17,8 +18,8 @@ export default class BedCountsSpan extends React.Component {
       bedSet: -1,
       sampleBed: "",
       sampleBedSet: "",
-      bedAPI: -1,
-      bedSetAPI: -1,
+      bedAPI: "",
+      bedSetAPI: "",
     };
   }
 
@@ -75,15 +76,14 @@ export default class BedCountsSpan extends React.Component {
   }
 
   render() {
-    return
-    <div>
-      <h1>Welcome to BEDBASE</h1>
-      <span style={{ fontSize: "12pt" }}>
-        Here we provide a web interface and a RESTful API to access the
-        statistics and plots of BED files and BED sets that produced by the
-        bedstat and bedbuncher pipeline.{" "}
-      </span>
-      {this.state.bedAPI + this.state.bedSetAPI !== -2 ? (
+    return (
+      <div>
+        <h1>Welcome to BEDBASE</h1>
+        <span style={{ fontSize: "12pt" }}>
+          Here we provide a web interface and a RESTful API to access the
+          statistics and plots of BED files and BED sets that produced by the
+          bedstat and bedbuncher pipeline.{" "}
+        </span>
         <div>
           <Label
             style={{
@@ -99,105 +99,113 @@ export default class BedCountsSpan extends React.Component {
           >
             BEDBASE Status
           </Label>
-          <table style={{ marginLeft: "15px" }}>
-            <tbody>
-              <tr>
-                <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  Table Name
-                </th>
-                <th style={{ padding: "3px 15px", fontSize: "10pt" }}>Size</th>
-                <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  Reference Assemblies
-                </th>
-                <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  Endpoints Served
-                </th>
-                <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  Example
-                </th>
-              </tr>
-              <tr style={{ verticalAlign: "top" }}>
-                <td
-                  style={{
-                    padding: "3px 15px",
-                    fontSize: "10pt",
-                    fontWeight: "bold",
-                  }}
-                >
-                  BED files
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  {this.state.bed}
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  hg38{" "}
-                  <a
-                    href={"http://refgenomes.databio.org/#hg38"}
-                    className="home-link"
-                    style={{ fontSize: "10pt" }}
-                  >
-                    [Refgenie]
-                  </a>
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  {this.state.bedAPI}
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  <Link
-                    className="home-link"
-                    to={{
-                      pathname: this.state.sampleBed,
+          {this.state.bedSet !== -1 ? (
+            <table style={{ marginLeft: "15px" }}>
+              <tbody>
+                <tr>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Table Name
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>Size</th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Reference Assemblies
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Endpoints Served
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Example
+                  </th>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
                     }}
                   >
-                    BED splash page
-                  </Link>
-                </td>
-              </tr>
-              <tr style={{ verticalAlign: "top" }}>
-                <td
-                  style={{
-                    padding: "3px 15px",
-                    fontSize: "10pt",
-                    fontWeight: "bold",
-                  }}
-                >
-                  BED sets
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  {this.state.bedSet}
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  hg38{" "}
-                  <a
-                    href={"http://refgenomes.databio.org/#hg38"}
-                    className="home-link"
-                    style={{ fontSize: "10pt" }}
-                  >
-                    [Refgenie]
-                  </a>
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  {this.state.bedSetAPI}
-                </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                  <Link
-                    className="home-link"
-                    to={{
-                      pathname: this.state.sampleBedSet,
+                    BED files
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    {this.state.bed}
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    hg38{" "}
+                    <a
+                      href={"http://refgenomes.databio.org/#hg38"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      [Refgenie]
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    {this.state.bedAPI}
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <Link
+                      className="home-link"
+                      to={{
+                        pathname: this.state.sampleBed,
+                      }}
+                    >
+                      BED splash page
+                    </Link>
+                  </td>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
                     }}
                   >
-                    BED set splash page
-                  </Link>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>) : (
-        <span>
-          Loading data......
-          {bedhost_api_url}?
-        </span>
-      )};
-    </div>
+                    BED sets
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    {this.state.bedSet}
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    hg38{" "}
+                    <a
+                      href={"http://refgenomes.databio.org/#hg38"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      [Refgenie]
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    {this.state.bedSetAPI}
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <Link
+                      className="home-link"
+                      to={{
+                        pathname: this.state.sampleBedSet,
+                      }}
+                    >
+                      BED set splash page
+                    </Link>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          ) : (
+            <>
+              <Spinner
+                animation="border"
+                size="sm"
+                style={{ marginBottom: "5px", color: "lightgray" }}
+              />
+              <span style={{ color: "lightgray" }}>Loading data </span>
+            </>
+          )}
+        </div>
+      </div>
+    )
+
   }
 }
