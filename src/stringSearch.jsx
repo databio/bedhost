@@ -19,7 +19,7 @@ export default class Search extends React.Component {
       showResults: false,
       searchTerms: "K562",
       genomeList: [],
-      genome: "",
+      genome: "hg38",
     };
   }
 
@@ -69,9 +69,9 @@ export default class Search extends React.Component {
             <input
               className="float-left"
               style={{
-                marginRight: "15px",
-                width: "80%",
-                height: "35px",
+                marginRight: "10px",
+                width: "86%",
+                height: "33px",
                 padding: "5px",
                 borderColor: "#ced4da",
                 borderStyle: "solid",
@@ -88,7 +88,7 @@ export default class Search extends React.Component {
               title={this.state.genome ? this.state.genome : "Select Genome"}
               id="select-genome"
               onSelect={this.handleSelect.bind(this)}
-              style={{ marginRight: "2px" }}
+              style={{ height: "33px", marginRight: "10px" }}
               onKeyPress={this.handleKeypress.bind(this)}
             >
               {this.state.genomeList.map((value, index) => {
@@ -100,6 +100,7 @@ export default class Search extends React.Component {
               })}
             </DropdownButton>
             <button
+              style={{ height: "33px" }}
               className="float-right btn btn-sm my-btn"
               onClick={this.setShowResults.bind(this)}
             >

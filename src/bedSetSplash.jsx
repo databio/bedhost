@@ -226,6 +226,7 @@ export default class BedSetSplash extends React.Component {
                           fontSize: "10pt",
                           fontWeight: "bold",
                           color: "teal",
+                          width: '150px'
                         }}
                       >
                         md5sum
@@ -321,6 +322,7 @@ export default class BedSetSplash extends React.Component {
                             fontSize: "10pt",
                             fontWeight: "bold",
                             color: "teal",
+                            width: '150px'
                           }}
                         >
                           {value.label ===
@@ -366,12 +368,12 @@ export default class BedSetSplash extends React.Component {
                           fontWeight: "bold",
                         }}
                       >
-                        http
+                        {" "} http {" "}
                       </a> |
                       <a href={file.s3} className="home-link" style={{ fontSize: "10pt", fontWeight: "bold" }}>
-                        s3
+                        {" "} s3  {" "}
                       </a>
-                      : {file.label} ({file.size})
+                      : {" "}{file.label} {" "} ({file.size})
                     </p>
                   );
                 })}

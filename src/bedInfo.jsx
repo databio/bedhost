@@ -19,10 +19,7 @@ export default function BedInfo(props) {
       </Label>
       <table>
         <tbody>
-          <tr>
-            <th className="absorbing-column">{""}</th>
-            <th>{""}</th>
-          </tr>
+
           <tr style={{ verticalAlign: "top" }}>
             <td
               style={{
@@ -30,6 +27,7 @@ export default function BedInfo(props) {
                 fontSize: "10pt",
                 fontWeight: "bold",
                 color: "teal",
+                width: '200px'
               }}
             >
               md5sum
@@ -58,6 +56,7 @@ export default function BedInfo(props) {
                     fontSize: "10pt",
                     fontWeight: "bold",
                     color: "teal",
+                    width: '200px'
                   }}
                 >
                   {key.charAt(0).toUpperCase() +
@@ -123,6 +122,7 @@ export default function BedInfo(props) {
                   fontSize: "10pt",
                   fontWeight: "bold",
                   color: "teal",
+                  width: '200px'
                 }}
               >
                 {value.label ===

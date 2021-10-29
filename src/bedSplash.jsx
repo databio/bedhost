@@ -264,7 +264,7 @@ export default class BedSplash extends React.Component {
                   GenomicDistribution Plots
                 </Label>
                 {this.state.bedFig ? (
-                  <ImgGrid imgList={this.state.bedFig} page="bed" />
+                  <ImgGrid style={{ marginLeft: "15px", }} imgList={this.state.bedFig} page="bed" />
                 ) : null}
               </Col>
             </Row>
