@@ -84,7 +84,7 @@ export default class BedSetTable extends React.Component {
         tableColumns.push({
           title: cols[i],
           field: cols[i],
-          width: 500,
+          width: 200,
           cellStyle: {
             backgroundColor: "#333535",
             color: "#FFF",
