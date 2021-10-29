@@ -17,8 +17,8 @@ export default class BedCountsSpan extends React.Component {
       bedSet: -1,
       sampleBed: "",
       sampleBedSet: "",
-      bedAPI: "",
-      bedSetAPI: "",
+      bedAPI: -1,
+      bedSetAPI: -1,
     };
   }
 
@@ -75,14 +75,15 @@ export default class BedCountsSpan extends React.Component {
   }
 
   render() {
-    return this.state["bed"] + this.state["bedSet"] !== -2 ? (
-      <div>
-        <h1>Welcome to BEDBASE</h1>
-        <span style={{ fontSize: "12pt" }}>
-          Here we provide a web interface and a RESTful API to access the
-          statistics and plots of BED files and BED sets that produced by the
-          bedstat and bedbuncher pipeline.{" "}
-        </span>
+    return
+    <div>
+      <h1>Welcome to BEDBASE</h1>
+      <span style={{ fontSize: "12pt" }}>
+        Here we provide a web interface and a RESTful API to access the
+        statistics and plots of BED files and BED sets that produced by the
+        bedstat and bedbuncher pipeline.{" "}
+      </span>
+      {this.state.bedAPI + this.state.bedSetAPI !== -2 ? (
         <div>
           <Label
             style={{
@@ -191,13 +192,12 @@ export default class BedCountsSpan extends React.Component {
               </tr>
             </tbody>
           </table>
-        </div>
-      </div>
-    ) : (
-      <span>
-        Could not fetch data from the server, is bedhost running at{" "}
-        {bedhost_api_url}?
-      </span>
-    );
+        </div>) : (
+        <span>
+          Loading data......
+          {bedhost_api_url}?
+        </span>
+      )};
+    </div>
   }
 }
