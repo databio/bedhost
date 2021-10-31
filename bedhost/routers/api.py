@@ -93,8 +93,8 @@ async def get_bed_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
-
-    return bbc.select_unique(table_name=BED_TABLE, column="genome")
+    print(bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"]))
+    return bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"])
 
 
 @router.get("/bed/all/data/count", response_model=int)
@@ -356,8 +356,8 @@ async def get_bedset_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
-
-    return bbc.select_unique(table_name=BEDSET_TABLE, column="genome")
+    print(bbc.bedset.select_distinct(table_name=BEDSET_TABLE, columns=["genome"]))
+    return bbc.bedset.select_distinct(table_name=BEDSET_TABLE, columns=["genome"])
 
 
 @router.get("/bedset/all/data/count", response_model=int)
