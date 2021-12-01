@@ -3,7 +3,7 @@ bbconf>=0.2.0
 fastapi>=0.61.2
 itsdangerous
 logmuse
-#pipestat>=0.2.0
+#pipestat>=0.3.0
 pipestat_reader
 python-multipart
 pyyaml
