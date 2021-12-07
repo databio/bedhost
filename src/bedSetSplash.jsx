@@ -253,7 +253,7 @@ export default class BedSetSplash extends React.Component {
                             <a
                               href={
                                 "http://refgenomes.databio.org/v3/genomes/splash/" +
-                                props.bed_genome.digest
+                                this.state.genome.digest
                               }
                               className="home-link"
                               style={{
