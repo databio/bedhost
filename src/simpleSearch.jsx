@@ -20,7 +20,8 @@ export default class SimpleSearch extends React.Component {
             showResults: false,
             searchTerm: "HEK293",
             genomeList: [],
-            genome: ""
+            genome: "",
+            searching: false
         };
     }
 
@@ -87,11 +88,24 @@ export default class SimpleSearch extends React.Component {
                                 )
                             })}
                         </DropdownButton>
-                        <button className='float-right btn btn-sm my-btn' onClick={this.setShowResults.bind(this)}>SEARCH</button>
+                        <button
+                            disabled={this.state.searching}
+                            className='float-right btn btn-sm my-btn' 
+                            onClick={() => {
+                                this.setShowResults.bind(this)
+                                this.setState({searching: true})
+                            }}
+                        >
+                            {this.state.searching ? "Searching..." : "SEARCH"}
+                        </button>
 
                     </Row>
                     {this.state.showResults ? (
-                        <ResultsBed term={this.state.searchTerm} genome={this.state.genome}/>
+                        <ResultsBed 
+                            term={this.state.searchTerm} 
+                            genome={this.state.genome}
+                            setSearchingFalse={() => this.setState({seaching: false})}    
+                        />
                     ) : null
                     }
                 </Container>

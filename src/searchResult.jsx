@@ -66,6 +66,7 @@ export default class ResultsBed extends React.Component {
     }
 
     this.setState({ bedData: res });
+    this.props.setSearchingFalse()
 
     if (res.length >= 50) {
       this.setState({
