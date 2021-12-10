@@ -198,7 +198,7 @@ export default class BedCountsSpan extends React.Component {
               <Spinner
                 animation="border"
                 size="sm"
-                style={{ marginBottom: "5px", color: "lightgray" }}
+                style={{ marginBottom: "5px", marginRight: "5px", color: "lightgray" }}
               />
               <span style={{ color: "lightgray" }}>Loading data </span>
             </>

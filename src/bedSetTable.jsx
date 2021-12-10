@@ -263,7 +263,7 @@ export default class BedSetTable extends React.Component {
                       <Spinner
                         animation="border"
                         size="sm"
-                        style={{ color: "lightgray" }}
+                        style={{ marginRight: "5px", color: "lightgray" }}
                       />
                       <p style={{ color: "lightgray" }}>Loading data </p>
                     </div>
