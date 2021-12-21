@@ -1,2 +1,3 @@
 -e git+git://github.com/pepkit/pipestat@dev#egg=pipestat
+-e git+git://github.com/pepkit/pipestat_reader@dev#egg=pipestat_reader
 -e git+git://github.com/databio/bbconf@dev#egg=bbconf
