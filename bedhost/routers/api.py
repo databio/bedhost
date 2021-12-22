@@ -93,7 +93,7 @@ async def get_bed_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
-    print(bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"]))
+
     return bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"])
 
 
@@ -356,7 +356,7 @@ async def get_bedset_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
-    print(bbc.bedset.select_distinct(table_name=BEDSET_TABLE, columns=["genome"]))
+
     return bbc.bedset.select_distinct(table_name=BEDSET_TABLE, columns=["genome"])
 
 
