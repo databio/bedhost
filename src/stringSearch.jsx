@@ -20,6 +20,7 @@ export default class Search extends React.Component {
       searchTerms: "K562",
       genomeList: [],
       genome: "hg38",
+      searching: false
     };
   }
 
@@ -29,7 +30,10 @@ export default class Search extends React.Component {
   }
 
   setShowResults() {
-    this.setState({ showResults: true });
+    this.setState({
+      showResults: true,
+      searching: true
+    });
   }
 
   setSearchTerms(event) {
@@ -104,13 +108,14 @@ export default class Search extends React.Component {
               className="float-right btn btn-sm my-btn"
               onClick={this.setShowResults.bind(this)}
             >
-              SEARCH
+              {this.state.searching ? "Searching..." : "SEARCH"}
             </button>
           </Row>
           {this.state.showResults ? (
             <ResultsBed
               terms={this.state.searchTerms}
               genome={this.state.genome}
+              setSearchingFalse={() => this.setState({ seaching: false })}
             />
           ) : null}
         </Container>
