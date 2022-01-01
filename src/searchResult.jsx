@@ -66,7 +66,7 @@ export default class ResultsBed extends React.Component {
     }
 
     this.setState({ bedData: res });
-    this.props.setSearchingFalse()
+    this.props.setSearchingFalse(false);
 
     if (res.length >= 50) {
       this.setState({
@@ -295,7 +295,14 @@ export default class ResultsBed extends React.Component {
             }}
           />
         </div>
-      ) : null
+      ) : (<div>
+        <Spinner
+          animation="border"
+          size="sm"
+          style={{ marginRight: "5px", color: "lightgray" }}
+        />
+        <p style={{ color: "lightgray" }}>Loading data </p>
+      </div>)
     ) : null;
   }
 }

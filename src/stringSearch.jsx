@@ -36,6 +36,10 @@ export default class Search extends React.Component {
     });
   }
 
+  setSearchingFalse(val) {
+    this.setState({ searching: val });
+  };
+
   setSearchTerms(event) {
     this.setState({
       showResults: false,
@@ -74,7 +78,7 @@ export default class Search extends React.Component {
               className="float-left"
               style={{
                 marginRight: "10px",
-                width: "86%",
+                width: "84%",
                 height: "33px",
                 padding: "5px",
                 borderColor: "#ced4da",
@@ -115,7 +119,7 @@ export default class Search extends React.Component {
             <ResultsBed
               terms={this.state.searchTerms}
               genome={this.state.genome}
-              setSearchingFalse={() => this.setState({ seaching: false })}
+              setSearchingFalse={this.setSearchingFalse.bind(this)}
             />
           ) : null}
         </Container>
