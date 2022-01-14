@@ -140,10 +140,10 @@ export default class BedSetSplash extends React.Component {
           data: [avg.gc_content.toFixed(3), sd.gc_content.toFixed(3)],
         },
         {
-          label: bed_schema["mean_absolute_tss_dist"].description,
+          label: bed_schema["median_absolute_tss_dist"].description,
           data: [
-            avg.mean_absolute_tss_dist.toFixed(3),
-            sd.mean_absolute_tss_dist.toFixed(3),
+            avg.median_absolute_tss_dist.toFixed(3),
+            sd.median_absolute_tss_dist.toFixed(3),
           ],
         },
         {
@@ -332,8 +332,8 @@ export default class BedSetSplash extends React.Component {
                           }}
                         >
                           {value.label ===
-                            "Mean absolute distance from transcription start sites" ? (
-                            <>Mean absolute distance from TSS</>
+                            "Median absolute distance from transcription start sites" ? (
+                            <>Median TSS distance</>
                           ) : (
                             <>{value.label}</>
                           )}

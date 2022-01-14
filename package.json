@@ -12,7 +12,7 @@
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
     "copy-to-clipboard": "^3.3.1",
-    "graphql": "^15.6.1",
+    "graphql": "^15.7.2",
     "jQuery-QueryBuilder": "^2.6.2",
     "lodash": "^4.17.21",
     "material-table": "1.69.1",

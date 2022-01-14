@@ -155,10 +155,10 @@ export default class Info extends React.Component {
                               fontWeight: "bold",
                             }}
                           >
-                            Mean absolute distance from TSS
+                            Median TSS distance
                           </td>
                           <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                            The average absolute distance to the Transcription
+                            The median absolute distance to the Transcription
                             Start Sites (TSS)
                           </td>
                         </tr>
@@ -310,10 +310,10 @@ export default class Info extends React.Component {
                               fontWeight: "bold",
                             }}
                           >
-                            Mean absolute distance from TSS
+                            Median TSS distance
                           </td>
                           <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                            The average absolute distance to the Transcription
+                            The median absolute distance to the Transcription
                             Start Sites (TSS) of the BED set.
                           </td>
                         </tr>

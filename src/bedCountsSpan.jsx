@@ -97,6 +97,92 @@ export default class BedCountsSpan extends React.Component {
             color="teal"
             ribbon
           >
+            Available Servers
+          </Label>
+          {
+            <table style={{ marginLeft: "15px" }}>
+              <tbody>
+                <tr>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Server Name
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    URL
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Maintainer
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Description
+                  </th>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Primary server
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <a
+                      href={"http://bedbase.org"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      http://bedbase.org
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Sheffield lab
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Main demonstration server
+                  </td>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Dev server
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <a
+                      href={"http://dev1.bedbase.org"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      http://dev1.bedbase.org
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Sheffield lab
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Developmental server
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          }
+          <Label
+            style={{
+              marginTop: "15px",
+              marginBottom: "5px",
+              marginLeft: "15px",
+              fontSize: "15px",
+              padding: "6px 20px 6px 30px",
+            }}
+            as="a"
+            color="teal"
+            ribbon
+          >
             BEDBASE Status
           </Label>
           {this.state.bedSet !== -1 ? (
@@ -203,6 +289,7 @@ export default class BedCountsSpan extends React.Component {
               <span style={{ color: "lightgray" }}>Loading data </span>
             </>
           )}
+
         </div>
       </div>
     )
