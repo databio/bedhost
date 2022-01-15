@@ -65,7 +65,9 @@ def main():
     log_level = DEBUG if args.debug else INFO
     _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
     logmuse.init_logger(name="bbconf", level=log_level)
+    _LOGGER.info("get bedbase cfg")
     bbc = BedBaseConf(bbconf.get_bedbase_cfg(args.config))
+    _LOGGER.info("finish getting bedbase cfg")
     if args.command == "serve":
         from .routers import api, private_api
 

@@ -1,10 +1,11 @@
 import enum
 import shlex
 import subprocess
+import requests
 from typing import Optional
 from bbconf.const import BED_TABLE
 
-from fastapi import APIRouter, HTTPException, Path, Query, Response
+from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
 from fastapi.responses import PlainTextResponse, StreamingResponse
 
 from ..const import *
@@ -588,3 +589,67 @@ async def get_image_for_bedset(
     )
 
     return Response(path, media_type="text/plain")
+
+
+@router.get("/bedset/{md5sum}/track_hub")
+async def get_track_hub_bedset(request: Request, md5sum: str = bsd):
+    """
+    Generate track hub files for the BED set
+    """
+
+    hit = bbc.bedset.select(filter_conditions=[("md5sum", "eq", md5sum)])[0]
+    name = getattr(hit, "name")
+
+    hub_txt = (
+        f"hub \t BEDBASE_{name}\n"
+        f"shortLabel \t BEDBASE_{name}\n"
+        f"longLabel\t BEDBASE {name} signal tracks\n"
+        f"genomesFile\t {request.url_for('get_genomes_file_bedset', md5sum=md5sum)}\n"
+        "email\t bx2ur@virginia.edu\n"
+        "descriptionUrl\t http://www.bedbase.org/"
+    )
+
+    return Response(hub_txt, media_type="text/plain")
+
+
+@router.get("/bedset/{md5sum}/track_hub_genome_file")
+async def get_genomes_file_bedset(request: Request, md5sum: str = bsd):
+    """
+    Generate genomes file for the BED set track hub
+    """
+
+    hit = bbc.bedset.select(filter_conditions=[("md5sum", "eq", md5sum)])[0]
+    genome = getattr(hit, "genome")
+
+    genome_txt = (
+        f"genome\t {genome['alias']}\n"
+        f"trackDb\t	{request.url_for('get_trackDb_file_bedset', md5sum=md5sum)}"
+    )
+
+    return Response(genome_txt, media_type="text/plain")
+
+
+@router.get("/bedset/{md5sum}/track_hub_trackDb_file")
+async def get_trackDb_file_bedset(request: Request, md5sum: str = bsd):
+    """
+    Generate trackDb file for the BED set track hub
+    """
+
+    hit = bbc.select_bedfiles_for_bedset(
+        bedfile_cols=["name", "other"], filter_conditions=[("md5sum", "eq", md5sum)]
+    )
+
+    values = [list(x) for x in hit]
+
+    trackDb_txt = ""
+    for bed in values:
+        trackDb_txt = (
+            trackDb_txt + f"track\t {bed[0]}\n"
+            "type\t bigBed\n"
+            f"bigDataUrl\t http://data.bedbase.org/bigbed_files/{bed[0]}.bigBed\n"
+            f"shortLabel\t {bed[0]}\n"
+            f"longLabel\t {bed[1]['description']}\n"
+            "visibility\t full\n\n"
+        )
+
+    return Response(trackDb_txt, media_type="text/plain")

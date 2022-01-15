@@ -10,7 +10,11 @@ from ..main import _LOGGER, app, bbc
 router = APIRouter()
 
 # private API
-@router.get("/distance/{term}/bedfiles/{genome}", response_model=DBResponse)
+@router.get(
+    "/distance/{term}/bedfiles/{genome}",
+    response_model=DBResponse,
+    include_in_schema=False,
+)
 async def get_bedfiles_in_distance(
     term: str = Path(..., description="search term", example="HEK293"),
     genome: str = Path(..., description="genome assemblies", example="hg38"),
