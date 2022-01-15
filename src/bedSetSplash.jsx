@@ -131,19 +131,21 @@ export default class BedSetSplash extends React.Component {
       hubFilePath:
         "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" +
         JSON.parse(res.genome).alias +
-        "&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/" +
+        "&hubUrl=" +
+        bedhost_api_url +
+        "/api/bedset/" +
         this.props.match.params.bedset_md5sum +
-        "/bedsetHub/hub.txt",
+        "/track_hub",
       bedSetStat: [
         {
           label: bed_schema["gc_content"].description,
           data: [avg.gc_content.toFixed(3), sd.gc_content.toFixed(3)],
         },
         {
-          label: bed_schema["median_absolute_tss_dist"].description,
+          label: bed_schema["median_tss_dist"].description,
           data: [
-            avg.median_absolute_tss_dist.toFixed(3),
-            sd.median_absolute_tss_dist.toFixed(3),
+            avg.median_tss_dist.toFixed(3),
+            sd.median_tss_dist.toFixed(3),
           ],
         },
         {
