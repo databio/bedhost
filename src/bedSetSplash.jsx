@@ -405,7 +405,7 @@ export default class BedSetSplash extends React.Component {
                       bedhost_api_url +
                       "/api/bedset/" +
                       this.props.match.params.bedset_md5sum +
-                      "/data"
+                      "/metadata"
                     }
                     className="home-link"
                     style={{
@@ -441,7 +441,7 @@ export default class BedSetSplash extends React.Component {
                       bedhost_api_url +
                       "/api/bedset/" +
                       this.props.match.params.bedset_md5sum +
-                      "/data?ids=bedset_means&ids=bedset_standard_deviation"
+                      "/metadata?ids=bedset_means&ids=bedset_standard_deviation"
                     }
                     className="home-link"
                     style={{
@@ -459,7 +459,7 @@ export default class BedSetSplash extends React.Component {
                       bedhost_api_url +
                       "/api/bedset/" +
                       this.props.match.params.bedset_md5sum +
-                      "/data?ids=region_commonality"
+                      "/metadata?ids=region_commonality"
                     }
                     className="home-link"
                     style={{
