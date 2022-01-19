@@ -109,13 +109,13 @@ async def get_bedfile_count():
     return int(bbc.bed.record_count)
 
 
-@router.get("/bed/all/data")
+@router.get("/bed/all/metadata")
 async def get_all_bed_metadata(
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
     """
-    Get bedfiles data for selected columns
+    Get bedfiles metadata for selected columns
     """
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
@@ -147,15 +147,15 @@ async def get_bed_schema():
     return serve_schema_for_table(bbc=bbc, table_name=BED_TABLE)
 
 
-@router.get("/bed/{md5sum}/data", response_model=DBResponse)
-async def get_bedfile_data(
+@router.get("/bed/{md5sum}/metadata", response_model=DBResponse)
+async def get_bedfile_metadata(
     md5sum: str = bd,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
 ):
     """
-    Returns data from selected columns for selected bedfile
+    Returns metadata from selected columns for selected bedfile
     """
 
     res = bbc.bed.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
@@ -168,7 +168,7 @@ async def get_bedfile_data(
             colnames = list(res[0].__dict__.keys())[1:-1]
             values = [list(x.__dict__.values())[1:-1] for x in res]
 
-        _LOGGER.info(f"Serving data for columns: {colnames}")
+        _LOGGER.info(f"Serving metadata for columns: {colnames}")
     else:
         _LOGGER.warning("No records matched the query")
         colnames = []
@@ -445,13 +445,13 @@ async def get_bedset_count():
     return int(bbc.bedset.record_count)
 
 
-@router.get("/bedset/all/data")
+@router.get("/bedset/all/metadata")
 async def get_all_bedset_metadata(
     ids: Optional[List[str]] = Query(None, description="Bedsets table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
     """
-    Get bedsets data for selected columns
+    Get bedsets metadata for selected columns
     """
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BEDSET_TABLE, columns=ids)
@@ -466,7 +466,7 @@ async def get_all_bedset_metadata(
             colnames = list(res[0].__dict__.keys())[1:-1]
             values = [list(x.__dict__.values())[1:-1] for x in res]
 
-        _LOGGER.info(f"Serving data for columns: {colnames}")
+        _LOGGER.info(f"Serving metadata for columns: {colnames}")
     else:
         _LOGGER.warning("No records matched the query")
         colnames = []
@@ -514,15 +514,15 @@ async def get_bedfiles_in_bedset(
     return {"columns": colnames, "data": values}
 
 
-@router.get("/bedset/{md5sum}/data", response_model=DBResponse)
-async def get_bedset_data(
+@router.get("/bedset/{md5sum}/metadata", response_model=DBResponse)
+async def get_bedset_metadata(
     md5sum: str = bsd,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
 ):
     """
-    Returns data from selected columns for selected bedset
+    Returns metadata from selected columns for selected bedset
     """
     res = bbc.bedset.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
 
@@ -534,7 +534,7 @@ async def get_bedset_data(
             colnames = list(res[0].__dict__.keys())[1:-1]
             values = [list(x.__dict__.values())[1:-1] for x in res]
 
-        _LOGGER.info(f"Serving data for columns: {colnames}")
+        _LOGGER.info(f"Serving metadata for columns: {colnames}")
     else:
         _LOGGER.warning("No records matched the query")
         colnames = []
