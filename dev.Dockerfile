@@ -15,4 +15,5 @@ RUN git clone https://github.com/vishnubob/wait-for-it.git
 RUN pip install .
 
 RUN wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed -P /usr/local/bin
-RUN chmod 755 /usr/local/bin/bigBedToBed
+RUN wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedIntersect -P /usr/local/bin
+RUN chmod 755 /usr/local/bin/bigBedToBed /usr/local/bin/bedIntersect
