@@ -101,7 +101,7 @@ async def get_bed_genome_assemblies():
     return bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"])
 
 
-@router.get("/bed/all/data/count", response_model=int)
+@router.get("/bed/count", response_model=int)
 async def get_bedfile_count():
     """
     Returns the number of bedfiles available in the database
@@ -139,7 +139,7 @@ async def get_all_bed_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.get("/bed/all/schema", response_model=Dict[str, SchemaElement])
+@router.get("/bed/schema", response_model=Dict[str, SchemaElement])
 async def get_bed_schema():
     """
     Get bedfiles pipestat schema
@@ -437,7 +437,7 @@ async def get_bedset_genome_assemblies():
     return bbc.bedset.select_distinct(table_name=BEDSET_TABLE, columns=["genome"])
 
 
-@router.get("/bedset/all/data/count", response_model=int)
+@router.get("/bedset/count", response_model=int)
 async def get_bedset_count():
     """
     Returns the number of bedsets available in the database
@@ -475,7 +475,7 @@ async def get_all_bedset_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.get("/bedset/all/schema", response_model=Dict[str, SchemaElement])
+@router.get("/bedset/schema", response_model=Dict[str, SchemaElement])
 async def get_bedset_schema():
     """
     Get bedsets pipestat schema
