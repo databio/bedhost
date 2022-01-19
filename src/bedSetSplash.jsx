@@ -40,10 +40,10 @@ export default class BedSetSplash extends React.Component {
   async componentDidMount() {
     // get table schema via fastAPI
     const bed_schema = await api
-      .get("/api/bed/all/schema")
+      .get("/api/bed/schema")
       .then(({ data }) => data);
     const bedset_schema = await api
-      .get("/api/bedset/all/schema")
+      .get("/api/bedset/schema")
       .then(({ data }) => data);
 
     // get bedsetsplash data via Graphql
