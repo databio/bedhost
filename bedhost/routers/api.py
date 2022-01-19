@@ -359,7 +359,6 @@ def get_regions_for_bedfile(
     response_model=DBResponse,
 )
 async def get_regions_for_bedfile(
-    request: Request,
     chr_num: str = c,
     start: int = Path(..., description="start coordinate", example=1103243),
     end: int = Path(..., description="end coordinate", example=2103332),
@@ -426,37 +425,6 @@ async def get_regions_for_bedfile(
             )
     f.close()
     return {"columns": colnames, "data": values}
-
-
-@router.get(
-    "/search_coordinates/{chr_num}/{start}/{end}", response_class=StreamingResponse
-)
-async def get_search_coordinates(
-    chr_num: str = c,
-    start: int = Path(..., description="start coordinate", example=1103243),
-    end: int = Path(..., description="end coordinate", example=2103332),
-):
-    """
-    Generate BED format for the search coordinates
-    """
-    import pandas as pd
-    import numpy as np
-
-    df = pd.DataFrame(np.array([[chr_num, start, end]]))
-
-    stream = io.StringIO()
-
-    df.to_csv(stream, index=False, header=False, sep="\t")
-
-    response = StreamingResponse(iter([stream.getvalue()]), media_type="text/csv")
-
-    response.headers["Content-Disposition"] = "attachment; filename=export.bed"
-
-    return response
-
-    # genome_coordinates = f"{chr_num}\t{start}\t{end}\n"
-
-    # return StreamingResponse(f, media_type="text/csv")
 
 
 # bedset endpoints
