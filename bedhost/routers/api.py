@@ -1,6 +1,9 @@
+from email.header import Header
 import enum
 import shlex
 import subprocess
+import io
+from xmlrpc.client import TRANSPORT_ERROR
 import requests
 from typing import Optional
 from bbconf.const import BED_TABLE
@@ -349,6 +352,111 @@ def get_regions_for_bedfile(
         raise HTTPException(
             status_code=500, detail="ERROR: bigBedToBed is not installed."
         )
+
+
+@router.get(
+    "/bed/search_by_genome_coordinates/regions/{chr_num}/{start}/{end}",
+    response_model=DBResponse,
+)
+async def get_regions_for_bedfile(
+    request: Request,
+    chr_num: str = c,
+    start: int = Path(..., description="start coordinate", example=1103243),
+    end: int = Path(..., description="end coordinate", example=2103332),
+):
+    """
+    Returns the list of BED files have regions overlapped with given genome coordinates
+
+    """
+    import tempfile
+
+    f = tempfile.NamedTemporaryFile(mode="w+")
+
+    f.write(f"{chr_num}\t{start}\t{end}\n")
+    f.read()
+
+    bed_files = await get_all_bed_metadata(ids=["name", "md5sum", "bedfile"])
+
+    colnames = ["name", "md5sum", "overlapped_regions"]
+    values = []
+
+    for bed in bed_files["data"]:
+        name = bed[0]
+        md5sum = bed[1]
+        remote = True if CFG_REMOTE_KEY in bbc.config else False
+        path = (
+            os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], bed[2]["path"])
+            if remote
+            else os.path.join(
+                bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], bed[2]["path"]
+            )
+        )
+
+        cmd = [
+            "bedIntersect",
+            f.name,
+            path,
+            "stdout",
+        ]
+
+        _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | wc -l")
+
+        try:
+            ct_process = subprocess.Popen(
+                ["wc", "-l"],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                universal_newlines=True,
+            )
+
+            subprocess.Popen(
+                cmd,
+                stdout=ct_process.stdin,
+                text=True,
+            )
+            if int(ct_process.communicate()[0].rstrip("\n")) != 0:
+                values.append(
+                    [name, md5sum, int(ct_process.communicate()[0].rstrip("\n"))]
+                )
+
+        except FileNotFoundError:
+            _LOGGER.warning("bedIntersect is not installed.")
+            raise HTTPException(
+                status_code=500, detail="ERROR: bigBedToBed is not installed."
+            )
+    f.close()
+    return {"columns": colnames, "data": values}
+
+
+@router.get(
+    "/search_coordinates/{chr_num}/{start}/{end}", response_class=StreamingResponse
+)
+async def get_search_coordinates(
+    chr_num: str = c,
+    start: int = Path(..., description="start coordinate", example=1103243),
+    end: int = Path(..., description="end coordinate", example=2103332),
+):
+    """
+    Generate BED format for the search coordinates
+    """
+    import pandas as pd
+    import numpy as np
+
+    df = pd.DataFrame(np.array([[chr_num, start, end]]))
+
+    stream = io.StringIO()
+
+    df.to_csv(stream, index=False, header=False, sep="\t")
+
+    response = StreamingResponse(iter([stream.getvalue()]), media_type="text/csv")
+
+    response.headers["Content-Disposition"] = "attachment; filename=export.bed"
+
+    return response
+
+    # genome_coordinates = f"{chr_num}\t{start}\t{end}\n"
+
+    # return StreamingResponse(f, media_type="text/csv")
 
 
 # bedset endpoints
