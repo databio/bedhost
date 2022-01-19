@@ -25,7 +25,7 @@ export default class BedCountsSpan extends React.Component {
 
   async componentDidMount() {
     let bfcount = await api
-      .get("/api/bed/all/data/count")
+      .get("/api/bed/count")
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
@@ -33,7 +33,7 @@ export default class BedCountsSpan extends React.Component {
     this.setState({ bed: bfcount.data });
 
     let bscount = await api
-      .get("/api/bedset/all/data/count")
+      .get("/api/bedset/count")
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
