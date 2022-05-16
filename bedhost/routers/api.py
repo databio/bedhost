@@ -357,6 +357,7 @@ def get_regions_for_bedfile(
 @router.get(
     "/bed/search_by_genome_coordinates/regions/{chr_num}/{start}/{end}",
     response_model=DBResponse,
+    include_in_schema=False,
 )
 async def get_regions_for_bedfile(
     chr_num: str = c,
