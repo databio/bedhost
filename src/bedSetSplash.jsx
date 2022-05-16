@@ -59,8 +59,10 @@ export default class BedSetSplash extends React.Component {
 
     let bedSetFile = []
     Object.entries(res).forEach(([key, value], index) => {
+      console.log(key)
       if (bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)] &&
-        bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "file") {
+        bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "file" &&
+        key !== "bedsetIgdDatabasePath") {
         bedSetFile.push({
           id: key,
           label: bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].label.replaceAll("_", " "),
