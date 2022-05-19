@@ -22,20 +22,38 @@ async def get_bedfiles_in_distance(
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
     term = term.replace(" ", ",").split(",")
+    print(genome)
 
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+
     res = bbc.select_bedfiles_for_distance(
-        genome=genome, condition_val=term, bedfile_col=ids, limit=limit
+        bedfile_cols=ids,
+        filter_conditions=[
+            ("search_term", "eq", term[0]),
+        ],
     )
-    if res:
-        colnames = list(res[0].keys())
-        values = [list(x.values()) for x in res]
+
+    for x in res:
+        values = []
+        if genome in str(x):
+            values.append(list(x))
+
+    if values:
+        if ids:
+            colnames = ids
+        else:
+            colnames = list(
+                serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys()
+            )
+            colnames.extend(["bed_label", "search_term", "score"])
+
         _LOGGER.info(f"Serving data for columns: {colnames}")
     else:
         _LOGGER.warning("No records matched the query")
         colnames = []
         values = [[]]
+
     return {"columns": colnames, "data": values}
 
 

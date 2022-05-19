@@ -159,7 +159,7 @@ async def get_bedfile_metadata(
     """
 
     res = bbc.bed.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
-
+    print(res[0])
     if res:
         if ids:
             colnames = ids
