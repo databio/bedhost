@@ -10,6 +10,7 @@ from bbconf.const import BED_TABLE
 
 from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
 from fastapi.responses import PlainTextResponse, StreamingResponse
+from sqlalchemy import false
 
 from ..const import *
 from ..data_models import *
@@ -730,3 +731,52 @@ async def get_trackDb_file_bedset(request: Request, md5sum: str = bsd):
         )
 
     return Response(trackDb_txt, media_type="text/plain")
+
+
+@router.get("/bedset/create/{name}/{bedfiles}")
+async def create_new_bedset(
+    name: str = Path(..., description="BED set name"),
+    bedfiles: str = Path(..., description="BED file ID list (comma sep string)"),
+):
+    """
+    add new BED set to database,
+    submit job to calculate status for the BED set
+    """
+    from hashlib import md5
+    import pandas as pd
+
+    bfs = list(bedfiles.split(","))
+
+    bfs_m = []
+    for bf in bfs:
+        sr = bbc.bed.select(
+            columns=["md5sum"],
+            filter_conditions=[("id", "eq", bf)],
+        )[0]
+
+        bfs_m.append(getattr(sr, "md5sum"))
+
+    m = md5()
+    m.update(";".join(sorted([f for f in bfs_m])).encode("utf-8"))
+
+    bedset_summary_info = {
+        "name": name,
+        "md5sum": m.hexdigest(),
+        "processed": False,
+    }
+
+    # select only first element of every list due to JSON produced by R putting
+    # every value into a list
+    data = {
+        k.lower(): v[0] if (isinstance(v, list)) else v
+        for k, v in bedset_summary_info.items()
+    }
+
+    bedset_id = bbc.bedset.report(
+        record_identifier=m.hexdigest(), values=data, return_id=True
+    )
+    print("bedset_id:", bedset_id)
+    for hit_id in bfs:
+        bbc.report_relationship(bedset_id=bedset_id, bedfile_id=hit_id)
+
+    return Response(m.hexdigest(), media_type="text/plain")
