@@ -6,6 +6,7 @@ import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
 import { client } from "./const/server";
 import { FaMinus } from "react-icons/fa";
+import { FaFolderPlus } from "react-icons/fa";
 import { GET_BED_DIST } from "./graphql/bedQueries";
 import _ from "lodash";
 
@@ -18,11 +19,13 @@ export default class ResultsBed extends React.Component {
       data: [],
       pageSize: -1,
       pageSizeOptions: [],
+      myBedSet: JSON.parse(localStorage.getItem('myBedSet')) || []
     };
   }
 
   async componentDidMount() {
     await this.getBedBySearchTerms();
+    console.log("bed info:", this.state.bedData)
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -246,6 +249,7 @@ export default class ResultsBed extends React.Component {
   getData() {
     let data = this.state.bedData.map((bed) => {
       let row = {
+        id: bed.node.bedId,
         name: bed.node.bedfile.name,
         md5sum: bed.node.bedfile.md5sum,
         relevance: this.getRelevance(bed.node.score),
@@ -306,6 +310,17 @@ export default class ResultsBed extends React.Component {
     );
   }
 
+  addtoBedSet(data) {
+    alert("You added " + data.name + " to your BED set.")
+    this.setState({
+      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name }]
+    }, () => {
+      localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
+    })
+    console.log("my bed set:", this.state.myBedSet)
+
+  }
+
   render() {
     return this.props.md5sum === this.state.md5sum ||
       this.props.query === this.state.query ||
@@ -316,6 +331,13 @@ export default class ResultsBed extends React.Component {
             icons={tableIcons}
             columns={this.state.columns}
             data={this.state.data}
+            actions={[
+              {
+                icon: () => < FaFolderPlus color='#e76f51' />,
+                tooltip: 'add to your BED set',
+                onClick: (event, rowData) => this.addtoBedSet(rowData)
+              }
+            ]}
             title=""
             options={{
               headerStyle: {
