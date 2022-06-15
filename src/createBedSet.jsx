@@ -4,10 +4,17 @@ import { tableIcons } from "./tableIcons";
 import Spinner from "react-bootstrap/Spinner";
 import { Paper } from "@material-ui/core";
 import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
+import { FaTrashAlt } from "react-icons/fa";
+import { FaDownload } from "react-icons/fa";
 import Header from "./header";
 import VersionsSpan from "./versionsSpan";
+import axios from "axios";
+import bedhost_api_url from "./const/server";
 import "./style/home.css";
+
+const api = axios.create({
+  baseURL: bedhost_api_url,
+});
 
 export default class CreateBedSet extends React.Component {
   constructor() {
@@ -22,13 +29,34 @@ export default class CreateBedSet extends React.Component {
     console.log("my bed set:", this.state.myBedSet)
   }
 
-  createBedSet() {
+  async createBedSet() {
+    let idx_list = []
+
+    idx_list.push(
+      this.state.myBedSet.map((bed) => {
+        return bed.id;
+      })
+    )
+
+    idx_list = idx_list.toString()
+
+    let md = await api.post(
+      "/api/bedset/create/" +
+      this.state.myBedSetName +
+      "/" +
+      encodeURIComponent(idx_list)
+    ).then(({ data }) => data)
+
     localStorage.clear();
-    console.log("my bed setname :", this.state.myBedSetName)
+
   }
 
   handleChange(e) {
     this.setState({ myBedSetName: e.target.value });
+
+  }
+
+  downloadBedSet() {
 
   }
 
@@ -38,68 +66,110 @@ export default class CreateBedSet extends React.Component {
         <Header />
         <div
           className="conten-body"
-          style={{ display: "flex", justifyContent: "center" }}
+        // style={{ display: "flex", justifyContent: "center" }}
         >
           <Container style={{ width: "75%" }} fluid className="p-4">
-
-            <MaterialTable
-              title="My BED Set"
-              icons={tableIcons}
-              columns={[
-                { title: 'Name', field: 'name' }
-              ]}
-              data={this.state.myBedSet}
-              editable={{
-                onRowDelete: oldData =>
-                  new Promise((resolve, reject) => {
-                    setTimeout(() => {
-                      const dataDelete = [...this.state.myBedSet];
-                      const index = oldData.tableData.id;
-                      dataDelete.splice(index, 1);
-                      this.setState({
-                        myBedSet: dataDelete
-                      }, () => {
-                        localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
-                      });
-                      resolve()
-                    }, 1000)
-                  }),
-              }}
-              options={{
-                headerStyle: {
-                  backgroundColor: "#264653",
-                  color: "#FFF",
-                  fontWeight: "bold",
-                },
-                actionsColumnIndex: -1,
-                actionsCellStyle: { justifyContent: "center" },
-                paging: true,
-                search: false,
-                toolbar: false,
-              }}
-              components={{
-                Container: (props) => <Paper {...props} elevation={0} />,
-              }}
-            />
-
-            <button
-              style={{ height: "33px" }}
-              className="float-right btn btn-sm my-btn"
-              onClick={this.createBedSet.bind(this)}
-            >
-              Create My BED Set
-            </button>
-
-            <input
-              type="text"
-              placeholder="My BED set name"
-              style={{ height: "33px", fontSize: 12 }}
-              className="float-right"
-              value={this.state.myBedSetName}
-              onChange={this.handleChange.bind(this)}
-            />
-
+            <h1>Download My BED Set</h1>
+            <span style={{ fontSize: "12pt" }}>
+              <p>
+                {"Download from http with command "}
+                <span style={{ fontWeight: 'bold' }}>
+                  {"wget -i <filelist>.txt"}
+                </span>
+              </p>
+              <p>
+                {"Download from s3 with command "}
+                <span style={{ fontWeight: 'bold' }}>
+                  {"cat <filelist>.txt | parallel aws s3 cp {} <output_dir>"}
+                </span>
+              </p>
+            </span>
           </Container>
+
+          {this.state.myBedSet ? (
+            <Container style={{ width: "75%" }} fluid className="p-4">
+              <MaterialTable
+                title="My BED Set"
+                icons={tableIcons}
+                columns={[
+                  { title: 'Name', field: 'name' },
+                  { title: 'md5sum', field: 'md5sum', hidden: true, }
+                ]}
+                data={this.state.myBedSet}
+                actions={[
+                  rowData => ({
+                    icon: () => <a
+                      href={bedhost_api_url + "/api/bed/" + rowData.md5sum + "/file/bed"}
+                    ><FaDownload color='#e76f51' /></a>,
+                    tooltip: 'Save User',
+                    onClick: (event, rowData) => alert("Download " + rowData.name)
+                  }),
+                  {
+                    icon: () => <FaTrashAlt color='#e76f51' />,
+                    tooltip: 'Delete BED file',
+                    onClick: (event, rowData) =>
+                      new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                          const dataDelete = [...this.state.myBedSet];
+                          const index = rowData.tableData.id;
+                          dataDelete.splice(index, 1);
+                          this.setState({
+                            myBedSet: dataDelete
+                          }, () => {
+                            localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
+                          });
+                          resolve()
+                        }, 1000)
+                      }),
+                  }
+                ]}
+                options={{
+                  headerStyle: {
+                    backgroundColor: "#264653",
+                    color: "#FFF",
+                    fontWeight: "bold",
+                  },
+                  actionsColumnIndex: -1,
+                  actionsCellStyle: { justifyContent: "center" },
+                  paging: true,
+                  search: false,
+                  toolbar: false,
+                }}
+                components={{
+                  Container: (props) => <Paper {...props} elevation={0} />,
+                }}
+              />
+              <button
+                style={{ height: "33px" }}
+                className="float-left btn btn-sm my-btn"
+                onClick={this.downloadBedSet.bind(this)}
+              >
+                Download My BED Set
+              </button>
+
+              <button
+                style={{ height: "33px" }}
+                className="float-right btn btn-sm my-btn"
+                onClick={this.createBedSet.bind(this)}
+              >
+                Create My BED Set
+              </button>
+
+              <input
+                type="text"
+                placeholder="My BED set name"
+                style={{ height: "33px", fontSize: 12 }}
+                className="float-right"
+                value={this.state.myBedSetName}
+                onChange={this.handleChange.bind(this)}
+              />
+            </Container>
+          ) : (
+            <Container style={{ width: "75%" }} fluid className="p-4">
+              <h1 >Your BED set cart is empty. </h1>
+            </Container>
+          )
+          }
         </div>
         <VersionsSpan />
       </React.StrictMode>
