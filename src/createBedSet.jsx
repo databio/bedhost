@@ -1,7 +1,7 @@
 import React from "react";
 import MaterialTable from "material-table";
 import { tableIcons } from "./tableIcons";
-import Spinner from "react-bootstrap/Spinner";
+import ResponsiveDialog from "./downloadMyBetSet";
 import { Paper } from "@material-ui/core";
 import Container from "react-bootstrap/Container";
 import { FaTrashAlt } from "react-icons/fa";
@@ -21,7 +21,8 @@ export default class CreateBedSet extends React.Component {
     super();
     this.state = {
       myBedSetName: "",
-      myBedSet: JSON.parse(localStorage.getItem('myBedSet'))
+      myBedSet: JSON.parse(localStorage.getItem('myBedSet')),
+      myBedSetIdx: ""
     };
   }
 
@@ -30,21 +31,28 @@ export default class CreateBedSet extends React.Component {
   }
 
   async createBedSet() {
-    let idx_list = []
+    this.getBedIdx()
+    // let idx_list = []
 
-    idx_list.push(
-      this.state.myBedSet.map((bed) => {
-        return bed.id;
-      })
-    )
+    // idx_list.push(
+    //   this.state.myBedSet.map((bed) => {
+    //     return bed.id;
+    //   })
+    // )
 
-    idx_list = idx_list.toString()
+    // idx_list = encodeURIComponent(
+    //   idx_list.toString()
+    // )
+
+    // this.setState({
+    //   myBedSetIdx: idx_list
+    // })
 
     let md = await api.post(
       "/api/bedset/create/" +
       this.state.myBedSetName +
       "/" +
-      encodeURIComponent(idx_list)
+      this.state.myBedSetIdx
     ).then(({ data }) => data)
 
     localStorage.clear();
@@ -55,9 +63,23 @@ export default class CreateBedSet extends React.Component {
     this.setState({ myBedSetName: e.target.value });
 
   }
+  getBedIdx() {
+    let idx_list = []
 
-  downloadBedSet() {
+    idx_list.push(
+      this.state.myBedSet.map((bed) => {
+        return bed.id;
+      })
+    )
 
+    idx_list = encodeURIComponent(
+      idx_list.toString()
+    )
+
+    this.setState({
+      myBedSetIdx: idx_list
+    })
+    this.forceUpdate();
   }
 
   render() {
@@ -74,13 +96,13 @@ export default class CreateBedSet extends React.Component {
               <p>
                 {"Download from http with command "}
                 <span style={{ fontWeight: 'bold' }}>
-                  {"wget -i <filelist>.txt"}
+                  {"wget -i my_bedset_http.txt"}
                 </span>
               </p>
               <p>
                 {"Download from s3 with command "}
                 <span style={{ fontWeight: 'bold' }}>
-                  {"cat <filelist>.txt | parallel aws s3 cp {} <output_dir>"}
+                  {"cat my_bedset_s3.txt | parallel aws s3 cp {} <output_dir>"}
                 </span>
               </p>
             </span>
@@ -139,13 +161,18 @@ export default class CreateBedSet extends React.Component {
                   Container: (props) => <Paper {...props} elevation={0} />,
                 }}
               />
-              <button
+              <ResponsiveDialog
+                onClick={this.getBedIdx.bind(this)}
+                bedfiles={this.state.myBedSetIdx}
+                btn={'Download My BED Set'}
+              />
+              {/* <button
                 style={{ height: "33px" }}
                 className="float-left btn btn-sm my-btn"
                 onClick={this.downloadBedSet.bind(this)}
               >
                 Download My BED Set
-              </button>
+              </button> */}
 
               <button
                 style={{ height: "33px" }}
