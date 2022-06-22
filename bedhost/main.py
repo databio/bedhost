@@ -8,7 +8,7 @@ import uvicorn
 from bbconf import BedBaseConf
 from fastapi import FastAPI, HTTPException, Path, Query
 from pipestat_reader import PipestatReader
-from starlette.graphql import GraphQLApp
+from starlette_graphene3 import GraphQLApp, make_graphiql_handler
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
@@ -103,7 +103,9 @@ def main():
         psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset, bbc.dist])
         _LOGGER.info("Generating GraphQL schema")
         graphql_schema = psr.generate_graphql_schema()
-        app.mount("/graphql", GraphQLApp(schema=graphql_schema, graphiql=True))
+        app.mount(
+            "/graphql", GraphQLApp(graphql_schema, on_get=make_graphiql_handler())
+        )
 
         _LOGGER.info(f"running {PKG_NAME} app")
         uvicorn.run(
