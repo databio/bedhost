@@ -1,5 +1,6 @@
 from email.header import Header
 import enum
+from fileinput import filename
 import shlex
 import subprocess
 import io
@@ -128,8 +129,8 @@ async def get_all_bed_metadata(
             colnames = ids
             values = [list(x) for x in res]
         else:
-            colnames = list(res[0].__dict__.keys())[1:-1]
-            values = [list(x.__dict__.values())[1:-1] for x in res]
+            colnames = list(res[0].__dict__.keys())[1:]
+            values = [list(x.__dict__.values())[1:] for x in res]
 
         _LOGGER.info(f"Serving data for columns: {colnames}")
     else:
@@ -160,14 +161,14 @@ async def get_bedfile_metadata(
     """
 
     res = bbc.bed.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
-    print(res[0])
+
     if res:
         if ids:
             colnames = ids
             values = [list(x) for x in res]
         else:
-            colnames = list(res[0].__dict__.keys())[1:-1]
-            values = [list(x.__dict__.values())[1:-1] for x in res]
+            colnames = list(res[0].__dict__.keys())[1:]
+            values = [list(x.__dict__.values())[1:] for x in res]
 
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
     else:
@@ -204,7 +205,7 @@ async def get_file_for_bedfile(
 
 
 @router.get("/bed/{md5sum}/file_path/{id}")
-async def get_file_for_bedfile(
+async def get_file_path_for_bedfile(
     md5sum: str = bd,
     id: FileColumnBed = Path(..., description="File identifier"),
     remoteClass: RemoteClassEnum = Query(
@@ -216,6 +217,7 @@ async def get_file_for_bedfile(
         filter_conditions=[("md5sum", "eq", md5sum)],
         columns=[file_map_bed[id.value]],
     )[0]
+
     file = getattr(hit, file_map_bed[id.value])
     remote = True if CFG_REMOTE_KEY in bbc.config else False
     path = (
@@ -263,7 +265,7 @@ async def get_image_for_bedfile(
 
 
 @router.get("/bed/{md5sum}/img_path/{id}")
-async def get_image_for_bedfile(
+async def get_image_path_for_bedfile(
     md5sum: str = bd,
     id: ImgColumnBed = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
@@ -465,8 +467,8 @@ async def get_all_bedset_metadata(
             colnames = ids
             values = [list(x) for x in res]
         else:
-            colnames = list(res[0].__dict__.keys())[1:-1]
-            values = [list(x.__dict__.values())[1:-1] for x in res]
+            colnames = list(res[0].__dict__.keys())[1:]
+            values = [list(x.__dict__.values())[1:] for x in res]
 
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
     else:
@@ -533,8 +535,8 @@ async def get_bedset_metadata(
             colnames = ids
             values = [list(x) for x in res]
         else:
-            colnames = list(res[0].__dict__.keys())[1:-1]
-            values = [list(x.__dict__.values())[1:-1] for x in res]
+            colnames = list(res[0].__dict__.keys())[1:]
+            values = [list(x.__dict__.values())[1:] for x in res]
 
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
     else:
@@ -634,7 +636,7 @@ async def get_image_for_bedset(
 
 
 @router.get("/bedset/{md5sum}/img_path/{id}")
-async def get_image_for_bedset(
+async def get_image_path_for_bedset(
     md5sum: str = bsd,
     id: ImgColumnBedset = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
@@ -733,7 +735,7 @@ async def get_trackDb_file_bedset(request: Request, md5sum: str = bsd):
     return Response(trackDb_txt, media_type="text/plain")
 
 
-@router.get("/bedset/create/{name}/{bedfiles}")
+@router.post("/bedset/create/{name}/{bedfiles}")
 async def create_new_bedset(
     name: str = Path(..., description="BED set name"),
     bedfiles: str = Path(..., description="BED file ID list (comma sep string)"),
@@ -743,7 +745,6 @@ async def create_new_bedset(
     submit job to calculate status for the BED set
     """
     from hashlib import md5
-    import pandas as pd
 
     bfs = list(bedfiles.split(","))
 
@@ -775,8 +776,59 @@ async def create_new_bedset(
     bedset_id = bbc.bedset.report(
         record_identifier=m.hexdigest(), values=data, return_id=True
     )
-    print("bedset_id:", bedset_id)
+
     for hit_id in bfs:
         bbc.report_relationship(bedset_id=bedset_id, bedfile_id=hit_id)
 
     return Response(m.hexdigest(), media_type="text/plain")
+
+
+@router.get("/bedset/my_bedset/file_paths/{bedfiles}")
+async def get_mybedset_file_path(
+    bedfiles: str = Path(..., description="BED file indexs"),
+    remoteClass: RemoteClassEnum = Query(
+        "http", description="Remote data provider class"
+    ),
+):
+    """
+    Generate track hub files for the BED set
+    """
+
+    bfs = list(bedfiles.split(","))
+
+    paths = ""
+    for bed in bfs:
+        # _LOGGER.info(bed)
+        # res = await get_file_path_for_bedfile(
+        #     md5sum=bed, id=FileColumnBed.bed, remoteClass=remoteClass
+        # )
+        # _LOGGER.info("testing: ", res.body.decode())
+
+        hit = bbc.bed.select(
+            filter_conditions=[("id", "eq", bed)],
+            columns=[file_map_bed["bed"]],
+        )[0]
+        file = getattr(hit, file_map_bed["bed"])
+        remote = True if CFG_REMOTE_KEY in bbc.config else False
+
+        path = (
+            os.path.join(
+                bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
+            )
+            if remote
+            else os.path.join(
+                bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+            )
+        )
+        paths = paths + path + "\n"
+
+        filename = "my_bedset_" + remoteClass.value + ".txt"
+        stream = io.StringIO(paths)
+
+        response = StreamingResponse(
+            stream,
+            media_type="text/csv",
+            headers={"Content-Disposition": f"attachment; filename={filename}.txt"},
+        )
+
+    return response
