@@ -27,7 +27,10 @@ export default class CreateBedSet extends React.Component {
   }
 
   async componentDidMount() {
-    this.getBedIdx()
+    if (this.state.myBedSet) {
+      this.getBedIdx()
+    }
+
   }
 
   async createBedSet() {
