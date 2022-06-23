@@ -27,26 +27,10 @@ export default class CreateBedSet extends React.Component {
   }
 
   async componentDidMount() {
-    console.log("my bed set:", this.state.myBedSet)
+    this.getBedIdx()
   }
 
   async createBedSet() {
-    this.getBedIdx()
-    // let idx_list = []
-
-    // idx_list.push(
-    //   this.state.myBedSet.map((bed) => {
-    //     return bed.id;
-    //   })
-    // )
-
-    // idx_list = encodeURIComponent(
-    //   idx_list.toString()
-    // )
-
-    // this.setState({
-    //   myBedSetIdx: idx_list
-    // })
 
     let md = await api.post(
       "/api/bedset/create/" +
@@ -54,6 +38,8 @@ export default class CreateBedSet extends React.Component {
       "/" +
       this.state.myBedSetIdx
     ).then(({ data }) => data)
+
+    alert("Your BED set has been submitted for processing!")
 
     localStorage.clear();
 
@@ -88,24 +74,9 @@ export default class CreateBedSet extends React.Component {
         <Header />
         <div
           className="conten-body"
-        // style={{ display: "flex", justifyContent: "center" }}
         >
           <Container style={{ width: "75%" }} fluid className="p-4">
-            <h1>Download My BED Set</h1>
-            <span style={{ fontSize: "12pt" }}>
-              <p>
-                {"Download from http with command "}
-                <span style={{ fontWeight: 'bold' }}>
-                  {"wget -i my_bedset_http.txt"}
-                </span>
-              </p>
-              <p>
-                {"Download from s3 with command "}
-                <span style={{ fontWeight: 'bold' }}>
-                  {"cat my_bedset_s3.txt | parallel aws s3 cp {} <output_dir>"}
-                </span>
-              </p>
-            </span>
+            <h1>My BED Set</h1>
           </Container>
 
           {this.state.myBedSet ? (
@@ -162,17 +133,9 @@ export default class CreateBedSet extends React.Component {
                 }}
               />
               <ResponsiveDialog
-                onClick={this.getBedIdx.bind(this)}
                 bedfiles={this.state.myBedSetIdx}
                 btn={'Download My BED Set'}
               />
-              {/* <button
-                style={{ height: "33px" }}
-                className="float-left btn btn-sm my-btn"
-                onClick={this.downloadBedSet.bind(this)}
-              >
-                Download My BED Set
-              </button> */}
 
               <button
                 style={{ height: "33px" }}

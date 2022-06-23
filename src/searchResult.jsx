@@ -25,7 +25,6 @@ export default class ResultsBed extends React.Component {
 
   async componentDidMount() {
     await this.getBedBySearchTerms();
-    console.log("bed info:", this.state.bedData)
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -88,7 +87,6 @@ export default class ResultsBed extends React.Component {
       });
     }
     this.setState({ terms: this.props.terms });
-    // console.log("BED files retrieved from the server: ", res);
     this.getColumns();
     this.getData();
   }
@@ -125,14 +123,13 @@ export default class ResultsBed extends React.Component {
     var bed_new = new_res.map((bed, index) => {
       return bed.node.bedId;
     });
-    const bedunique = this.getUnique(bed_old, bed_new)[0]
+    const bedunique = this.getUnique(bed_old, bed_new)
 
     avg_res = oldres.map((bed, index) => {
       if (bedunique.includes(bed.node.bedId)) {
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
           bed.node.score =
             (bed.node.score + thresh) / 2;
-          console.log("bed:", bed)
           return bed;
         }
       } else {
@@ -144,7 +141,7 @@ export default class ResultsBed extends React.Component {
 
           bed.node.score =
             (bed.node.score + new_res[new_res_idx].node.score) / 2;
-          console.log("bed:", bed)
+
           return bed;
 
         }
@@ -157,7 +154,6 @@ export default class ResultsBed extends React.Component {
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
           bed.node.score =
             (bed.node.score + thresh) / 2;
-          console.log("bed:", bed)
           avg_res.push(bed);
         }
       }
@@ -165,7 +161,7 @@ export default class ResultsBed extends React.Component {
     )
 
     avg_res = avg_res.filter(value => Object.keys(value).length !== 0);
-    console.log("avg_res:", avg_res)
+
     return avg_res;
   }
 
@@ -313,11 +309,11 @@ export default class ResultsBed extends React.Component {
   addtoBedSet(data) {
     alert("You added " + data.name + " to your BED set.")
     this.setState({
-      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name }]
+      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
     }, () => {
       localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
     })
-    console.log("my bed set:", this.state.myBedSet)
+
 
   }
 
