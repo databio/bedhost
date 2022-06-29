@@ -40,6 +40,7 @@ export const GET_SAMPLE_BEDSET = gql`
           md5sum
         }
       }
+      totalCount
     }
   }
 `;
@@ -98,7 +99,7 @@ export const GET_BEDSET_BEDFILES = gql`
                 regionsNo
                 gcContent
                 meanRegionWidth
-                meanAbsoluteTssDist
+                medianTssDist
                 exonFrequency
                 exonPercentage
                 intronFrequency
@@ -175,7 +176,7 @@ export const GET_BEDSET_SPLASH = gql`
                 regionsNo
                 gcContent
                 meanRegionWidth
-                meanAbsoluteTssDist
+                medianTssDist
                 exonFrequency
                 exonPercentage
                 intronFrequency

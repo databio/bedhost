@@ -25,7 +25,7 @@ export default class BedCountsSpan extends React.Component {
 
   async componentDidMount() {
     let bfcount = await api
-      .get("/api/bed/all/data/count")
+      .get("/api/bed/count")
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
@@ -33,18 +33,18 @@ export default class BedCountsSpan extends React.Component {
     this.setState({ bed: bfcount.data });
 
     let bscount = await api
-      .get("/api/bedset/all/data/count")
+      .get("/api/bedset/count")
       .catch(function (error) {
         alert(error + "; is bedhost running at " + bedhost_api_url + "?");
       });
     // console.log("BED set count retrieved from the server: ", bscount.data);
     this.setState({ bedSet: bscount.data });
 
-    let bed = await api.get("/api/bed/all/data?ids=md5sum&limit=1").then(({ data }) => data);
+    let bed = await api.get("/api/bed/all/metadata?ids=md5sum&limit=1").then(({ data }) => data);
     let bedurl = '/bedsplash/' + bed.data[0][0]
     this.setState({ sampleBed: bedurl });
 
-    let bedset = await api.get("/api/bedset/all/data?ids=md5sum&limt=1").then(({ data }) => data)
+    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limt=1").then(({ data }) => data)
     let bedseturl = '/bedsetsplash/' + bedset.data[0][0]
     this.setState({ sampleBedSet: bedseturl });
     this.getAPIcount()
@@ -85,6 +85,92 @@ export default class BedCountsSpan extends React.Component {
           bedstat and bedbuncher pipeline.{" "}
         </span>
         <div>
+          <Label
+            style={{
+              marginTop: "15px",
+              marginBottom: "5px",
+              marginLeft: "15px",
+              fontSize: "15px",
+              padding: "6px 20px 6px 30px",
+            }}
+            as="a"
+            color="teal"
+            ribbon
+          >
+            Available Servers
+          </Label>
+          {
+            <table style={{ marginLeft: "15px" }}>
+              <tbody>
+                <tr>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Server Name
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    URL
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Maintainer
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Description
+                  </th>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Primary server
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <a
+                      href={"http://bedbase.org"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      http://bedbase.org
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Sheffield lab
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Main demonstration server
+                  </td>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Dev server
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <a
+                      href={"http://dev1.bedbase.org"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      http://dev1.bedbase.org
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Sheffield lab
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Developmental server
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          }
           <Label
             style={{
               marginTop: "15px",
@@ -203,6 +289,7 @@ export default class BedCountsSpan extends React.Component {
               <span style={{ color: "lightgray" }}>Loading data </span>
             </>
           )}
+
         </div>
       </div>
     )

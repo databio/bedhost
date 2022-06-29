@@ -6,6 +6,7 @@ import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
 import { client } from "./const/server";
 import { FaMinus } from "react-icons/fa";
+import { FaFolderPlus } from "react-icons/fa";
 import { GET_BED_DIST } from "./graphql/bedQueries";
 import _ from "lodash";
 
@@ -18,6 +19,7 @@ export default class ResultsBed extends React.Component {
       data: [],
       pageSize: -1,
       pageSizeOptions: [],
+      myBedSet: JSON.parse(localStorage.getItem('myBedSet')) || []
     };
   }
 
@@ -42,6 +44,11 @@ export default class ResultsBed extends React.Component {
           variables: { filters: { searchTermIlike: terms[0] } },
         })
         .then(({ data }) => data.distances.edges);
+      res = res.map((bed, index) => {
+        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+          return bed;
+        }
+      });
       res = res.slice().sort((a, b) => a.node.score - b.node.score);
     } else {
       res = [];
@@ -56,11 +63,11 @@ export default class ResultsBed extends React.Component {
         if (j === 0) {
           res = new_res;
         } else if (j === terms.length - 1) {
-          res = this.getAvgDist(res, new_res, terms.length).sort(
+          res = this.getAvgDist(res, new_res).sort(
             (a, b) => a.node.score - b.node.score
           );
         } else {
-          res = this.getAvgDist(res, new_res, 1);
+          res = this.getAvgDist(res, new_res);
         }
       }
     }
@@ -80,13 +87,35 @@ export default class ResultsBed extends React.Component {
       });
     }
     this.setState({ terms: this.props.terms });
-    // console.log("BED files retrieved from the server: ", res);
     this.getColumns();
     this.getData();
   }
 
-  getAvgDist(old_res, new_res, len) {
-    var editable = _.cloneDeep(old_res);
+  getUnique(arr1, arr2) {
+    var uniqueArr = []
+    for (var i = 0; i < arr1.length; i++) {
+      var flag = 0;
+      for (var j = 0; j < arr2.length; j++) {
+        if (arr1[i] === arr2[j]) {
+          arr2.splice(j, 1);
+          j--;
+          flag = 1;
+        }
+      }
+
+      if (flag === 0) {
+        uniqueArr.push(arr1[i]);
+      }
+    }
+    uniqueArr.push(arr2);
+    return uniqueArr;
+  }
+
+  getAvgDist(old_res, new_res) {
+
+    const thresh = 0.5
+    var oldres = _.cloneDeep(old_res);
+    var newres = _.cloneDeep(new_res);
     var avg_res = [];
     var bed_old = old_res.map((bed, index) => {
       return bed.node.bedId;
@@ -94,22 +123,45 @@ export default class ResultsBed extends React.Component {
     var bed_new = new_res.map((bed, index) => {
       return bed.node.bedId;
     });
-    const bedlist = bed_old.filter((value) => bed_new.includes(value));
+    const bedunique = this.getUnique(bed_old, bed_new)
 
-    avg_res = editable.map((bed, index) => {
-      if (bedlist.includes(bed.node.bedId)) {
+    avg_res = oldres.map((bed, index) => {
+      if (bedunique.includes(bed.node.bedId)) {
+        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+          bed.node.score =
+            (bed.node.score + thresh) / 2;
+          return bed;
+        }
+      } else {
+
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
           var new_res_idx = new_res.findIndex(function (new_bed) {
             return new_bed.node.bedId === bed.node.bedId;
           });
+
           bed.node.score =
-            (bed.node.score + new_res[new_res_idx].node.score) / len;
+            (bed.node.score + new_res[new_res_idx].node.score) / 2;
+
           return bed;
+
         }
       }
       return {}
     });
+
+    newres.map((bed, index) => {
+      if (bedunique.includes(bed.node.bedId)) {
+        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+          bed.node.score =
+            (bed.node.score + thresh) / 2;
+          avg_res.push(bed);
+        }
+      }
+    }
+    )
+
     avg_res = avg_res.filter(value => Object.keys(value).length !== 0);
+
     return avg_res;
   }
 
@@ -193,6 +245,7 @@ export default class ResultsBed extends React.Component {
   getData() {
     let data = this.state.bedData.map((bed) => {
       let row = {
+        id: bed.node.bedId,
         name: bed.node.bedfile.name,
         md5sum: bed.node.bedfile.md5sum,
         relevance: this.getRelevance(bed.node.score),
@@ -253,6 +306,17 @@ export default class ResultsBed extends React.Component {
     );
   }
 
+  addtoBedSet(data) {
+    alert("You added " + data.name + " to your BED set.")
+    this.setState({
+      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
+    }, () => {
+      localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
+    })
+
+
+  }
+
   render() {
     return this.props.md5sum === this.state.md5sum ||
       this.props.query === this.state.query ||
@@ -263,6 +327,13 @@ export default class ResultsBed extends React.Component {
             icons={tableIcons}
             columns={this.state.columns}
             data={this.state.data}
+            actions={[
+              {
+                icon: () => < FaFolderPlus className="my-icon" />,
+                tooltip: 'add to your BED set',
+                onClick: (event, rowData) => this.addtoBedSet(rowData)
+              }
+            ]}
             title=""
             options={{
               headerStyle: {

@@ -40,10 +40,10 @@ export default class BedSetSplash extends React.Component {
   async componentDidMount() {
     // get table schema via fastAPI
     const bed_schema = await api
-      .get("/api/bed/all/schema")
+      .get("/api/bed/schema")
       .then(({ data }) => data);
     const bedset_schema = await api
-      .get("/api/bedset/all/schema")
+      .get("/api/bedset/schema")
       .then(({ data }) => data);
 
     // get bedsetsplash data via Graphql
@@ -59,8 +59,10 @@ export default class BedSetSplash extends React.Component {
 
     let bedSetFile = []
     Object.entries(res).forEach(([key, value], index) => {
+      console.log(key)
       if (bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)] &&
-        bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "file") {
+        bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "file" &&
+        key !== "bedsetIgdDatabasePath") {
         bedSetFile.push({
           id: key,
           label: bedset_schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].label.replaceAll("_", " "),
@@ -131,19 +133,21 @@ export default class BedSetSplash extends React.Component {
       hubFilePath:
         "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" +
         JSON.parse(res.genome).alias +
-        "&hubUrl=http://data.bedbase.org/outputs/bedbuncher_output/" +
+        "&hubUrl=" +
+        bedhost_api_url +
+        "/api/bedset/" +
         this.props.match.params.bedset_md5sum +
-        "/bedsetHub/hub.txt",
+        "/track_hub",
       bedSetStat: [
         {
           label: bed_schema["gc_content"].description,
           data: [avg.gc_content.toFixed(3), sd.gc_content.toFixed(3)],
         },
         {
-          label: bed_schema["mean_absolute_tss_dist"].description,
+          label: bed_schema["median_tss_dist"].description,
           data: [
-            avg.mean_absolute_tss_dist.toFixed(3),
-            sd.mean_absolute_tss_dist.toFixed(3),
+            avg.median_tss_dist.toFixed(3),
+            sd.median_tss_dist.toFixed(3),
           ],
         },
         {
@@ -332,8 +336,8 @@ export default class BedSetSplash extends React.Component {
                           }}
                         >
                           {value.label ===
-                            "Mean absolute distance from transcription start sites" ? (
-                            <>Mean absolute distance from TSS</>
+                            "Median absolute distance from transcription start sites" ? (
+                            <>Median TSS distance</>
                           ) : (
                             <>{value.label}</>
                           )}
@@ -403,7 +407,7 @@ export default class BedSetSplash extends React.Component {
                       bedhost_api_url +
                       "/api/bedset/" +
                       this.props.match.params.bedset_md5sum +
-                      "/data"
+                      "/metadata"
                     }
                     className="home-link"
                     style={{
@@ -439,7 +443,7 @@ export default class BedSetSplash extends React.Component {
                       bedhost_api_url +
                       "/api/bedset/" +
                       this.props.match.params.bedset_md5sum +
-                      "/data?ids=bedset_means&ids=bedset_standard_deviation"
+                      "/metadata?ids=bedset_means&ids=bedset_standard_deviation"
                     }
                     className="home-link"
                     style={{
@@ -457,7 +461,7 @@ export default class BedSetSplash extends React.Component {
                       bedhost_api_url +
                       "/api/bedset/" +
                       this.props.match.params.bedset_md5sum +
-                      "/data?ids=region_commonality"
+                      "/metadata?ids=region_commonality"
                     }
                     className="home-link"
                     style={{

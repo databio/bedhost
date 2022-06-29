@@ -115,7 +115,7 @@ export default class BedSetTable extends React.Component {
         });
       } else if (i !== 0) {
         if (
-          cols[i] === "meanAbsoluteTssDist" ||
+          cols[i] === "medianTssDist" ||
           cols[i] === "meanRegionWidth"
         ) {
           tableColumns.push({

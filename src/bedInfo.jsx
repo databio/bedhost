@@ -129,8 +129,8 @@ export default function BedInfo(props) {
                 }}
               >
                 {value.label ===
-                  "Mean absolute distance from transcription start sites" ? (
-                  <>Mean absolute distance from TSS</>
+                  "Median absolute distance from transcription start sites" ? (
+                  <>Median TSS distance</>
                 ) : (
                   <>{value.label}</>
                 )}

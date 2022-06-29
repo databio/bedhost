@@ -4,6 +4,7 @@ import Nav from "react-bootstrap/Nav";
 import { Link } from "react-router-dom";
 import { FaGithub } from "react-icons/fa";
 import { FaBook } from "react-icons/fa";
+import { FaFolderOpen } from "react-icons/fa";
 import bedhost_api_url from "./const/server";
 
 export default function Header() {
@@ -35,6 +36,11 @@ export default function Header() {
         >
           <b>GraphiQL</b>
         </Nav.Link>
+      </Nav>
+      <Nav className="float-right">
+        <Link to="/createBedSet">
+          <FaFolderOpen size={30} style={{ fill: "white", marginRight: "10px" }} />
+        </Link>
       </Nav>
       <Nav className="float-right">
         <Link to="/about">
