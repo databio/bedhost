@@ -1,7 +1,7 @@
 -e git+https://github.com/pepkit/pipestat@dev#egg=pipestat
 -e git+https://github.com/pepkit/pipestat_reader@dev#egg=pipestat_reader
 -e git+https://github.com/databio/bbconf@dev#egg=bbconf
--e git+https://github.com/cooldudemcgeexl/graphene-sqlalchemy-filter.git
+-e git+https://github.com/cooldudemcgeexl/graphene-sqlalchemy-filter@master#egg=graphene-sqlalchemy-filter
 graphene==3.1
 graphene-sqlalchemy==3.0.0b1
 graphql-core==3.2.1
