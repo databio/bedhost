@@ -57,7 +57,7 @@ setup(
     ],
     keywords="project, bioinformatics, sequencing, ngs, workflow, GUI, bed, server",
     url="",
-    author=u"Michal Stolarczyk, Ognen Duzlevski, Nathan Sheffield",
+    author="Michal Stolarczyk, Ognen Duzlevski, Bingjie Xue, Nathan Sheffield",
     license="BSD2",
     entry_points={
         "console_scripts": [
