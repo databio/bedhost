@@ -1,8 +1,10 @@
--e git+git://github.com/pepkit/pipestat@dev#egg=pipestat
--e git+git://github.com/pepkit/pipestat_reader@dev#egg=pipestat_reader
--e git+git://github.com/databio/bbconf@dev#egg=bbconf
-graphene==2.1.9                
-graphene-sqlalchemy==2.3.0                
-graphene-sqlalchemy-filter==1.12.2               
-graphql-core==2.3.2                
-graphql-relay==2.0.1
+-e git+https://github.com/pepkit/pipestat@dev#egg=pipestat
+-e git+https://github.com/pepkit/pipestat_reader@dev#egg=pipestat_reader
+-e git+https://github.com/databio/bbconf@dev#egg=bbconf
+-e git+https://github.com/cooldudemcgeexl/graphene-sqlalchemy-filter.git@bf40c524e0e8e6b55ac7db2bdba02befa7fd10a4
+graphene==3.1
+graphene-sqlalchemy==3.0.0b1
+graphql-core==3.2.1
+graphql-relay==3.2.0
+starlette-graphene3==0.6.0
+
