@@ -329,7 +329,7 @@ export default class ResultsBed extends React.Component {
             data={this.state.data}
             actions={[
               {
-                icon: () => < FaFolderPlus color='#e76f51' />,
+                icon: () => < FaFolderPlus className="my-icon" />,
                 tooltip: 'add to your BED set',
                 onClick: (event, rowData) => this.addtoBedSet(rowData)
               }

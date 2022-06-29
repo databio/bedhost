@@ -8,13 +8,13 @@ import { FaTrashAlt } from "react-icons/fa";
 import { FaDownload } from "react-icons/fa";
 import Header from "./header";
 import VersionsSpan from "./versionsSpan";
-import axios from "axios";
+// import axios from "axios";
 import bedhost_api_url from "./const/server";
 import "./style/home.css";
 
-const api = axios.create({
-  baseURL: bedhost_api_url,
-});
+// const api = axios.create({
+//   baseURL: bedhost_api_url,
+// });
 
 export default class CreateBedSet extends React.Component {
   constructor() {
@@ -34,18 +34,18 @@ export default class CreateBedSet extends React.Component {
   }
 
   async createBedSet() {
+    // hide before process myBEDSet function is complete 
+    // let md = await api.post(
+    //   "/api/bedset/create/" +
+    //   this.state.myBedSetName +
+    //   "/" +
+    //   this.state.myBedSetIdx
+    // ).then(({ data }) => data)
 
-    let md = await api.post(
-      "/api/bedset/create/" +
-      this.state.myBedSetName +
-      "/" +
-      this.state.myBedSetIdx
-    ).then(({ data }) => data)
-
-    alert("Your BED set has been submitted for processing!")
+    // alert("Your BED set has been submitted for processing!")
 
     localStorage.clear();
-
+    window.location.reload(true);
   }
 
   handleChange(e) {
@@ -78,12 +78,9 @@ export default class CreateBedSet extends React.Component {
         <div
           className="conten-body"
         >
-          <Container style={{ width: "75%" }} fluid className="p-4">
-            <h1>My BED Set</h1>
-          </Container>
-
           {this.state.myBedSet ? (
             <Container style={{ width: "75%" }} fluid className="p-4">
+              <h1>My BED Set</h1>
               <MaterialTable
                 title="My BED Set"
                 icons={tableIcons}
@@ -96,12 +93,12 @@ export default class CreateBedSet extends React.Component {
                   rowData => ({
                     icon: () => <a
                       href={bedhost_api_url + "/api/bed/" + rowData.md5sum + "/file/bed"}
-                    ><FaDownload color='#e76f51' /></a>,
+                    ><FaDownload className="my-icon" /></a>,
                     tooltip: 'Save User',
                     onClick: (event, rowData) => alert("Download " + rowData.name)
                   }),
                   {
-                    icon: () => <FaTrashAlt color='#e76f51' />,
+                    icon: () => <FaTrashAlt className="my-icon" />,
                     tooltip: 'Delete BED file',
                     onClick: (event, rowData) =>
                       new Promise((resolve, reject) => {
@@ -145,9 +142,11 @@ export default class CreateBedSet extends React.Component {
                 className="float-right btn btn-sm my-btn"
                 onClick={this.createBedSet.bind(this)}
               >
-                Create My BED Set
+                Empty My BED Set
               </button>
 
+              {/* 
+                // hide before process myBEDSet function is complete
               <input
                 type="text"
                 placeholder="My BED set name"
@@ -155,11 +154,11 @@ export default class CreateBedSet extends React.Component {
                 className="float-right"
                 value={this.state.myBedSetName}
                 onChange={this.handleChange.bind(this)}
-              />
+              /> */}
             </Container>
           ) : (
             <Container style={{ width: "75%" }} fluid className="p-4">
-              <h1 >Your BED set cart is empty. </h1>
+              <h1 style={{ color: "#e76f51" }} >Your BED set cart is empty. </h1>
             </Container>
           )
           }
