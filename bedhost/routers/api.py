@@ -692,7 +692,7 @@ async def get_track_hub_bedset(request: Request, md5sum: str = bsd):
     return Response(hub_txt, media_type="text/plain")
 
 
-@router.get("/bedset/{md5sum}/track_hub_genome_file")
+@router.get("/bedset/{md5sum}/track_hub_genome_file", include_in_schema=False)
 async def get_genomes_file_bedset(request: Request, md5sum: str = bsd):
     """
     Generate genomes file for the BED set track hub
@@ -709,7 +709,7 @@ async def get_genomes_file_bedset(request: Request, md5sum: str = bsd):
     return Response(genome_txt, media_type="text/plain")
 
 
-@router.get("/bedset/{md5sum}/track_hub_trackDb_file")
+@router.get("/bedset/{md5sum}/track_hub_trackDb_file", include_in_schema=False)
 async def get_trackDb_file_bedset(request: Request, md5sum: str = bsd):
     """
     Generate trackDb file for the BED set track hub
@@ -735,7 +735,7 @@ async def get_trackDb_file_bedset(request: Request, md5sum: str = bsd):
     return Response(trackDb_txt, media_type="text/plain")
 
 
-@router.post("/bedset/create/{name}/{bedfiles}")
+@router.post("/bedset/create/{name}/{bedfiles}", include_in_schema=False)
 async def create_new_bedset(
     name: str = Path(..., description="BED set name"),
     bedfiles: str = Path(..., description="BED file ID list (comma sep string)"),
@@ -783,7 +783,7 @@ async def create_new_bedset(
     return Response(m.hexdigest(), media_type="text/plain")
 
 
-@router.get("/bedset/my_bedset/file_paths/{bedfiles}")
+@router.get("/bedset/my_bedset/file_paths/{bedfiles}", include_in_schema=False)
 async def get_mybedset_file_path(
     bedfiles: str = Path(..., description="BED file indexs"),
     remoteClass: RemoteClassEnum = Query(
