@@ -38,17 +38,21 @@ export default class ResultsBed extends React.Component {
     let terms = this.props.terms.split(/[\s,]+/);
 
     if (terms.length === 1) {
-      var res = await client
+      var data = await client
         .query({
           query: GET_BED_DIST,
           variables: { filters: { searchTermIlike: terms[0] } },
         })
         .then(({ data }) => data.distances.edges);
-      res = res.map((bed, index) => {
+
+      var res = []
+      data.forEach((bed, index) => {
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
-          return bed;
+          console.log(bed)
+          res.push(bed);
         }
       });
+      console.log(res)
       res = res.slice().sort((a, b) => a.node.score - b.node.score);
     } else {
       res = [];
@@ -149,7 +153,7 @@ export default class ResultsBed extends React.Component {
       return {}
     });
 
-    newres.map((bed, index) => {
+    newres.forEach((bed, index) => {
       if (bedunique.includes(bed.node.bedId)) {
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
           bed.node.score =
