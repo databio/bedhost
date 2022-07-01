@@ -221,21 +221,33 @@ export default class BedCountsSpan extends React.Component {
                     {this.state.bed}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    {/* {this.state.genomeList.map((value, index) => {
+                      return (
+                        value.genome.digest ? (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                            <a
+                              href={"http://refgenomes.databio.org/#" + value.genome.alias}
+                              className="home-link"
+                              style={{ fontSize: "10pt" }}
+                            >
+                              [Refgenie]
+                            </a>
+                          </p>
+                        ) : (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                          </p>
+                        )
+                      );
+                    })} */}
                     {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
                       return (
-                        <a key={index} >
+                        <text key={index} >
                           {value}{", "}
-                        </a>
+                        </text>
                       );
                     })}
-                    {/* hg38{" "}
-                    <a
-                      href={"http://refgenomes.databio.org/#hg38"}
-                      className="home-link"
-                      style={{ fontSize: "10pt" }}
-                    >
-                      [Refgenie]
-                    </a> */}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                     {this.state.bedAPI}
@@ -265,21 +277,33 @@ export default class BedCountsSpan extends React.Component {
                     {this.state.bedSet}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    {/* {this.state.genomeList.map((value, index) => {
+                      return (
+                        value.genome.digest ? (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                            <a
+                              href={"http://refgenomes.databio.org/#" + value.genome.alias}
+                              className="home-link"
+                              style={{ fontSize: "10pt" }}
+                            >
+                              [Refgenie]
+                            </a>
+                          </p>
+                        ) : (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                          </p>
+                        )
+                      );
+                    })} */}
                     {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
                       return (
-                        <a key={index} >
+                        <text key={index} >
                           {value}{", "}
-                        </a>
+                        </text>
                       );
                     })}
-                    {/* hg38{" "}
-                    <a
-                      href={"http://refgenomes.databio.org/#hg38"}
-                      className="home-link"
-                      style={{ fontSize: "10pt" }}
-                    >
-                      [Refgenie]
-                    </a> */}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                     {this.state.bedSetAPI}
