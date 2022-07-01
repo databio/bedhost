@@ -99,10 +99,10 @@ export default class Search extends React.Component {
               style={{ height: "33px", marginRight: "10px" }}
               onKeyPress={this.handleKeypress.bind(this)}
             >
-              {this.state.genomeList.map((value, index) => {
+              {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
                 return (
-                  <Dropdown.Item key={index} eventKey={value.genome.alias}>
-                    {value.genome.alias}
+                  <Dropdown.Item key={index} eventKey={value}>
+                    {value}
                   </Dropdown.Item>
                 );
               })}
