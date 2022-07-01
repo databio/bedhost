@@ -20,10 +20,14 @@ export default class BedCountsSpan extends React.Component {
       sampleBedSet: "",
       bedAPI: "",
       bedSetAPI: "",
+      genomeList: [],
     };
   }
 
   async componentDidMount() {
+    let genomes = await api.get("/api/bed/genomes").then(({ data }) => data);
+    this.setState({ genomeList: genomes });
+
     let bfcount = await api
       .get("/api/bed/count")
       .catch(function (error) {
@@ -217,14 +221,21 @@ export default class BedCountsSpan extends React.Component {
                     {this.state.bed}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                    hg38{" "}
+                    {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
+                      return (
+                        <a key={index} >
+                          {value}{", "}
+                        </a>
+                      );
+                    })}
+                    {/* hg38{" "}
                     <a
                       href={"http://refgenomes.databio.org/#hg38"}
                       className="home-link"
                       style={{ fontSize: "10pt" }}
                     >
                       [Refgenie]
-                    </a>
+                    </a> */}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                     {this.state.bedAPI}
@@ -254,14 +265,21 @@ export default class BedCountsSpan extends React.Component {
                     {this.state.bedSet}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                    hg38{" "}
+                    {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
+                      return (
+                        <a key={index} >
+                          {value}{", "}
+                        </a>
+                      );
+                    })}
+                    {/* hg38{" "}
                     <a
                       href={"http://refgenomes.databio.org/#hg38"}
                       className="home-link"
                       style={{ fontSize: "10pt" }}
                     >
                       [Refgenie]
-                    </a>
+                    </a> */}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                     {this.state.bedSetAPI}
