@@ -8,7 +8,7 @@ import { client } from "./const/server";
 import { FaMinus } from "react-icons/fa";
 import { FaFolderPlus } from "react-icons/fa";
 import { GET_BED_DIST } from "./graphql/bedQueries";
-import _ from "lodash";
+// import _ from "lodash";
 
 export default class ResultsBed extends React.Component {
   constructor(props) {
@@ -48,32 +48,43 @@ export default class ResultsBed extends React.Component {
       var res = []
       data.forEach((bed, index) => {
         if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
-          console.log(bed)
           res.push(bed);
         }
       });
       console.log(res)
       res = res.slice().sort((a, b) => a.node.score - b.node.score);
     } else {
-      res = [];
-      for (var j = 0; j < terms.length; j++) {
-        var new_res = await client
-          .query({
-            query: GET_BED_DIST,
-            variables: { filters: { searchTermIlike: terms[j] } },
-          })
-          .then(({ data }) => data.distances.edges);
+      var filter = []
+      terms.forEach((term, index) => {
+        filter.push({ searchTermIlike: term });
+      })
+      data = await client
+        .query({
+          query: GET_BED_DIST,
+          variables: { filters: { or: filter } },
+        })
+        .then(({ data }) => data.distances.edges);
 
-        if (j === 0) {
-          res = new_res;
-        } else if (j === terms.length - 1) {
-          res = this.getAvgDist(res, new_res).sort(
-            (a, b) => a.node.score - b.node.score
-          );
-        } else {
-          res = this.getAvgDist(res, new_res);
+      var res_all = []
+      data.forEach((bed, index) => {
+        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+          res_all.push(bed);
         }
-      }
+      });
+      var res_group = this.groupBy(res_all, "bedId");
+
+      res = [];
+      res_group.forEach((bed, index) => {
+        const thresh = 0.5
+        let avg_score = (bed.reduce((total, next) => total + next.node.score, 0) + thresh * (terms.length - bed.length)) / terms.length;
+        data = { ...bed[0].node, score: avg_score };
+
+        delete data.searchTerm;
+        res.push({ node: data })
+      });
+
+      res = res.slice().sort((a, b) => a.node.score - b.node.score);
+      console.log(res)
     }
 
     this.setState({ bedData: res });
@@ -93,6 +104,12 @@ export default class ResultsBed extends React.Component {
     this.setState({ terms: this.props.terms });
     this.getColumns();
     this.getData();
+  }
+
+  groupBy(arr, prop) {
+    const map = new Map(Array.from(arr, obj => [obj.node[prop], []]));
+    arr.forEach(obj => map.get(obj.node[prop]).push(obj));
+    return Array.from(map.values());
   }
 
   getUnique(arr1, arr2) {
@@ -115,59 +132,59 @@ export default class ResultsBed extends React.Component {
     return uniqueArr;
   }
 
-  getAvgDist(old_res, new_res) {
+  // getAvgDist(old_res, new_res) {
 
-    const thresh = 0.5
-    var oldres = _.cloneDeep(old_res);
-    var newres = _.cloneDeep(new_res);
-    var avg_res = [];
-    var bed_old = old_res.map((bed, index) => {
-      return bed.node.bedId;
-    });
-    var bed_new = new_res.map((bed, index) => {
-      return bed.node.bedId;
-    });
-    const bedunique = this.getUnique(bed_old, bed_new)
+  //   const thresh = 0.5
+  //   var oldres = _.cloneDeep(old_res);
+  //   var newres = _.cloneDeep(new_res);
+  //   var avg_res = [];
+  //   var bed_old = old_res.map((bed, index) => {
+  //     return bed.node.bedId;
+  //   });
+  //   var bed_new = new_res.map((bed, index) => {
+  //     return bed.node.bedId;
+  //   });
+  //   const bedunique = this.getUnique(bed_old, bed_new)
 
-    avg_res = oldres.map((bed, index) => {
-      if (bedunique.includes(bed.node.bedId)) {
-        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
-          bed.node.score =
-            (bed.node.score + thresh) / 2;
-          return bed;
-        }
-      } else {
+  //   avg_res = oldres.map((bed, index) => {
+  //     if (bedunique.includes(bed.node.bedId)) {
+  //       if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+  //         bed.node.score =
+  //           (bed.node.score + thresh) / 2;
+  //         return bed;
+  //       }
+  //     } else {
 
-        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
-          var new_res_idx = new_res.findIndex(function (new_bed) {
-            return new_bed.node.bedId === bed.node.bedId;
-          });
+  //       if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+  //         var new_res_idx = new_res.findIndex(function (new_bed) {
+  //           return new_bed.node.bedId === bed.node.bedId;
+  //         });
 
-          bed.node.score =
-            (bed.node.score + new_res[new_res_idx].node.score) / 2;
+  //         bed.node.score =
+  //           (bed.node.score + new_res[new_res_idx].node.score) / 2;
 
-          return bed;
+  //         return bed;
 
-        }
-      }
-      return {}
-    });
+  //       }
+  //     }
+  //     return {}
+  //   });
 
-    newres.forEach((bed, index) => {
-      if (bedunique.includes(bed.node.bedId)) {
-        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
-          bed.node.score =
-            (bed.node.score + thresh) / 2;
-          avg_res.push(bed);
-        }
-      }
-    }
-    )
+  //   newres.forEach((bed, index) => {
+  //     if (bedunique.includes(bed.node.bedId)) {
+  //       if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
+  //         bed.node.score =
+  //           (bed.node.score + thresh) / 2;
+  //         avg_res.push(bed);
+  //       }
+  //     }
+  //   }
+  //   )
 
-    avg_res = avg_res.filter(value => Object.keys(value).length !== 0);
+  //   avg_res = avg_res.filter(value => Object.keys(value).length !== 0);
 
-    return avg_res;
-  }
+  //   return avg_res;
+  // }
 
   getColumns() {
     let tableColumns = [];

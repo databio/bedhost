@@ -165,6 +165,7 @@ export const GET_BED_DIST = gql`
       edges{
         node{
           bedId
+          searchTerm
           score
           bedfile{
             name
