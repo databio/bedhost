@@ -123,7 +123,7 @@ export default class QueryBuilderWrapper extends React.Component {
       }
     }
     `
-    this.setState({ rules: sql.sql, query: graphql, graphql: graphql_query});
+    this.setState({ rules: sql.sql, query: graphql, graphql: graphql_query });
     this.forceUpdate();
   }
   // reinitialize jQuery Query Builder based on react state
@@ -169,9 +169,9 @@ export default class QueryBuilderWrapper extends React.Component {
 
   setLimit(event) {
     if (this.state.table_name === "bedfiles") {
-      this.setState({ bedlimit: event.target.value });
+      this.setState({ bedlimit: parseInt(event.target.value) });
     } else {
-      this.setState({ setlimit: event.target.value });
+      this.setState({ setlimit: parseInt(event.target.value) });
     }
   }
 
@@ -214,7 +214,7 @@ export default class QueryBuilderWrapper extends React.Component {
               borderWidth: "1px",
               borderRadius: ".25rem",
             }}
-            type="text"
+            type="number"
             value={this.state.bedlimit}
             onChange={this.setLimit.bind(this)}
           />
@@ -231,7 +231,7 @@ export default class QueryBuilderWrapper extends React.Component {
               borderWidth: "1px",
               borderRadius: ".25rem",
             }}
-            type="text"
+            type="number"
             value={this.state.setlimit}
             onChange={this.setLimit.bind(this)}
           />
