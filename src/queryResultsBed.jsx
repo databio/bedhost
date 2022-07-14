@@ -155,11 +155,11 @@ export default class ResultsBed extends React.Component {
           title: cols[i],
           field: cols[i],
           render: (rowData) =>
-            rowData.data_source === "GEO" ? (
+            rowData.GSM ? (
               <a
                 href={
                   "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" +
-                  rowData.GSE
+                  rowData.GSM
                 }
                 className="home-link"
               >
