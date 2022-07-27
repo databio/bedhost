@@ -11,3 +11,4 @@ requests
 starlette==0.16.0
 uvicorn
 yacman>=0.7.1
+setuptools
