@@ -9,44 +9,47 @@ from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
+
+class Terms(BaseModel):
+    genome: str
+    terms: list
+
+
 # private API
-@router.get(
-    "/distance/{term}/bedfiles/{genome}",
+@router.post(
+    "/distance/bedfiles/terms",
     response_model=DBResponse,
-    include_in_schema=False,
+    # include_in_schema=False,
 )
 async def get_bedfiles_in_distance(
-    term: str = Path(..., description="search term", example="HEK293"),
-    genome: str = Path(..., description="genome assemblies", example="hg38"),
+    terms: Terms,
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
-    term = term.replace(" ", ",").split(",")
-    print(genome)
 
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
 
     res = bbc.select_bedfiles_for_distance(
+        terms=terms.terms,
+        genome=terms.genome,
         bedfile_cols=ids,
-        filter_conditions=[
-            ("search_term", "eq", term[0]),
-        ],
+        limit=limit if limit else None,
     )
 
+    values = []
     for x in res:
-        values = []
-        if genome in str(x):
-            values.append(list(x))
+        values.append(list(x.values()))
 
     if values:
         if ids:
             colnames = ids
+            colnames.extend(["score"])
         else:
             colnames = list(
                 serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys()
             )
-            colnames.extend(["bed_label", "search_term", "score"])
+            colnames.extend(["score"])
 
         _LOGGER.info(f"Serving data for columns: {colnames}")
     else:
