@@ -53,9 +53,10 @@ export default class BedSplash extends React.Component {
         variables: { md5sum: this.props.match.params.bed_md5sum },
       })
       .then(({ data }) => data.bedfiles.edges[0].node);
-
+    console.log(res)
     let bedStats = []
     Object.entries(res).forEach(([key, value], index) => {
+
       if (schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "number") {
         bedStats.push(
           {

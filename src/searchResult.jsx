@@ -48,8 +48,6 @@ export default class ResultsBed extends React.Component {
     let res = await api.post('/_private_api/distance/bedfiles/terms?ids=name&ids=md5sum&ids=other&ids=genome', request)
       .then(({ data }) => data);
 
-    console.log("test:", res)
-
     this.setState({
       bedData: res,
       terms: this.props.terms

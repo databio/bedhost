@@ -243,9 +243,9 @@ export default class BedCountsSpan extends React.Component {
                     })} */}
                     {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
                       return (
-                        <text key={index} >
+                        <span key={index} >
                           {value}{", "}
-                        </text>
+                        </span>
                       );
                     })}
                   </td>
@@ -299,9 +299,9 @@ export default class BedCountsSpan extends React.Component {
                     })} */}
                     {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
                       return (
-                        <text key={index} >
+                        <span key={index} >
                           {value}{", "}
-                        </text>
+                        </span>
                       );
                     })}
                   </td>

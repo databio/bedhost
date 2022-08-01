@@ -10,7 +10,6 @@ import copy from "copy-to-clipboard";
 import bedhost_api_url from "./const/server";
 
 export default function ResponsiveDialog(props) {
-    console.log("here:", props.bedfiles)
 
     const [open, setOpen] = React.useState(false);
     // const [idx, setIdx] = React.useState(idx_list);
