@@ -9,8 +9,8 @@ import ImgGrid from "./imgGrid";
 import BedInfo from "./bedInfo";
 import { Label } from "semantic-ui-react";
 import "./style/splash.css";
-import bedhost_api_url, { client } from "./const/server";
-import { GET_BED_SPLASH } from "./graphql/bedQueries";
+import bedhost_api_url from "./const/server";
+import { bed_splash_cols } from "./fastapi/bedQueries";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -38,7 +38,7 @@ export default class BedSplash extends React.Component {
     this.setState({ bedSchema: schema });
 
     await api
-      .get("/api/bed/" + this.props.match.params.bed_md5sum + "/file/bigBed")
+      .get(`/api/bed/${this.props.match.params.bed_md5sum}/file/bigBed`)
       .then(this.setState({ bigbed: true }))
       .catch((err) => {
         if (err.response.status === 404) {
@@ -46,21 +46,29 @@ export default class BedSplash extends React.Component {
         }
       });
 
-    // get bedsplash data via Graphql
-    const res = await client
-      .query({
-        query: GET_BED_SPLASH,
-        variables: { md5sum: this.props.match.params.bed_md5sum },
-      })
-      .then(({ data }) => data.bedfiles.edges[0].node);
-    console.log(res)
+    // get bedsplash data via fastapi endpoints
+    let bed_cols = ""
+    bed_splash_cols.forEach((col, idx) => {
+      if (idx === 0) {
+        bed_cols = `ids=${col}`
+      } else {
+        bed_cols = `${bed_cols}&ids=${col}`
+      }
+    });
+
+    const result = await api
+      .get(`/api/bed/${this.props.match.params.bed_md5sum}/metadata?${bed_cols}`)
+      .then(({ data }) => data);
+
+    let res = {}
+    result.columns.forEach((key, i) => res[key] = result.data[0][i]);
+
     let bedStats = []
     Object.entries(res).forEach(([key, value], index) => {
-
-      if (schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].type === "number") {
+      if (schema[key].type === "number") {
         bedStats.push(
           {
-            label: schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)].description,
+            label: schema[key].description,
             data: res[key]
           }
         )
@@ -75,21 +83,9 @@ export default class BedSplash extends React.Component {
             id: key,
             title: value.description,
             src_pdf:
-              bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/img/" +
-              schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)]
-                .label +
-              "?format=pdf",
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/img/${schema[key].label}?format=pdf`,
             src_png:
-              bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/img/" +
-              schema[key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`)]
-                .label +
-              "?format=png",
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/img/${schema[key].label}?format=png`,
           }
         )
       }
@@ -98,23 +94,19 @@ export default class BedSplash extends React.Component {
     let newbedFiles = {}
     Object.entries(schema).forEach(([key, value], index) => {
       if (value.type === "file") {
-        newbedFiles[key] = JSON.parse(res[key]).size;
+        newbedFiles[key] = res[key].size;
       }
     });
 
     this.setState({
       bedName: res.name,
-      bedGenome: JSON.parse(res.genome),
-      bedMeta: JSON.parse(res.other),
+      bedGenome: res.genome,
+      bedMeta: res.other,
       bedStats: bedStats,
       bedFig: newbedFig,
       bedFiles: newbedFiles,
       trackPath:
-        "http://genome.ucsc.edu/cgi-bin/hgTracks?db=" +
-        res.genome +
-        "&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/" +
-        res.name +
-        ".bigBed",
+        `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome}&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/${res.name}.bigBed`,
     });
 
     if (this.state.bigbed) {
@@ -123,35 +115,22 @@ export default class BedSplash extends React.Component {
           BED_File: {
             id: "bedfile",
             label: "BED file",
-            url: bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/file/bed",
-            http: bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/file_path/bigBed?remoteClass=http",
-            s3: bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/file_path/bigBed?remoteClass=s3"
+            url:
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file/bed`,
+            http:
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
+            s3:
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
           },
           bigBED_File: {
             id: "bigbedfile",
             label: "bigBed file",
             url:
-              bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/file/bigBed",
-            http: bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/file_path/bigBed?remoteClass=http",
-            s3: bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/file_path/bigBed?remoteClass=s3"
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file/bigBed`,
+            http:
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
+            s3:
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
           },
         },
       });
@@ -162,12 +141,11 @@ export default class BedSplash extends React.Component {
             id: "bedfile",
             label: "BED file",
             url:
-              bedhost_api_url +
-              "/api/bed/" +
-              this.props.match.params.bed_md5sum +
-              "/file/bed",
-            http: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bed?remoteClass=http",
-            s3: bedhost_api_url + "/api/bed/" + this.props.match.params.bed_md5sum + "/file_path/bed?remoteClass=s3"
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file/bed`,
+            http:
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=http`,
+            s3:
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=s3`
           },
         },
       });

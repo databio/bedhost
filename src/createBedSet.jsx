@@ -36,11 +36,7 @@ export default class CreateBedSet extends React.Component {
   async createBedSet() {
     // hide before process myBEDSet function is complete 
     // let md = await api.post(
-    //   "/api/bedset/create/" +
-    //   this.state.myBedSetName +
-    //   "/" +
-    //   this.state.myBedSetIdx
-    // ).then(({ data }) => data)
+    //   `/api/bedset/create/${this.state.myBedSetName}/${this.state.myBedSetIdx}`).then(({ data }) => data)
 
     // alert("Your BED set has been submitted for processing!")
 
@@ -92,10 +88,11 @@ export default class CreateBedSet extends React.Component {
                 actions={[
                   rowData => ({
                     icon: () => <a
-                      href={bedhost_api_url + "/api/bed/" + rowData.md5sum + "/file/bed"}
+                      href={
+                        `${bedhost_api_url}/api/bed/${rowData.md5sum}/file/bed`}
                     ><FaDownload className="my-icon" /></a>,
                     tooltip: 'Save User',
-                    onClick: (event, rowData) => alert("Download " + rowData.name)
+                    onClick: (event, rowData) => alert(`Download ${rowData.name}`)
                   }),
                   {
                     icon: () => <FaTrashAlt className="my-icon" />,

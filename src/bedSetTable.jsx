@@ -28,14 +28,13 @@ export default class BedSetTable extends React.Component {
   }
 
   async componentDidMount() {
-    const bed_count = this.props.bedSetTableData.totalCount;
-    const bed_stats = this.props.bedSetTableData.edges;
+    // get bedsplash data via fastapi endpoints
+    const bed_count = this.props.bedSetTableData.length;
 
-    let cols = Object.keys(bed_stats[0].node);
-    let data = bed_stats.map((value) => {
-      return value.node;
-    });
-    const editable = data.map((o) => ({ ...o }));
+    let cols = Object.keys(this.props.bedSetTableData[0]);
+
+    const editable = this.props.bedSetTableData.map((o) => ({ ...o }));
+
 
     let bedSetFig = []
 
@@ -99,7 +98,7 @@ export default class BedSetTable extends React.Component {
             <Link
               className="splash-link"
               to={{
-                pathname: "/bedsplash/" + rowData.md5sum,
+                pathname: `/bedsplash/${rowData.md5sum}`,
               }}
             >
               {rowData.name}
