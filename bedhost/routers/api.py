@@ -791,19 +791,13 @@ async def get_mybedset_file_path(
     ),
 ):
     """
-    Generate track hub files for the BED set
+    return list of file path for user defined bed
     """
 
     bfs = list(bedfiles.split(","))
 
     paths = ""
     for bed in bfs:
-        # _LOGGER.info(bed)
-        # res = await get_file_path_for_bedfile(
-        #     md5sum=bed, id=FileColumnBed.bed, remoteClass=remoteClass
-        # )
-        # _LOGGER.info("testing: ", res.body.decode())
-
         hit = bbc.bed.select(
             filter_conditions=[("id", "eq", bed)],
             columns=[file_map_bed["bed"]],
