@@ -48,7 +48,7 @@ export default class BedCountsSpan extends React.Component {
     let bedurl = `/bedsplash/${bed.data[0][0]}`
     this.setState({ sampleBed: bedurl });
 
-    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limt=1").then(({ data }) => data)
+    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limit=1").then(({ data }) => data)
     let bedseturl = `/bedsetsplash/${bedset.data[0][0]}`
     this.setState({ sampleBedSet: bedseturl });
     this.getAPIcount()
