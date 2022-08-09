@@ -83,6 +83,9 @@ async def get_query_results(
     columns = ", ".join([c for c in ids])
 
     statement_str = "SELECT {} FROM {} WHERE {}"
+
+    statement_str = f"{statement_str} LIMIT {limit}" if limit else statement_str
+
     print(text(statement_str.format(columns, table_name.value, query.query)))
     try:
         if table_name.value == BED_TABLE:
