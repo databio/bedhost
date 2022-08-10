@@ -173,6 +173,7 @@ export default class QueryBuilderWrapper extends React.Component {
     } else {
       this.setState({ setlimit: parseInt(event.target.value) });
     }
+    console.log(this.state.bedlimit, this.state.setlimit)
   }
 
   render() {

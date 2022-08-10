@@ -33,6 +33,9 @@ export default class ResultsBedSet extends React.Component {
     if (prevProps.query !== this.props.query) {
       await this.getBedSetByQuery()
       this.setState({ query: this.props.query })
+    } else if (prevProps.limit !== this.props.limit) {
+      await this.getBedSetByQuery()
+      this.setState({ query: this.props.query })
     }
   }
 

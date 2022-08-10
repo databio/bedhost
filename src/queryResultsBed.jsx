@@ -41,6 +41,14 @@ export default class ResultsBed extends React.Component {
     } else if (prevProps.bedset_md5sum !== this.props.bedset_md5sum) {
       await this.getBedByBedSet()
       this.setState({ md5sum: this.props.md5sum })
+    } else if (prevProps.limit !== this.props.limit) {
+      if (this.props.query) {
+        await this.getBedByQuery()
+        this.setState({ query: this.props.query })
+      } else {
+        await this.getBedByBedSet()
+        this.setState({ md5sum: this.props.md5sum })
+      }
     }
   }
 
