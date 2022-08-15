@@ -41,9 +41,10 @@ export default class BedSplash extends React.Component {
       .get(`/api/bed/${this.props.match.params.bed_md5sum}/file/bigBed`)
       .then(this.setState({ bigbed: true }))
       .catch((err) => {
-        if (err.response.status === 404) {
-          this.setState({ bigbed: false });
-        }
+        console.log(err)
+        // if (err.response.status === 500) {
+        this.setState({ bigbed: false });
+        // }
       });
 
     // get bedsplash data via fastapi endpoints
@@ -94,7 +95,9 @@ export default class BedSplash extends React.Component {
     let newbedFiles = {}
     Object.entries(schema).forEach(([key, value], index) => {
       if (value.type === "file") {
-        newbedFiles[key] = res[key].size;
+        if (res[key]) {
+          newbedFiles[key] = res[key].size;
+        }
       }
     });
 
