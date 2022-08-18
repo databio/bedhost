@@ -1,9 +1,9 @@
 aiofiles
-bbconf>=0.3.0
+bbconf
 fastapi>=0.61.2
 itsdangerous
 logmuse
-pipestat>=0.3.0
+pipestat
 pipestat_reader
 python-multipart
 pyyaml
