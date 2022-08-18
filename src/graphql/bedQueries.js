@@ -16,6 +16,7 @@ export const GET_SAMPLE_BED = gql`
           md5sum
         }
       }
+      totalCount
     }
   }
 `;
@@ -63,7 +64,7 @@ export const GET_BED_STATS = gql`
         node {
           gcContent
           regionsNo
-          meanAbsoluteTssDist
+          medianTssDist
           meanRegionWidth
           exonPercentage
           intronPercentage
@@ -164,6 +165,7 @@ export const GET_BED_DIST = gql`
       edges{
         node{
           bedId
+          searchTerm
           score
           bedfile{
             name
@@ -188,7 +190,7 @@ export const GET_BED_SPLASH = gql`
           bigbedfile
           gcContent
           regionsNo
-          meanAbsoluteTssDist
+          medianTssDist
           meanRegionWidth
           exonPercentage
           intronPercentage

@@ -57,7 +57,7 @@ export default class QueryBuilderWrapper extends React.Component {
     this.state = {
       table_name: "",
       rules: {},
-      query: {},
+      query: "",
       graphql: "",
       filters: {},
       bedlimit: 500,
@@ -93,9 +93,9 @@ export default class QueryBuilderWrapper extends React.Component {
 
   async getfilter() {
     let filters_res = await api
-      .get("/_private_api/filters/" + this.props.table_name)
+      .get(`/_private_api/filters/${this.props.table_name}`)
       .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
     this.setState({ filters: filters_res.data });
   }
@@ -123,7 +123,7 @@ export default class QueryBuilderWrapper extends React.Component {
       }
     }
     `
-    this.setState({ rules: sql.sql, query: graphql, graphql: graphql_query});
+    this.setState({ rules: sql.sql, query: sql.sql, graphql: graphql_query });
     this.forceUpdate();
   }
   // reinitialize jQuery Query Builder based on react state
@@ -169,10 +169,11 @@ export default class QueryBuilderWrapper extends React.Component {
 
   setLimit(event) {
     if (this.state.table_name === "bedfiles") {
-      this.setState({ bedlimit: event.target.value });
+      this.setState({ bedlimit: parseInt(event.target.value) });
     } else {
-      this.setState({ setlimit: event.target.value });
+      this.setState({ setlimit: parseInt(event.target.value) });
     }
+    console.log(this.state.bedlimit, this.state.setlimit)
   }
 
   render() {
@@ -214,7 +215,7 @@ export default class QueryBuilderWrapper extends React.Component {
               borderWidth: "1px",
               borderRadius: ".25rem",
             }}
-            type="text"
+            type="number"
             value={this.state.bedlimit}
             onChange={this.setLimit.bind(this)}
           />
@@ -231,7 +232,7 @@ export default class QueryBuilderWrapper extends React.Component {
               borderWidth: "1px",
               borderRadius: ".25rem",
             }}
-            type="text"
+            type="number"
             value={this.state.setlimit}
             onChange={this.setLimit.bind(this)}
           />

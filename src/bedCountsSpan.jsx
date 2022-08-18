@@ -20,38 +20,42 @@ export default class BedCountsSpan extends React.Component {
       sampleBedSet: "",
       bedAPI: "",
       bedSetAPI: "",
+      genomeList: [],
     };
   }
 
   async componentDidMount() {
+    let genomes = await api.get("/api/bed/genomes").then(({ data }) => data);
+    this.setState({ genomeList: genomes });
+
     let bfcount = await api
-      .get("/api/bed/all/data/count")
+      .get("/api/bed/count")
       .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
     // console.log("BED file count retrieved from the server: ", bfcount.data);
     this.setState({ bed: bfcount.data });
 
     let bscount = await api
-      .get("/api/bedset/all/data/count")
+      .get("/api/bedset/count")
       .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
     // console.log("BED set count retrieved from the server: ", bscount.data);
     this.setState({ bedSet: bscount.data });
 
-    let bed = await api.get("/api/bed/all/data?ids=md5sum&limit=1").then(({ data }) => data);
-    let bedurl = '/bedsplash/' + bed.data[0][0]
+    let bed = await api.get("/api/bed/all/metadata?ids=md5sum&limit=1").then(({ data }) => data);
+    let bedurl = `/bedsplash/${bed.data[0][0]}`
     this.setState({ sampleBed: bedurl });
 
-    let bedset = await api.get("/api/bedset/all/data?ids=md5sum&limt=1").then(({ data }) => data)
-    let bedseturl = '/bedsetsplash/' + bedset.data[0][0]
+    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limit=1").then(({ data }) => data)
+    let bedseturl = `/bedsetsplash/${bedset.data[0][0]}`
     this.setState({ sampleBedSet: bedseturl });
     this.getAPIcount()
   }
 
   async getAPIcount() {
-    let api_json = await fetch(bedhost_api_url + "/openapi.json")
+    let api_json = await fetch(`${bedhost_api_url}/openapi.json`)
       .then((response) => response.json())
       .then((responseJson) => {
         return responseJson.paths;
@@ -85,6 +89,92 @@ export default class BedCountsSpan extends React.Component {
           bedstat and bedbuncher pipeline.{" "}
         </span>
         <div>
+          <Label
+            style={{
+              marginTop: "15px",
+              marginBottom: "5px",
+              marginLeft: "15px",
+              fontSize: "15px",
+              padding: "6px 20px 6px 30px",
+            }}
+            as="a"
+            color="teal"
+            ribbon
+          >
+            Available Servers
+          </Label>
+          {
+            <table style={{ marginLeft: "15px" }}>
+              <tbody>
+                <tr>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Server Name
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    URL
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Maintainer
+                  </th>
+                  <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Description
+                  </th>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Primary server
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <a
+                      href={"http://bedbase.org"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      http://bedbase.org
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Sheffield lab
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Main demonstration server
+                  </td>
+                </tr>
+                <tr style={{ verticalAlign: "top" }}>
+                  <td
+                    style={{
+                      padding: "3px 15px",
+                      fontSize: "10pt",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Dev server
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    <a
+                      href={"http://dev1.bedbase.org"}
+                      className="home-link"
+                      style={{ fontSize: "10pt" }}
+                    >
+                      http://dev1.bedbase.org
+                    </a>
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Sheffield lab
+                  </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    Developmental server
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          }
           <Label
             style={{
               marginTop: "15px",
@@ -131,14 +221,33 @@ export default class BedCountsSpan extends React.Component {
                     {this.state.bed}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                    hg38{" "}
-                    <a
-                      href={"http://refgenomes.databio.org/#hg38"}
-                      className="home-link"
-                      style={{ fontSize: "10pt" }}
-                    >
-                      [Refgenie]
-                    </a>
+                    {/* {this.state.genomeList.map((value, index) => {
+                      return (
+                        value.genome.digest ? (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                            <a
+                              href={"http://refgenomes.databio.org/#" + value.genome.alias}
+                              className="home-link"
+                              style={{ fontSize: "10pt" }}
+                            >
+                              [Refgenie]
+                            </a>
+                          </p>
+                        ) : (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                          </p>
+                        )
+                      );
+                    })} */}
+                    {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
+                      return (
+                        <span key={index} >
+                          {value}{", "}
+                        </span>
+                      );
+                    })}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                     {this.state.bedAPI}
@@ -168,14 +277,33 @@ export default class BedCountsSpan extends React.Component {
                     {this.state.bedSet}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                    hg38{" "}
-                    <a
-                      href={"http://refgenomes.databio.org/#hg38"}
-                      className="home-link"
-                      style={{ fontSize: "10pt" }}
-                    >
-                      [Refgenie]
-                    </a>
+                    {/* {this.state.genomeList.map((value, index) => {
+                      return (
+                        value.genome.digest ? (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                            <a
+                              href={"http://refgenomes.databio.org/#" + value.genome.alias}
+                              className="home-link"
+                              style={{ fontSize: "10pt" }}
+                            >
+                              [Refgenie]
+                            </a>
+                          </p>
+                        ) : (
+                          <p key={index} >
+                            {value.genome.alias}{" "}
+                          </p>
+                        )
+                      );
+                    })} */}
+                    {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
+                      return (
+                        <span key={index} >
+                          {value}{", "}
+                        </span>
+                      );
+                    })}
                   </td>
                   <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
                     {this.state.bedSetAPI}
@@ -198,11 +326,12 @@ export default class BedCountsSpan extends React.Component {
               <Spinner
                 animation="border"
                 size="sm"
-                style={{ marginBottom: "5px", color: "lightgray" }}
+                style={{ marginBottom: "5px", marginRight: "5px", color: "lightgray" }}
               />
               <span style={{ color: "lightgray" }}>Loading data </span>
             </>
           )}
+
         </div>
       </div>
     )

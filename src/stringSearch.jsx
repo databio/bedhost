@@ -20,6 +20,7 @@ export default class Search extends React.Component {
       searchTerms: "K562",
       genomeList: [],
       genome: "hg38",
+      searching: false
     };
   }
 
@@ -29,8 +30,15 @@ export default class Search extends React.Component {
   }
 
   setShowResults() {
-    this.setState({ showResults: true });
+    this.setState({
+      showResults: true,
+      searching: true
+    });
   }
+
+  setSearchingFalse(val) {
+    this.setState({ searching: val });
+  };
 
   setSearchTerms(event) {
     this.setState({
@@ -43,6 +51,7 @@ export default class Search extends React.Component {
   handleSelect(e) {
     this.setState({
       genome: e,
+      showResults: false,
     });
   }
 
@@ -70,7 +79,7 @@ export default class Search extends React.Component {
               className="float-left"
               style={{
                 marginRight: "10px",
-                width: "86%",
+                width: "84%",
                 height: "33px",
                 padding: "5px",
                 borderColor: "#ced4da",
@@ -91,10 +100,10 @@ export default class Search extends React.Component {
               style={{ height: "33px", marginRight: "10px" }}
               onKeyPress={this.handleKeypress.bind(this)}
             >
-              {this.state.genomeList.map((value, index) => {
+              {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
                 return (
-                  <Dropdown.Item key={index} eventKey={value.genome.alias}>
-                    {value.genome.alias}
+                  <Dropdown.Item key={index} eventKey={value}>
+                    {value}
                   </Dropdown.Item>
                 );
               })}
@@ -104,13 +113,14 @@ export default class Search extends React.Component {
               className="float-right btn btn-sm my-btn"
               onClick={this.setShowResults.bind(this)}
             >
-              SEARCH
+              {this.state.searching ? "Searching..." : "SEARCH"}
             </button>
           </Row>
           {this.state.showResults ? (
             <ResultsBed
               terms={this.state.searchTerms}
               genome={this.state.genome}
+              setSearchingFalse={this.setSearchingFalse.bind(this)}
             />
           ) : null}
         </Container>

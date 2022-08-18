@@ -66,20 +66,22 @@ export default function BedInfo(props) {
                   {key === "genome" ? (
                     <>
                       <span>{props.bed_genome.alias}</span>
-                      <a
-                        href={
-                          "http://refgenomes.databio.org/v3/genomes/splash/" +
-                          props.bed_genome.digest
-                        }
-                        className="home-link"
-                        style={{
-                          marginLeft: "15px",
-                          fontSize: "10pt",
-                          fontWeight: "bold",
-                        }}
-                      >
-                        [Refgenie]
-                      </a>
+                      {props.bed_genome.digest !== "" ? (
+                        <a
+                          href={
+                            `http://refgenomes.databio.org/v3/genomes/splash/${props.bed_genome.digest}`
+                          }
+                          className="home-link"
+                          style={{
+                            marginLeft: "15px",
+                            fontSize: "10pt",
+                            fontWeight: "bold",
+                          }}
+                        >
+                          [Refgenie]
+                        </a>
+                      ) : null
+                      }
                     </>
                   ) : (
                     value
@@ -126,8 +128,8 @@ export default function BedInfo(props) {
                 }}
               >
                 {value.label ===
-                  "Mean absolute distance from transcription start sites" ? (
-                  <>Mean absolute distance from TSS</>
+                  "Median absolute distance from transcription start sites" ? (
+                  <>Median TSS distance</>
                 ) : (
                   <>{value.label}</>
                 )}

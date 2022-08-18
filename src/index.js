@@ -4,6 +4,7 @@ import { Route, Switch, HashRouter as Router } from "react-router-dom";
 import * as serviceWorker from "./serviceWorker";
 import Home from "./home";
 import About from "./about";
+import CreateBedSet from "./createBedSet";
 import BedSetSplash from './bedSetSplash';
 import BedSplash from './bedSplash';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -18,6 +19,7 @@ ReactDOM.render(
     <Switch>
       <Route exact path="/" component={Home} />
       <Route exact path="/about" component={About} />
+      <Route exact path="/createBedSet" component={CreateBedSet} />
       <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash} />
       <Route path="/bedsplash/:bed_md5sum" component={BedSplash} />
     </Switch>

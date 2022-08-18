@@ -4,10 +4,14 @@ import Spinner from "react-bootstrap/Spinner";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
-import { client } from "./const/server";
 import { FaMinus } from "react-icons/fa";
-import { GET_BED_DIST } from "./graphql/bedQueries";
-import _ from "lodash";
+import { FaFolderPlus } from "react-icons/fa";
+import axios from "axios";
+import bedhost_api_url from "./const/server";
+
+const api = axios.create({
+  baseURL: bedhost_api_url,
+});
 
 export default class ResultsBed extends React.Component {
   constructor(props) {
@@ -18,6 +22,7 @@ export default class ResultsBed extends React.Component {
       data: [],
       pageSize: -1,
       pageSizeOptions: [],
+      myBedSet: JSON.parse(localStorage.getItem('myBedSet')) || []
     };
   }
 
@@ -35,82 +40,36 @@ export default class ResultsBed extends React.Component {
   async getBedBySearchTerms() {
     let terms = this.props.terms.split(/[\s,]+/);
 
-    if (terms.length === 1) {
-      var res = await client
-        .query({
-          query: GET_BED_DIST,
-          variables: { filters: { searchTermIlike: terms[0] } },
-        })
-        .then(({ data }) => data.distances.edges);
-      res = res.slice().sort((a, b) => a.node.score - b.node.score);
-    } else {
-      res = [];
-      for (var j = 0; j < terms.length; j++) {
-        var new_res = await client
-          .query({
-            query: GET_BED_DIST,
-            variables: { filters: { searchTermIlike: terms[j] } },
-          })
-          .then(({ data }) => data.distances.edges);
+    var request = {
+      genome: this.props.genome,
+      terms: terms
+    };
 
-        if (j === 0) {
-          res = new_res;
-        } else if (j === terms.length - 1) {
-          res = this.getAvgDist(res, new_res, terms.length).sort(
-            (a, b) => a.node.score - b.node.score
-          );
-        } else {
-          res = this.getAvgDist(res, new_res, 1);
-        }
-      }
-    }
+    let res = await api.post('/_private_api/distance/bedfiles/terms?ids=name&ids=md5sum&ids=other&ids=genome', request)
+      .then(({ data }) => data);
 
-    this.setState({ bedData: res });
+    this.setState({
+      bedData: res,
+      terms: this.props.terms
+    });
 
-    if (res.length >= 50) {
+    if (res.data.length >= 50) {
       this.setState({
         pageSize: 50,
         pageSizeOptions: [50, 100, 150],
       });
     } else {
       this.setState({
-        pageSize: res.length,
-        pageSizeOptions: [res.length],
+        pageSize: res.data.length,
+        pageSizeOptions: [res.data.length],
       });
     }
-    this.setState({ terms: this.props.terms });
-    // console.log("BED files retrieved from the server: ", res);
+
+    this.props.setSearchingFalse(false);
     this.getColumns();
     this.getData();
   }
 
-  getAvgDist(old_res, new_res, len) {
-    var editable = _.cloneDeep(old_res);
-    var avg_res = [];
-    var bed_old = old_res.map((bed, index) => {
-      return bed.node.bedId;
-    });
-    var bed_new = new_res.map((bed, index) => {
-      return bed.node.bedId;
-    });
-    const bedlist = bed_old.filter((value) => bed_new.includes(value));
-
-    avg_res = editable.map((bed, index) => {
-      if (bedlist.includes(bed.node.bedId)) {
-        if (JSON.parse(bed.node.bedfile.genome).alias === this.props.genome) {
-          var new_res_idx = new_res.findIndex(function (new_bed) {
-            return new_bed.node.bedId === bed.node.bedId;
-          });
-          bed.node.score =
-            (bed.node.score + new_res[new_res_idx].node.score) / len;
-          return bed;
-        }
-      }
-      return {}
-    });
-    avg_res = avg_res.filter(value => Object.keys(value).length !== 0);
-    return avg_res;
-  }
 
   getColumns() {
     let tableColumns = [];
@@ -133,7 +92,7 @@ export default class ResultsBed extends React.Component {
             <Link
               className="home-link"
               to={{
-                pathname: "/bedsplash/" + rowData.md5sum,
+                pathname: `/bedsplash/${rowData.md5sum}`,
               }}
             >
               {rowData.name}
@@ -161,8 +120,7 @@ export default class ResultsBed extends React.Component {
             rowData.data_source === "GEO" ? (
               <a
                 href={
-                  "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" +
-                  rowData.GSE
+                  `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${rowData.GSE}`
                 }
                 className="home-link"
               >
@@ -170,7 +128,7 @@ export default class ResultsBed extends React.Component {
               </a>
             ) : rowData.data_source === "ENCODE" ? (
               <a
-                href={"https://www.encodeproject.org/files/" + rowData.file_acc}
+                href={`https://www.encodeproject.org/files/${rowData.file_acc}`}
                 className="home-link"
               >
                 {rowData.data_source}
@@ -190,13 +148,15 @@ export default class ResultsBed extends React.Component {
   }
 
   getData() {
-    let data = this.state.bedData.map((bed) => {
+    let data = this.state.bedData.data.map((bed) => {
+      let bf = {}
+      this.state.bedData.columns.forEach((key, i) => bf[key] = bed[i]);
       let row = {
-        name: bed.node.bedfile.name,
-        md5sum: bed.node.bedfile.md5sum,
-        relevance: this.getRelevance(bed.node.score),
+        name: bf.name,
+        md5sum: bf.md5sum,
+        relevance: this.getRelevance(bf.score),
       };
-      row = Object.assign({}, row, JSON.parse(bed.node.bedfile.other));
+      row = Object.assign({}, row, bf.other);
       return row;
     })
 
@@ -252,6 +212,15 @@ export default class ResultsBed extends React.Component {
     );
   }
 
+  addtoBedSet(data) {
+    alert(`You added ${data.name} to your BED set.`)
+    this.setState({
+      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
+    }, () => {
+      localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
+    })
+  }
+
   render() {
     return this.props.md5sum === this.state.md5sum ||
       this.props.query === this.state.query ||
@@ -262,6 +231,13 @@ export default class ResultsBed extends React.Component {
             icons={tableIcons}
             columns={this.state.columns}
             data={this.state.data}
+            actions={[
+              {
+                icon: () => < FaFolderPlus className="my-icon" />,
+                tooltip: 'add to your BED set',
+                onClick: (event, rowData) => this.addtoBedSet(rowData)
+              }
+            ]}
             title=""
             options={{
               headerStyle: {
@@ -285,7 +261,7 @@ export default class ResultsBed extends React.Component {
                     <Spinner
                       animation="border"
                       size="sm"
-                      style={{ color: "lightgray" }}
+                      style={{ marginRight: "5px", color: "lightgray" }}
                     />
                     <p style={{ color: "lightgray" }}>Loading data </p>
                   </div>
@@ -294,7 +270,14 @@ export default class ResultsBed extends React.Component {
             }}
           />
         </div>
-      ) : null
+      ) : (<div>
+        <Spinner
+          animation="border"
+          size="sm"
+          style={{ marginRight: "5px", color: "lightgray" }}
+        />
+        <p style={{ color: "lightgray" }}>Loading data </p>
+      </div>)
     ) : null;
   }
 }
