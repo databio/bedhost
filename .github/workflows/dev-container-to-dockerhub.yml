@@ -13,11 +13,11 @@ jobs:
     - name: Checkout bedhost
       uses: actions/checkout@v2
 
-    - name: Checkout bedhost-ui@fastapi
+    - name: Checkout bedhost-ui@dev
       uses: actions/checkout@v2
       with:
         repository: databio/bedhost-ui
-        ref: fastapi
+        ref: dev
         path: bedhost-ui
 
     - name: Setup Node.js 12.18.4
