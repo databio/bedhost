@@ -1,10 +1,10 @@
 aiofiles
-#bbconf>=0.2.0
+bbconf>=0.3.0
 fastapi>=0.61.2
 itsdangerous
 logmuse
-#pipestat>=0.3.0
-#pipestat_reader
+pipestat>=0.3.0
+pipestat_reader
 python-multipart
 pyyaml
 requests
@@ -14,12 +14,10 @@ yacman>=0.7.1
 setuptools
 graphene==3.1
 graphene-sqlalchemy==3.0.0b1
+graphene-sqlalchemy-filter
 graphql-core==3.2.1
 graphql-relay==3.2.0
 starlette-graphene3==0.6.0
 
--e git+https://github.com/pepkit/pipestat@dev#egg=pipestat
--e git+https://github.com/pepkit/pipestat_reader@dev#egg=pipestat_reader
--e git+https://github.com/databio/bbconf@dev#egg=bbconf
--e git+https://github.com/cooldudemcgeexl/graphene-sqlalchemy-filter@master#egg=graphene-sqlalchemy-filter
+
 
