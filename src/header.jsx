@@ -26,13 +26,13 @@ export default function Header() {
       <Nav className="mr-auto">
         <Nav.Link
           style={{ fontSize: "16px", color: "white" }}
-          href={bedhost_api_url + "/docs"}
+          href={`${bedhost_api_url}/docs`}
         >
           <b>API documentation</b>
         </Nav.Link>
         <Nav.Link
           style={{ fontSize: "16px", color: "white" }}
-          href={bedhost_api_url + "/graphql"}
+          href={`${bedhost_api_url}/graphql`}
         >
           <b>GraphiQL</b>
         </Nav.Link>

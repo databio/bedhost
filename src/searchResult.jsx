@@ -92,7 +92,7 @@ export default class ResultsBed extends React.Component {
             <Link
               className="home-link"
               to={{
-                pathname: "/bedsplash/" + rowData.md5sum,
+                pathname: `/bedsplash/${rowData.md5sum}`,
               }}
             >
               {rowData.name}
@@ -120,8 +120,7 @@ export default class ResultsBed extends React.Component {
             rowData.data_source === "GEO" ? (
               <a
                 href={
-                  "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=" +
-                  rowData.GSE
+                  `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${rowData.GSE}`
                 }
                 className="home-link"
               >
@@ -129,7 +128,7 @@ export default class ResultsBed extends React.Component {
               </a>
             ) : rowData.data_source === "ENCODE" ? (
               <a
-                href={"https://www.encodeproject.org/files/" + rowData.file_acc}
+                href={`https://www.encodeproject.org/files/${rowData.file_acc}`}
                 className="home-link"
               >
                 {rowData.data_source}
@@ -214,14 +213,12 @@ export default class ResultsBed extends React.Component {
   }
 
   addtoBedSet(data) {
-    alert("You added " + data.name + " to your BED set.")
+    alert(`You added ${data.name} to your BED set.`)
     this.setState({
       myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
     }, () => {
       localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
     })
-
-
   }
 
   render() {

@@ -69,8 +69,7 @@ export default function BedInfo(props) {
                       {props.bed_genome.digest !== "" ? (
                         <a
                           href={
-                            "http://refgenomes.databio.org/v3/genomes/splash/" +
-                            props.bed_genome.digest
+                            `http://refgenomes.databio.org/v3/genomes/splash/${props.bed_genome.digest}`
                           }
                           className="home-link"
                           style={{

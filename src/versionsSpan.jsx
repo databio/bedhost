@@ -23,7 +23,7 @@ export default class VersionsSpan extends React.Component {
       .get("/api/versions")
       .then(({ data }) => data)
       .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
 
     this.setState({

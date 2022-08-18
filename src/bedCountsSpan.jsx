@@ -31,7 +31,7 @@ export default class BedCountsSpan extends React.Component {
     let bfcount = await api
       .get("/api/bed/count")
       .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
     // console.log("BED file count retrieved from the server: ", bfcount.data);
     this.setState({ bed: bfcount.data });
@@ -39,23 +39,23 @@ export default class BedCountsSpan extends React.Component {
     let bscount = await api
       .get("/api/bedset/count")
       .catch(function (error) {
-        alert(error + "; is bedhost running at " + bedhost_api_url + "?");
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
     // console.log("BED set count retrieved from the server: ", bscount.data);
     this.setState({ bedSet: bscount.data });
 
     let bed = await api.get("/api/bed/all/metadata?ids=md5sum&limit=1").then(({ data }) => data);
-    let bedurl = '/bedsplash/' + bed.data[0][0]
+    let bedurl = `/bedsplash/${bed.data[0][0]}`
     this.setState({ sampleBed: bedurl });
 
-    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limt=1").then(({ data }) => data)
-    let bedseturl = '/bedsetsplash/' + bedset.data[0][0]
+    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limit=1").then(({ data }) => data)
+    let bedseturl = `/bedsetsplash/${bedset.data[0][0]}`
     this.setState({ sampleBedSet: bedseturl });
     this.getAPIcount()
   }
 
   async getAPIcount() {
-    let api_json = await fetch(bedhost_api_url + "/openapi.json")
+    let api_json = await fetch(`${bedhost_api_url}/openapi.json`)
       .then((response) => response.json())
       .then((responseJson) => {
         return responseJson.paths;

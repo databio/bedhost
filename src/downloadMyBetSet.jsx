@@ -12,11 +12,8 @@ import bedhost_api_url from "./const/server";
 export default function ResponsiveDialog(props) {
 
     const [open, setOpen] = React.useState(false);
-    // const [idx, setIdx] = React.useState(idx_list);
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
-
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -66,7 +63,7 @@ export default function ResponsiveDialog(props) {
                 </DialogContent>
                 <DialogActions>
                     <a
-                        href={bedhost_api_url + "/api/bedset/my_bedset/file_paths/" + props.bedfiles + "?remoteClass=http"}
+                        href={`${bedhost_api_url}/api/bedset/my_bedset/file_paths/${props.bedfiles}?remoteClass=http`}
                         className="home-link"
                         style={{
                             marginLeft: "15px",
@@ -84,7 +81,7 @@ export default function ResponsiveDialog(props) {
                         </button>
                     </a>
                     <a
-                        href={bedhost_api_url + "/api/bedset/my_bedset/file_paths/" + props.bedfiles + "?remoteClass=s3"}
+                        href={`${bedhost_api_url}/api/bedset/my_bedset/file_paths/${props.bedfiles}?remoteClass=s3`}
                         className="home-link"
                         style={{
                             marginLeft: "15px",

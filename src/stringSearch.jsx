@@ -51,6 +51,7 @@ export default class Search extends React.Component {
   handleSelect(e) {
     this.setState({
       genome: e,
+      showResults: false,
     });
   }
 
