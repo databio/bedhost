@@ -15,6 +15,7 @@ graphene==3.1
 graphene-sqlalchemy==3.0.0b1
 graphql-core==3.2.1
 graphql-relay==3.2.0
+setuptools
 
 -e git+https://github.com/pepkit/pipestat@dev#egg=pipestat
 -e git+https://github.com/pepkit/pipestat_reader@dev#egg=pipestat_reader

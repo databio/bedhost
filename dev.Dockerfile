@@ -8,6 +8,7 @@ RUN apt-get install -y libpq-dev
 RUN apt-get install -y gcc
 RUN apt-get install -y wget
 RUN apt-get install -y libcurl4
+RUN apt-get install -y python-setuptools
 
 RUN pip install -r requirements/requirements-all.txt
 RUN pip install -r requirements/requirements-dev.txt
