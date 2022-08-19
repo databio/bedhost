@@ -8,7 +8,7 @@ import uvicorn
 from bbconf import BedBaseConf
 from fastapi import FastAPI, HTTPException, Path, Query
 from pipestat_reader import PipestatReader
-from starlette.graphql import GraphQLApp
+from starlette_graphene3 import GraphQLApp, make_graphiql_handler
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
@@ -65,7 +65,9 @@ def main():
     log_level = DEBUG if args.debug else INFO
     _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
     logmuse.init_logger(name="bbconf", level=log_level)
+    _LOGGER.info("get bedbase cfg")
     bbc = BedBaseConf(bbconf.get_bedbase_cfg(args.config))
+    _LOGGER.info("finish getting bedbase cfg")
     if args.command == "serve":
         from .routers import api, private_api
 
@@ -101,7 +103,9 @@ def main():
         psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset, bbc.dist])
         _LOGGER.info("Generating GraphQL schema")
         graphql_schema = psr.generate_graphql_schema()
-        app.mount("/graphql", GraphQLApp(schema=graphql_schema, graphiql=True))
+        app.mount(
+            "/graphql", GraphQLApp(graphql_schema, on_get=make_graphiql_handler())
+        )
 
         _LOGGER.info(f"running {PKG_NAME} app")
         uvicorn.run(

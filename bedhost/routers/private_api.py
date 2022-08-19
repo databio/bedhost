@@ -1,6 +1,7 @@
 from typing import Optional
 
 from fastapi import APIRouter, Path, Query
+from sqlalchemy import text
 
 from ..const import *
 from ..data_models import *
@@ -9,59 +10,122 @@ from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
+
+class Terms(BaseModel):
+    genome: str
+    terms: list
+
+
+class MyQuery(BaseModel):
+    query: str
+
+
 # private API
-@router.get("/distance/{term}/bedfiles/{genome}", response_model=DBResponse)
+@router.post(
+    "/distance/bedfiles/terms",
+    response_model=DBResponse,
+    include_in_schema=False,
+)
 async def get_bedfiles_in_distance(
-    term: str = Path(..., description="search term", example="HEK293"),
-    genome: str = Path(..., description="genome assemblies", example="hg38"),
+    terms: Terms,
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
-    term = term.replace(" ", ",").split(",")
 
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+
     res = bbc.select_bedfiles_for_distance(
-        genome=genome, condition_val=term, bedfile_col=ids, limit=limit
+        terms=terms.terms,
+        genome=terms.genome,
+        bedfile_cols=ids,
+        limit=limit if limit else None,
     )
-    if res:
-        colnames = list(res[0].keys())
-        values = [list(x.values()) for x in res]
+
+    values = []
+    for x in res:
+        values.append(list(x.values()))
+
+    if values:
+        if ids:
+            colnames = ids
+            colnames.extend(["score"])
+        else:
+            colnames = list(
+                serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys()
+            )
+            colnames.extend(["score"])
+
         _LOGGER.info(f"Serving data for columns: {colnames}")
     else:
         _LOGGER.warning("No records matched the query")
         colnames = []
         values = [[]]
+
     return {"columns": colnames, "data": values}
 
 
-@router.get("/query/{table_name}/{query}", include_in_schema=False)
+@router.post("/query/{table_name}", include_in_schema=False)
 async def get_query_results(
+    query: MyQuery,
     table_name: TableName = Path(..., description="DB Table name"),
-    query: str = Path(
-        None, description="DB query to perform with placeholders for values"
-    ),
-    query_val: List[str] = Query(None, description="Values to populate DB query with"),
-    columns: Optional[List[str]] = Query(
+    ids: Optional[List[str]] = Query(
         None, description="Column names to include in the query result"
     ),
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
     """
-    Return query results with provided table name and query string
+    Return query results with provided table name and query
     """
-    if columns:
-        assert_table_columns_match(bbc=bbc, table_name=table_name, columns=columns)
-    if isinstance(query_val, str):
-        query_val = [query_val]
+    if ids:
+        assert_table_columns_match(bbc=bbc, table_name=table_name, columns=ids)
+
+    columns = ", ".join([c for c in ids])
+
+    statement_str = "SELECT {} FROM {} WHERE {}"
+
+    statement_str = f"{statement_str} LIMIT {limit}" if limit else statement_str
+
+    print(text(statement_str.format(columns, table_name.value, query.query)))
     try:
-        return getattr(bbc, table_name2attr(table_name)).select(
-            condition=query, condition_val=query_val, columns=columns, limit=limit
-        )
+        if table_name.value == BED_TABLE:
+
+            with bbc.bed.session as s:
+                res = s.execute(
+                    text(statement_str.format(columns, table_name.value, query.query)),
+                )
+        else:
+            with bbc.bedset.session as s:
+                res = s.execute(
+                    text(statement_str.format(columns, table_name.value, query.query)),
+                )
+
+        res = res.mappings().all()
+
     except Exception as e:
         msg = f"Caught exception while querying the DB: {str(e)}"
         _LOGGER.error(msg)
         raise HTTPException(status_code=404, detail=msg)
+
+    values = []
+    for x in res:
+        values.append(list(x.values()))
+
+    if values:
+        if ids:
+            colnames = ids
+        else:
+            colnames = list(
+                serve_schema_for_table(bbc=bbc, table_name=table_name.value).keys()
+            )
+
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
+
+    return {"columns": colnames, "data": values}
 
 
 @router.get("/filters/{table_name}", include_in_schema=False)
