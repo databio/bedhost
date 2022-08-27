@@ -41,7 +41,6 @@ export default class BedSplash extends React.Component {
       .get(`/api/bed/${this.props.match.params.bed_md5sum}/file/bigBed`)
       .then(this.setState({ bigbed: true }))
       .catch((err) => {
-        console.log(err)
         // if (err.response.status === 500) {
         this.setState({ bigbed: false });
         // }
@@ -152,6 +151,12 @@ export default class BedSplash extends React.Component {
           },
         },
       });
+    }
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.match.params.bed_md5sum !== this.props.match.params.bed_md5sum) {
+      window.location.reload(true);
     }
   }
 

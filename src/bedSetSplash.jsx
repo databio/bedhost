@@ -171,6 +171,12 @@ export default class BedSetSplash extends React.Component {
     });
   }
 
+  async componentDidUpdate(prevProps, prevState) {
+    if (prevProps.match.params.bedset_md5sum !== this.props.match.params.bedset_md5sum) {
+      window.location.reload(true);
+    }
+  }
+
   render() {
     return (
       <React.StrictMode>
