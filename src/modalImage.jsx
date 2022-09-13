@@ -10,7 +10,7 @@ export default function ModalImage(props) {
     <>
       <img
         onClick={handleShow}
-        className={ (props.page === "bed") ? "splash-img-bed" : "splash-img-bedset"}
+        className={(props.page === "bed") ? "splash-img-bed" : "splash-img-bedset"}
         src={props.image.src_png}
         alt={props.image.id}
       />
@@ -23,7 +23,7 @@ export default function ModalImage(props) {
         <Modal.Header closeButton>
           <Modal.Title>{props.image.title}</Modal.Title>
         </Modal.Header>
-        <Modal.Body><iframe title="pdf" style={{ margin: 'auto', display:'block', height: 950, width: 900 }} src={props.image.src_pdf}></iframe></Modal.Body>
+        <Modal.Body><iframe title="pdf" style={{ margin: 'auto', display: 'block', height: 950, width: 900 }} src={props.image.src_pdf}></iframe></Modal.Body>
         <Modal.Footer>
           <button className='btn btn-sm my-btn' onClick={handleClose}>
             Close
