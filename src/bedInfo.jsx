@@ -4,7 +4,6 @@ import { HashLink as Link } from "react-router-hash-link";
 import { FaQuestionCircle } from "react-icons/fa";
 
 export default function BedInfo(props) {
-  console.log(props.bed_stats)
   return (
     <div>
       <Label
