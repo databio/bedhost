@@ -118,29 +118,31 @@ export default function BedInfo(props) {
         <tbody>
           {props.bed_stats.map((value, index) => (
             <tr style={{ verticalAlign: "top" }} key={index}>
-              <td
-                style={{
-                  padding: "3px 15px",
-                  fontSize: "10pt",
-                  fontWeight: "bold",
-                  color: "teal",
-                  width: '200px'
-                }}
-              >
-                {value.label ===
-                  "Median absolute distance from transcription start sites" ? (
-                  <>Median TSS distance</>
-                ) : (
-                  <>{value.label}</>
-                )}
-              </td>
-              <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
-                {value.label === "Number of regions" ? (
-                  <>{value.data.toFixed(0)}</>
-                ) : (
-                  <>{value.data.toFixed(3)}</>
-                )}
-              </td>
+              {value.data !== null ? (
+                <><td
+                  style={{
+                    padding: "3px 15px",
+                    fontSize: "10pt",
+                    fontWeight: "bold",
+                    color: "teal",
+                    width: '200px'
+                  }}
+                >
+                  {value.label ===
+                    "Median absolute distance from transcription start sites" ? (
+                    <>Median TSS distance</>
+                  ) : (
+                    <>{value.label}</>
+                  )}
+                </td>
+                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                    {value.label === "Number of regions" ? (
+                      <>{value.data.toFixed(0)}</>
+                    ) : (
+                      <>{value.data.toFixed(3)}</>
+                    )}
+                  </td></>
+              ) : null}
             </tr>
           ))}
         </tbody>
