@@ -33,8 +33,8 @@ export default function ResponsiveDialog(props) {
   return (
     <div className="float-left" onClick={props.onClick}>
       <button
-        className="btn btn-sm my-btn"
-        style={{ marginRight: "5px" }}
+        className="btn btn-sm btn-search"
+        style={{ marginRight: "3px" }}
         onClick={handleClickOpen}
       >
         {props.btn}
@@ -53,16 +53,16 @@ export default function ResponsiveDialog(props) {
           {copied ? <span style={{ color: "red" }}>Copied.</span> : null}
           <button
             onClick={handleClickCopy}
-            className="btn btn-sm my-btn"
-            style={{ marginRight: "5px" }}
+            className="btn btn-sm btn-search"
+            style={{ marginRight: "3px" }}
           >
             Copy
           </button>
           <button
             autoFocus
             onClick={handleClose}
-            className="btn btn-sm my-btn"
-            style={{ marginRight: "5px" }}
+            className="btn btn-sm btn-search"
+            style={{ marginRight: "3px" }}
           >
             Cancel
           </button>

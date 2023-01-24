@@ -53,7 +53,7 @@
 
 .query-builder .btn-success {
   color: #FFF;
-  background-color:teal;
+  background-color: teal;
   border-color: teal;
 }
 
@@ -61,7 +61,7 @@
 .query-builder .btn-primary {
   color: #FFF;
   background-color: darkgrey;
- 
+
 }
 
 .query-builder .btn-danger {
@@ -82,20 +82,21 @@
 
 .query-builder .btn-primary.active,
 .query-builder .btn-primary.focus,
-.query-builder .btn-primary:not(:disabled):not(.disabled).active, 
-.query-builder .btn-primary:not(:disabled):not(.disabled):active, 
+.query-builder .btn-primary:not(:disabled):not(.disabled).active,
+.query-builder .btn-primary:not(:disabled):not(.disabled):active,
 .query-builder .btn-primary:active,
 .query-builder .btn-primary:focus,
 .query-builder .btn-primary:hover {
   color: #FFF;
-  background-color:teal;
+  background-color: teal;
   border-color: teal;
 }
-.query-builder .btn-primary.disabled, 
-.query-builder .btn-primary:disabled{
+
+.query-builder .btn-primary.disabled,
+.query-builder .btn-primary:disabled {
   color: #FFF;
-  background-color:lightgray;
-  border-color:lightgray;
+  background-color: lightgray;
+  border-color: lightgray;
 }
 
 .query-builder .btn-danger.active,
@@ -114,34 +115,34 @@
   vertical-align: middle;
 }
 
-.query-builder .btn-group > .btn {
+.query-builder .btn-group>.btn {
   position: relative;
   float: left;
 }
 
-.query-builder .btn-group > .btn:first-child {
+.query-builder .btn-group>.btn:first-child {
   margin-left: 0px;
 }
 
-.query-builder .btn-group > .btn:first-child:not(:last-child) {
+.query-builder .btn-group>.btn:first-child:not(:last-child) {
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
 }
 
-.query-builder .btn-group > .btn:last-child:not(:first-child) {
+.query-builder .btn-group>.btn:last-child:not(:first-child) {
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
 }
 
-.query-builder .btn-group .btn + .btn,
-.query-builder .btn-group .btn + .btn-group,
-.query-builder .btn-group .btn-group + .btn,
-.query-builder .btn-group .btn-group + .btn-group {
+.query-builder .btn-group .btn+.btn,
+.query-builder .btn-group .btn+.btn-group,
+.query-builder .btn-group .btn-group+.btn,
+.query-builder .btn-group .btn-group+.btn-group {
   margin-left: -1px;
 }
 
 .query-builder .btn-xs,
-.query-builder .btn-group-xs > .btn {
+.query-builder .btn-group-xs>.btn {
   padding: 1px 5px;
   font-size: 12px;
   line-height: 1.5;
@@ -160,7 +161,7 @@
 .query-builder .rules-group-container {
   position: relative;
   margin: 4px 0;
-  border-radius: 5px;
+  border-radius: 3px;
   padding: 5px;
   border: 1px solid #EEE;
   background: rgba(255, 255, 255, .9);
@@ -170,9 +171,9 @@
 
 .query-builder .drag-handle,
 .query-builder .error-container,
-.query-builder .rule-container .rule-filter-container ,
+.query-builder .rule-container .rule-filter-container,
 .query-builder .rule-container .rule-operator-container,
-.query-builder .rule-container .rule-value-container{
+.query-builder .rule-container .rule-value-container {
   display: inline-block;
   margin: 0 5px 0 0;
   vertical-align: middle;
@@ -183,6 +184,9 @@
 .query-builder .rule-container .rule-value-container .form-control {
   font-size: 14px;
   font-weight: 400;
+  border-radius: 0.2rem;
+  padding-left: 5px;
+  padding-right: 5px
 }
 
 /*Query Builder BACKGROUND*/
@@ -251,7 +255,7 @@
 }
 
 .query-builder .has-error .error-container {
-  display: inline-block!important
+  display: inline-block !important
 }
 
 .query-builder .dragging::after,
@@ -302,7 +306,7 @@
 }
 
 .query-builder .error-container+.tooltip .tooltip-inner {
-  color: #F99!important
+  color: #F99 !important
 }
 
 .query-builder p.filter-description {

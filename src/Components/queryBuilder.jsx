@@ -1,4 +1,5 @@
 import React from "react";
+import { Container, Row, Col } from "react-bootstrap";
 import $ from "jquery";
 import "jQuery-QueryBuilder";
 import { OP_MAP } from "../const/keyMap";
@@ -180,69 +181,122 @@ export default class QueryBuilderWrapper extends React.Component {
     return (
       <div>
         <div id="query-builder" ref={this.queryBuilder} />
-        <ResponsiveDialog
-          onClick={this.handleGetRulesClick.bind(this)}
-          message={JSON.stringify(this.state.rules, undefined, 2)}
-          btn={'SQL'}
-        />
-        <ResponsiveDialog
-          onClick={this.handleGetRulesClick.bind(this)}
-          message={this.state.graphql}
-          btn={'GraphQL'}
-        />
-        <button
-          className="btn btn-sm my-btn"
-          onClick={this.handleSetRulesClick.bind(this)}
-        >
-          RESET RULES
-        </button>
-        <button
-          className="float-right btn btn-sm my-btn"
-          onClick={this.handleGetRulesClick.bind(this)}
-        >
-          SEARCH
-        </button>
-        {this.state.table_name === "bedfiles" ? (
-          <input
-            className="float-right"
+        <Row>
+          <Col
+            md="auto"
             style={{
-              width: "100px",
-              height: "27px",
-              marginLeft: "5px",
-              padding: "5px",
-              borderColor: "#ced4da",
-              borderStyle: "solid",
-              borderWidth: "1px",
-              borderRadius: ".25rem",
+              disply: 'flex',
+              justifyContent: 'left',
+              marginLeft: '12px',
+              padding: '0px'
             }}
-            type="number"
-            value={this.state.bedlimit}
-            onChange={this.setLimit.bind(this)}
-          />
-        ) : (
-          <input
-            className="float-right"
+          >
+            <ResponsiveDialog
+              onClick={this.handleGetRulesClick.bind(this)}
+              message={JSON.stringify(this.state.rules, undefined, 2)}
+              btn={'SQL'}
+            />
+          </Col>
+          <Col
+            md="auto"
             style={{
-              width: "100px",
-              height: "27px",
-              marginLeft: "5px",
-              padding: "5px",
-              borderColor: "#ced4da",
-              borderStyle: "solid",
-              borderWidth: "1px",
-              borderRadius: ".25rem",
+              disply: 'flex',
+              justifyContent: 'left',
+              padding: '0px'
             }}
-            type="number"
-            value={this.state.setlimit}
-            onChange={this.setLimit.bind(this)}
-          />
-        )}
-        <label
-          className="float-right"
-          style={{ marginTop: "3px", fontSize: "10pt" }}
-        >
-          Set limit:{" "}
-        </label>
+          >
+            <ResponsiveDialog
+              onClick={this.handleGetRulesClick.bind(this)}
+              message={this.state.graphql}
+              btn={'GraphQL'}
+            />
+          </Col>
+          <Col
+            md={9}
+            style={{
+              disply: 'flex',
+              justifyContent: 'left',
+              padding: '0px'
+            }}
+          >
+            <button
+              className="btn btn-sm btn-search"
+              onClick={this.handleSetRulesClick.bind(this)}
+            >
+              RESET RULES
+            </button>
+          </Col>
+          <Col
+            className="align-items-end"
+            md="auto"
+            style={{
+              disply: 'flex',
+              justifyContent: 'right',
+              padding: '0px'
+            }}
+          >
+            <label
+              className="float-right"
+              style={{ marginTop: "3px" }}
+            >
+              Set limit:{" "}
+            </label>
+            {this.state.table_name === "bedfiles" ? (
+              <input
+                className="float-right"
+                style={{
+                  width: "56px",
+                  height: "31px",
+                  marginLeft: "5px",
+                  padding: "5px",
+                  borderColor: "#ced4da",
+                  borderStyle: "solid",
+                  borderWidth: "1px",
+                  borderRadius: ".25rem",
+                }}
+                type="number"
+                value={this.state.bedlimit}
+                onChange={this.setLimit.bind(this)}
+              />
+            ) : (
+              <input
+                className="float-right"
+                style={{
+                  width: "56px",
+                  height: "31px",
+                  marginLeft: "5px",
+                  padding: "5px",
+                  borderColor: "#ced4da",
+                  borderStyle: "solid",
+                  borderWidth: "1px",
+                  borderRadius: ".25rem",
+                }}
+                type="number"
+                value={this.state.setlimit}
+                onChange={this.setLimit.bind(this)}
+              />
+            )}
+
+          </Col>
+
+          <Col
+            sx="auto"
+            style={{
+              disply: 'flex',
+              justifyContent: 'right',
+              marginRight: '12px',
+              padding: '0px'
+            }}
+          >
+            <button
+              className="float-right btn btn-sm btn-search"
+              onClick={this.handleGetRulesClick.bind(this)}
+            >
+              SEARCH
+            </button>
+          </Col>
+        </Row>
+
         {this.props.table_name === this.state.table_name && this.state.query ? (
           this.state.table_name === "bedfiles" ? (
             <ResultsBed query={this.state.query} limit={this.state.bedlimit} />
