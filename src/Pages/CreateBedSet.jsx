@@ -3,7 +3,7 @@ import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
 import { Container } from "react-bootstrap";
 import { FaTrashAlt, FaDownload } from "react-icons/fa";
-import { tableIcons, VersionsSpan, DownloadBedSetDialog } from "../Components";
+import { tableIcons, DownloadBedSetDialog } from "../Components";
 import bedhost_api_url from "../const/server";
 import "../style/home.css";
 // import axios from "axios";
@@ -68,7 +68,6 @@ export default class CreateBedSet extends React.Component {
       <React.StrictMode>
         <div
           className="conten-body"
-          style={{ minHeight: "70%" }}
         >
           {this.state.myBedSet ? (
             <Container
@@ -163,7 +162,6 @@ export default class CreateBedSet extends React.Component {
           )
           }
         </div>
-        <VersionsSpan />
       </React.StrictMode>
     );
   }
