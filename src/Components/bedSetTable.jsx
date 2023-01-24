@@ -1,12 +1,12 @@
 import React from "react";
-import MaterialTable, { MTableToolbar } from "material-table";
-import { Button, Paper } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
+import { Link } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
+import MaterialTable, { MTableToolbar } from "material-table";
+import { Button, Paper, Tooltip } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-import { Label } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+
+import { Label } from "semantic-ui-react";//
 
 
 export default class BedSetTable extends React.Component {

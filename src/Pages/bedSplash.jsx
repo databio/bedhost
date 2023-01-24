@@ -1,16 +1,10 @@
 import React from "react";
-import Header from "./header";
-import VersionsSpan from "./versionsSpan";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Container, Row, Col } from "react-bootstrap";
+import { ImgGrid, BedInfo } from "../Components"
+import { bed_splash_cols } from "../fastapi/bedQueries";
+import bedhost_api_url from "../const/server";
 import axios from "axios";
-import ImgGrid from "./imgGrid";
-import BedInfo from "./bedInfo";
-import { Label } from "semantic-ui-react";
-import "./style/splash.css";
-import bedhost_api_url from "./const/server";
-import { bed_splash_cols } from "./fastapi/bedQueries";
+import "../style/splash.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -163,7 +157,6 @@ export default class BedSplash extends React.Component {
   render() {
     return (
       <React.StrictMode>
-        <Header />
         <div className="conten-body">
           <Container
             style={{ width: "75%", minWidth: "900px" }}
@@ -171,13 +164,14 @@ export default class BedSplash extends React.Component {
             className="p-4"
           >
             <Row>
-              <Col>
-                <h1>BED File: {this.state.bedName}</h1>
+              <Col md={10}>
+                <h3> BED File: {this.state.bedName}</h3>
+                <span> md5sum: {this.props.match.params.bed_md5sum} </span>
               </Col>
-              <Col>
+              <Col md={2}>
                 {this.state.bigbed ? (
                   <a href={this.state.trackPath}>
-                    <button className="float-right btn primary-btn">
+                    <button className="float-right btn btn-primary">
                       Genome Browser
                     </button>
                   </a>
@@ -191,7 +185,7 @@ export default class BedSplash extends React.Component {
             className="p-4"
           >
             <Row>
-              <Col sm={4} md={4}>
+              <Col sm={5} md={5}>
                 {Object.keys(this.state.bedStats).length > 0 ? (
                   <BedInfo
                     bed_md5sum={this.props.match.params.bed_md5sum}
@@ -200,20 +194,7 @@ export default class BedSplash extends React.Component {
                     bed_stats={this.state.bedStats}
                   />
                 ) : null}
-                <Label
-                  style={{
-                    marginTop: "15px",
-                    marginBottom: "5px",
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  as="a"
-                  color="teal"
-                  ribbon
-                >
-                  BED File Download
-                </Label>
+                <h4> Downloads </h4>
                 {Object.entries(this.state.bedDownload).map(
                   ([key, value], index) => (
                     <p style={{ marginBottom: "5px" }} key={index}>
@@ -222,12 +203,11 @@ export default class BedSplash extends React.Component {
                         className="home-link"
                         style={{
                           marginLeft: "15px",
-                          fontSize: "10pt",
                           fontWeight: "bold",
                         }}
                       >
                         http
-                      </a> | <a href={value.s3} className="home-link" style={{ fontSize: "10pt", fontWeight: "bold" }}>
+                      </a> | <a href={value.s3} className="home-link" style={{ fontWeight: "bold" }}>
                         s3
                       </a>
                       : {value.label} ({this.state.bedFiles[value.id]})
@@ -236,20 +216,10 @@ export default class BedSplash extends React.Component {
                 )}
 
               </Col>
-              <Col sm={8} md={8}>
-                <Label
-                  style={{
-                    marginBottom: "15px",
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  as="a"
-                  color="teal"
-                  ribbon
-                >
+              <Col sm={7} md={7}>
+                <h4 style={{ marginBottom: "10px" }}>
                   GenomicDistribution Plots
-                </Label>
+                </h4>
                 {this.state.bedFig ? (
                   <ImgGrid style={{ marginLeft: "15px", }} imgList={this.state.bedFig} page="bed" />
                 ) : null}
@@ -257,8 +227,8 @@ export default class BedSplash extends React.Component {
             </Row>
           </Container>
         </div>
-        <VersionsSpan />
-      </React.StrictMode>
+
+      </React.StrictMode >
     );
   }
 }

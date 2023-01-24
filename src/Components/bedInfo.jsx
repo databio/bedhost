@@ -1,41 +1,28 @@
 import React from "react";
-import { Label } from "semantic-ui-react";
 import { HashLink as Link } from "react-router-hash-link";
 import { FaQuestionCircle } from "react-icons/fa";
 
 export default function BedInfo(props) {
   return (
     <div>
-      <Label
-        style={{
-          marginLeft: "15px",
-          fontSize: "15px",
-          padding: "6px 20px 6px 30px",
-        }}
-        color="teal"
-        ribbon
-      >
-        BED File Info
-      </Label>
-      <table>
+      <h4> Summary </h4>
+      <table style={{ marginBottom: "10px" }}>
         <tbody>
 
-          <tr style={{ verticalAlign: "top" }}>
+          {/* <tr style={{ verticalAlign: "top" }}>
             <td
               style={{
-                padding: "3px 15px",
-                fontSize: "10pt",
+                padding: "3px 10px",
                 fontWeight: "bold",
-                color: "teal",
                 width: '200px'
               }}
             >
               md5sum
             </td>
-            <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+            <td style={{ padding: "3px 10px", width: '200px' }}>
               {props.bed_md5sum}
             </td>
-          </tr>
+          </tr> */}
           {Object.entries(props.bed_info).map(([key, value], index) => {
             const hide = [
               "bigbed",
@@ -46,23 +33,33 @@ export default function BedInfo(props) {
               "open_signal_matrix",
               "pipeline_interfaces",
               "pipeline_interfaces",
+              "URL",
+              "ensdb",
+              "fasta",
+              "format",
+              "ensDb_Gtf",
+              "fasta_file",
+              "sample_name"
             ];
 
             return !hide.includes(key) ? (
               <tr style={{ verticalAlign: "top" }} key={index}>
                 <td
                   style={{
-                    padding: "3px 15px",
-                    fontSize: "10pt",
+                    padding: "3px 10px",
                     fontWeight: "bold",
-                    color: "teal",
                     width: '200px'
                   }}
                 >
                   {key.charAt(0).toUpperCase() +
                     key.replaceAll("_", " ").slice(1)}
                 </td>
-                <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                <td
+                  style={{
+                    padding: "3px 10px",
+                    width: "200px"
+                  }}
+                >
                   {key === "genome" ? (
                     <>
                       <span>{props.bed_genome.alias}</span>
@@ -73,8 +70,7 @@ export default function BedInfo(props) {
                           }
                           className="home-link"
                           style={{
-                            marginLeft: "15px",
-                            fontSize: "10pt",
+                            marginLeft: "10px",
                             fontWeight: "bold",
                           }}
                         >
@@ -92,39 +88,29 @@ export default function BedInfo(props) {
           })}
         </tbody>
       </table>
-      <Label
-        style={{
-          marginTop: "15px",
-          marginLeft: "15px",
-          fontSize: "15px",
-          padding: "6px 20px 6px 30px",
-        }}
-        color="teal"
-        ribbon
-      >
-        BED File Stats
+      <h4>
+        Statistics
         <Link to="/about#bedfile-stats">
           <FaQuestionCircle
             style={{
               marginBottom: "3px",
               marginLeft: "10px",
-              fontSize: "12px",
+              fontSize: "15px",
             }}
-            color="white"
+            color="black"
           />
         </Link>
-      </Label>
-      <table>
+      </h4>
+
+      <table style={{ marginBottom: "10px" }}>
         <tbody>
           {props.bed_stats.map((value, index) => (
             <tr style={{ verticalAlign: "top" }} key={index}>
               {value.data !== null ? (
                 <><td
                   style={{
-                    padding: "3px 15px",
-                    fontSize: "10pt",
+                    padding: "3px 10px",
                     fontWeight: "bold",
-                    color: "teal",
                     width: '200px'
                   }}
                 >
@@ -135,7 +121,12 @@ export default function BedInfo(props) {
                     <>{value.label}</>
                   )}
                 </td>
-                  <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                  <td
+                    style={{
+                      padding: "3px 10px",
+                      width: '200px'
+                    }}
+                  >
                     {value.label === "Number of regions" ? (
                       <>{value.data.toFixed(0)}</>
                     ) : (

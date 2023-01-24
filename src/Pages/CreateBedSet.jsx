@@ -1,16 +1,12 @@
 import React from "react";
 import MaterialTable from "material-table";
-import { tableIcons } from "./tableIcons";
-import ResponsiveDialog from "./downloadMyBetSet";
 import { Paper } from "@material-ui/core";
-import Container from "react-bootstrap/Container";
-import { FaTrashAlt } from "react-icons/fa";
-import { FaDownload } from "react-icons/fa";
-import Header from "./header";
-import VersionsSpan from "./versionsSpan";
+import { Container } from "react-bootstrap";
+import { FaTrashAlt, FaDownload } from "react-icons/fa";
+import { tableIcons, VersionsSpan, DownloadBedSetDialog } from "../Components";
+import bedhost_api_url from "../const/server";
+import "../style/home.css";
 // import axios from "axios";
-import bedhost_api_url from "./const/server";
-import "./style/home.css";
 
 // const api = axios.create({
 //   baseURL: bedhost_api_url,
@@ -70,12 +66,15 @@ export default class CreateBedSet extends React.Component {
   render() {
     return (
       <React.StrictMode>
-        <Header />
         <div
           className="conten-body"
+          style={{ minHeight: "70%" }}
         >
           {this.state.myBedSet ? (
-            <Container style={{ width: "75%" }} fluid className="p-4">
+            <Container
+              style={{ width: "75%" }}
+              fluid className="p-4"
+            >
               <h1>My BED Set</h1>
               <MaterialTable
                 title="My BED Set"
@@ -90,7 +89,9 @@ export default class CreateBedSet extends React.Component {
                     icon: () => <a
                       href={
                         `${bedhost_api_url}/api/bed/${rowData.md5sum}/file/bed`}
-                    ><FaDownload className="my-icon" /></a>,
+                    >
+                      <FaDownload className="my-icon" />
+                    </a>,
                     tooltip: 'Save User',
                     onClick: (event, rowData) => alert(`Download ${rowData.name}`)
                   }),
@@ -129,7 +130,7 @@ export default class CreateBedSet extends React.Component {
                   Container: (props) => <Paper {...props} elevation={0} />,
                 }}
               />
-              <ResponsiveDialog
+              <DownloadBedSetDialog
                 bedfiles={this.state.myBedSetIdx}
                 btn={'Download My BED Set'}
               />
@@ -155,7 +156,9 @@ export default class CreateBedSet extends React.Component {
             </Container>
           ) : (
             <Container style={{ width: "75%" }} fluid className="p-4">
-              <h1 style={{ color: "#e76f51" }} >Your BED set cart is empty. </h1>
+              <h1 style={{ color: "#e76f51" }} >
+                Your BED set cart is empty.
+              </h1>
             </Container>
           )
           }

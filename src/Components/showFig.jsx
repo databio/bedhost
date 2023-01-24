@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import ImgGrid from "./imgGrid";
-import bedhost_api_url from "./const/server";
-import { Label } from 'semantic-ui-react';
+import bedhost_api_url from "../const/server";
+
+import { Label } from 'semantic-ui-react'; //
 
 export default function ShowFig(props) {
   const [figList, setFigList] = useState([]);

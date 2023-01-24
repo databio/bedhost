@@ -1,10 +1,10 @@
 import React from "react";
+import Spinner from 'react-bootstrap/Spinner';
 import MaterialTable from "material-table";
-import Spinner from 'react-bootstrap/Spinner'
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
-import bedhost_api_url from "./const/server";
+import bedhost_api_url from "../const/server";
 import axios from "axios";
 
 const api = axios.create({

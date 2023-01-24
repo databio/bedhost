@@ -1,13 +1,13 @@
 import React from "react";
-import ResponsiveDialog from "./responsiveDialog";
 import $ from "jquery";
 import "jQuery-QueryBuilder";
-import axios from "axios";
-import bedhost_api_url from "./const/server";
-import { OP_MAP } from "./const/keyMap";
-import "./style/queryBuilder.css";
+import { OP_MAP } from "../const/keyMap";
+import ResponsiveDialog from "./responsiveDialog";
 import ResultsBed from "./queryResultsBed";
 import ResultsBedSet from "./queryResultsBedSet";
+import axios from "axios";
+import bedhost_api_url from "../const/server";
+import "../style/queryBuilder.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,

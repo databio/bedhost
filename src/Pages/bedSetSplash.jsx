@@ -1,19 +1,12 @@
 import React from "react";
-import Header from "./header";
-import VersionsSpan from "./versionsSpan";
-import Container from "react-bootstrap/Container";
-import BedSetTable from "./bedSetTable";
-import BedSetPlots from "./bedSetPlots";
-import BarChart from "./barChart";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
-import axios from "axios";
-import { Label } from "semantic-ui-react";
 import { HashLink as Link } from "react-router-hash-link";
+import { Container, Row, Col } from "react-bootstrap";
 import { FaQuestionCircle } from "react-icons/fa";
-import bedhost_api_url from "./const/server";
-import { bedset_splash_cols, bedset_bedfiles_cols } from "./fastapi/bedSetQueries";
-import "./style/splash.css";
+import { BedSetTable, BedSetPlots, BarChart } from "../Components";
+import bedhost_api_url from "../const/server";
+import axios from "axios";
+import { bedset_splash_cols, bedset_bedfiles_cols } from "../fastapi/bedSetQueries";
+import "../style/splash.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -180,7 +173,6 @@ export default class BedSetSplash extends React.Component {
   render() {
     return (
       <React.StrictMode>
-        <Header />
         <div className="conten-body">
           <Container
             style={{ width: "75%", minWidth: "900px" }}
@@ -189,11 +181,12 @@ export default class BedSetSplash extends React.Component {
           >
             <Row>
               <Col md="10">
-                <h1>BED Set: {this.state.bedSetName}</h1>
+                <h3> BED Set: {this.state.bedSetName}</h3>
+                <span> md5sum: {this.props.match.params.bedset_md5sum} </span>
               </Col>
               <Col>
                 <a href={this.state.hubFilePath}>
-                  <button className="float-right btn primary-btn">
+                  <button className="float-right btn btn-primary">
                     Genome Browser
                   </button>
                 </a>
@@ -207,47 +200,34 @@ export default class BedSetSplash extends React.Component {
           >
             <Row>
               <Col sm={5} md={5}>
-                <Label
-                  style={{
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  color="teal"
-                  ribbon
-                >
-                  BED Set Info
-                </Label>
-                <table>
+                <h4> Summary </h4>
+                <table style={{ marginBottom: "10px" }}>
                   <tbody>
                     <tr style={{ verticalAlign: "top" }}>
-                      <td
+                      {/* <td
                         style={{
-                          padding: "3px 15px",
-                          fontSize: "10pt",
+                          padding: "3px 10pt",
                           fontWeight: "bold",
-                          color: "teal",
                           width: '150px'
                         }}
                       >
                         md5sum
                       </td>
-                      <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                      <td style={{ padding: "3px 10pt" }}>
                         {this.props.match.params.bedset_md5sum}
-                      </td>
+                      </td> */}
                     </tr>
                     <tr style={{ verticalAlign: "top" }}>
                       <td
                         style={{
-                          padding: "3px 15px",
-                          fontSize: "10pt",
+                          padding: "3px 10pt",
                           fontWeight: "bold",
-                          color: "teal",
+                          width: '200px'
                         }}
                       >
                         genome
                       </td>
-                      <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                      <td style={{ padding: "3px 10pt" }}>
                         <>
                           <span>{this.state.genome.alias}</span>
                           {this.state.genome.digest !== "" ? (
@@ -258,7 +238,6 @@ export default class BedSetSplash extends React.Component {
                               className="home-link"
                               style={{
                                 marginLeft: "15px",
-                                fontSize: "10pt",
                                 fontWeight: "bold",
                               }}
                             >
@@ -272,51 +251,41 @@ export default class BedSetSplash extends React.Component {
                     <tr style={{ verticalAlign: "top" }}>
                       <td
                         style={{
-                          padding: "3px 15px",
-                          fontSize: "10pt",
+                          padding: "3px 10pt",
                           fontWeight: "bold",
-                          color: "teal",
+                          width: '200px'
                         }}
                       >
                         total BED
                       </td>
-                      <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                      <td style={{ padding: "3px 10pt" }}>
                         {this.state.bedsCount}
                       </td>
                     </tr>
                   </tbody>
                 </table>
 
-                <Label
-                  style={{
-                    marginTop: "15px",
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  color="teal"
-                  ribbon
-                >
-                  BED Set Stats
+                <h4>
+                  Statistics
                   <Link to="/about#bedset-stats">
                     <FaQuestionCircle
                       style={{
                         marginBottom: "3px",
                         marginLeft: "10px",
-                        fontSize: "12px",
+                        fontSize: "15px",
                       }}
-                      color="white"
+                      color="black"
                     />
                   </Link>
-                </Label>
-                <table>
+                </h4>
+                <table style={{ marginBottom: "10px" }}>
                   <tbody>
                     <tr>
                       <th> </th>
-                      <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                      <th style={{ padding: "3px 10pt" }}>
                         AVG
                       </th>
-                      <th style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                      <th style={{ padding: "3px 10pt" }}>
                         SD
                       </th>
                     </tr>
@@ -324,11 +293,9 @@ export default class BedSetSplash extends React.Component {
                       <tr style={{ verticalAlign: "top" }} key={index}>
                         <td
                           style={{
-                            padding: "3px 15px",
-                            fontSize: "10pt",
+                            padding: "3px 10pt",
                             fontWeight: "bold",
-                            color: "teal",
-                            width: '150px'
+                            width: '200px'
                           }}
                         >
                           {value.label ===
@@ -338,10 +305,10 @@ export default class BedSetSplash extends React.Component {
                             <>{value.label}</>
                           )}
                         </td>
-                        <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                        <td style={{ padding: "3px 10pt" }}>
                           {value.data[0]}
                         </td>
-                        <td style={{ padding: "3px 15px", fontSize: "10pt" }}>
+                        <td style={{ padding: "3px 10pt" }}>
                           {value.data[1]}
                         </td>
                       </tr>
@@ -349,19 +316,7 @@ export default class BedSetSplash extends React.Component {
                   </tbody>
                 </table>
 
-                <Label
-                  style={{
-                    marginTop: "15px",
-                    marginBottom: "5px",
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  color="teal"
-                  ribbon
-                >
-                  BED Set Downloads
-                </Label>
+                <h4> Downloads </h4>
                 {this.state.bedSetDownload.map((file, index) => {
                   return (
                     <p style={{ marginBottom: "5px" }} key={file.id}>
@@ -370,13 +325,12 @@ export default class BedSetSplash extends React.Component {
                         className="home-link"
                         style={{
                           marginLeft: "15px",
-                          fontSize: "10pt",
                           fontWeight: "bold",
                         }}
                       >
                         {" "} http {" "}
                       </a> |
-                      <a href={file.s3} className="home-link" style={{ fontSize: "10pt", fontWeight: "bold" }}>
+                      <a href={file.s3} className="home-link" style={{ fontWeight: "bold" }}>
                         {" "} s3  {" "}
                       </a>
                       : {" "}{file.label} {" "} ({file.size})
@@ -384,19 +338,7 @@ export default class BedSetSplash extends React.Component {
                   );
                 })}
 
-                <Label
-                  style={{
-                    marginTop: "15px",
-                    marginBottom: "5px",
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  color="teal"
-                  ribbon
-                >
-                  API Endpoint Examples
-                </Label>
+                {/* <h4 style={{ marginTop: "10px" }}>  API Endpoints </h4>
                 <p style={{ marginBottom: "5px" }}>
                   <a
                     href={
@@ -405,7 +347,6 @@ export default class BedSetSplash extends React.Component {
                     className="home-link"
                     style={{
                       marginLeft: "15px",
-                      fontSize: "10pt",
                       fontWeight: "bold",
                     }}
                   >
@@ -420,7 +361,6 @@ export default class BedSetSplash extends React.Component {
                     className="home-link"
                     style={{
                       marginLeft: "15px",
-                      fontSize: "10pt",
                       fontWeight: "bold",
                     }}
                   >
@@ -435,7 +375,6 @@ export default class BedSetSplash extends React.Component {
                     className="home-link"
                     style={{
                       marginLeft: "15px",
-                      fontSize: "10pt",
                       fontWeight: "bold",
                     }}
                   >
@@ -450,35 +389,26 @@ export default class BedSetSplash extends React.Component {
                     className="home-link"
                     style={{
                       marginLeft: "15px",
-                      fontSize: "10pt",
                       fontWeight: "bold",
                     }}
                   >
                     BED set plot
                   </a>
-                </p>
+                </p> */}
               </Col>
-              <Col sm={7} md={7}>
+              <Col md={7}>
+                <h4 style={{ marginBottom: "10px" }}>
+                  BED Set Plots
+                </h4>
                 <Row>
-                  <Col>
-                    <Label
-                      style={{
-                        marginLeft: "15px",
-                        fontSize: "15px",
-                        padding: "6px 20px 6px 30px",
-                      }}
-                      color="teal"
-                      ribbon
-                    >
-                      BED Set Plots
-                    </Label>
-                    {this.state.bedSetFig ? (
-                      <BedSetPlots bedset_figs={this.state.bedSetFig} />
-                    ) : null}
-                  </Col>
                   <Col>
                     {Object.keys(this.state.avgRegionD).length !== 0 ? (
                       <BarChart stats={this.state.avgRegionD} />
+                    ) : null}
+                  </Col>
+                  <Col>
+                    {this.state.bedSetFig ? (
+                      <BedSetPlots bedset_figs={this.state.bedSetFig} />
                     ) : null}
                   </Col>
                 </Row>
@@ -490,20 +420,11 @@ export default class BedSetSplash extends React.Component {
             fluid
             className="p-4"
           >
-            <Label
-              style={{
-                marginLeft: "15px",
-                fontSize: "15px",
-                padding: "6px 20px 6px 30px",
-              }}
-              color="teal"
-              ribbon
-            >
+            <h4 style={{ marginBottom: "10px" }}>
               BED File Comparison
-            </Label>
+            </h4>
             <div style={{ marginLeft: "15px" }}>
               <span className={"new-line"}>
-                {"\n"}
                 The table below shows the statistics of each BED file in this
                 BED set. {"\n"}
                 The statistics of the reginal distributions are shown in
@@ -512,10 +433,12 @@ export default class BedSetSplash extends React.Component {
                 percentage. {"\n"}
                 You can compare the GenomicDistribution plots of multiple BED
                 files by: {"\n"}
-                1) select the BED files you want to compare using the select box
-                in the left-most column, and {"\n"}
-                2) select one plot type you want to compare using the buttons
-                below the table. {"\n"}
+                <p style={{ marginLeft: "40px" }}>
+                  1) select the BED files you want to compare using the select box
+                  in the left-most column, and {"\n"}
+                  2) select one plot type you want to compare using the buttons
+                  below the table. {"\n"}
+                </p>
               </span>
             </div>
             {Object.keys(this.state.bedSetTableData).length > 0 ? (
@@ -526,7 +449,6 @@ export default class BedSetSplash extends React.Component {
               />) : null}
           </Container>
         </div>
-        <VersionsSpan />
       </React.StrictMode>
     );
   }

@@ -1,7 +1,7 @@
 .splash-img-bedset {
-  height: 300px;
-  width: 300px;
-  cursor:pointer
+  height: 280px;
+  width: 280px;
+  cursor: pointer
 }
 
 .splash-img-bed {
@@ -14,9 +14,9 @@
   color: #ffffff;
 }
 
-.splash-link:hover {
-  color:  #e76f51;
-}
+/* .splash-link:hover {
+  color: #e76f51;
+} */
 
 .new-line {
   white-space: pre-line;
@@ -24,28 +24,34 @@
   font-size: 12pt
 }
 
-.primary-btn:not(:disabled):not(.disabled).active, 
-.primary-btn:not(:disabled):not(.disabled):active,
-.show>.primary-btn.dropdown-toggle {
-  background-color:  #e76f51;
-  border-color: #e76f51
-}
+/* 
+.btn-primary.focus,
+.btn-primary:focus,
+.btn-primary.hover,
+.btn-primary:hover,
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active,
+.show>.btn-primary.dropdown-toggle {
+  color: #FFF;
+  background-color: #e76f51;
+  border-color: #e76f51;
+} */
 
 .dropdown-item:hover {
   color: white;
-  background-color:  #e76f51;
+  background-color: #e76f51;
 }
 
 
-.MuiGridListTileBar-title:hover{
-  border-color:  #e76f51;
+.MuiGridListTileBar-title:hover {
+  border-color: #e76f51;
 }
 
 .MuiTableCell-root {
   padding: 5px !important;
 }
 
-.MuiButtonBase-root:hover{
+.MuiButtonBase-root:hover {
   color: white;
 }
 
@@ -96,10 +102,10 @@
 }
 
 .custom-modal {
-  max-width: fit-content 
+  max-width: fit-content
 }
 
-.paper{
+.paper {
   padding: 15px;
   margin: 5px;
 }

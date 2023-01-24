@@ -1,13 +1,12 @@
 import React from "react";
-import MaterialTable from "material-table";
-import Spinner from "react-bootstrap/Spinner";
-import { Paper } from "@material-ui/core";
-import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
-import { FaMinus } from "react-icons/fa";
-import { FaFolderPlus } from "react-icons/fa";
+import Spinner from "react-bootstrap/Spinner";
+import MaterialTable from "material-table";
+import { Paper } from "@material-ui/core";
+import { FaMinus, FaFolderPlus } from "react-icons/fa";
+import { tableIcons } from "./tableIcons";
 import axios from "axios";
-import bedhost_api_url from "./const/server";
+import bedhost_api_url from "../const/server";
 
 const api = axios.create({
   baseURL: bedhost_api_url,

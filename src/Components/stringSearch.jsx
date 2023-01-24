@@ -1,18 +1,16 @@
 import React from "react";
-import "./style/queryBuilder.css";
 import ResultsBed from "./searchResult";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import DropdownButton from "react-bootstrap/DropdownButton";
-import Dropdown from "react-bootstrap/Dropdown";
+import { Container, Row } from "react-bootstrap";
+import { Dropdown, DropdownButton } from "react-bootstrap";
 import axios from "axios";
-import bedhost_api_url from "./const/server";
+import bedhost_api_url from "../const/server";
+import "../style/queryBuilder.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-export default class Search extends React.Component {
+export default class StringSearch extends React.Component {
   constructor(props) {
     super();
     this.state = {

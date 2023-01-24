@@ -40,16 +40,16 @@ export default class BedSetBarChart extends React.Component {
 
   render() {
     return (
-      <div style={{ marginTop: "20px" }}>
-        <span style={{ marginLeft: "80px" }}>
+      <div >
+        <span style={{ marginLeft: "20px" }}>
           Mean Regional Distribution of the BED Set
         </span>
         <BarChart
-          width={400}
+          width={390}
           height={300}
           data={this.state.data}
           margin={{
-            top: 15,
+            top: 10,
             right: 30,
             left: 20,
             bottom: 5,
