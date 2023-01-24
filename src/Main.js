@@ -64,11 +64,15 @@ class Main extends React.Component {
                             <Nav className="float-right">
                                 <Form inline>
                                     <FormControl
+                                        style={{
+                                            width: "250px",
+                                            marginRight: "50px"
+                                        }}
                                         onChange={this.handleSearchInput}
                                         onKeyDown={this.handleSearchSubmit}
                                         value={this.state.searchText}
                                         type="text"
-                                        placeholder="Search BEDbase"
+                                        placeholder="Search BEDbase (ex. K562)"
                                         className="mr-sm-2"
                                     />
                                 </Form>

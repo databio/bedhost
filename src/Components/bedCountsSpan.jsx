@@ -80,7 +80,7 @@ export default class BedCountsSpan extends React.Component {
 
   render() {
     return (
-      <div style={{ paddingBottom: "20px", borderBottom: '1px solid black' }}>
+      <div style={{ paddingBottom: "20px", borderBottom: '1.5px solid lightgrey' }}>
         <h2>
           BEDbase Status
         </h2>

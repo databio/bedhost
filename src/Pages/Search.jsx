@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { StringSearch, BedCountsSpan, AdvancedSearch } from "../Components";
-import "../style/home.css";
+import "../style/search.css";
 
 export default class SearchPage extends React.Component {
     constructor(props) {
@@ -37,21 +37,27 @@ export default class SearchPage extends React.Component {
                     </Container>
                     <Container style={{ width: "75%" }} fluid className="p-4">
                         {this.state.searchType === "string" ? (
-                            <Container>
-                                <button
+                            <>
+                                {/* <button
                                     style={{ marginBottom: "15px" }}
-                                    className="btn btn-block btn-sm my-btn"
+                                    className="btn btn-block btn-sm btn-search"
                                     onClick={() => this.setSearchType("advance")}
                                 >
                                     Advanced Search
+                                </button> */}
+                                <button
+                                    className="btn btn-sm"
+                                    style={{ color: "black", padding: "0px" }}
+                                    onClick={() => this.setSearchType("advance")}>
+                                    Advanced
                                 </button>
                                 <StringSearch />
-                            </Container>
+                            </>
                         ) : (
                             <Container>
                                 <button
                                     style={{ marginBottom: "15px" }}
-                                    className="btn btn-block btn-sm my-btn"
+                                    className="btn btn-block btn-sm btn-search"
                                     onClick={() => this.setSearchType("string")}
                                 >
                                     String Search
@@ -60,7 +66,7 @@ export default class SearchPage extends React.Component {
                                 <Row>
                                     <Col>
                                         <button
-                                            className="btn btn-block btn-sm my-btn"
+                                            className="btn btn-block btn-sm btn-search"
                                             disabled={this.state.filebtn}
                                             onClick={() => this.handleClick("bedfiles")}
                                         >
@@ -69,7 +75,7 @@ export default class SearchPage extends React.Component {
                                     </Col>
                                     <Col md={6}>
                                         <button
-                                            className="btn btn-block btn-sm my-btn"
+                                            className="btn btn-block btn-sm btn-search"
                                             disabled={this.state.setbtn}
                                             onClick={() => this.handleClick("bedsets")}
                                         >

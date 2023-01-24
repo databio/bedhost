@@ -28,34 +28,27 @@ export default class Home extends React.Component {
                   web interface and programmatically interact with the
                   data via an OpenAPI-compatible API.
                 </p>
-                {/* <Link to={{
-                    pathname: `/search`,
-                  }}>
-                    <a className="btn btn-warning">
-                      Search BEDbase
-                    </a>
-                  </Link> */}
                 <Row>
                   <Col md={4}>
                     <Link to={{
                       pathname: `/about`,
                     }}>
-                      <text className="btn btn-sm btn-secondary"
+                      <button className="btn btn-primary"
                         style={{ width: "100%" }}
                       >
                         Find Out More
-                      </text>
+                      </button>
                     </Link>
                   </Col>
                   <Col md={4}>
                     <Link to={{
                       pathname: `/search`,
                     }}>
-                      <text className="btn btn-sm btn-primary"
+                      <button className="btn btn-search"
                         style={{ width: "100%" }}
                       >
                         Search BEDbase
-                      </text>
+                      </button>
                     </Link>
                   </Col>
                 </Row>

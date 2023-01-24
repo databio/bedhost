@@ -8,7 +8,7 @@ export default class BedSetPlots extends React.Component {
                 <span>
                     Region commonality
                 </span>
-                <ModalImage style={{ marginTop: "90px" }} image={this.props.bedset_figs[0]} page="bedset" />
+                <ModalImage image={this.props.bedset_figs[0]} page="bedset" />
             </div>
         );
     }
