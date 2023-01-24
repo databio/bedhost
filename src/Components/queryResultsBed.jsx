@@ -1,9 +1,10 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import Spinner from 'react-bootstrap/Spinner';
 import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
-import { Link } from "react-router-dom";
+import { FaFolderPlus } from "react-icons/fa";
 import bedhost_api_url from "../const/server";
 import axios from "axios";
 
@@ -22,7 +23,7 @@ export default class ResultsBed extends React.Component {
       data: [],
       pageSize: -1,
       pageSizeOptions: [],
-      toolBar: true
+      myBedSet: JSON.parse(localStorage.getItem('myBedSet')) || []
     }
   }
 
@@ -188,15 +189,30 @@ export default class ResultsBed extends React.Component {
     })
   }
 
+  addtoBedSet(data) {
+    alert(`You added ${data.name} to your BED set.`)
+    this.setState({
+      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
+    }, () => {
+      localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
+    })
+  }
 
   render() {
     return (this.props.md5sum === this.state.md5sum || this.props.query === this.state.query ? (
       this.state.pageSize !== -1 ? (
-        <div>
+        <div style={{ marginTop: "20px" }}>
           <MaterialTable
             icons={tableIcons}
             columns={this.state.columns}
             data={this.state.data}
+            actions={[
+              {
+                icon: () => < FaFolderPlus className="my-icon" />,
+                tooltip: 'add to your BED set',
+                onClick: (event, rowData) => this.addtoBedSet(rowData)
+              }
+            ]}
             title=""
             options={{
               headerStyle: {
@@ -208,7 +224,7 @@ export default class ResultsBed extends React.Component {
               pageSize: this.state.pageSize,
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
-              toolbar: this.state.toolBar
+              toolbar: false,
             }}
             components={{
               Container: props => <Paper {...props} elevation={0} />

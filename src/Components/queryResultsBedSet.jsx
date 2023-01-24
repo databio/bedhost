@@ -123,7 +123,7 @@ export default class ResultsBedSet extends React.Component {
   render() {
     return (this.props.query === this.state.query && this.state.data ? (
       this.state.pageSize !== -1 ? (
-        <div style={{ maxWidth: '100%' }}>
+        <div style={{ marginTop: "20px" }}>
           <MaterialTable
             icons={tableIcons}
             columns={this.state.columns}
@@ -139,6 +139,7 @@ export default class ResultsBedSet extends React.Component {
               pageSize: this.state.pageSize,
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
+              toolbar: false,
             }}
             detailPanel={[
               {

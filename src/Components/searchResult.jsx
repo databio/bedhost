@@ -225,7 +225,7 @@ export default class ResultsBed extends React.Component {
       this.props.query === this.state.query ||
       this.props.term === this.state.term ? (
       this.state.pageSize !== -1 ? (
-        <div>
+        <div style={{ marginTop: "20px" }}>
           <MaterialTable
             icons={tableIcons}
             columns={this.state.columns}

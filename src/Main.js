@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Switch, withRouter } from "react-router-dom";
-import { Navbar, Nav, Form, FormControl } from "react-bootstrap";
+import { Navbar, Nav, Form, FormControl, Button } from "react-bootstrap";
 import { BsFillInboxesFill, BsFillInfoCircleFill } from "react-icons/bs";
 import { FaCode, FaGithub } from "react-icons/fa"
 import { Home, About, Search, BedSplash, BedSetSplash, CreateBedSet } from "./Pages";
@@ -11,7 +11,7 @@ import bedhost_api_url from "./const/server";
 
 class Main extends React.Component {
     state = {
-        searchText: ""
+        searchTerms: ""
     };
 
     handleRoute = route => () => {
@@ -20,22 +20,23 @@ class Main extends React.Component {
 
     handleSearchInput = (e) => {
         this.setState({
-            searchText: e.target.value
+            searchTerms: e.target.value
         });
     };
 
     handleSearchSubmit = (e) => {
-        if (this.state.searchText) {
-            if (e.key === 'Enter') {
+        if (e.key === 'Enter') {
+            if (this.state.searchTerms) {
                 this.props.history.push({
                     pathname: "/search",
                     state: {
-                        searchText: this.state.searchText
+                        searchTerms: this.state.searchTerms
                     }
                 });
+                // console.log("enter:", this.props)
+            } else {
+                alert("Please enter some search text!");
             }
-        } else {
-            alert("Please enter some search text!");
         }
     };
 
@@ -46,7 +47,7 @@ class Main extends React.Component {
 
                     <Navbar style={{ backgroundColor: "#EFF3F6" }} >
                         <Nav
-                            className="container-fluid"
+                            className="container-fluid "
                             style={{
                                 marginLeft: "90px",
                                 marginRight: "90px"
@@ -61,20 +62,23 @@ class Main extends React.Component {
                                 />
                             </Navbar.Brand>
 
-                            <Nav className="float-right">
-                                <Form inline>
+                            <Nav className="float-right" >
+                                <Form inline >
                                     <FormControl
                                         style={{
-                                            width: "250px",
+                                            width: "300px",
                                             marginRight: "50px"
                                         }}
-                                        onChange={this.handleSearchInput}
-                                        onKeyDown={this.handleSearchSubmit}
-                                        value={this.state.searchText}
+                                        onChange={this.handleSearchInput.bind(this)}
+                                        onKeyDown={this.handleSearchSubmit.bind(this)}
+                                        value={this.state.searchTerms}
                                         type="text"
                                         placeholder="Search BEDbase (ex. K562)"
                                         className="mr-sm-2"
                                     />
+                                    {/* <Button className="btn btn-sm" onClick={this.handleSearchSubmit.bind(this)} variant="outline-info">
+                                        Search
+                                    </Button> */}
                                 </Form>
                                 <Nav.Link href={`${bedhost_api_url}/docs`}>
                                     <h5>

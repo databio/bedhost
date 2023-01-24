@@ -1,6 +1,6 @@
 import React from "react";
 import ResultsBed from "./searchResult";
-import { Form, FormControl, Row, Col } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import axios from "axios";
 import bedhost_api_url from "../const/server";
@@ -24,6 +24,15 @@ export default class StringSearch extends React.Component {
   async componentDidMount() {
     let genomes = await api.get("/api/bed/genomes").then(({ data }) => data);
     this.setState({ genomeList: genomes });
+    console.log("entered:", this.props.searchTerms)
+    if (this.props.searchTerms) {
+      this.setState({
+        searchTerms: this.props.searchTerms,
+        showResults: true,
+      });
+    }
+
+    console.log("entered:", this.state.searchTerms)
   }
 
   setShowResults() {
@@ -37,10 +46,10 @@ export default class StringSearch extends React.Component {
     this.setState({ searching: val });
   };
 
-  setSearchTerms(event) {
+  setSearchTerms(e) {
     this.setState({
+      searchTerms: e.target.value,
       showResults: false,
-      searchTerms: event.target.value,
     });
     this.forceUpdate();
   }
@@ -52,12 +61,17 @@ export default class StringSearch extends React.Component {
     });
   }
 
-  handleKeyPress(e) {
+  handleSearchSubmit(e) {
     //it triggers by pressing the enter key
     if (e.key === 'Enter') {
-      this.setShowResults();
+      if (this.state.searchTerms) {
+        this.setShowResults();
+      } else {
+        alert("Please enter some search text!");
+      }
     }
   }
+
   // setLimit(event) {
   //     if (this.state.table_name === 'bedfiles') {
   //         this.setState({ bedlimit: event.target.value });
@@ -72,20 +86,14 @@ export default class StringSearch extends React.Component {
       <>
         <Row>
           <Col md="auto" style={{ paddingRight: "0px" }}>
-            <Form inline>
-              <FormControl
-                className="float-left"
-                style={{
-                  width: "1220px",
-                  borderRadius: "3px",
-                }}
-                type="text"
-                value={this.state.searchTerms}
-                placeholder="Search BEDbase (ex. K562)"
-                onChange={this.setSearchTerms.bind(this)}
-                onKeyPress={this.handleKeyPress.bind(this)}
-              />
-            </Form>
+            <input
+              className="float-left search-input"
+              type="text"
+              value={this.state.searchTerms}
+              placeholder="Search BEDbase (ex. K562)"
+              onChange={this.setSearchTerms.bind(this)}
+              onKeyDown={this.handleSearchSubmit.bind(this)}
+            />
           </Col>
           <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
             <DropdownButton
@@ -94,7 +102,7 @@ export default class StringSearch extends React.Component {
               title={this.state.genome ? this.state.genome : "Select Genome"}
               id="select-genome"
               onSelect={this.handleSelect.bind(this)}
-              onKeyPress={this.handleKeyPress.bind(this)}
+              onKeyPress={this.handleSearchSubmit.bind(this)}
             >
               {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
                 return (
@@ -108,20 +116,22 @@ export default class StringSearch extends React.Component {
           <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
             <button
               className="float-right btn btn-search"
-              style={{ width: "100%" }}
               onClick={this.setShowResults.bind(this)}
+              disabled={this.state.searching ? "true" : ""}
             >
-              {this.state.searching ? " Searching... " : " SEARCH "}
+              SEARCH
             </button>
           </Col>
         </Row>
-        {this.state.showResults ? (
-          <ResultsBed
-            terms={this.state.searchTerms}
-            genome={this.state.genome}
-            setSearchingFalse={this.setSearchingFalse.bind(this)}
-          />
-        ) : null}
+        {
+          this.state.showResults ? (
+            <ResultsBed
+              terms={this.state.searchTerms}
+              genome={this.state.genome}
+              setSearchingFalse={this.setSearchingFalse.bind(this)}
+            />
+          ) : null
+        }
 
       </>
     );

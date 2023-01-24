@@ -74,3 +74,17 @@
     color: #fff;
     background-color: rgb(13, 110, 110);
 }
+
+.search-input {
+    width: 1212px;
+    height: 38px;
+    padding: 10px;
+    border-color: #ced4da;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px
+}
+
+.search-input:focus {
+    outline: none;
+}

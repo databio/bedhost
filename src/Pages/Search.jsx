@@ -10,9 +10,20 @@ export default class SearchPage extends React.Component {
         this.state = {
             search: "bedfiles",
             searchType: "string",
-            searchTerm: "",
+            searchTerms: "",
         };
     }
+
+    componentWillMount() {
+        if (this.props.location.state) {
+            console.log("search entered:", this.props.location.state.searchTerms)
+            this.setState({
+                searchTerms: this.props.location.state.searchTerms,
+            });
+        }
+        console.log("search entered:", this.state.searchTerms)
+    }
+
 
     setSearchType(type) {
         this.setState({ searchType: type });
@@ -34,7 +45,7 @@ export default class SearchPage extends React.Component {
                                     onClick={() => this.setSearchType("advance")}>
                                     Advanced Search
                                 </button>
-                                <StringSearch />
+                                <StringSearch searchTerm={this.state.searchTerms} />
                             </>
                         ) : (
                             <>
