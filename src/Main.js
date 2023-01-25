@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Switch, withRouter } from "react-router-dom";
-import { Navbar, Nav, Form, FormControl, Button } from "react-bootstrap";
+import { Navbar, Nav, Form, FormControl } from "react-bootstrap";
 import { BsFillInboxesFill, BsFillInfoCircleFill } from "react-icons/bs";
 import { FaCode, FaGithub } from "react-icons/fa"
 import { Home, About, Search, BedSplash, BedSetSplash, CreateBedSet } from "./Pages";
@@ -27,13 +27,11 @@ class Main extends React.Component {
     handleSearchSubmit = (e) => {
         if (e.key === 'Enter') {
             if (this.state.searchTerms) {
+                e.preventDefault();
                 this.props.history.push({
-                    pathname: "/search",
-                    state: {
-                        searchTerms: this.state.searchTerms
-                    }
+                    pathname: `/search`,
+                    search: "?" + new URLSearchParams(`terms=${this.state.searchTerms}`)
                 });
-                // console.log("enter:", this.props)
             } else {
                 alert("Please enter some search text!");
             }
@@ -76,9 +74,6 @@ class Main extends React.Component {
                                         placeholder="Search BEDbase (ex. K562)"
                                         className="mr-sm-2"
                                     />
-                                    {/* <Button className="btn btn-sm" onClick={this.handleSearchSubmit.bind(this)} variant="outline-info">
-                                        Search
-                                    </Button> */}
                                 </Form>
                                 <Nav.Link href={`${bedhost_api_url}/docs`}>
                                     <h5>
@@ -156,8 +151,8 @@ class Main extends React.Component {
                         <Switch>
                             <Route exact path="/" component={Home} />
                             <Route exact path="/about" component={About} />
-                            <Route exact path="/search" component={Search} />
                             <Route exact path="/createBedSet" component={CreateBedSet} />
+                            <Route path="/search" component={Search} />
                             <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash} />
                             <Route path="/bedsplash/:bed_md5sum" component={BedSplash} />
                         </Switch>

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState, useMemo } from "react";
+import { useLocation } from "react-router-dom"
 import ResultsBed from "./searchResult";
 import { Row, Col } from "react-bootstrap";
 import { Dropdown, DropdownButton } from "react-bootstrap";
@@ -9,63 +10,51 @@ const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-export default class StringSearch extends React.Component {
-  constructor(props) {
-    super();
-    this.state = {
-      showResults: false,
-      searchTerms: "",
-      genomeList: [],
-      genome: "hg38",
-      searching: false
-    };
+
+
+export default function StringSearch() {
+  const [showResults, setShowResults] = useState(false);
+  const [searchTerms, setSearchTerms] = useState();
+  const [genomeList, setGenomeList] = useState([]);
+  const [genome, setGenome] = useState("hg38");
+  const [searching, setSearching] = useState(false);
+
+  useEffect(() => {
+    api.get("/api/bed/genomes").then(result => setGenomeList(result.data));
+  }, []);
+
+  const { search } = useLocation();
+  const query = useMemo(() => new URLSearchParams(search), [search]);
+
+  useEffect(() => {
+    setSearchTerms(query.get("terms"))
+  });
+
+  const handleShowResults = () => {
+    setShowResults(true)
+    setSearching(true)
   }
 
-  async componentDidMount() {
-    let genomes = await api.get("/api/bed/genomes").then(({ data }) => data);
-    this.setState({ genomeList: genomes });
-    console.log("entered:", this.props.searchTerms)
-    if (this.props.searchTerms) {
-      this.setState({
-        searchTerms: this.props.searchTerms,
-        showResults: true,
-      });
-    }
-
-    console.log("entered:", this.state.searchTerms)
-  }
-
-  setShowResults() {
-    this.setState({
-      showResults: true,
-      searching: true
-    });
-  }
-
-  setSearchingFalse(val) {
-    this.setState({ searching: val });
+  const handleSearching = (val) => {
+    setSearching(val)
   };
 
-  setSearchTerms(e) {
-    this.setState({
-      searchTerms: e.target.value,
-      showResults: false,
-    });
-    this.forceUpdate();
+  const handleSearchTerms = (e) => {
+    setSearchTerms(e.target.value)
+    setShowResults(false)
+    // this.forceUpdate();
   }
 
-  handleSelect(e) {
-    this.setState({
-      genome: e,
-      showResults: false,
-    });
+  const handleSelect = (e) => {
+    setGenome(e)
+    setShowResults(false)
   }
 
-  handleSearchSubmit(e) {
+  const handleSearchSubmit = (e) => {
     //it triggers by pressing the enter key
     if (e.key === 'Enter') {
-      if (this.state.searchTerms) {
-        this.setShowResults();
+      if (searchTerms) {
+        handleShowResults();
       } else {
         alert("Please enter some search text!");
       }
@@ -81,59 +70,57 @@ export default class StringSearch extends React.Component {
 
   // };
 
-  render() {
-    return (
-      <>
-        <Row>
-          <Col md="auto" style={{ paddingRight: "0px" }}>
-            <input
-              className="float-left search-input"
-              type="text"
-              value={this.state.searchTerms}
-              placeholder="Search BEDbase (ex. K562)"
-              onChange={this.setSearchTerms.bind(this)}
-              onKeyDown={this.handleSearchSubmit.bind(this)}
-            />
-          </Col>
-          <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
-            <DropdownButton
-              alignRight
-              className="dropdown-btn"
-              title={this.state.genome ? this.state.genome : "Select Genome"}
-              id="select-genome"
-              onSelect={this.handleSelect.bind(this)}
-              onKeyPress={this.handleSearchSubmit.bind(this)}
-            >
-              {Array.from(new Set(this.state.genomeList.map(obj => obj.genome.alias))).map((value, index) => {
-                return (
-                  <Dropdown.Item key={index} eventKey={value}>
-                    {value}
-                  </Dropdown.Item>
-                );
-              })}
-            </DropdownButton>
-          </Col>
-          <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
-            <button
-              className="float-right btn btn-search"
-              onClick={this.setShowResults.bind(this)}
-              disabled={this.state.searching ? "true" : ""}
-            >
-              SEARCH
-            </button>
-          </Col>
-        </Row>
-        {
-          this.state.showResults ? (
-            <ResultsBed
-              terms={this.state.searchTerms}
-              genome={this.state.genome}
-              setSearchingFalse={this.setSearchingFalse.bind(this)}
-            />
-          ) : null
-        }
+  return (
+    <>
+      <Row>
+        <Col md="auto" style={{ paddingRight: "0px" }}>
+          <input
+            className="float-left search-input"
+            type="text"
+            value={searchTerms}
+            placeholder="Search BEDbase (ex. K562)"
+            onChange={handleSearchTerms}
+            onKeyDown={handleSearchSubmit}
+          />
+        </Col>
+        <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
+          <DropdownButton
+            alignRight
+            className="dropdown-btn"
+            title={genome ? genome : "Select Genome"}
+            id="select-genome"
+            onSelect={handleSelect}
+            onKeyPress={handleSearchSubmit}
+          >
+            {Array.from(new Set(genomeList.map(obj => obj.genome.alias))).map((value, index) => {
+              return (
+                <Dropdown.Item key={index} eventKey={value}>
+                  {value}
+                </Dropdown.Item>
+              );
+            })}
+          </DropdownButton>
+        </Col>
+        <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
+          <button
+            className="float-right btn btn-search"
+            onClick={handleShowResults}
+            disabled={searching ? "true" : ""}
+          >
+            SEARCH
+          </button>
+        </Col>
+      </Row>
+      {
+        showResults ? (
+          <ResultsBed
+            terms={searchTerms}
+            genome={genome}
+            setSearchingFalse={handleSearching}
+          />
+        ) : null
+      }
 
-      </>
-    );
-  }
+    </>
+  );
 }
