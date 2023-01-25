@@ -28,6 +28,9 @@ export default function StringSearch() {
 
   useEffect(() => {
     setSearchTerms(query.get("terms"))
+    if (searchTerms) {
+      setShowResults(true)
+    }
   });
 
   const handleShowResults = () => {
