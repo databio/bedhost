@@ -171,7 +171,10 @@ export default class BedSplash extends React.Component {
               <Col md={2}>
                 {this.state.bigbed ? (
                   <a href={this.state.trackPath}>
-                    <button className="float-right btn btn-primary">
+                    <button
+                      className="float-right btn btn-primary"
+                      style={{ backgroundColor: "teal" }}
+                    >
                       Genome Browser
                     </button>
                   </a>

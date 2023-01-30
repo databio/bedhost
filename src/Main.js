@@ -61,20 +61,22 @@ class Main extends React.Component {
                             </Navbar.Brand>
 
                             <Nav className="float-right" >
-                                <Form inline >
-                                    <FormControl
-                                        style={{
-                                            width: "300px",
-                                            marginRight: "50px"
-                                        }}
-                                        onChange={this.handleSearchInput.bind(this)}
-                                        onKeyDown={this.handleSearchSubmit.bind(this)}
-                                        value={this.state.searchTerms}
-                                        type="text"
-                                        placeholder="Search BEDbase (ex. K562)"
-                                        className="mr-sm-2"
-                                    />
-                                </Form>
+                                {window.location.pathname !== "/" && window.location.pathname !== "/search" ? (
+                                    <Form inline >
+                                        <FormControl
+                                            style={{
+                                                width: "500px",
+                                                marginRight: "50px"
+                                            }}
+                                            onChange={this.handleSearchInput.bind(this)}
+                                            onKeyDown={this.handleSearchSubmit.bind(this)}
+                                            value={this.state.searchTerms}
+                                            type="text"
+                                            placeholder="Search BEDbase (ex. K562)"
+                                            className="mr-sm-2"
+                                        />
+                                    </Form>) : null}
+
                                 <Nav.Link href={`${bedhost_api_url}/docs`}>
                                     <h5>
                                         <FaCode

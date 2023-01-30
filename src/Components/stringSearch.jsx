@@ -10,8 +10,6 @@ const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-
-
 export default function StringSearch() {
   const [showResults, setShowResults] = useState(false);
   const [searchTerms, setSearchTerms] = useState();

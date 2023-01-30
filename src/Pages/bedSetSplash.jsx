@@ -186,7 +186,10 @@ export default class BedSetSplash extends React.Component {
               </Col>
               <Col>
                 <a href={this.state.hubFilePath}>
-                  <button className="float-right btn btn-primary">
+                  <button
+                    className="float-right btn btn-primary"
+                    style={{ backgroundColor: "teal" }}
+                  >
                     Genome Browser
                   </button>
                 </a>
