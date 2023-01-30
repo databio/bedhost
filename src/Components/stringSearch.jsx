@@ -112,6 +112,9 @@ export default function StringSearch() {
           </button>
         </Col>
       </Row>
+      <p style={{ fontSize: "8pt" }}>
+        * The search function is still under development. This is a demo.
+      </p>
       {
         showResults ? (
           <ResultsBed

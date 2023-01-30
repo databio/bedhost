@@ -11,9 +11,9 @@ export default function SearchPage(props) {
     return (
         <>
             <div className="conten-body">
-                <Container style={{ width: "75%" }} fluid className="p-4">
+                {/* <Container style={{ width: "75%" }} fluid className="p-4">
                     <BedCountsSpan />
-                </Container>
+                </Container> */}
                 <Container style={{ width: "75%" }} fluid className="p-4">
                     {searchType === "string" ? (
                         <>
