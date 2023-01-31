@@ -17,10 +17,11 @@ export default function ImgGrid(props) {
   const classes = useStyles();
   const gridWidth = (props.page === "bed") ? 1000 : 1575;
   const cellHeight = (props.page === "bed") ? 200 : 350;
+  const gridCols = (props.page === "bed") ? 3 : 5;
 
   return (
     <div className={classes.root}>
-      <GridList style={{ width: gridWidth }} cellHeight={cellHeight} spacing={10} cols={3}>
+      <GridList style={{ width: gridWidth }} cellHeight={cellHeight} cols={gridCols}>
         {props.imgList.map((image, index) => {
           return (
             <GridListTile key={index}>
@@ -30,7 +31,6 @@ export default function ImgGrid(props) {
           );
         })}
       </GridList>
-
     </div>
   )
 }

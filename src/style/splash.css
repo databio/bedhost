@@ -11,12 +11,12 @@
 }
 
 .splash-link {
-  color: #ffffff;
+  color: teal;
 }
 
-/* .splash-link:hover {
-  color: #e76f51;
-} */
+.splash-link:hover {
+  color: rgb(13, 110, 110);
+}
 
 .new-line {
   white-space: pre-line;

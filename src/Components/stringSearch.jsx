@@ -29,7 +29,7 @@ export default function StringSearch() {
     if (searchTerms) {
       setShowResults(true)
     }
-  });
+  }, [query, searchTerms]);
 
   const handleShowResults = () => {
     setShowResults(true)

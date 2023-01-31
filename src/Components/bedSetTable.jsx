@@ -6,8 +6,6 @@ import { Button, Paper, Tooltip } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
 
-import { Label } from "semantic-ui-react";//
-
 
 export default class BedSetTable extends React.Component {
   constructor(props) {
@@ -23,7 +21,7 @@ export default class BedSetTable extends React.Component {
       selectedBedName: [],
       pageSize: -1,
       pageSizeOptions: [],
-      hideCol: "Percentage",
+      hideCol: "percentage",
     };
   }
 
@@ -34,7 +32,11 @@ export default class BedSetTable extends React.Component {
     let cols = Object.keys(this.props.bedSetTableData[0]);
 
     const editable = this.props.bedSetTableData.map((o) => ({ ...o }));
-
+    editable.forEach((i) => {
+      if (i["median_tss_dist"] === 0) {
+        i["median_tss_dist"] = "n/a"
+      }
+    });
 
     let bedSetFig = []
 
@@ -75,6 +77,7 @@ export default class BedSetTable extends React.Component {
       });
     }
   }
+
   getColumns(cols) {
     let tableColumns = [];
 
@@ -85,12 +88,9 @@ export default class BedSetTable extends React.Component {
           field: cols[i],
           width: 200,
           cellStyle: {
-            backgroundColor: "#333535",
-            color: "#FFF",
-            fontWeight: "bold",
           },
           headerStyle: {
-            backgroundColor: "#333535",
+            backgroundColor: "#264653",
             color: "#FFF",
             fontWeight: "bold",
           },
@@ -110,12 +110,12 @@ export default class BedSetTable extends React.Component {
         tableColumns.push({
           title: cols[i],
           field: cols[i],
-          width: 275,
+          width: 300,
         });
       } else if (i !== 0) {
         if (
-          cols[i] === "medianTssDist" ||
-          cols[i] === "meanRegionWidth"
+          cols[i] === "median_tss_dist" ||
+          cols[i] === "mean_region_width"
         ) {
           tableColumns.push({
             title: cols[i],
@@ -131,7 +131,7 @@ export default class BedSetTable extends React.Component {
           });
         } else {
           tableColumns.push({
-            title: cols[i].replaceAll(/Frequency|Percentage/gi, ""),
+            title: cols[i].replaceAll(/_frequency|_percentage/gi, ""),
             field: cols[i],
             width: 100,
           });
@@ -204,8 +204,8 @@ export default class BedSetTable extends React.Component {
                   left: 1,
                 },
                 headerStyle: {
-                  backgroundColor: "#333535",
-                  color: "#FFF",
+                  backgroundColor: "#264653",
+                  color: "white",
                   fontWeight: "bold",
                 },
                 paging: true,
@@ -234,7 +234,7 @@ export default class BedSetTable extends React.Component {
                         variant="contained"
                         style={{ padding: 5, margin: 5 }}
                         onClick={() => {
-                          this.setState({ hideCol: "Frequency" });
+                          this.setState({ hideCol: "frequency" });
                         }}
                       >
                         show percentage
@@ -244,7 +244,7 @@ export default class BedSetTable extends React.Component {
                         variant="contained"
                         style={{ padding: 5, margin: 5 }}
                         onClick={() => {
-                          this.setState({ hideCol: "Percentage" });
+                          this.setState({ hideCol: "percentage" });
                         }}
                       >
                         show frequency
@@ -276,18 +276,9 @@ export default class BedSetTable extends React.Component {
         <div style={{ padding: "10px 10px" }}>
           {this.state.showFig ? (
             <>
-              <Label
-                style={{
-                  marginLeft: "15px",
-                  fontSize: "15px",
-                  padding: "6px 20px 6px 30px",
-                }}
-                as="a"
-                color="teal"
-                ribbon
-              >
-                {this.state.figType[1]}
-              </Label>
+              <h5>
+                {this.state.figType[1].replaceAll(/_/gi, " ")}
+              </h5>
               {this.getFigButton()}
               <ShowFig
                 figType={this.state.figType}
@@ -296,19 +287,15 @@ export default class BedSetTable extends React.Component {
               />
             </>
           ) : (
-            <div style={{ marginLeft: "10px" }}>
-              <Label
+            <div>
+              <h5
                 style={{
-                  marginLeft: "15px",
-                  fontSize: "15px",
-                  padding: "6px 20px 6px 30px",
+                  color: "orange",
+                  fontWeight: "bold",
                 }}
-                as="a"
-                color="orange"
-                ribbon
               >
                 Please select plot type.
-              </Label>
+              </h5>
               {this.getFigButton()}
             </div>
           )}

@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Spinner from "react-bootstrap/Spinner";
+// import Spinner from "react-bootstrap/Spinner";
 import { FaFileAlt } from "react-icons/fa";
 import axios from "axios";
 import bedhost_api_url from "../const/server";

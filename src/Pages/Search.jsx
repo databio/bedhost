@@ -2,7 +2,7 @@ import React from "react";
 // import { useLocation } from "react-router-dom"
 import { Container, Row } from "react-bootstrap";
 import { Tab, Tabs } from 'react-bootstrap';
-import { StringSearch, BedCountsSpan, AdvancedSearch } from "../Components";
+import { StringSearch, AdvancedSearch } from "../Components";
 import "../style/search.css";
 
 export default function SearchPage(props) {

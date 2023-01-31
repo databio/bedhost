@@ -173,7 +173,10 @@ export default class BedSplash extends React.Component {
                   <a href={this.state.trackPath}>
                     <button
                       className="float-right btn btn-primary"
-                      style={{ backgroundColor: "teal" }}
+                      style={{
+                        backgroundColor: "teal",
+                        borderColor: "teal"
+                      }}
                     >
                       Genome Browser
                     </button>

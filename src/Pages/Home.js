@@ -6,7 +6,6 @@ import {
   Form,
   FormControl
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
 import { BedCountsSpan } from "../Components";
 import "../style/home.css";
 

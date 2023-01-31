@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import $ from "jquery";
 import "jQuery-QueryBuilder";
 import { OP_MAP } from "../const/keyMap";
