@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
 import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
-import { FaMinus, FaFolderPlus } from "react-icons/fa";
+import { FaMinus } from "react-icons/fa";
+import { BsFolderPlus } from "react-icons/bs";
 import { tableIcons } from "./tableIcons";
 import axios from "axios";
 import bedhost_api_url from "../const/server";
@@ -232,7 +233,7 @@ export default class ResultsBed extends React.Component {
             data={this.state.data}
             actions={[
               {
-                icon: () => < FaFolderPlus className="my-icon" />,
+                icon: () => < BsFolderPlus className="my-icon" />,
                 tooltip: 'add to your BED set',
                 onClick: (event, rowData) => this.addtoBedSet(rowData)
               }

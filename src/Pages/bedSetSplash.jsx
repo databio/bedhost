@@ -1,7 +1,7 @@
 import React from "react";
 import { HashLink as Link } from "react-router-hash-link";
 import { Container, Row, Col } from "react-bootstrap";
-import { FaQuestionCircle } from "react-icons/fa";
+import { BsQuestionCircle } from "react-icons/bs";
 import { BedSetTable, BedSetPlots, BarChart } from "../Components";
 import bedhost_api_url from "../const/server";
 import axios from "axios";
@@ -274,7 +274,7 @@ export default class BedSetSplash extends React.Component {
                 <h4>
                   Statistics
                   <Link to="/about#bedset-stats">
-                    <FaQuestionCircle
+                    <BsQuestionCircle
                       style={{
                         marginBottom: "3px",
                         marginLeft: "10px",

@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import {
   Container,
   Row,
@@ -6,13 +7,53 @@ import {
   Form,
   FormControl
 } from "react-bootstrap";
-import { BedCountsSpan } from "../Components";
+import axios from "axios";
+import bedhost_api_url from "../const/server";
 import "../style/home.css";
 
+const api = axios.create({
+  baseURL: bedhost_api_url,
+});
+
+
 export default class Home extends React.Component {
-  state = {
-    searchTerms: ""
-  };
+  constructor() {
+    super();
+    this.state = {
+      bed: -1,
+      bedSet: -1,
+      sampleBed: "",
+      sampleBedSet: "",
+      searchTerms: ""
+    };
+  }
+  async componentDidMount() {
+
+    let bfcount = await api
+      .get("/api/bed/count")
+      .catch(function (error) {
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
+      });
+    // console.log("BED file count retrieved from the server: ", bfcount.data);
+    this.setState({ bed: bfcount.data });
+
+    let bscount = await api
+      .get("/api/bedset/count")
+      .catch(function (error) {
+        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
+      });
+    // console.log("BED set count retrieved from the server: ", bscount.data);
+    this.setState({ bedSet: bscount.data });
+
+    let bed = await api.get("/api/bed/all/metadata?ids=md5sum&limit=1").then(({ data }) => data);
+    let bedurl = `/bedsplash/${bed.data[0][0]}`
+    this.setState({ sampleBed: bedurl });
+
+    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limit=1").then(({ data }) => data)
+    let bedseturl = `/bedsetsplash/${bedset.data[0][0]}`
+    this.setState({ sampleBedSet: bedseturl });
+  }
+
 
   handleSearchInput = (e) => {
     this.setState({
@@ -49,15 +90,24 @@ export default class Home extends React.Component {
     return (
       <>
         <div className="conten-body" >
-          <div style={{ background: 'linear-gradient(#5dadad,white)', height: "350px" }}>
-            <Container>
-              <Row className="justify-content-center">
+          <div
+            style={{ background: 'linear-gradient(#88bdbc,white)', height: "350px" }}
+          >
+            <Container style={{ width: "75%" }} >
+              <Row>
                 <Col md="auto">
                   <h1
                     style={{ marginTop: "100px" }}>
                     Welcome to BEDbase
                   </h1>
                 </Col>
+                {this.state.bedSet !== -1 ? (
+                  <>
+                    <p style={{ marginBottom: "3px" }}>
+                      Hosting {this.state.bed} BED files and  {this.state.bedSet} BED sets.
+                    </p>
+                  </>
+                ) : null}
               </Row>
 
               <Row
@@ -69,7 +119,7 @@ export default class Home extends React.Component {
                   <Form inline >
                     <FormControl
                       style={{
-                        width: "750px",
+                        width: "1200px",
                         height: "50px",
                         borderColor: "#ced4da",
                         borderStyle: "solid",
@@ -101,16 +151,41 @@ export default class Home extends React.Component {
                   </button>
                 </Col>
               </Row>
-              <p style={{ marginLeft: "225px", fontSize: "8pt" }}>
-                * The search function is still under development. This is a demo.
-              </p>
+              <Row className="justify-content-between">
+                <Col md={4}>
+                  <p style={{ fontSize: "8pt" }}>
+                    * The search function is still under development. This is a demo.
+                  </p>
+                </Col>
+                <Col md={4} style={{ padding: "0px" }}>
+                  <Link
+                    className="home-link"
+                    style={{ marginRight: "10px" }}
+                    data-toggle="tooltip"
+                    title="sample BED file"
+                    to={{
+                      pathname: this.state.sampleBed,
+                    }}>
+                    View example BED file
+                  </Link>
+                  <Link
+                    className="home-link"
+                    data-toggle="tooltip"
+                    title="sample BED set"
+                    to={{
+                      pathname: this.state.sampleBedSet,
+                    }}>
+                    View example BED set
+                  </Link>
+                </Col>
+              </Row>
             </Container>
           </div>
-          <Container>
+          <Container style={{ width: "75%" }} >
             <Row className="justify-content-center">
-              <Col md={4}>
+              <Col md={7}>
                 <p
-                  style={{ paddingBottom: "20px", borderBottom: '1.5px solid lightgrey' }}
+                  style={{ marginTop: "50px" }}
                 >
                   BEDbase is a unified platform for aggregating,
                   analyzing, and serving genomic region data.
@@ -123,7 +198,7 @@ export default class Home extends React.Component {
                   web interface and programmatically interact with the
                   data via an OpenAPI-compatible API.
                 </p>
-                <BedCountsSpan />
+
               </Col>
               {/* <Row>
                   <Col md={4}>
@@ -150,9 +225,9 @@ export default class Home extends React.Component {
                   </Col>
                 </Row> */}
 
-              <Col md={4}>
+              <Col md={5}>
                 <img
-                  style={{ marginLeft: "50px", height: "330px" }}
+                  style={{ marginLeft: "150px", height: "300px" }}
                   src="/workflow_landing.svg"
                   // src="/ui/workflow_landing.svg"
                   height="500px"

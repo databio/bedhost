@@ -2,7 +2,8 @@ import React from "react";
 import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
 import { Container } from "react-bootstrap";
-import { FaTrashAlt, FaDownload } from "react-icons/fa";
+// import { BsTrashFill, BsDownload } from "react-icons/fa";
+import { BsTrash, BsDownload } from "react-icons/bs";
 import { tableIcons, DownloadBedSetDialog } from "../Components";
 import bedhost_api_url from "../const/server";
 import "../style/home.css";
@@ -89,13 +90,13 @@ export default class CreateBedSet extends React.Component {
                       href={
                         `${bedhost_api_url}/api/bed/${rowData.md5sum}/file/bed`}
                     >
-                      <FaDownload className="my-icon" />
+                      <BsDownload className="my-icon" />
                     </a>,
                     tooltip: 'Save User',
                     onClick: (event, rowData) => alert(`Download ${rowData.name}`)
                   }),
                   {
-                    icon: () => <FaTrashAlt className="my-icon" />,
+                    icon: () => <BsTrash className="my-icon" />,
                     tooltip: 'Delete BED file',
                     onClick: (event, rowData) =>
                       new Promise((resolve, reject) => {

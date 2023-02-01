@@ -1,6 +1,6 @@
 import React from "react";
 import { HashLink as Link } from "react-router-hash-link";
-import { FaQuestionCircle } from "react-icons/fa";
+import { BsQuestionCircle } from "react-icons/bs";
 
 export default function BedInfo(props) {
   return (
@@ -91,7 +91,7 @@ export default function BedInfo(props) {
       <h4>
         Statistics
         <Link to="/about#bedfile-stats">
-          <FaQuestionCircle
+          <BsQuestionCircle
             style={{
               marginBottom: "3px",
               marginLeft: "10px",
