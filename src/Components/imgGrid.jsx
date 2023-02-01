@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ImgGrid(props) {
   const classes = useStyles();
   const gridWidth = (props.page === "bed") ? 1000 : 1575;
-  const rowHeight = (props.page === "bed") ? 220 : 350;
+  const rowHeight = (props.page === "bed") ? 210 : 350;
   const gridCols = (props.page === "bed") ? 3 : 5;
 
   return (

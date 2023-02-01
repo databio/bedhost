@@ -27,7 +27,11 @@ export default function BedInfo(props) {
             />
           </a>
         </Card.Header>
-        <Card.Body>
+        <Card.Body
+          style={{
+            padding: "10px",
+          }}
+        >
           <Card.Text>
             {Object.entries(props.bed_info).map(([key, value], index) => {
               const hide = [
@@ -53,7 +57,7 @@ export default function BedInfo(props) {
                   <label
                     style={{
                       fontWeight: "bold",
-                      width: '215px',
+                      width: '208px',
                       display: "block",
                       textAlign: "right"
                     }}
@@ -62,8 +66,7 @@ export default function BedInfo(props) {
                       key.replaceAll("_", " ").slice(1)}{":"}
                   </label>
                   <div style={{
-                    marginLeft: "20px",
-                    width: "300px"
+                    marginLeft: "10px"
                   }}>
                     {key === "genome" ? (
                       <>
@@ -121,7 +124,11 @@ export default function BedInfo(props) {
             />
           </a>
         </Card.Header>
-        <Card.Body>
+        <Card.Body
+          style={{
+            padding: "10px",
+          }}
+        >
           <Card.Text>
             {props.bed_stats.map((value, index) => {
               return value.data !== null ? (
@@ -129,7 +136,7 @@ export default function BedInfo(props) {
                   <label
                     style={{
                       fontWeight: "bold",
-                      width: '215px',
+                      width: '208px',
                       display: "block",
                       textAlign: "right"
                     }}
@@ -143,8 +150,7 @@ export default function BedInfo(props) {
 
                   </label>
                   <div style={{
-                    marginLeft: "20px",
-                    width: "300px"
+                    marginLeft: "10px"
                   }}>
                     {value.label === "Number of regions" ? (
                       <>{value.data.toFixed(0)}</>
