@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import { ImgGrid, BedInfo } from "../Components"
 import { bed_splash_cols } from "../fastapi/bedQueries";
 import { FaExternalLinkAlt } from "react-icons/fa"
@@ -198,7 +198,7 @@ export default class BedSplash extends React.Component {
             fluid
             className="p-4"
           >
-            <Row>
+            <Row className="justify-content-between">
               <Col md={10}>
                 <h3> BED File: {this.state.bedName}
                   <a href={
@@ -216,7 +216,7 @@ export default class BedSplash extends React.Component {
                 </h3>
                 <span> md5sum: {this.props.match.params.bed_md5sum} </span>
               </Col>
-              <Col md={2}>
+              <Col md="auto">
                 {this.state.bigbed ? (
                   <a href={this.state.trackPath}>
                     <button
@@ -249,66 +249,76 @@ export default class BedSplash extends React.Component {
                     bedStats_cols={this.state.bedStatsCols}
                   />
                 ) : null}
-                <h4>
-                  Downloads
-                  <a href={
-                    `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
-                  }>
-                    <FaExternalLinkAlt
-                      style={{
-                        marginBottom: "3px",
-                        marginLeft: "10px",
-                        fontSize: "15px",
-                      }}
-                      color="teal"
-                    />
-                  </a>
-                </h4>
-                {Object.entries(this.state.bedDownload).map(
-                  ([key, value], index) => (
-                    <p style={{ marginBottom: "5px" }} key={index}>
-                      <a
-                        href={value.url}
-                        className="home-link"
+                <Card>
+                  <Card.Header>
+                    Downloads
+                    <a href={
+                      `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
+                    }>
+                      <FaExternalLinkAlt
                         style={{
-                          marginLeft: "15px",
-                          fontWeight: "bold",
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
                         }}
-                      >
-                        http
-                      </a> | <a href={value.s3} className="home-link" style={{ fontWeight: "bold" }}>
-                        s3
-                      </a>
-                      : {value.label} ({this.state.bedFiles[value.id]})
-                    </p>
-                  )
-                )}
-
+                        color="teal"
+                      />
+                    </a>
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Text>
+                      {Object.entries(this.state.bedDownload).map(
+                        ([key, value], index) => (
+                          <p style={{ marginBottom: "5px" }} key={index}>
+                            <a
+                              href={value.url}
+                              className="home-link"
+                              style={{
+                                marginLeft: "15px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              http
+                            </a> | <a href={value.s3} className="home-link" style={{ fontWeight: "bold" }}>
+                              s3
+                            </a>
+                            : {value.label} ({this.state.bedFiles[value.id]})
+                          </p>
+                        )
+                      )}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
               </Col>
               <Col sm={7} md={7}>
-                <h4 style={{ marginBottom: "10px" }}>
-                  GenomicDistribution Plots
-                  <a href={
-                    `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
-                  }>
-                    <FaExternalLinkAlt
-                      style={{
-                        marginBottom: "3px",
-                        marginLeft: "10px",
-                        fontSize: "15px",
-                      }}
-                      color="teal"
-                    />
-                  </a>
-                </h4>
-                {this.state.bedFig ? (
-                  <ImgGrid style={{ marginLeft: "15px", }} imgList={this.state.bedFig} page="bed" />
-                ) : null}
+                <Card style={{ minHeight: '760px' }}>
+                  <Card.Header>
+                    GenomicDistribution Plots
+                    <a href={
+                      `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
+                    }>
+                      <FaExternalLinkAlt
+                        style={{
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
+                        }}
+                        color="teal"
+                      />
+                    </a>
+                  </Card.Header>
+                  <Card.Body>
+                    <Card.Text>
+                      {this.state.bedFig ? (
+                        <ImgGrid style={{ marginLeft: "15px", }} imgList={this.state.bedFig} page="bed" />
+                      ) : null}
+                    </Card.Text>
+                  </Card.Body>
+                </Card>
               </Col>
             </Row>
           </Container>
         </div>
-
       </React.StrictMode >
     );
   }
