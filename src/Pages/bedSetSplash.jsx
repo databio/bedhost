@@ -1,6 +1,7 @@
 import React from "react";
 import { HashLink as Link } from "react-router-hash-link";
 import { Container, Row, Col } from "react-bootstrap";
+import { FaExternalLinkAlt } from "react-icons/fa"
 import { BsQuestionCircle } from "react-icons/bs";
 import { BedSetTable, BedSetPlots, BarChart } from "../Components";
 import bedhost_api_url from "../const/server";
@@ -181,7 +182,21 @@ export default class BedSetSplash extends React.Component {
           >
             <Row>
               <Col md="10">
-                <h3> BED Set: {this.state.bedSetName}</h3>
+                <h3>
+                  BED Set: {this.state.bedSetName}
+                  <a href={
+                    `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata`
+                  }>
+                    <FaExternalLinkAlt
+                      style={{
+                        marginBottom: "3px",
+                        marginLeft: "10px",
+                        fontSize: "15px",
+                      }}
+                      color="black"
+                    />
+                  </a>
+                </h3>
                 <span> md5sum: {this.props.match.params.bedset_md5sum} </span>
               </Col>
               <Col>

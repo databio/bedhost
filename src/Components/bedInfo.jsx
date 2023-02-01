@@ -1,28 +1,33 @@
 import React from "react";
+import { useParams } from 'react-router-dom';
 import { HashLink as Link } from "react-router-hash-link";
 import { BsQuestionCircle } from "react-icons/bs";
+import { FaExternalLinkAlt } from "react-icons/fa";
+import bedhost_api_url from "../const/server";
+
 
 export default function BedInfo(props) {
+  const params = useParams()
+
   return (
     <div>
-      <h4> Summary </h4>
+      <h4>
+        Summary
+        <a href={
+          `${bedhost_api_url}/api/bed/${params.bed_md5sum}/metadata?ids=other`
+        }>
+          <FaExternalLinkAlt
+            style={{
+              marginBottom: "3px",
+              marginLeft: "10px",
+              fontSize: "15px",
+            }}
+            color="teal"
+          />
+        </a>
+      </h4>
       <table style={{ marginBottom: "10px" }}>
         <tbody>
-
-          {/* <tr style={{ verticalAlign: "top" }}>
-            <td
-              style={{
-                padding: "3px 10px",
-                fontWeight: "bold",
-                width: '200px'
-              }}
-            >
-              md5sum
-            </td>
-            <td style={{ padding: "3px 10px", width: '200px' }}>
-              {props.bed_md5sum}
-            </td>
-          </tr> */}
           {Object.entries(props.bed_info).map(([key, value], index) => {
             const hide = [
               "bigbed",
@@ -100,6 +105,18 @@ export default function BedInfo(props) {
             color="black"
           />
         </Link>
+        <a href={
+          `${bedhost_api_url}/api/bed/${params.bed_md5sum}/metadata?${props.bedStats_cols}`
+        }>
+          <FaExternalLinkAlt
+            style={{
+              marginBottom: "3px",
+              marginLeft: "10px",
+              fontSize: "15px",
+            }}
+            color="teal"
+          />
+        </a>
       </h4>
 
       <table style={{ marginBottom: "10px" }}>

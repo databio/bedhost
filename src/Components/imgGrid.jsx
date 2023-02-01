@@ -1,5 +1,5 @@
 import React from "react";
-import { GridList, GridListTile, Tooltip } from "@material-ui/core";
+import { ImageList, ImageListItem, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import ModalImage from "./modalImage";
 
@@ -16,21 +16,21 @@ const useStyles = makeStyles((theme) => ({
 export default function ImgGrid(props) {
   const classes = useStyles();
   const gridWidth = (props.page === "bed") ? 1000 : 1575;
-  const cellHeight = (props.page === "bed") ? 200 : 350;
+  const rowHeight = (props.page === "bed") ? 200 : 350;
   const gridCols = (props.page === "bed") ? 3 : 5;
 
   return (
     <div className={classes.root}>
-      <GridList style={{ width: gridWidth }} cellHeight={cellHeight} cols={gridCols}>
+      < ImageList style={{ width: gridWidth }} rowHeight={rowHeight} cols={gridCols}>
         {props.imgList.map((image, index) => {
           return (
-            <GridListTile key={index}>
+            < ImageListItem key={index}>
               <ModalImage image={image} page={props.page} />
               <Tooltip title={image.title} ><p><b>Fig. {index + 1}: </b> {image.title}</p></Tooltip>
-            </GridListTile>
+            </ ImageListItem>
           );
         })}
-      </GridList>
+      </ ImageList>
     </div>
   )
 }

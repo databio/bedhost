@@ -144,7 +144,7 @@ export default class CreateBedSet extends React.Component {
                     fontWeight: "bold",
                   },
                   actionsColumnIndex: -1,
-                  // actionsCellStyle: { justifyContent: "right" },
+                  actionsCellStyle: { justifyContent: "right" },
                   paging: true,
                   search: false,
                   toolbar: false,
