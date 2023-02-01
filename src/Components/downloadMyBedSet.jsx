@@ -32,7 +32,7 @@ export default function DownloadBedSetDialog(props) {
     return (
         <div className="float-left" onClick={props.onClick}>
             <button
-                className="btn btn-sm my-btn"
+                className="btn btn-search"
                 style={{ marginRight: "5px" }}
                 onClick={handleClickOpen}
             >
@@ -68,7 +68,6 @@ export default function DownloadBedSetDialog(props) {
                         href={`${bedhost_api_url}/api/bedset/my_bedset/file_paths/${props.bedfiles}?remoteClass=http`}
                         className="home-link"
                         style={{
-                            marginLeft: "15px",
                             fontSize: "10pt",
                             fontWeight: "bold",
                         }}
@@ -76,8 +75,8 @@ export default function DownloadBedSetDialog(props) {
                     >
                         <button
                             onClick={handleClickCopy}
-                            className="btn btn-sm my-btn"
-                            style={{ marginRight: "5px" }}
+                            className="btn btn-sm btn-search"
+                            style={{ width: "30px", padding: "2px" }}
                         >
                             http
                         </button>
@@ -86,7 +85,6 @@ export default function DownloadBedSetDialog(props) {
                         href={`${bedhost_api_url}/api/bedset/my_bedset/file_paths/${props.bedfiles}?remoteClass=s3`}
                         className="home-link"
                         style={{
-                            marginLeft: "15px",
                             fontSize: "10pt",
                             fontWeight: "bold",
                         }}
@@ -94,8 +92,8 @@ export default function DownloadBedSetDialog(props) {
                     >
                         <button
                             onClick={handleClickCopy}
-                            className="btn btn-sm my-btn"
-                            style={{ marginRight: "5px" }}
+                            className="btn btn-sm btn-search"
+                            style={{ width: "30px", padding: "2px" }}
                         >
                             s3
                         </button>
@@ -104,8 +102,8 @@ export default function DownloadBedSetDialog(props) {
                     <button
                         autoFocus
                         onClick={handleClose}
-                        className="btn btn-sm my-btn"
-                        style={{ marginRight: "5px" }}
+                        className="btn btn-sm btn-search"
+                        style={{ padding: "2px" }}
                     >
                         Cancel
                     </button>

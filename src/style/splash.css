@@ -95,3 +95,19 @@
 table .absorbing-column {
   width: 100%;
 }
+
+.my-icon {
+  color: #264653;
+  background-color: rgba(255, 255, 255, 0);
+  border-color: rgba(255, 255, 255, 0);
+}
+
+.my-icon:hover,
+.my-icon:focus,
+.my-icon.disabled,
+.my-icon:disabled {
+  color: #e76f51;
+  background-color: rgba(255, 255, 255, 0);
+  border-color: rgba(255, 255, 255, 0);
+  opacity: 1
+}

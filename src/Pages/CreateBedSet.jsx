@@ -1,12 +1,11 @@
 import React from "react";
 import MaterialTable from "material-table";
 import { Paper } from "@material-ui/core";
-import { Container } from "react-bootstrap";
-// import { BsTrashFill, BsDownload } from "react-icons/fa";
+import { Container, Row, Col } from "react-bootstrap";
 import { BsTrash, BsDownload } from "react-icons/bs";
 import { tableIcons, DownloadBedSetDialog } from "../Components";
 import bedhost_api_url from "../const/server";
-import "../style/home.css";
+import "../style/splash.css";
 // import axios from "axios";
 
 // const api = axios.create({
@@ -75,12 +74,36 @@ export default class CreateBedSet extends React.Component {
               style={{ width: "75%" }}
               fluid className="p-4"
             >
-              <h1>My BED Set</h1>
+              <Row style={{ margin: "0px" }}>
+                <Col md="auto" style={{ padding: "0px", width: "969px" }}>
+                  <h1>My BED Set</h1>
+                </Col>
+                <Col md="auto" className="align-items-end" style={{ padding: "0px" }}>
+                  <DownloadBedSetDialog
+                    bedfiles={this.state.myBedSetIdx}
+                    btn={'Download My BED Set'}
+                  />
+                </Col>
+                <Col md="auto" className="align-items-end" style={{ padding: "0px" }}>
+                  <button
+                    className="float-right btn btn-search"
+                    onClick={this.createBedSet.bind(this)}
+                  >
+                    Empty My BED Set
+                  </button>
+                </Col>
+              </Row>
               <MaterialTable
                 title="My BED Set"
                 icons={tableIcons}
                 columns={[
-                  { title: 'Name', field: 'name' },
+                  {
+                    title: 'Name',
+                    field: 'name',
+                    cellStyle: {
+                      width: 1300,
+                    }
+                  },
                   { title: 'md5sum', field: 'md5sum', hidden: true, }
                 ]}
                 data={this.state.myBedSet}
@@ -121,7 +144,7 @@ export default class CreateBedSet extends React.Component {
                     fontWeight: "bold",
                   },
                   actionsColumnIndex: -1,
-                  actionsCellStyle: { justifyContent: "center" },
+                  // actionsCellStyle: { justifyContent: "right" },
                   paging: true,
                   search: false,
                   toolbar: false,
@@ -130,19 +153,6 @@ export default class CreateBedSet extends React.Component {
                   Container: (props) => <Paper {...props} elevation={0} />,
                 }}
               />
-              <DownloadBedSetDialog
-                bedfiles={this.state.myBedSetIdx}
-                btn={'Download My BED Set'}
-              />
-
-              <button
-                style={{ height: "33px" }}
-                className="float-right btn btn-sm my-btn"
-                onClick={this.createBedSet.bind(this)}
-              >
-                Empty My BED Set
-              </button>
-
               {/* 
                 // hide before process myBEDSet function is complete
               <input
