@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from 'react-router-dom';
 import { HashLink as Link } from "react-router-hash-link";
-import Card from 'react-bootstrap/Card';
+import { Col, Card } from 'react-bootstrap';
 import { BsQuestionCircle } from "react-icons/bs";
 import { FaExternalLinkAlt } from "react-icons/fa";
 import bedhost_api_url from "../const/server";
@@ -32,7 +32,7 @@ export default function BedInfo(props) {
             padding: "10px",
           }}
         >
-          <Card.Text>
+          <Col>
             {Object.entries(props.bed_info).map(([key, value], index) => {
               const hide = [
                 "bigbed",
@@ -53,7 +53,7 @@ export default function BedInfo(props) {
               ];
 
               return !hide.includes(key) ? (
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>
                   <label
                     style={{
                       fontWeight: "bold",
@@ -95,7 +95,7 @@ export default function BedInfo(props) {
               ) : null;
             })}
 
-          </Card.Text>
+          </Col>
         </Card.Body>
       </Card>
 
@@ -129,10 +129,10 @@ export default function BedInfo(props) {
             padding: "10px",
           }}
         >
-          <Card.Text>
+          <Col>
             {props.bed_stats.map((value, index) => {
               return value.data !== null ? (
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>
                   <label
                     style={{
                       fontWeight: "bold",
@@ -162,7 +162,7 @@ export default function BedInfo(props) {
                 </div>) : null
 
             })}
-          </Card.Text>
+          </Col>
         </Card.Body>
       </Card>
     </div>

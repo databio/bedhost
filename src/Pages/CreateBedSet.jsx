@@ -74,8 +74,8 @@ export default class CreateBedSet extends React.Component {
               style={{ width: "75%" }}
               fluid className="p-4"
             >
-              <Row style={{ margin: "0px" }}>
-                <Col md="auto" style={{ padding: "0px", width: "969px" }}>
+              <Row className="justify-content-between" style={{ margin: "0px" }}>
+                <Col md="auto" style={{ padding: "0px", width: "1000px" }}>
                   <h1>My BED Set</h1>
                 </Col>
                 <Col md="auto" className="align-items-end" style={{ padding: "0px" }}>

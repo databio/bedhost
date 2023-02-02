@@ -1,11 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Spinner from "react-bootstrap/Spinner";
-import MaterialTable, { MTableToolbar } from "material-table";
-import { Button, Paper, Tooltip } from "@material-ui/core";
+import { Spinner, Col, Row, Dropdown, DropdownButton } from "react-bootstrap";
+import MaterialTable, { MTableActions } from "material-table";
+import { Paper, TablePagination } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-
+import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
+import ToggleButton from 'react-bootstrap/ToggleButton';
 
 export default class BedSetTable extends React.Component {
   constructor(props) {
@@ -16,7 +17,7 @@ export default class BedSetTable extends React.Component {
       tableColumns: [],
       bedFigs: [],
       showFig: false,
-      figType: "",
+      figType: [],
       selectedBedId: [],
       selectedBedName: [],
       pageSize: -1,
@@ -155,38 +156,38 @@ export default class BedSetTable extends React.Component {
     });
   }
 
-  figTypeClicked(fig, name) {
+  figTypeClicked(e) {
+    let fig = e.split(',')
     this.setState({
       showFig: true,
-      figType: [fig, name],
+      figType: fig,
     });
   }
 
   getFigButton() {
     return (
-      <div style={{ padding: "5px 5px" }}>
-        {this.state.bedFigs.map((fig, index) => {
-          return (
-            <>
-              {fig ? (
-                <Tooltip key={index} title={fig.title} placement="top">
-                  <Button
-                    size="small"
-                    variant="contained"
-                    style={{ padding: 5, margin: 5 }}
-                    onClick={() => {
-                      this.figTypeClicked(fig.id, fig.label);
-                    }}
-                  >
-                    {fig.id}
-                  </Button>
-                </Tooltip>
-              ) : null}
-            </>
-          );
-        })}
-      </div>
+      <Col md="auto">
+        <DropdownButton
+          alignRight
+          className="dropdown-btn"
+          title={this.state.figType.length > 0 ? this.state.figType[0] : "Select figure type"}
+          id="select-fig-type"
+          onSelect={this.figTypeClicked.bind(this)}
+        >
+          {this.state.bedFigs.map((fig, index) => {
+            return (
+              < Dropdown.Item key={index} eventKey={[fig.id, fig.label]} >
+                {fig.id}
+              </Dropdown.Item>
+            );
+          })}
+        </DropdownButton>
+      </Col >
     );
+  }
+
+  handleStatsType(selectedValue) {
+    this.setState({ hideCol: selectedValue });
   }
 
   render() {
@@ -225,32 +226,57 @@ export default class BedSetTable extends React.Component {
               }}
               components={{
                 Container: (props) => <Paper {...props} elevation={0} />,
-                Toolbar: (props) => (
-                  <div>
-                    <MTableToolbar {...props} />
-                    <div style={{ padding: "5px 5px" }}>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        style={{ padding: 5, margin: 5 }}
-                        onClick={() => {
-                          this.setState({ hideCol: "frequency" });
+                Actions: (props) => (
+                  <Row className="justify-content-end">
+                    <Col md="auto">
+                      <MTableActions {...props} />
+                    </Col>
+                    {/* <Col md="auto"> */}
+                    {this.getFigButton()}
+                    {/* </Col> */}
+                  </Row>
+
+                ),
+                Pagination: (props) => (
+                  <Row className="justify-content-end">
+                    <Col
+                      style={{
+                        padding: "0px",
+                        borderBottom: "1px solid rgba(224, 224, 224, 1)"
+                      }}
+                    >
+                      <ToggleButtonGroup
+                        style={{
+                          marginTop: "15px",
+                          marginLeft: "880px"
                         }}
+                        type='radio'
+                        name='stats type'
+                        value={this.state.hideCol}
+                        onChange={this.handleStatsType.bind(this)}
                       >
-                        show percentage
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        style={{ padding: 5, margin: 5 }}
-                        onClick={() => {
-                          this.setState({ hideCol: "percentage" });
-                        }}
-                      >
-                        show frequency
-                      </Button>
-                    </div>
-                  </div>
+                        <ToggleButton
+                          className="btn-xs"
+                          style={{ padding: "5px", fontSize: "10pt" }}
+                          value={"frequency"}
+                        >
+                          Percentage
+                        </ToggleButton>
+                        <ToggleButton
+                          className="btn-xs"
+                          style={{ padding: "5px", fontSize: "10pt" }}
+                          value={"percentage"}
+                        >
+                          Frequency
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </Col>
+                    <Col md="auto" style={{ padding: "0px" }}>
+                      <TablePagination
+                        {...props}
+                      />
+                    </Col>
+                  </Row>
                 ),
               }}
               localization={{
@@ -279,7 +305,6 @@ export default class BedSetTable extends React.Component {
               <h5>
                 {this.state.figType[1].replaceAll(/_/gi, " ")}
               </h5>
-              {this.getFigButton()}
               <ShowFig
                 figType={this.state.figType}
                 bedIds={this.state.selectedBedId}
@@ -296,7 +321,6 @@ export default class BedSetTable extends React.Component {
               >
                 Please select plot type.
               </h5>
-              {this.getFigButton()}
             </div>
           )}
         </div>

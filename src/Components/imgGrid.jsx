@@ -21,7 +21,7 @@ export default function ImgGrid(props) {
 
   return (
     <div className={classes.root}>
-      < ImageList style={{ width: gridWidth }} rowHeight={rowHeight} cols={gridCols}>
+      < ImageList component="span" style={{ width: gridWidth }} rowHeight={rowHeight} cols={gridCols}>
         {props.imgList.map((image, index) => {
           return (
             < ImageListItem key={index}>

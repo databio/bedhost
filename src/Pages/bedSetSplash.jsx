@@ -1,6 +1,6 @@
 import React from "react";
 import { HashLink as Link } from "react-router-hash-link";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Card } from "react-bootstrap";
 import { FaExternalLinkAlt } from "react-icons/fa"
 import { BsQuestionCircle } from "react-icons/bs";
 import { BedSetTable, BedSetPlots, BarChart } from "../Components";
@@ -23,7 +23,9 @@ export default class BedSetSplash extends React.Component {
       bedSetStat: [],
       avgRegionD: {},
       bedSetDownload: [],
+      bedSetFileCols: "",
       bedSetFig: false,
+      bedSetFigCols: "",
       hubFilePath: "",
       description: "",
       bedSetTableData: {},
@@ -93,6 +95,7 @@ export default class BedSetSplash extends React.Component {
       }
     });
 
+
     let bed_cols = ""
     bedset_bedfiles_cols.forEach((col, idx) => {
       if (idx === 0) {
@@ -100,6 +103,29 @@ export default class BedSetSplash extends React.Component {
       } else {
         bed_cols = `${bed_cols}&ids=${col}`
       }
+    });
+
+    let bedsetfig_cols = ""
+    let bedsetfile_cols = ""
+    Object.entries(bedset_schema).forEach(([key, value], index) => {
+      if (value.type === "image") {
+        if (bedsetfig_cols) {
+          bedsetfig_cols = `${bedsetfig_cols}&ids=${key}`
+        } else {
+          bedsetfig_cols = `ids=${key}`
+        }
+      } else if (value.type === "file") {
+        if (bedsetfile_cols) {
+          bedsetfile_cols = `${bedsetfile_cols}&ids=${key}`
+        } else {
+          bedsetfile_cols = `ids=${key}`
+        }
+      }
+
+      this.setState({
+        bedSetFigCols: bedsetfig_cols,
+        bedSetFileCols: bedsetfile_cols,
+      });
     });
 
     const result_bed = await api
@@ -180,7 +206,7 @@ export default class BedSetSplash extends React.Component {
             fluid
             className="p-4"
           >
-            <Row>
+            <Row className="justify-content-between">
               <Col md="10">
                 <h3>
                   BED Set: {this.state.bedSetName}
@@ -193,13 +219,13 @@ export default class BedSetSplash extends React.Component {
                         marginLeft: "10px",
                         fontSize: "15px",
                       }}
-                      color="black"
+                      color="teal"
                     />
                   </a>
                 </h3>
                 <span> md5sum: {this.props.match.params.bedset_md5sum} </span>
               </Col>
-              <Col>
+              <Col md="auto">
                 <a href={this.state.hubFilePath}>
                   <button
                     className="float-right btn btn-primary"
@@ -221,36 +247,31 @@ export default class BedSetSplash extends React.Component {
           >
             <Row>
               <Col sm={5} md={5}>
-                <h4> Summary </h4>
-                <table style={{ marginBottom: "10px" }}>
-                  <tbody>
-                    <tr style={{ verticalAlign: "top" }}>
-                      {/* <td
-                        style={{
-                          padding: "3px 10pt",
-                          fontWeight: "bold",
-                          width: '150px'
-                        }}
-                      >
-                        md5sum
-                      </td>
-                      <td style={{ padding: "3px 10pt" }}>
-                        {this.props.match.params.bedset_md5sum}
-                      </td> */}
-                    </tr>
-                    <tr style={{ verticalAlign: "top" }}>
-                      <td
-                        style={{
-                          padding: "3px 10pt",
-                          fontWeight: "bold",
-                          width: '200px'
-                        }}
-                      >
-                        genome
-                      </td>
-                      <td style={{ padding: "3px 10pt" }}>
-                        <>
-                          <span>{this.state.genome.alias}</span>
+                <Card style={{ marginBottom: '10px' }}>
+                  <Card.Header>
+                    Summary
+                  </Card.Header>
+                  <Card.Body
+                    style={{
+                      padding: "10px",
+                    }}
+                  >
+                    <Col>
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <label
+                          style={{
+                            fontWeight: "bold",
+                            width: '208px',
+                            display: "block",
+                            textAlign: "right"
+                          }}
+                        >
+                          genome:
+                        </label>
+                        <div style={{
+                          marginLeft: "10px"
+                        }}>
+                          {this.state.genome.alias}
                           {this.state.genome.digest !== "" ? (
                             <a
                               href={
@@ -266,173 +287,174 @@ export default class BedSetSplash extends React.Component {
                             </a>
                           ) : null
                           }
-                        </>
-                      </td>
-                    </tr>
-                    <tr style={{ verticalAlign: "top" }}>
-                      <td
-                        style={{
-                          padding: "3px 10pt",
-                          fontWeight: "bold",
-                          width: '200px'
-                        }}
-                      >
-                        total BED
-                      </td>
-                      <td style={{ padding: "3px 10pt" }}>
-                        {this.state.bedsCount}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-
-                <h4>
-                  Statistics
-                  <Link to="/about#bedset-stats">
-                    <BsQuestionCircle
-                      style={{
-                        marginBottom: "3px",
-                        marginLeft: "10px",
-                        fontSize: "15px",
-                      }}
-                      color="black"
-                    />
-                  </Link>
-                </h4>
-                <table style={{ marginBottom: "10px" }}>
-                  <tbody>
-                    <tr>
-                      <th> </th>
-                      <th style={{ padding: "3px 10pt" }}>
-                        AVG
-                      </th>
-                      <th style={{ padding: "3px 10pt" }}>
-                        SD
-                      </th>
-                    </tr>
-                    {this.state.bedSetStat.map((value, index) => (
-                      <tr style={{ verticalAlign: "top" }} key={index}>
-                        <td
+                        </div>
+                      </div>
+                      <div style={{ display: 'flex', flexDirection: 'row' }}>
+                        <label
                           style={{
-                            padding: "3px 10pt",
                             fontWeight: "bold",
-                            width: '200px'
+                            width: '208px',
+                            display: "block",
+                            textAlign: "right"
                           }}
                         >
-                          {value.label ===
-                            "Median absolute distance from transcription start sites" ? (
-                            <>Median TSS distance</>
-                          ) : (
-                            <>{value.label}</>
-                          )}
-                        </td>
-                        <td style={{ padding: "3px 10pt" }}>
-                          {value.data[0]}
-                        </td>
-                        <td style={{ padding: "3px 10pt" }}>
-                          {value.data[1]}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                <h4> Downloads </h4>
-                {this.state.bedSetDownload.map((file, index) => {
-                  return (
-                    <p style={{ marginBottom: "5px" }} key={file.id}>
-                      <a
-                        href={file.url}
-                        className="home-link"
+                          total BED:
+                        </label>
+                        <div style={{
+                          marginLeft: "10px"
+                        }}>
+                          {this.state.bedsCount}
+                        </div>
+                      </div>
+                    </Col>
+                  </Card.Body>
+                </Card>
+                <Card style={{ marginBottom: '10px' }}>
+                  <Card.Header>
+                    Statistics (mean|sd)
+                    <Link to="/about#bedset-stats">
+                      <BsQuestionCircle
                         style={{
-                          marginLeft: "15px",
-                          fontWeight: "bold",
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
                         }}
-                      >
-                        {" "} http {" "}
-                      </a> |
-                      <a href={file.s3} className="home-link" style={{ fontWeight: "bold" }}>
-                        {" "} s3  {" "}
-                      </a>
-                      : {" "}{file.label} {" "} ({file.size})
-                    </p>
-                  );
-                })}
+                        color="black"
+                      />
+                    </Link>
+                    <a href={
+                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?ids=bedset_standard_deviation&ids=bedset_means`
+                    }>
+                      <FaExternalLinkAlt
+                        style={{
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
+                        }}
+                        color="teal"
+                      />
+                    </a>
+                  </Card.Header>
+                  <Card.Body
+                    style={{
+                      padding: "10px",
+                    }}
+                  >
+                    <Col component={'span'}>
+                      {this.state.bedSetStat.map((value, index) => {
+                        return value.data !== null ? (
+                          <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>
+                            <label
+                              style={{
+                                fontWeight: "bold",
+                                width: '208px',
+                                display: "block",
+                                textAlign: "right"
+                              }}
+                            >
+                              {value.label ===
+                                "Median absolute distance from transcription start sites" ? (
+                                <>Median TSS distance: </>
+                              ) : (
+                                <>{value.label}: </>
+                              )}
 
-                {/* <h4 style={{ marginTop: "10px" }}>  API Endpoints </h4>
-                <p style={{ marginBottom: "5px" }}>
-                  <a
-                    href={
-                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata`
-                    }
-                    className="home-link"
+                            </label>
+                            <div style={{
+                              marginLeft: "10px"
+                            }}>
+                              {value.data[0]} {"|"} {value.data[1]}
+                            </div>
+
+                          </div>) : null
+                      })}
+                    </Col>
+                  </Card.Body>
+                </Card>
+                <Card>
+                  <Card.Header>
+                    Downloads
+                    <a href={
+                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?${this.state.bedSetFileCols}`
+                    }>
+                      <FaExternalLinkAlt
+                        style={{
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
+                        }}
+                        color="teal"
+                      />
+                    </a>
+                  </Card.Header>
+                  <Card.Body
                     style={{
-                      marginLeft: "15px",
-                      fontWeight: "bold",
+                      padding: "10px",
                     }}
                   >
-                    All data
-                  </a>
-                </p>
-                <p style={{ marginBottom: "5px" }}>
-                  <a
-                    href={
-                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/bedfiles`
-                    }
-                    className="home-link"
-                    style={{
-                      marginLeft: "15px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    BED files data
-                  </a>
-                </p>
-                <p style={{ marginBottom: "5px" }}>
-                  <a
-                    href={
-                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?ids=bedset_means&ids=bedset_standard_deviation`
-                    }
-                    className="home-link"
-                    style={{
-                      marginLeft: "15px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    BED set stats
-                  </a>
-                </p>
-                <p style={{ marginBottom: "5px" }}>
-                  <a
-                    href={
-                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?ids=region_commonality`
-                    }
-                    className="home-link"
-                    style={{
-                      marginLeft: "15px",
-                      fontWeight: "bold",
-                    }}
-                  >
-                    BED set plot
-                  </a>
-                </p> */}
+                    <Col component={'span'}>
+                      {this.state.bedSetDownload.map((file, index) => {
+                        return (
+                          <p style={{ marginBottom: "5px" }} key={index}>
+                            <a
+                              href={file.url}
+                              className="home-link"
+                              style={{
+                                marginLeft: "15px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              {" "} http {" "}
+                            </a> |
+                            <a href={file.s3} className="home-link" style={{ fontWeight: "bold" }}>
+                              {" "} s3  {" "}
+                            </a>
+                            : {" "}{file.label} {" "} ({file.size})
+                          </p>
+                        );
+                      })}
+                    </Col>
+                  </Card.Body>
+                </Card>
               </Col>
-              <Col md={7}>
-                <h4 style={{ marginBottom: "10px" }}>
-                  BED Set Plots
-                </h4>
-                <Row>
-                  <Col>
-                    {Object.keys(this.state.avgRegionD).length !== 0 ? (
-                      <BarChart stats={this.state.avgRegionD} />
-                    ) : null}
-                  </Col>
-                  <Col>
-                    {this.state.bedSetFig ? (
-                      <BedSetPlots bedset_figs={this.state.bedSetFig} />
-                    ) : null}
-                  </Col>
-                </Row>
+              <Col sm={7} md={7}>
+                <Card style={{ minHeight: '445px' }}>
+                  <Card.Header>
+                    BED Set Plots
+                    <a href={
+                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?${this.state.bedSetFigCols}`
+                    }>
+                      <FaExternalLinkAlt
+                        style={{
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
+                        }}
+                        color="teal"
+                      />
+                    </a>
+                  </Card.Header>
+                  <Card.Body
+                    style={{
+                      padding: "10px",
+                    }}
+                  >
+                    <Col component={'span'}>
+                      <Row>
+                        <Col>
+                          {Object.keys(this.state.avgRegionD).length !== 0 ? (
+                            <BarChart stats={this.state.avgRegionD} />
+                          ) : null}
+                        </Col>
+                        <Col>
+                          {this.state.bedSetFig ? (
+                            <BedSetPlots bedset_figs={this.state.bedSetFig} />
+                          ) : null}
+                        </Col>
+                      </Row>
+                    </Col>
+                  </Card.Body>
+                </Card>
               </Col>
             </Row>
           </Container>
@@ -449,16 +471,16 @@ export default class BedSetSplash extends React.Component {
                 The table below shows the statistics of each BED file in this
                 BED set. {"\n"}
                 The statistics of the reginal distributions are shown in
-                frequency by default. You can click on the{" "}
-                <b> SHOW PERCENTAGE</b> button to show reginal distributions in
-                percentage. {"\n"}
+                frequency by default. You can click on the
+                toggle button to switch between statistics showing in frequency
+                and percentage. {"\n"}
                 You can compare the GenomicDistribution plots of multiple BED
                 files by: {"\n"}
                 <p style={{ marginLeft: "40px" }}>
                   1) select the BED files you want to compare using the select box
                   in the left-most column, and {"\n"}
-                  2) select one plot type you want to compare using the buttons
-                  below the table. {"\n"}
+                  2) select one plot type you want to compare using the dropdown button
+                  on the top right corner of the table. {"\n"}
                 </p>
               </span>
             </div>

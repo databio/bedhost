@@ -27,12 +27,12 @@ export default function ModalImage(props) {
         show={show}
         onHide={handleClose}
       >
-        <Modal.Header closeButton>
+        <Modal.Header >
           <Modal.Title>{props.image.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body><iframe title="pdf" style={{ margin: 'auto', display: 'block', height: 700, width: 900, overflow: "auto" }} src={pdf}></iframe></Modal.Body>
         <Modal.Footer>
-          <button className='btn btn-sm my-btn' onClick={handleClose}>
+          <button className='btn btn-sm btn-search' onClick={handleClose}>
             Close
           </button>
         </Modal.Footer>

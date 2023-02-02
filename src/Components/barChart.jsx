@@ -45,8 +45,8 @@ export default class BedSetBarChart extends React.Component {
           Mean Regional Distribution of the BED Set
         </span>
         <BarChart
-          width={390}
-          height={300}
+          width={380}
+          height={320}
           data={this.state.data}
           margin={{
             top: 10,

@@ -59,7 +59,7 @@ export default class BedSplash extends React.Component {
       this.setState({ bedCols: bed_cols });
 
       if (schema[bed_splash_cols[idx]].type === "image") {
-        if (bedstats_cols) {
+        if (bedfig_cols) {
           bedfig_cols = `${bedfig_cols}&ids=${col}`
         } else {
           bedfig_cols = `ids=${col}`
@@ -266,7 +266,7 @@ export default class BedSplash extends React.Component {
                     </a>
                   </Card.Header>
                   <Card.Body>
-                    <Card.Text>
+                    <Col>
                       {Object.entries(this.state.bedDownload).map(
                         ([key, value], index) => (
                           <p style={{ marginBottom: "5px" }} key={index}>
@@ -286,7 +286,7 @@ export default class BedSplash extends React.Component {
                           </p>
                         )
                       )}
-                    </Card.Text>
+                    </Col>
                   </Card.Body>
                 </Card>
               </Col>
@@ -307,12 +307,12 @@ export default class BedSplash extends React.Component {
                       />
                     </a>
                   </Card.Header>
-                  <Card.Body>
-                    <Card.Text>
+                  <Card.Body >
+                    <Col >
                       {this.state.bedFig ? (
                         <ImgGrid style={{ marginLeft: "15px", }} imgList={this.state.bedFig} page="bed" />
                       ) : null}
-                    </Card.Text>
+                    </Col>
                   </Card.Body>
                 </Card>
               </Col>
