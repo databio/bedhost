@@ -1,6 +1,6 @@
 import React from "react";
 import MaterialTable from "@material-table/core";
-import { Paper } from "@material-ui/core";
+import { Paper, TablePagination } from "@material-ui/core";
 import { Container, Row, Col } from "react-bootstrap";
 import { BsTrash, BsDownload } from "react-icons/bs";
 import { tableIcons, DownloadBedSetDialog } from "../Components";
@@ -152,6 +152,13 @@ export default class CreateBedSet extends React.Component {
                 }}
                 components={{
                   Container: (props) => <Paper {...props} elevation={0} />,
+                  Pagination: (props) => (
+                    <Row className="justify-content-end">
+                      <TablePagination
+                        {...props}
+                      />
+                    </Row>
+                  ),
                 }}
               />
               {/* 

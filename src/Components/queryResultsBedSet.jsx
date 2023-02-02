@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Spinner from 'react-bootstrap/Spinner';
+import { Row, Spinner } from 'react-bootstrap';
 import MaterialTable from "@material-table/core";
-import { Paper } from "@material-ui/core";
+import { Paper, TablePagination } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import ResultsBed from './queryResultsBed'
 import bedhost_api_url from "../const/server";
@@ -151,7 +151,14 @@ export default class ResultsBedSet extends React.Component {
               },
             ]}
             components={{
-              Container: props => <Paper {...props} elevation={0} />
+              Container: props => <Paper {...props} elevation={0} />,
+              Pagination: (props) => (
+                <Row className="justify-content-end">
+                  <TablePagination
+                    {...props}
+                  />
+                </Row>
+              ),
             }}
             localization={{
               body: {
