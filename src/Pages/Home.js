@@ -153,7 +153,7 @@ export default class Home extends React.Component {
               </Row>
               <Row className="justify-content-between">
                 <Col md={4}>
-                  <p style={{ fontSize: "8pt" }}>
+                  <p style={{ fontSize: "9pt" }}>
                     * The search function is still under development. This is a demo.
                   </p>
                 </Col>

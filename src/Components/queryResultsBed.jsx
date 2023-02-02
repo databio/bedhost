@@ -61,7 +61,6 @@ export default class ResultsBed extends React.Component {
       `/_private_api/query/bedfiles?ids=name&ids=md5sum&ids=other&limit=${this.props.limit}`, request
     )
       .then(({ data }) => data)
-    console.log(res)
     this.setState({
       bedData: res.data
     })

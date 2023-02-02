@@ -5,110 +5,135 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    useMediaQuery
 } from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
-import copy from "copy-to-clipboard";
 import bedhost_api_url from "../const/server";
+import axios from "axios";
 
-export default function DownloadBedSetDialog(props) {
 
-    const [open, setOpen] = React.useState(false);
-    const theme = useTheme();
-    const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
+const api = axios.create({
+    baseURL: bedhost_api_url,
+});
 
-    const handleClickOpen = () => {
-        setOpen(true);
+export default class DownloadBedSetDialog extends React.Component {
+
+    constructor(props) {
+        super();
+        this.state = {
+            request: {},
+            open: false,
+            type: ""
+        };
+    }
+
+    getBedIdx() {
+        const lst = JSON.parse(localStorage.getItem('myBedSet'))
+        let id_list = []
+        id_list.push(
+            lst.map((bed) => {
+                return bed.md5sum;
+            })
+        )
+        let request = { md5sums: id_list[0] }
+        this.setState({
+            request: request
+        })
+        this.forceUpdate();
+    }
+
+    handleClickOpen() {
+        this.setState({
+            open: true
+        });
+        this.getBedIdx()
     };
 
-    const handleClose = () => {
-        setOpen(false);
+    handleClose() {
+        this.setState({
+            open: false
+        });
     };
 
-    const handleClickCopy = () => {
-        copy(props.message);
-    };
+    async handleClick(e) {
+        this.setState({ type: e.target.id })
+        await api.post(`/api/bedset/my_bedset/file_paths?remoteClass=${e.target.id}`, this.state.request)
+            .then(res => {
+                var data = new Blob([res.data], { type: 'text/csv' });
+                var url = window.URL.createObjectURL(data);
+                var a = document.createElement('a');
+                a.href = url;
+                a.setAttribute('download', 'mybedsetlist.txt');
+                a.click();
+            })
+            .catch(error => {
+                console.error(error);
+            });
+    }
 
-    return (
-        <div className="float-left" onClick={props.onClick}>
-            <button
-                className="btn btn-search"
-                style={{ marginRight: "5px" }}
-                onClick={handleClickOpen}
-            >
-                {props.btn}
-            </button>
-            <Dialog
-                fullScreen={fullScreen}
-                open={open}
-                onClose={handleClose}
-                aria-labelledby="responsive-dialog-title"
-            >
-                <DialogTitle id="responsive-dialog-title">{props.btn}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        <span style={{ fontSize: "12pt" }}>
-                            <p>
-                                {"Download from http with command "}
-                                <span style={{ fontWeight: 'bold' }}>
-                                    {"wget -i my_bedset_http.txt"}
-                                </span>
-                            </p>
-                            <p>
-                                {"Download from s3 with command "}
-                                <span style={{ fontWeight: 'bold' }}>
-                                    {"cat my_bedset_s3.txt | parallel aws s3 cp {} <output_dir>"}
-                                </span>
-                            </p>
-                        </span>
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <a
-                        href={`${bedhost_api_url}/api/bedset/my_bedset/file_paths/${props.bedfiles}?remoteClass=http`}
-                        className="home-link"
-                        style={{
-                            fontSize: "10pt",
-                            fontWeight: "bold",
-                        }}
-                        download="my_bedset_http.txt"
-                    >
+    render() {
+        return (
+            <div className="float-left" onClick={this.props.onClick}>
+                <button
+                    className="btn btn-search"
+                    style={{ marginRight: "5px" }}
+                    onClick={this.handleClickOpen.bind(this)}
+                >
+                    {this.props.btn}
+                </button>
+                <Dialog
+                    open={this.state.open}
+                    onClose={this.handleClose.bind(this)}
+                    aria-labelledby="responsive-dialog-title"
+                >
+                    <DialogTitle id="responsive-dialog-title">{this.props.btn}</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            <span style={{ fontSize: "12pt" }}>
+                                <p style={{ color: "red", fontSize: "9pt" }}>
+                                    * This function is still under development.
+                                    Here is the temporary instructions on "My BED set" downloading.
+                                </p>
+                                <p>
+                                    {"Download from http with command "}
+                                    <span style={{ fontWeight: 'bold' }}>
+                                        {"wget -i my_bedset_http.txt"}
+                                    </span>
+                                </p>
+                                <p>
+                                    {"Download from s3 with command "}
+                                    <span style={{ fontWeight: 'bold' }}>
+                                        {"cat my_bedset_s3.txt | parallel aws s3 cp {} <output_dir>"}
+                                    </span>
+                                </p>
+                            </span>
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
                         <button
-                            onClick={handleClickCopy}
+                            id='http'
+                            onClick={this.handleClick.bind(this)}
                             className="btn btn-sm btn-search"
                             style={{ width: "30px", padding: "2px" }}
                         >
                             http
                         </button>
-                    </a>
-                    <a
-                        href={`${bedhost_api_url}/api/bedset/my_bedset/file_paths/${props.bedfiles}?remoteClass=s3`}
-                        className="home-link"
-                        style={{
-                            fontSize: "10pt",
-                            fontWeight: "bold",
-                        }}
-                        download="my_bedset_s3.txt"
-                    >
                         <button
-                            onClick={handleClickCopy}
+                            onClick={() => { this.setState({ type: "s3" }); this.handleClick.bind(this) }}
                             className="btn btn-sm btn-search"
                             style={{ width: "30px", padding: "2px" }}
                         >
                             s3
                         </button>
-                    </a>
-
-                    <button
-                        autoFocus
-                        onClick={handleClose}
-                        className="btn btn-sm btn-search"
-                        style={{ padding: "2px" }}
-                    >
-                        Cancel
-                    </button>
-                </DialogActions>
-            </Dialog>
-        </div>
-    );
+                        <button
+                            autoFocus
+                            onClick={this.handleClose.bind(this)}
+                            className="btn btn-sm btn-search"
+                            style={{ padding: "2px" }}
+                        >
+                            Cancel
+                        </button>
+                    </DialogActions>
+                </Dialog>
+            </div>
+        );
+    }
 }

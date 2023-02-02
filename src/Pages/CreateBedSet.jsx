@@ -45,20 +45,19 @@ export default class CreateBedSet extends React.Component {
 
   }
   getBedIdx() {
-    let idx_list = []
-
-    idx_list.push(
+    let id_list = []
+    id_list.push(
       this.state.myBedSet.map((bed) => {
-        return bed.id;
+        return bed.md5sum;
       })
     )
 
-    idx_list = encodeURIComponent(
-      idx_list.toString()
-    )
+    // idx_list = encodeURIComponent(
+    //   idx_list.toString()
+    // )
 
     this.setState({
-      myBedSetIdx: idx_list
+      myBedSetIdx: id_list
     })
     this.forceUpdate();
   }
@@ -74,6 +73,12 @@ export default class CreateBedSet extends React.Component {
               style={{ width: "75%" }}
               fluid className="p-4"
             >
+              <Row>
+                <p style={{ fontSize: "9pt" }}>
+                  * This function is still under development.
+                  "My BED set" will not be added to BEDbase database.
+                </p>
+              </Row>
               <Row className="justify-content-between" style={{ margin: "0px" }}>
                 <Col md="auto" style={{ padding: "0px", width: "950px" }}>
                   <h1>My BED Set</h1>

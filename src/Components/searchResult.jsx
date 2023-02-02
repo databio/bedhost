@@ -215,7 +215,7 @@ export default class ResultsBed extends React.Component {
   addtoBedSet(data) {
     alert(`You added ${data.name} to your BED set.`)
     this.setState({
-      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
+      myBedSet: [...this.state.myBedSet, { "name": data.name, "md5sum": data.md5sum }]
     }, () => {
       localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
     })
