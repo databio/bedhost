@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Spinner, Col, Row, Dropdown, DropdownButton } from "react-bootstrap";
-import MaterialTable, { MTableActions } from "material-table";
+import MaterialTable, { MTableActions } from "@material-table/core";
 import { Paper, TablePagination } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
@@ -215,6 +215,7 @@ export default class BedSetTable extends React.Component {
                 search: true,
                 selection: true,
                 showSelectAllCheckbox: true,
+                idSynonym: 'md5sum',
               }}
               onSelectionChange={(rows) => {
                 rows.length > 0
@@ -248,7 +249,7 @@ export default class BedSetTable extends React.Component {
                       <ToggleButtonGroup
                         style={{
                           marginTop: "15px",
-                          marginLeft: "880px"
+                          marginLeft: "10px"
                         }}
                         type='radio'
                         name='stats type'

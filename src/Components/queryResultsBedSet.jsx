@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Spinner from 'react-bootstrap/Spinner';
-import MaterialTable from "material-table";
+import MaterialTable from "@material-table/core";
 import { Paper } from "@material-ui/core";
 import { tableIcons } from "./tableIcons";
 import ResultsBed from './queryResultsBed'
@@ -140,6 +140,7 @@ export default class ResultsBedSet extends React.Component {
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
               toolbar: false,
+              idSynonym: 'md5sum',
             }}
             detailPanel={[
               {

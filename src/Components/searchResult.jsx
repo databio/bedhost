@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Spinner from "react-bootstrap/Spinner";
-import MaterialTable from "material-table";
+import MaterialTable from "@material-table/core";
 import { Paper } from "@material-ui/core";
 import { FaMinus } from "react-icons/fa";
 import { BsFolderPlus } from "react-icons/bs";
@@ -250,6 +250,7 @@ export default class ResultsBed extends React.Component {
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
               toolbar: false,
+              idSynonym: 'md5sum',
             }}
             components={{
               Container: (props) => <Paper {...props} elevation={0} />,

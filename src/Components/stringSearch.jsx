@@ -78,7 +78,7 @@ export default function StringSearch() {
           <input
             className="float-left search-input"
             type="text"
-            value={searchTerms}
+            value={searchTerms || ""}
             placeholder="Search BEDbase (ex. K562)"
             onChange={handleSearchTerms}
             onKeyDown={handleSearchSubmit}
