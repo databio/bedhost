@@ -1,12 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Spinner, Col, Row, Dropdown, DropdownButton } from "react-bootstrap";
+import {
+  Spinner,
+  Col, Row,
+  Dropdown, DropdownButton,
+  ToggleButtonGroup, ToggleButton
+} from "react-bootstrap";
 import MaterialTable, { MTableActions } from "@material-table/core";
 import { Paper, TablePagination } from "@material-ui/core";
+import Modal from "react-bootstrap/Modal";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-import ToggleButtonGroup from 'react-bootstrap/ToggleButtonGroup';
-import ToggleButton from 'react-bootstrap/ToggleButton';
+import "../style/splash.css";
 
 export default class BedSetTable extends React.Component {
   constructor(props) {
@@ -156,6 +161,13 @@ export default class BedSetTable extends React.Component {
     });
   }
 
+  handleClose() {
+    this.setState({
+      figType: [],
+      showFig: false,
+    });
+  };
+
   figTypeClicked(e) {
     let fig = e.split(',')
     this.setState({
@@ -166,23 +178,22 @@ export default class BedSetTable extends React.Component {
 
   getFigButton() {
     return (
-      <Col md="auto">
-        <DropdownButton
-          alignRight
-          className="dropdown-btn"
-          title={this.state.figType.length > 0 ? this.state.figType[0] : "Select figure type"}
-          id="select-fig-type"
-          onSelect={this.figTypeClicked.bind(this)}
-        >
-          {this.state.bedFigs.map((fig, index) => {
-            return (
-              < Dropdown.Item key={index} eventKey={[fig.id, fig.label]} >
-                {fig.id}
-              </Dropdown.Item>
-            );
-          })}
-        </DropdownButton>
-      </Col >
+      <DropdownButton
+        alignRight
+        className="dropdown-btn"
+        title={this.state.figType.length > 0 ? this.state.figType[0] : "Select figure type"
+        }
+        id="select-fig-type"
+        onSelect={this.figTypeClicked.bind(this)}
+      >
+        {this.state.bedFigs.map((fig, index) => {
+          return (
+            < Dropdown.Item key={index} eventKey={[fig.id, fig.label]} >
+              {fig.id}
+            </Dropdown.Item>
+          );
+        })}
+      </DropdownButton>
     );
   }
 
@@ -232,11 +243,10 @@ export default class BedSetTable extends React.Component {
                     <Col md="auto">
                       <MTableActions {...props} />
                     </Col>
-                    {/* <Col md="auto"> */}
-                    {this.getFigButton()}
-                    {/* </Col> */}
+                    <Col md="auto" >
+                      {this.getFigButton()}
+                    </Col>
                   </Row>
-
                 ),
                 Pagination: (props) => (
                   <Row className="justify-content-end">
@@ -303,27 +313,36 @@ export default class BedSetTable extends React.Component {
         <div style={{ padding: "10px 10px" }}>
           {this.state.showFig ? (
             <>
-              <h5>
-                {this.state.figType[1].replaceAll(/_/gi, " ")}
-              </h5>
-              <ShowFig
-                figType={this.state.figType}
-                bedIds={this.state.selectedBedId}
-                bedNames={this.state.selectedBedName}
-              />
-            </>
-          ) : (
-            <div>
-              <h5
-                style={{
-                  color: "orange",
-                  fontWeight: "bold",
-                }}
+              <Modal
+                contentClassName="transparentBgClass"
+                size="xl"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={this.state.showFig}
+                onHide={this.handleClose.bind(this)}
+                animation={false}
               >
-                Please select plot type.
-              </h5>
-            </div>
-          )}
+                <Modal.Header >
+                  <Modal.Title>{this.state.figType[1].replaceAll(/_/gi, " ")}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body
+                  style={{
+                    maxHeight: "750px"
+                  }}>
+                  <ShowFig
+                    figType={this.state.figType}
+                    bedIds={this.state.selectedBedId}
+                    bedNames={this.state.selectedBedName}
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  <button className='btn btn-sm btn-search' onClick={this.handleClose.bind(this)}>
+                    Close
+                  </button>
+                </Modal.Footer>
+              </Modal>
+            </>
+          ) : null}
         </div>
       </div>
     );

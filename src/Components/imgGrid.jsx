@@ -15,12 +15,12 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ImgGrid(props) {
   const classes = useStyles();
-  const gridWidth = (props.page === "bed") ? 1000 : 1575;
-  const rowHeight = (props.page === "bed") ? 210 : 350;
-  const gridCols = (props.page === "bed") ? 3 : 5;
+  const gridWidth = 1000;
+  const rowHeight = (props.page === "bed") ? 215 : 350;
+  const gridCols = 3;
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} style={{ height: "700px", overflow: "scroll" }}>
       < ImageList component="span" style={{ width: gridWidth }} rowHeight={rowHeight} cols={gridCols}>
         {props.imgList.map((image, index) => {
           return (

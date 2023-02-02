@@ -291,7 +291,7 @@ export default class BedSplash extends React.Component {
                 </Card>
               </Col>
               <Col sm={7} md={7}>
-                <Card style={{ minHeight: '712px' }}>
+                <Card style={{ minHeight: '735px' }}>
                   <Card.Header>
                     GenomicDistribution Plots
                     <a href={

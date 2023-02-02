@@ -1,12 +1,12 @@
 .splash-img-bedset {
-  height: 300px;
-  width: 310px;
+  height: 305px;
+  width: 300px;
   cursor: pointer
 }
 
 .splash-img-bed {
-  height: 150px;
-  width: 150px;
+  height: 170px;
+  width: 170px;
   cursor: pointer
 }
 
@@ -39,6 +39,12 @@
 
 .MuiIconButton-root {
   padding: 3px !important;
+}
+
+.MuiToolbar-root {
+  padding-right: 0px !important;
+  color: slategrey !important;
+  background-color: white !important;
 }
 
 .title {
