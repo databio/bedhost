@@ -1,16 +1,12 @@
 import React from "react";
-import MaterialTable from "material-table";
-import { tableIcons } from "./tableIcons";
-import ResponsiveDialog from "./downloadMyBetSet";
-import { Paper } from "@material-ui/core";
-import Container from "react-bootstrap/Container";
-import { FaTrashAlt } from "react-icons/fa";
-import { FaDownload } from "react-icons/fa";
-import Header from "./header";
-import VersionsSpan from "./versionsSpan";
+import MaterialTable from "@material-table/core";
+import { Paper, TablePagination } from "@material-ui/core";
+import { Container, Row, Col } from "react-bootstrap";
+import { BsTrash, BsDownload } from "react-icons/bs";
+import { tableIcons, DownloadBedSetDialog } from "../Components";
+import bedhost_api_url from "../const/server";
+import "../style/splash.css";
 // import axios from "axios";
-import bedhost_api_url from "./const/server";
-import "./style/home.css";
 
 // const api = axios.create({
 //   baseURL: bedhost_api_url,
@@ -49,20 +45,19 @@ export default class CreateBedSet extends React.Component {
 
   }
   getBedIdx() {
-    let idx_list = []
-
-    idx_list.push(
+    let id_list = []
+    id_list.push(
       this.state.myBedSet.map((bed) => {
-        return bed.id;
+        return bed.md5sum;
       })
     )
 
-    idx_list = encodeURIComponent(
-      idx_list.toString()
-    )
+    // idx_list = encodeURIComponent(
+    //   idx_list.toString()
+    // )
 
     this.setState({
-      myBedSetIdx: idx_list
+      myBedSetIdx: id_list
     })
     this.forceUpdate();
   }
@@ -70,18 +65,50 @@ export default class CreateBedSet extends React.Component {
   render() {
     return (
       <React.StrictMode>
-        <Header />
         <div
           className="conten-body"
         >
           {this.state.myBedSet ? (
-            <Container style={{ width: "75%" }} fluid className="p-4">
-              <h1>My BED Set</h1>
+            <Container
+              style={{ width: "75%" }}
+              fluid className="p-4"
+            >
+              <Row>
+                <p style={{ fontSize: "9pt" }}>
+                  * This function is still under development.
+                  "My BED set" will not be added to BEDbase database.
+                </p>
+              </Row>
+              <Row className="justify-content-between" style={{ margin: "0px" }}>
+                <Col md="auto" style={{ padding: "0px", width: "950px" }}>
+                  <h1>My BED Set</h1>
+                </Col>
+                <Col md="auto" className="align-items-end" style={{ padding: "0px" }}>
+                  <DownloadBedSetDialog
+                    bedfiles={this.state.myBedSetIdx}
+                    btn={'Download My BED Set'}
+                  />
+                </Col>
+                <Col md="auto" className="align-items-end" style={{ padding: "0px" }}>
+                  <button
+                    className="float-right btn btn-search"
+                    onClick={this.createBedSet.bind(this)}
+                  >
+                    Empty My BED Set
+                  </button>
+                </Col>
+              </Row>
               <MaterialTable
                 title="My BED Set"
                 icons={tableIcons}
                 columns={[
-                  { title: 'Name', field: 'name' },
+                  {
+                    title: 'Name',
+                    field: 'name',
+                    cellStyle: {
+                      width: 1300,
+                    }
+                  },
                   { title: 'md5sum', field: 'md5sum', hidden: true, }
                 ]}
                 data={this.state.myBedSet}
@@ -90,12 +117,14 @@ export default class CreateBedSet extends React.Component {
                     icon: () => <a
                       href={
                         `${bedhost_api_url}/api/bed/${rowData.md5sum}/file/bed`}
-                    ><FaDownload className="my-icon" /></a>,
+                    >
+                      <BsDownload className="my-icon" />
+                    </a>,
                     tooltip: 'Save User',
                     onClick: (event, rowData) => alert(`Download ${rowData.name}`)
                   }),
                   {
-                    icon: () => <FaTrashAlt className="my-icon" />,
+                    icon: () => <BsTrash className="my-icon" />,
                     tooltip: 'Delete BED file',
                     onClick: (event, rowData) =>
                       new Promise((resolve, reject) => {
@@ -120,28 +149,23 @@ export default class CreateBedSet extends React.Component {
                     fontWeight: "bold",
                   },
                   actionsColumnIndex: -1,
-                  actionsCellStyle: { justifyContent: "center" },
+                  actionsCellStyle: { justifyContent: "right" },
                   paging: true,
                   search: false,
                   toolbar: false,
+                  idSynonym: 'md5sum',
                 }}
                 components={{
                   Container: (props) => <Paper {...props} elevation={0} />,
+                  Pagination: (props) => (
+                    <Row className="justify-content-end">
+                      <TablePagination
+                        {...props}
+                      />
+                    </Row>
+                  ),
                 }}
               />
-              <ResponsiveDialog
-                bedfiles={this.state.myBedSetIdx}
-                btn={'Download My BED Set'}
-              />
-
-              <button
-                style={{ height: "33px" }}
-                className="float-right btn btn-sm my-btn"
-                onClick={this.createBedSet.bind(this)}
-              >
-                Empty My BED Set
-              </button>
-
               {/* 
                 // hide before process myBEDSet function is complete
               <input
@@ -155,12 +179,13 @@ export default class CreateBedSet extends React.Component {
             </Container>
           ) : (
             <Container style={{ width: "75%" }} fluid className="p-4">
-              <h1 style={{ color: "#e76f51" }} >Your BED set cart is empty. </h1>
+              <h1 style={{ color: "#e76f51" }} >
+                Your BED set cart is empty.
+              </h1>
             </Container>
           )
           }
         </div>
-        <VersionsSpan />
       </React.StrictMode>
     );
   }

@@ -1,13 +1,13 @@
 import React from "react";
-import MaterialTable from "material-table";
-import Spinner from "react-bootstrap/Spinner";
-import { Paper } from "@material-ui/core";
-import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
+import { Row, Spinner } from "react-bootstrap";
+import MaterialTable from "@material-table/core";
+import { Paper, TablePagination } from "@material-ui/core";
 import { FaMinus } from "react-icons/fa";
-import { FaFolderPlus } from "react-icons/fa";
+import { BsFolderPlus } from "react-icons/bs";
+import { tableIcons } from "./tableIcons";
 import axios from "axios";
-import bedhost_api_url from "./const/server";
+import bedhost_api_url from "../const/server";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -215,7 +215,7 @@ export default class ResultsBed extends React.Component {
   addtoBedSet(data) {
     alert(`You added ${data.name} to your BED set.`)
     this.setState({
-      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
+      myBedSet: [...this.state.myBedSet, { "name": data.name, "md5sum": data.md5sum }]
     }, () => {
       localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
     })
@@ -226,14 +226,14 @@ export default class ResultsBed extends React.Component {
       this.props.query === this.state.query ||
       this.props.term === this.state.term ? (
       this.state.pageSize !== -1 ? (
-        <div>
+        <div style={{ marginTop: "20px" }}>
           <MaterialTable
             icons={tableIcons}
             columns={this.state.columns}
             data={this.state.data}
             actions={[
               {
-                icon: () => < FaFolderPlus className="my-icon" />,
+                icon: () => < BsFolderPlus className="my-icon" />,
                 tooltip: 'add to your BED set',
                 onClick: (event, rowData) => this.addtoBedSet(rowData)
               }
@@ -250,9 +250,17 @@ export default class ResultsBed extends React.Component {
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
               toolbar: false,
+              idSynonym: 'md5sum',
             }}
             components={{
               Container: (props) => <Paper {...props} elevation={0} />,
+              Pagination: (props) => (
+                <Row className="justify-content-end">
+                  <TablePagination
+                    {...props}
+                  />
+                </Row>
+              ),
             }}
             localization={{
               body: {
