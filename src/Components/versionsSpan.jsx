@@ -72,8 +72,8 @@ export default class VersionsSpan extends React.Component {
           href="http://databio.org/"
         >
           <img
-            src="/databio_logo.svg"
-            // src="/ui/databio_logo.svg"
+            // src="/databio_logo.svg"
+            src="/ui/databio_logo.svg"
             height="60px"
             alt="databio logo"
           />
