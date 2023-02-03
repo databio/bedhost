@@ -1,9 +1,7 @@
 import React from "react";
+import { ImageList, ImageListItem, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import GridList from "@material-ui/core/GridList";
-import GridListTile from "@material-ui/core/GridListTile";
 import ModalImage from "./modalImage";
-import Tooltip from "@material-ui/core/Tooltip";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -17,22 +15,23 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ImgGrid(props) {
   const classes = useStyles();
-  const gridWidth = (props.page === "bed") ? 1000 : 1575;
-  const cellHeight = (props.page === "bed") ? 250 : 350;
+  const gridWidth = 1000;
+  const rowHeight = (props.page === "bed") ? 215 : 350;
+  const gridCols = 3;
+  const style = (props.page === "bed") ? { height: "650px" } : { height: "700px", overflow: "scroll" }
 
   return (
-    <div className={classes.root}>
-      <GridList style={{ width: gridWidth }} cellHeight={cellHeight} spacing={25} cols={5}>
+    <div className={classes.root} style={style}>
+      < ImageList component="span" style={{ width: gridWidth }} rowHeight={rowHeight} cols={gridCols}>
         {props.imgList.map((image, index) => {
           return (
-            <GridListTile key={index}>
+            < ImageListItem key={index}>
               <ModalImage image={image} page={props.page} />
               <Tooltip title={image.title} ><p><b>Fig. {index + 1}: </b> {image.title}</p></Tooltip>
-            </GridListTile>
+            </ ImageListItem>
           );
         })}
-      </GridList>
-
+      </ ImageList>
     </div>
   )
 }

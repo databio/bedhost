@@ -1,21 +1,21 @@
 .splash-img-bedset {
-  height: 300px;
+  height: 305px;
   width: 300px;
-  cursor:pointer
+  cursor: pointer
 }
 
 .splash-img-bed {
-  height: 150px;
-  width: 150px;
+  height: 170px;
+  width: 170px;
   cursor: pointer
 }
 
 .splash-link {
-  color: #ffffff;
+  color: teal;
 }
 
 .splash-link:hover {
-  color:  #e76f51;
+  color: rgb(13, 110, 110);
 }
 
 .new-line {
@@ -24,33 +24,27 @@
   font-size: 12pt
 }
 
-.primary-btn:not(:disabled):not(.disabled).active, 
-.primary-btn:not(:disabled):not(.disabled):active,
-.show>.primary-btn.dropdown-toggle {
-  background-color:  #e76f51;
-  border-color: #e76f51
-}
 
-.dropdown-item:hover {
-  color: white;
-  background-color:  #e76f51;
-}
-
-
-.MuiGridListTileBar-title:hover{
-  border-color:  #e76f51;
+.MuiGridListTileBar-title:hover {
+  border-color: #e76f51;
 }
 
 .MuiTableCell-root {
   padding: 5px !important;
 }
 
-.MuiButtonBase-root:hover{
+.MuiButtonBase-root:hover {
   color: white;
 }
 
 .MuiIconButton-root {
   padding: 3px !important;
+}
+
+.MuiToolbar-root {
+  padding-right: 0px !important;
+  color: slategrey !important;
+  background-color: white !important;
 }
 
 .title {
@@ -96,14 +90,30 @@
 }
 
 .custom-modal {
-  max-width: fit-content 
+  max-width: fit-content
 }
 
-.paper{
+.paper {
   padding: 15px;
   margin: 5px;
 }
 
 table .absorbing-column {
   width: 100%;
+}
+
+.my-icon {
+  color: #264653;
+  background-color: rgba(255, 255, 255, 0);
+  border-color: rgba(255, 255, 255, 0);
+}
+
+.my-icon:hover,
+.my-icon:focus,
+.my-icon.disabled,
+.my-icon:disabled {
+  color: #e76f51;
+  background-color: rgba(255, 255, 255, 0);
+  border-color: rgba(255, 255, 255, 0);
+  opacity: 1
 }

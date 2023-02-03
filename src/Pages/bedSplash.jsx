@@ -1,16 +1,11 @@
 import React from "react";
-import Header from "./header";
-import VersionsSpan from "./versionsSpan";
-import Container from "react-bootstrap/Container";
-import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
+import { Container, Row, Col, Card } from "react-bootstrap";
+import { ImgGrid, BedInfo } from "../Components"
+import { bed_splash_cols } from "../fastapi/bedQueries";
+import { FaExternalLinkAlt } from "react-icons/fa"
+import bedhost_api_url from "../const/server";
 import axios from "axios";
-import ImgGrid from "./imgGrid";
-import BedInfo from "./bedInfo";
-import { Label } from "semantic-ui-react";
-import "./style/splash.css";
-import bedhost_api_url from "./const/server";
-import { bed_splash_cols } from "./fastapi/bedQueries";
+import "../style/splash.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -22,14 +17,17 @@ export default class BedSplash extends React.Component {
     this.state = {
       bedName: "",
       bedFig: [],
+      bedFigCols: "",
       bedFiles: [],
+      bedFileCols: "",
       bedDownload: {},
       trackPath: "",
       bigbed: false,
       bedMeta: {},
       bedGenome: {},
       bedSchema: {},
-      bedStats: {}
+      bedStats: {},
+      bedStatsCols: "",
     };
   }
 
@@ -48,12 +46,43 @@ export default class BedSplash extends React.Component {
 
     // get bedsplash data via fastapi endpoints
     let bed_cols = ""
+    let bedfig_cols = ""
+    let bedfile_cols = ""
+    let bedstats_cols = ""
+
     bed_splash_cols.forEach((col, idx) => {
       if (idx === 0) {
         bed_cols = `ids=${col}`
       } else {
         bed_cols = `${bed_cols}&ids=${col}`
       }
+      this.setState({ bedCols: bed_cols });
+
+      if (schema[bed_splash_cols[idx]].type === "image") {
+        if (bedfig_cols) {
+          bedfig_cols = `${bedfig_cols}&ids=${col}`
+        } else {
+          bedfig_cols = `ids=${col}`
+        }
+      } else if (schema[bed_splash_cols[idx]].type === "file") {
+        if (bedfile_cols) {
+          bedfile_cols = `${bedfile_cols}&ids=${col}`
+        } else {
+          bedfile_cols = `ids=${col}`
+        }
+      } else if (schema[bed_splash_cols[idx]].type === "number" || schema[bed_splash_cols[idx]].type === "integer") {
+        if (bedstats_cols) {
+          bedstats_cols = `${bedstats_cols}&ids=${col}`
+        } else {
+          bedstats_cols = `ids=${col}`
+        }
+      }
+
+      this.setState({
+        bedFigCols: bedfig_cols,
+        bedFileCols: bedfile_cols,
+        bedStatsCols: bedstats_cols,
+      });
     });
 
     const result = await api
@@ -120,9 +149,9 @@ export default class BedSplash extends React.Component {
             url:
               `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file/bed`,
             http:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=http`,
             s3:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
+              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=s3`
           },
           bigBED_File: {
             id: "bigbedfile",
@@ -163,21 +192,40 @@ export default class BedSplash extends React.Component {
   render() {
     return (
       <React.StrictMode>
-        <Header />
         <div className="conten-body">
           <Container
             style={{ width: "75%", minWidth: "900px" }}
             fluid
             className="p-4"
           >
-            <Row>
-              <Col>
-                <h1>BED File: {this.state.bedName}</h1>
+            <Row className="justify-content-between">
+              <Col md={10}>
+                <h3> BED File: {this.state.bedName}
+                  <a href={
+                    `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata`
+                  }>
+                    <FaExternalLinkAlt
+                      style={{
+                        marginBottom: "3px",
+                        marginLeft: "10px",
+                        fontSize: "15px",
+                      }}
+                      color="teal"
+                    />
+                  </a>
+                </h3>
+                <span> md5sum: {this.props.match.params.bed_md5sum} </span>
               </Col>
-              <Col>
+              <Col md="auto">
                 {this.state.bigbed ? (
                   <a href={this.state.trackPath}>
-                    <button className="float-right btn primary-btn">
+                    <button
+                      className="float-right btn btn-primary"
+                      style={{
+                        backgroundColor: "teal",
+                        borderColor: "teal"
+                      }}
+                    >
                       Genome Browser
                     </button>
                   </a>
@@ -191,74 +239,87 @@ export default class BedSplash extends React.Component {
             className="p-4"
           >
             <Row>
-              <Col sm={4} md={4}>
+              <Col sm={5} md={5}>
                 {Object.keys(this.state.bedStats).length > 0 ? (
                   <BedInfo
                     bed_md5sum={this.props.match.params.bed_md5sum}
                     bed_genome={this.state.bedGenome}
                     bed_info={this.state.bedMeta}
                     bed_stats={this.state.bedStats}
+                    bedStats_cols={this.state.bedStatsCols}
                   />
                 ) : null}
-                <Label
-                  style={{
-                    marginTop: "15px",
-                    marginBottom: "5px",
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  as="a"
-                  color="teal"
-                  ribbon
-                >
-                  BED File Download
-                </Label>
-                {Object.entries(this.state.bedDownload).map(
-                  ([key, value], index) => (
-                    <p style={{ marginBottom: "5px" }} key={index}>
-                      <a
-                        href={value.url}
-                        className="home-link"
+                <Card>
+                  <Card.Header>
+                    Downloads
+                    <a href={
+                      `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
+                    }>
+                      <FaExternalLinkAlt
                         style={{
-                          marginLeft: "15px",
-                          fontSize: "10pt",
-                          fontWeight: "bold",
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
                         }}
-                      >
-                        http
-                      </a> | <a href={value.s3} className="home-link" style={{ fontSize: "10pt", fontWeight: "bold" }}>
-                        s3
-                      </a>
-                      : {value.label} ({this.state.bedFiles[value.id]})
-                    </p>
-                  )
-                )}
-
+                        color="teal"
+                      />
+                    </a>
+                  </Card.Header>
+                  <Card.Body>
+                    <Col>
+                      {Object.entries(this.state.bedDownload).map(
+                        ([key, value], index) => (
+                          <p style={{ marginBottom: "5px" }} key={index}>
+                            <a
+                              href={value.url}
+                              className="home-link"
+                              style={{
+                                marginLeft: "15px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              http
+                            </a> | <a href={value.s3} className="home-link" style={{ fontWeight: "bold" }}>
+                              s3
+                            </a>
+                            : {value.label} ({this.state.bedFiles[value.id]})
+                          </p>
+                        )
+                      )}
+                    </Col>
+                  </Card.Body>
+                </Card>
               </Col>
-              <Col sm={8} md={8}>
-                <Label
-                  style={{
-                    marginBottom: "15px",
-                    marginLeft: "15px",
-                    fontSize: "15px",
-                    padding: "6px 20px 6px 30px",
-                  }}
-                  as="a"
-                  color="teal"
-                  ribbon
-                >
-                  GenomicDistribution Plots
-                </Label>
-                {this.state.bedFig ? (
-                  <ImgGrid style={{ marginLeft: "15px", }} imgList={this.state.bedFig} page="bed" />
-                ) : null}
+              <Col sm={7} md={7}>
+                <Card style={{ minHeight: '735px' }}>
+                  <Card.Header>
+                    GenomicDistribution Plots
+                    <a href={
+                      `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
+                    }>
+                      <FaExternalLinkAlt
+                        style={{
+                          marginBottom: "3px",
+                          marginLeft: "10px",
+                          fontSize: "15px",
+                        }}
+                        color="teal"
+                      />
+                    </a>
+                  </Card.Header>
+                  <Card.Body >
+                    <Col >
+                      {this.state.bedFig ? (
+                        <ImgGrid style={{ marginLeft: "15px", }} imgList={this.state.bedFig} page="bed" />
+                      ) : null}
+                    </Col>
+                  </Card.Body>
+                </Card>
               </Col>
             </Row>
           </Container>
         </div>
-        <VersionsSpan />
-      </React.StrictMode>
+      </React.StrictMode >
     );
   }
 }

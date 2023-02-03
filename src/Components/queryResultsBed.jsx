@@ -1,10 +1,11 @@
 import React from "react";
-import MaterialTable from "material-table";
-import Spinner from 'react-bootstrap/Spinner'
-import { Paper } from "@material-ui/core";
-import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
-import bedhost_api_url from "./const/server";
+import { Row, Spinner } from 'react-bootstrap';
+import MaterialTable from "@material-table/core";
+import { Paper, TablePagination } from "@material-ui/core";
+import { tableIcons } from "./tableIcons";
+import { BsFolderPlus } from "react-icons/bs";
+import bedhost_api_url from "../const/server";
 import axios from "axios";
 
 const api = axios.create({
@@ -22,7 +23,7 @@ export default class ResultsBed extends React.Component {
       data: [],
       pageSize: -1,
       pageSizeOptions: [],
-      toolBar: true
+      myBedSet: JSON.parse(localStorage.getItem('myBedSet')) || []
     }
   }
 
@@ -60,7 +61,6 @@ export default class ResultsBed extends React.Component {
       `/_private_api/query/bedfiles?ids=name&ids=md5sum&ids=other&limit=${this.props.limit}`, request
     )
       .then(({ data }) => data)
-    console.log(res)
     this.setState({
       bedData: res.data
     })
@@ -188,15 +188,30 @@ export default class ResultsBed extends React.Component {
     })
   }
 
+  addtoBedSet(data) {
+    alert(`You added ${data.name} to your BED set.`)
+    this.setState({
+      myBedSet: [...this.state.myBedSet, { "id": data.id, "name": data.name, "md5sum": data.md5sum }]
+    }, () => {
+      localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
+    })
+  }
 
   render() {
     return (this.props.md5sum === this.state.md5sum || this.props.query === this.state.query ? (
       this.state.pageSize !== -1 ? (
-        <div>
+        <div style={{ marginTop: "20px" }}>
           <MaterialTable
             icons={tableIcons}
             columns={this.state.columns}
             data={this.state.data}
+            actions={[
+              {
+                icon: () => < BsFolderPlus className="my-icon" />,
+                tooltip: 'add to your BED set',
+                onClick: (event, rowData) => this.addtoBedSet(rowData)
+              }
+            ]}
             title=""
             options={{
               headerStyle: {
@@ -208,10 +223,18 @@ export default class ResultsBed extends React.Component {
               pageSize: this.state.pageSize,
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
-              toolbar: this.state.toolBar
+              toolbar: false,
+              idSynonym: 'md5sum',
             }}
             components={{
-              Container: props => <Paper {...props} elevation={0} />
+              Container: props => <Paper {...props} elevation={0} />,
+              Pagination: (props) => (
+                <Row className="justify-content-end">
+                  <TablePagination
+                    {...props}
+                  />
+                </Row>
+              ),
             }}
             localization={{
               body: {

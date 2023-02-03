@@ -1,0 +1,90 @@
+.result-link {
+    color: teal;
+}
+
+.result-link:hover {
+    color: #e76f51;
+}
+
+
+.btn-search {
+    color: #FFF;
+    background-color: teal;
+    border-color: teal;
+    border-radius: 3px;
+}
+
+.btn-search.hover,
+.btn-search:hover {
+    color: #FFF;
+    background-color: #0c6b6b;
+    border-color: #0c6b6b;
+    opacity: 1
+}
+
+.btn-search.disabled,
+.btn-search:disabled {
+    color: #FFF;
+    background-color: darkgrey;
+    border-color: darkgrey;
+    opacity: 1
+}
+
+.btn-primary {
+    color: #FFF;
+    background-color: darkgrey;
+    border-color: darkgrey;
+    border-radius: 3px;
+    opacity: 1
+}
+
+.btn-primary.focus,
+.btn-primary:focus,
+.btn-primary.hover,
+.btn-primary:hover,
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active,
+.show>.btn-primary.dropdown-toggle {
+    color: #FFF;
+    background-color: rgb(129, 129, 129);
+    border-color: rgb(129, 129, 129);
+}
+
+.dropdown-item:hover {
+    color: white;
+    background-color: rgb(129, 129, 129);
+}
+
+.nav-tabs .nav-link {
+    color: #fff;
+    background-color: grey;
+    border-color: none;
+}
+
+
+.nav-tabs .nav-link.active {
+    color: #fff;
+    background-color: teal;
+    border-color: teal;
+    margin-right: 3px
+}
+
+
+.nav-tabs .nav-link:hover {
+    color: #fff;
+    background-color: rgb(13, 110, 110);
+}
+
+.search-input {
+    width: 1160px;
+    height: 38px;
+    padding: 10px;
+    border-color: #ced4da;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 3px
+}
+
+.search-input:focus {
+    outline: none;
+}

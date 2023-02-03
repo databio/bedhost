@@ -1,31 +1,21 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Route, Switch, HashRouter as Router } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
+import Main from "./Main";
 import * as serviceWorker from "./serviceWorker";
-import Home from "./home";
-import About from "./about";
-import CreateBedSet from "./createBedSet";
-import BedSetSplash from './bedSetSplash';
-import BedSplash from './bedSplash';
 import "bootstrap/dist/css/bootstrap.min.css";
+import './style/index.css';
 
-const styleLink = document.createElement("link");
-styleLink.rel = "stylesheet";
-styleLink.href = "https://cdn.jsdelivr.net/npm/semantic-ui/dist/semantic.min.css";
-document.head.appendChild(styleLink);
+function App() {
+  return (
+    <BrowserRouter>
+      <Main />
+    </BrowserRouter>
+  );
+}
 
-ReactDOM.render(
-  <Router>
-    <Switch>
-      <Route exact path="/" component={Home} />
-      <Route exact path="/about" component={About} />
-      <Route exact path="/createBedSet" component={CreateBedSet} />
-      <Route path="/bedsetsplash/:bedset_md5sum" component={BedSetSplash} />
-      <Route path="/bedsplash/:bed_md5sum" component={BedSplash} />
-    </Switch>
-  </Router>,
-  document.getElementById('root')
-);
+const rootElement = document.getElementById("root");
+ReactDOM.render(<App />, rootElement);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.

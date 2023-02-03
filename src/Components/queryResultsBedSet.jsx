@@ -1,11 +1,11 @@
 import React from "react";
-import MaterialTable from "material-table";
-import Spinner from 'react-bootstrap/Spinner'
-import { Paper } from "@material-ui/core";
-import { tableIcons } from "./tableIcons";
 import { Link } from "react-router-dom";
+import { Row, Spinner } from 'react-bootstrap';
+import MaterialTable from "@material-table/core";
+import { Paper, TablePagination } from "@material-ui/core";
+import { tableIcons } from "./tableIcons";
 import ResultsBed from './queryResultsBed'
-import bedhost_api_url from "./const/server";
+import bedhost_api_url from "../const/server";
 import axios from "axios";
 
 const api = axios.create({
@@ -123,7 +123,7 @@ export default class ResultsBedSet extends React.Component {
   render() {
     return (this.props.query === this.state.query && this.state.data ? (
       this.state.pageSize !== -1 ? (
-        <div style={{ maxWidth: '100%' }}>
+        <div style={{ marginTop: "20px" }}>
           <MaterialTable
             icons={tableIcons}
             columns={this.state.columns}
@@ -139,6 +139,8 @@ export default class ResultsBedSet extends React.Component {
               pageSize: this.state.pageSize,
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
+              toolbar: false,
+              idSynonym: 'md5sum',
             }}
             detailPanel={[
               {
@@ -149,7 +151,14 @@ export default class ResultsBedSet extends React.Component {
               },
             ]}
             components={{
-              Container: props => <Paper {...props} elevation={0} />
+              Container: props => <Paper {...props} elevation={0} />,
+              Pagination: (props) => (
+                <Row className="justify-content-end">
+                  <TablePagination
+                    {...props}
+                  />
+                </Row>
+              ),
             }}
             localization={{
               body: {

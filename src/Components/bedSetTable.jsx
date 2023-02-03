@@ -1,13 +1,17 @@
 import React from "react";
-import MaterialTable, { MTableToolbar } from "material-table";
-import { Button, Paper } from "@material-ui/core";
-import Tooltip from "@material-ui/core/Tooltip";
-import Spinner from "react-bootstrap/Spinner";
+import { Link } from "react-router-dom";
+import {
+  Spinner,
+  Col, Row,
+  Dropdown, DropdownButton,
+  ToggleButtonGroup, ToggleButton
+} from "react-bootstrap";
+import MaterialTable, { MTableActions } from "@material-table/core";
+import { Paper, TablePagination } from "@material-ui/core";
+import Modal from "react-bootstrap/Modal";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
-import { Label } from "semantic-ui-react";
-import { Link } from "react-router-dom";
-
+import "../style/splash.css";
 
 export default class BedSetTable extends React.Component {
   constructor(props) {
@@ -18,12 +22,12 @@ export default class BedSetTable extends React.Component {
       tableColumns: [],
       bedFigs: [],
       showFig: false,
-      figType: "",
+      figType: [],
       selectedBedId: [],
       selectedBedName: [],
       pageSize: -1,
       pageSizeOptions: [],
-      hideCol: "Percentage",
+      hideCol: "percentage",
     };
   }
 
@@ -34,7 +38,11 @@ export default class BedSetTable extends React.Component {
     let cols = Object.keys(this.props.bedSetTableData[0]);
 
     const editable = this.props.bedSetTableData.map((o) => ({ ...o }));
-
+    editable.forEach((i) => {
+      if (i["median_tss_dist"] === 0) {
+        i["median_tss_dist"] = "n/a"
+      }
+    });
 
     let bedSetFig = []
 
@@ -75,6 +83,7 @@ export default class BedSetTable extends React.Component {
       });
     }
   }
+
   getColumns(cols) {
     let tableColumns = [];
 
@@ -85,12 +94,9 @@ export default class BedSetTable extends React.Component {
           field: cols[i],
           width: 200,
           cellStyle: {
-            backgroundColor: "#333535",
-            color: "#FFF",
-            fontWeight: "bold",
           },
           headerStyle: {
-            backgroundColor: "#333535",
+            backgroundColor: "#264653",
             color: "#FFF",
             fontWeight: "bold",
           },
@@ -110,12 +116,12 @@ export default class BedSetTable extends React.Component {
         tableColumns.push({
           title: cols[i],
           field: cols[i],
-          width: 275,
+          width: 300,
         });
       } else if (i !== 0) {
         if (
-          cols[i] === "medianTssDist" ||
-          cols[i] === "meanRegionWidth"
+          cols[i] === "median_tss_dist" ||
+          cols[i] === "mean_region_width"
         ) {
           tableColumns.push({
             title: cols[i],
@@ -131,7 +137,7 @@ export default class BedSetTable extends React.Component {
           });
         } else {
           tableColumns.push({
-            title: cols[i].replaceAll(/Frequency|Percentage/gi, ""),
+            title: cols[i].replaceAll(/_frequency|_percentage/gi, ""),
             field: cols[i],
             width: 100,
           });
@@ -155,38 +161,44 @@ export default class BedSetTable extends React.Component {
     });
   }
 
-  figTypeClicked(fig, name) {
+  handleClose() {
+    this.setState({
+      figType: [],
+      showFig: false,
+    });
+  };
+
+  figTypeClicked(e) {
+    let fig = e.split(',')
     this.setState({
       showFig: true,
-      figType: [fig, name],
+      figType: fig,
     });
   }
 
   getFigButton() {
     return (
-      <div style={{ padding: "5px 5px" }}>
+      <DropdownButton
+        alignRight
+        className="dropdown-btn"
+        title={this.state.figType.length > 0 ? this.state.figType[0] : "Select figure type"
+        }
+        id="select-fig-type"
+        onSelect={this.figTypeClicked.bind(this)}
+      >
         {this.state.bedFigs.map((fig, index) => {
           return (
-            <>
-              {fig ? (
-                <Tooltip key={index} title={fig.title} placement="top">
-                  <Button
-                    size="small"
-                    variant="contained"
-                    style={{ padding: 5, margin: 5 }}
-                    onClick={() => {
-                      this.figTypeClicked(fig.id, fig.label);
-                    }}
-                  >
-                    {fig.id}
-                  </Button>
-                </Tooltip>
-              ) : null}
-            </>
+            < Dropdown.Item key={index} eventKey={[fig.id, fig.label]} >
+              {fig.id}
+            </Dropdown.Item>
           );
         })}
-      </div>
+      </DropdownButton>
     );
+  }
+
+  handleStatsType(selectedValue) {
+    this.setState({ hideCol: selectedValue });
   }
 
   render() {
@@ -204,8 +216,8 @@ export default class BedSetTable extends React.Component {
                   left: 1,
                 },
                 headerStyle: {
-                  backgroundColor: "#333535",
-                  color: "#FFF",
+                  backgroundColor: "#264653",
+                  color: "white",
                   fontWeight: "bold",
                 },
                 paging: true,
@@ -214,6 +226,7 @@ export default class BedSetTable extends React.Component {
                 search: true,
                 selection: true,
                 showSelectAllCheckbox: true,
+                idSynonym: 'md5sum',
               }}
               onSelectionChange={(rows) => {
                 rows.length > 0
@@ -225,32 +238,56 @@ export default class BedSetTable extends React.Component {
               }}
               components={{
                 Container: (props) => <Paper {...props} elevation={0} />,
-                Toolbar: (props) => (
-                  <div>
-                    <MTableToolbar {...props} />
-                    <div style={{ padding: "5px 5px" }}>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        style={{ padding: 5, margin: 5 }}
-                        onClick={() => {
-                          this.setState({ hideCol: "Frequency" });
+                Actions: (props) => (
+                  <Row className="justify-content-end">
+                    <Col md="auto">
+                      <MTableActions {...props} />
+                    </Col>
+                    <Col md="auto" >
+                      {this.getFigButton()}
+                    </Col>
+                  </Row>
+                ),
+                Pagination: (props) => (
+                  <Row className="justify-content-end">
+                    <Col
+                      style={{
+                        padding: "0px",
+                        borderBottom: "1px solid rgba(224, 224, 224, 1)"
+                      }}
+                    >
+                      <ToggleButtonGroup
+                        style={{
+                          marginTop: "15px",
+                          marginLeft: "10px"
                         }}
+                        type='radio'
+                        name='stats type'
+                        value={this.state.hideCol}
+                        onChange={this.handleStatsType.bind(this)}
                       >
-                        show percentage
-                      </Button>
-                      <Button
-                        size="small"
-                        variant="contained"
-                        style={{ padding: 5, margin: 5 }}
-                        onClick={() => {
-                          this.setState({ hideCol: "Percentage" });
-                        }}
-                      >
-                        show frequency
-                      </Button>
-                    </div>
-                  </div>
+                        <ToggleButton
+                          className="btn-xs"
+                          style={{ padding: "5px", fontSize: "10pt" }}
+                          value={"frequency"}
+                        >
+                          Percentage
+                        </ToggleButton>
+                        <ToggleButton
+                          className="btn-xs"
+                          style={{ padding: "5px", fontSize: "10pt" }}
+                          value={"percentage"}
+                        >
+                          Frequency
+                        </ToggleButton>
+                      </ToggleButtonGroup>
+                    </Col>
+                    <Col md="auto" style={{ padding: "0px" }}>
+                      <TablePagination
+                        {...props}
+                      />
+                    </Col>
+                  </Row>
                 ),
               }}
               localization={{
@@ -276,42 +313,36 @@ export default class BedSetTable extends React.Component {
         <div style={{ padding: "10px 10px" }}>
           {this.state.showFig ? (
             <>
-              <Label
-                style={{
-                  marginLeft: "15px",
-                  fontSize: "15px",
-                  padding: "6px 20px 6px 30px",
-                }}
-                as="a"
-                color="teal"
-                ribbon
+              <Modal
+                contentClassName="transparentBgClass"
+                size="xl"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+                show={this.state.showFig}
+                onHide={this.handleClose.bind(this)}
+                animation={false}
               >
-                {this.state.figType[1]}
-              </Label>
-              {this.getFigButton()}
-              <ShowFig
-                figType={this.state.figType}
-                bedIds={this.state.selectedBedId}
-                bedNames={this.state.selectedBedName}
-              />
+                <Modal.Header >
+                  <Modal.Title>{this.state.figType[1].replaceAll(/_/gi, " ")}</Modal.Title>
+                </Modal.Header>
+                <Modal.Body
+                  style={{
+                    maxHeight: "750px"
+                  }}>
+                  <ShowFig
+                    figType={this.state.figType}
+                    bedIds={this.state.selectedBedId}
+                    bedNames={this.state.selectedBedName}
+                  />
+                </Modal.Body>
+                <Modal.Footer>
+                  <button className='btn btn-sm btn-search' onClick={this.handleClose.bind(this)}>
+                    Close
+                  </button>
+                </Modal.Footer>
+              </Modal>
             </>
-          ) : (
-            <div style={{ marginLeft: "10px" }}>
-              <Label
-                style={{
-                  marginLeft: "15px",
-                  fontSize: "15px",
-                  padding: "6px 20px 6px 30px",
-                }}
-                as="a"
-                color="orange"
-                ribbon
-              >
-                Please select plot type.
-              </Label>
-              {this.getFigButton()}
-            </div>
-          )}
+          ) : null}
         </div>
       </div>
     );
