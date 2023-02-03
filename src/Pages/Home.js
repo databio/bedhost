@@ -202,8 +202,8 @@ export default class Home extends React.Component {
               <Col md={5}>
                 <img
                   style={{ marginLeft: "150px", height: "300px" }}
-                  src="/workflow_landing.svg"
-                  // src="/ui/workflow_landing.svg"
+                  // src="/workflow_landing.svg"
+                  src="/ui/workflow_landing.svg"
                   height="500px"
                   alt="workflow"
                 />
