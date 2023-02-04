@@ -63,10 +63,10 @@ export default function BedInfo(props) {
                     }}
                   >
                     {key.charAt(0).toUpperCase() +
-                      key.replaceAll("_", " ").slice(1)}{":"}
+                      key.replaceAll("_", " ").slice(1)}{": "}
                   </label>
                   <div style={{
-                    marginLeft: "10px"
+                    marginLeft: "5px"
                   }}>
                     {key === "genome" ? (
                       <>
