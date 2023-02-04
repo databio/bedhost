@@ -8,7 +8,7 @@ import { ApolloClient, InMemoryCache } from '@apollo/client'
 
 // const bedhost_api_url = 'http://dev1.bedbase.org'
 
-production mode
+// production mode
 const bedhost_api_url = `${window.location.protocol}//${window.location.host}`
 
 // Instantiate client for GraphQL
