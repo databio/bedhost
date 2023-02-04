@@ -66,7 +66,7 @@ export default function BedInfo(props) {
                       key.replaceAll("_", " ").slice(1)}{":"}
                   </label>
                   <div style={{
-                    marginLeft: "10px"
+                    marginLeft: "5px"
                   }}>
                     {key === "genome" ? (
                       <>
