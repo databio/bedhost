@@ -2,6 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format. 
 
+## [0.1.2] -- 2023-2-6
+### change
+-   change `/bedset/my_bedset/file_paths`endpoint from GET to POST
+
 ## [0.1.1] -- 2021-10-30
 ### change
 -   `/bed/genomes` and `bedset/genomes`: impove speed
