@@ -37,6 +37,7 @@ export default class CreateBedSet extends React.Component {
     // alert("Your BED set has been submitted for processing!")
 
     localStorage.clear();
+    this.setState({ myBedSet: JSON.parse(localStorage.getItem('myBedSet')), })
     window.location.reload(true);
   }
 
