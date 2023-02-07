@@ -22,8 +22,8 @@ export default class About extends React.Component {
                     users can access BED files along with useful statistics and{" "}
                     plots.
                   </p>
-                  {/* <img src="/ui/workflow.svg" width="100%" alt="workflow" /> */}
-                  <img src="/workflow.svg" width="100%" alt="workflow" />
+                  <img src="/ui/workflow.svg" width="100%" alt="workflow" />
+                  {/* <img src="/workflow.svg" width="100%" alt="workflow" /> */}
                 </div>
                 <div id="key-features" style={{ marginTop: "15px" }}>
                   <h4>Key Features</h4>

@@ -35,14 +35,16 @@ export default class BedSplash extends React.Component {
     let schema = await api.get("/api/bed/schema").then(({ data }) => data);
     this.setState({ bedSchema: schema });
 
-    await api
-      .get(`/api/bed/${this.props.match.params.bed_md5sum}/file/bigBed`)
-      .then(this.setState({ bigbed: true }))
+    await api.get(`/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=http`)
+      .then((res) => {
+        if (res.status === 200) {
+          this.setState({ bigbed: true });
+        }
+      })
       .catch((err) => {
-        // if (err.response.status === 500) {
         this.setState({ bigbed: false });
-        // }
       });
+
 
     // get bedsplash data via fastapi endpoints
     let bed_cols = ""

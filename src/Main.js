@@ -53,8 +53,8 @@ class Main extends React.Component {
                         >
                             <Navbar.Brand href="/">
                                 <img
-                                    src="/bedbase_logo.svg"
-                                    // src="/ui/bedbase_logo.svg"
+                                    // src="/bedbase_logo.svg"
+                                    src="/ui/bedbase_logo.svg"
                                     height="60px"
                                     alt="BEDBASE logo"
                                 />

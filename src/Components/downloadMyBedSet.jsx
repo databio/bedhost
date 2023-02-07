@@ -117,7 +117,8 @@ export default class DownloadBedSetDialog extends React.Component {
                             http
                         </button>
                         <button
-                            onClick={() => { this.setState({ type: "s3" }); this.handleClick.bind(this) }}
+                            id='s3'
+                            onClick={this.handleClick.bind(this)}
                             className="btn btn-sm btn-search"
                             style={{ width: "30px", padding: "2px" }}
                         >
