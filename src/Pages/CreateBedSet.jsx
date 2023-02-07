@@ -38,7 +38,6 @@ export default class CreateBedSet extends React.Component {
 
     localStorage.clear();
     this.setState({ myBedSet: JSON.parse(localStorage.getItem('myBedSet')), })
-    window.location.reload(true);
   }
 
   handleChange(e) {
