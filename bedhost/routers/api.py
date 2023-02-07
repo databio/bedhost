@@ -82,6 +82,11 @@ c = Path(
     example=ex_chr,
 )
 
+
+class BEDLIST(BaseModel):
+    md5sums: list
+
+
 # misc endpoints
 @router.get("/versions", response_model=Dict[str, str])
 async def get_version_info():
@@ -783,9 +788,9 @@ async def create_new_bedset(
     return Response(m.hexdigest(), media_type="text/plain")
 
 
-@router.get("/bedset/my_bedset/file_paths/{bedfiles}", include_in_schema=False)
+@router.post("/bedset/my_bedset/file_paths", include_in_schema=True)
 async def get_mybedset_file_path(
-    bedfiles: str = Path(..., description="BED file indexs"),
+    md5sums: BEDLIST,
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),
@@ -794,12 +799,13 @@ async def get_mybedset_file_path(
     return list of file path for user defined bed
     """
 
-    bfs = list(bedfiles.split(","))
+    # idxs = list(bedfiles.split(","))
 
     paths = ""
-    for bed in bfs:
+    for bed in md5sums.md5sums:
+        print(bed)
         hit = bbc.bed.select(
-            filter_conditions=[("id", "eq", bed)],
+            filter_conditions=[("md5sum", "eq", bed)],
             columns=[file_map_bed["bed"]],
         )[0]
         file = getattr(hit, file_map_bed["bed"])
@@ -822,7 +828,7 @@ async def get_mybedset_file_path(
         response = StreamingResponse(
             stream,
             media_type="text/csv",
-            headers={"Content-Disposition": f"attachment; filename={filename}.txt"},
         )
+        response.headers["Content-Disposition"] = f"attachment; filename={filename}"
 
     return response

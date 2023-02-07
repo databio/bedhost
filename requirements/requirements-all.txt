@@ -8,7 +8,7 @@ pipestat_reader
 python-multipart
 pyyaml
 requests
-starlette==0.16.0
+starlette==0.22.0
 uvicorn
 yacman>=0.7.1
 setuptools
