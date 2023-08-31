@@ -4,6 +4,7 @@ from platform import python_version
 
 from bbconf._version import __version__ as bbconf_v
 from bbconf.const import *
+from bbconf.const import CFG_REMOTE_KEY  # nice to have this explicit, rather than *
 
 from bedhost._version import __version__ as server_v
 

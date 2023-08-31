@@ -46,13 +46,13 @@ img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
 
 img_map_bed = get_id_map(bbc, BED_TABLE, "image")
 
-ex_bed_digest = serve_columns_for_table(
-    bbc=bbc, table_name=BED_TABLE, columns=["md5sum"], limit=1
-).get("data")[0][0]
+# ex_bed_digest = serve_columns_for_table(
+#     bbc=bbc, table_name=BED_TABLE, columns=["md5sum"], limit=1
+# ).get("data")[0][0]
 
-ex_bedset_digest = serve_columns_for_table(
-    bbc=bbc, table_name=BEDSET_TABLE, columns=["md5sum"], limit=1
-).get("data")[0][0]
+# ex_bedset_digest = serve_columns_for_table(
+#     bbc=bbc, table_name=BEDSET_TABLE, columns=["md5sum"], limit=1
+# ).get("data")[0][0]
 
 ex_chr = "chr1"
 
@@ -63,7 +63,7 @@ bd = Path(
     regex=r"^\w+$",
     max_length=32,
     min_length=32,
-    example=ex_bed_digest,
+    # example=ex_bed_digest,
 )
 
 bsd = Path(
@@ -72,7 +72,7 @@ bsd = Path(
     regex=r"^\w+$",
     max_length=32,
     min_length=32,
-    example=ex_bedset_digest,
+    # example=ex_bedset_digest,
 )
 
 c = Path(

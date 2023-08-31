@@ -225,7 +225,7 @@ def assert_table_columns_match(bbc, table_name, columns):
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
-    diff = set(columns).difference(list(schema.keys()))
+    diff = set(columns).difference(list(schema.sample_level_data.keys()))
     if diff:
         msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
         _LOGGER.warning(msg)
@@ -357,7 +357,7 @@ def get_id_map(bbc, table_name, file_type):
     id_map = {}
 
     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-    for key, value in schema.items():
+    for key, value in schema.sample_level_data.items():
         if value["type"] == file_type:
             id_map[value["label"]] = key
 
@@ -374,9 +374,8 @@ def get_enum_map(bbc, table_name, file_type):
     """
 
     enum_map = {}
-
     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-    for key, value in schema.items():
+    for key, value in schema.sample_level_data.items():
         if value["type"] == file_type:
             enum_map[value["label"]] = value["label"]
 

@@ -1,24 +1,21 @@
-import sys
-from logging import DEBUG, INFO
-from typing import Dict, List, Optional
-
 import bbconf
 import logmuse
+import logging
+import sys
 import uvicorn
+
 from bbconf import BedBaseConf
+from logging import DEBUG, INFO
+from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Path, Query
-from pipestat_reader import PipestatReader
-from starlette_graphene3 import GraphQLApp, make_graphiql_handler
-from starlette.middleware.cors import CORSMiddleware
-from starlette.responses import FileResponse, RedirectResponse
-from starlette.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from .const import *
 from .data_models import DBResponse
 from .helpers import *
 
 global _LOGGER
-
+_LOGGER = logging.getLogger(__name__)
 app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
@@ -50,7 +47,7 @@ async def index():
     """
     Display the index UI page
     """
-    return FileResponse(os.path.join(UI_PATH, "index.html"))
+    return FileResponse(os.path.join(STATIC_PATH, "index.html"))
 
 
 def main():
@@ -98,14 +95,9 @@ def main():
         else:
             raise FileNotFoundError(f"React UI path to mount not found: {UI_PATH}")
 
-        app.mount("/ui", StaticFiles(directory=UI_PATH))
+        # app.mount("/ui", StaticFiles(directory=UI_PATH))
 
-        psr = PipestatReader(pipestat_managers=[bbc.bed, bbc.bedset, bbc.dist])
-        _LOGGER.info("Generating GraphQL schema")
-        graphql_schema = psr.generate_graphql_schema()
-        app.mount(
-            "/graphql", GraphQLApp(graphql_schema, on_get=make_graphiql_handler())
-        )
+
 
         _LOGGER.info(f"running {PKG_NAME} app")
         uvicorn.run(
@@ -113,3 +105,21 @@ def main():
             host=bbc.config[CFG_SERVER_KEY][CFG_HOST_KEY],
             port=bbc.config[CFG_SERVER_KEY][CFG_PORT_KEY],
         )
+
+
+def register_globals(cfg):
+    global bbc
+    bbc = BedBaseConf(bbconf.get_bedbase_cfg(cfg))
+
+if __name__ != "__main__":
+    if os.environ.get("BEDBASE_CONFIG"):
+        # Establish global config when running through uvicorn CLI
+        register_globals(os.environ.get("BEDBASE_CONFIG"))
+        from .routers import api, private_api
+
+        app.include_router(api.router, prefix="/api")
+        app.include_router(private_api.router, prefix="/_private_api")
+
+    else:
+        # Warn
+        _LOGGER.warning("No BEDBASE_CONFIG found. Can't configure server.")
