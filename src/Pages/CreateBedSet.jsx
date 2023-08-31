@@ -1,6 +1,6 @@
 import React from "react";
 import MaterialTable from "@material-table/core";
-import { Paper, TablePagination } from "@material-ui/core";
+import { Paper, TablePagination } from "@mui/material";
 import { Container, Row, Col } from "react-bootstrap";
 import { BsTrash, BsDownload } from "react-icons/bs";
 import { tableIcons, DownloadBedSetDialog } from "../Components";

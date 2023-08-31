@@ -86,7 +86,7 @@ export default function StringSearch() {
         </Col>
         <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
           <DropdownButton
-            alignRight
+           alignright="true"
             className="dropdown-btn"
             title={genome ? genome : "Select Genome"}
             id="select-genome"

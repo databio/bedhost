@@ -116,7 +116,7 @@ export default class Home extends React.Component {
                   marginTop: "50px",
                 }}>
                 <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
-                  <Form inline >
+                  <Form inline="true">
                     <FormControl
                       style={{
                         width: "1200px",
@@ -202,8 +202,8 @@ export default class Home extends React.Component {
               <Col md={5}>
                 <img
                   style={{ marginLeft: "150px", height: "300px" }}
-                  // src="/workflow_landing.svg"
-                  src="/ui/workflow_landing.svg"
+                  src="/workflow_landing.svg"
+                  // src="/ui/workflow_landing.svg"
                   height="500px"
                   alt="workflow"
                 />

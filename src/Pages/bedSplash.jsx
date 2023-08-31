@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from '../Components/withRouter';
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { ImgGrid, BedInfo } from "../Components"
 import { bed_splash_cols } from "../fastapi/bedQueries";
@@ -11,7 +12,7 @@ const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-export default class BedSplash extends React.Component {
+class BedSplash extends React.Component {
   constructor(props) {
     super();
     this.state = {
@@ -32,10 +33,11 @@ export default class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
+    console.log(this.props)
     let schema = await api.get("/api/bed/schema").then(({ data }) => data);
     this.setState({ bedSchema: schema });
 
-    await api.get(`/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=http`)
+    await api.get(`/api/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=http`)
       .then((res) => {
         if (res.status === 200) {
           this.setState({ bigbed: true });
@@ -88,7 +90,7 @@ export default class BedSplash extends React.Component {
     });
 
     const result = await api
-      .get(`/api/bed/${this.props.match.params.bed_md5sum}/metadata?${bed_cols}`)
+      .get(`/api/bed/${this.props.router.params.bed_md5sum}/metadata?${bed_cols}`)
       .then(({ data }) => data);
 
     let res = {}
@@ -114,9 +116,9 @@ export default class BedSplash extends React.Component {
             id: key,
             title: value.description,
             src_pdf:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/img/${schema[key].label}?format=pdf`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=pdf`,
             src_png:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/img/${schema[key].label}?format=png`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=png`,
           }
         )
       }
@@ -149,21 +151,21 @@ export default class BedSplash extends React.Component {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file/bed`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file/bed`,
             http:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=http`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
             s3:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=s3`
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
           },
           bigBED_File: {
             id: "bigbedfile",
             label: "bigBed file",
             url:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file/bigBed`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file/bigBed`,
             http:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
             s3:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
           },
         },
       });
@@ -174,11 +176,11 @@ export default class BedSplash extends React.Component {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file/bed`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file/bed`,
             http:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=http`,
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
             s3:
-              `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/file_path/bed?remoteClass=s3`
+              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
           },
         },
       });
@@ -186,7 +188,7 @@ export default class BedSplash extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.match.params.bed_md5sum !== this.props.match.params.bed_md5sum) {
+    if (prevProps.router.params.bed_md5sum !== this.props.router.params.bed_md5sum) {
       window.location.reload(true);
     }
   }
@@ -202,9 +204,9 @@ export default class BedSplash extends React.Component {
           >
             <Row className="justify-content-between">
               <Col md={10}>
-                <h3> BED File: {this.state.bedName}
+                <h3> BED File: {this.state.bedName}this.props.router.params
                   <a href={
-                    `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata`
+                    `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/metadata`
                   }>
                     <FaExternalLinkAlt
                       style={{
@@ -216,7 +218,7 @@ export default class BedSplash extends React.Component {
                     />
                   </a>
                 </h3>
-                <span> md5sum: {this.props.match.params.bed_md5sum} </span>
+                <span> md5sum: {this.props.router.params.bed_md5sum} </span>
               </Col>
               <Col md="auto">
                 {this.state.bigbed ? (
@@ -244,7 +246,7 @@ export default class BedSplash extends React.Component {
               <Col sm={5} md={5}>
                 {Object.keys(this.state.bedStats).length > 0 ? (
                   <BedInfo
-                    bed_md5sum={this.props.match.params.bed_md5sum}
+                    bed_md5sum={this.props.router.params.bed_md5sum}
                     bed_genome={this.state.bedGenome}
                     bed_info={this.state.bedMeta}
                     bed_stats={this.state.bedStats}
@@ -255,7 +257,7 @@ export default class BedSplash extends React.Component {
                   <Card.Header>
                     Downloads
                     <a href={
-                      `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
+                      `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
                     }>
                       <FaExternalLinkAlt
                         style={{
@@ -297,7 +299,7 @@ export default class BedSplash extends React.Component {
                   <Card.Header>
                     GenomicDistribution Plots
                     <a href={
-                      `${bedhost_api_url}/api/bed/${this.props.match.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
+                      `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
                     }>
                       <FaExternalLinkAlt
                         style={{
@@ -325,3 +327,5 @@ export default class BedSplash extends React.Component {
     );
   }
 }
+
+export default withRouter(BedSplash);

@@ -5,7 +5,7 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-} from "@material-ui/core";
+} from "@mui/material";
 import bedhost_api_url from "../const/server";
 import axios from "axios";
 

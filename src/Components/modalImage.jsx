@@ -8,8 +8,10 @@ export default function ModalImage(props) {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const onError = () => {
-    setPdf(`/ui/fignotavl.svg`)
-    setPng(`/ui/fignotavl_png.svg`)
+    // setPdf(`/ui/fignotavl.svg`)
+    // setPng(`/ui/fignotavl_png.svg`)
+    setPdf(`/fignotavl.svg`)
+    setPng(`/fignotavl_png.svg`)
   };
 
   return (

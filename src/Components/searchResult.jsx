@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Spinner } from "react-bootstrap";
 import MaterialTable from "@material-table/core";
-import { Paper, TablePagination } from "@material-ui/core";
+import { Paper, TablePagination } from "@mui/material";
 import { FaMinus } from "react-icons/fa";
 import { BsFolderPlus } from "react-icons/bs";
 import { tableIcons } from "./tableIcons";
