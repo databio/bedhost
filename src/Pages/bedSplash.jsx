@@ -203,7 +203,7 @@ class BedSplash extends React.Component {
           >
             <Row className="justify-content-between">
               <Col md={10}>
-                <h3> BED File: {this.state.bedName}this.props.router.params
+                <h3> BED File: {this.state.bedName}
                   <a href={
                     `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/metadata`
                   }>
