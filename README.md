@@ -89,3 +89,16 @@ docker run --rm --init -p 8000:8000 --name bedstat-rest-server \
   bedstat-rest-api-server uvicorn main:app --reload
 ```
 
+
+# Refactor
+
+I'm in the middle of refactoring this code.
+For development, you can now also run it with `uvicorn`, which gives you auto-reload. Two things we need:
+
+1. Since we dont have the argparser to read the config file through CLI, you must pass it in with a command-line variable.
+2. We need some environment vars set.
+
+```
+source ../bedboss/environment/production.env
+BEDBASE_CONFIG=../bedbase.org/config/bedbase.yaml uvicorn bedhost.main:app --reload
+```
