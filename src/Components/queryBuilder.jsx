@@ -60,7 +60,7 @@ export default class QueryBuilderWrapper extends React.Component {
       rules: {},
       query: "",
       graphql: "",
-      filters: {},
+      filters: [],
       bedlimit: 500,
       setlimit: 50,
     };
@@ -238,13 +238,13 @@ export default class QueryBuilderWrapper extends React.Component {
               className="float-right"
               style={{ marginTop: "3px" }}
             >
-              Set limit:{" "}
+              Set limit: {" "}
             </label>
             {this.state.table_name === "bedfiles" ? (
               <input
                 className="float-right"
                 style={{
-                  width: "56px",
+                  width: "45px",
                   height: "31px",
                   marginLeft: "5px",
                   padding: "5px",
@@ -261,7 +261,7 @@ export default class QueryBuilderWrapper extends React.Component {
               <input
                 className="float-right"
                 style={{
-                  width: "56px",
+                  width: "45px",
                   height: "31px",
                   marginLeft: "5px",
                   padding: "5px",
@@ -283,7 +283,7 @@ export default class QueryBuilderWrapper extends React.Component {
             style={{
               disply: 'flex',
               justifyContent: 'right',
-              marginRight: '12px',
+              marginRight: '10px',
               padding: '0px'
             }}
           >
