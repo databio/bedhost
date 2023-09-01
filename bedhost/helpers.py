@@ -253,7 +253,7 @@ def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=No
     :param bbconf.BedBaseConf bbc: bedbase configuration object
     :param str table_name: table name to query
     :param list[str] columns: columns to return
-    :param str digest: entry digest to restrivt the results to
+    :param str digest: entry digest to restrict the results to
     :return dict: servable DB search result, selected column names and data
     """
     if columns:
