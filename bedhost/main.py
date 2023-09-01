@@ -5,10 +5,10 @@ import sys
 import uvicorn
 
 from bbconf import BedBaseConf
-from logging import DEBUG, INFO
-from typing import Dict, List, Optional
 from fastapi import FastAPI, HTTPException, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
+from logging import DEBUG, INFO
+from typing import Dict, List, Optional
 
 from .const import *
 from .data_models import DBResponse
@@ -37,14 +37,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/")
 async def index():
     """
     Display the index UI page
     """
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
-
 
 def main():
     global _LOGGER
@@ -64,7 +62,7 @@ def main():
     if args.command == "serve":
         from .routers import api, private_api
 
-        app.include_router(api.router, prefix="/api")
+        app.include_router(api.router)
         app.include_router(private_api.router, prefix="/_private_api")
         if not CFG_REMOTE_KEY in bbc.config:
             _LOGGER.debug(
@@ -91,10 +89,6 @@ def main():
         else:
             raise FileNotFoundError(f"React UI path to mount not found: {UI_PATH}")
 
-        # app.mount("/ui", StaticFiles(directory=UI_PATH))
-
-
-
         _LOGGER.info(f"running {PKG_NAME} app")
         uvicorn.run(
             app,
@@ -108,12 +102,14 @@ def register_globals(cfg):
     bbc = BedBaseConf(bbconf.get_bedbase_cfg(cfg))
 
 if __name__ != "__main__":
+    # TODO: streamline this to make it work easily with either CLI or uvicorn
+
     if os.environ.get("BEDBASE_CONFIG"):
         # Establish global config when running through uvicorn CLI
         register_globals(os.environ.get("BEDBASE_CONFIG"))
         from .routers import api, private_api
 
-        app.include_router(api.router, prefix="/api")
+        app.include_router(api.router)
         app.include_router(private_api.router, prefix="/_private_api")
 
     else:
