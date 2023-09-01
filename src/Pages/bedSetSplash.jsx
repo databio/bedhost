@@ -1,4 +1,5 @@
 import React from "react";
+import { withRouter } from '../Components/withRouter';
 import { HashLink as Link } from "react-router-hash-link";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { FaExternalLinkAlt } from "react-icons/fa"
@@ -13,7 +14,7 @@ const api = axios.create({
   baseURL: bedhost_api_url,
 });
 
-export default class BedSetSplash extends React.Component {
+class BedSetSplash extends React.Component {
   constructor(props) {
     super();
     this.state = {
@@ -53,7 +54,7 @@ export default class BedSetSplash extends React.Component {
     });
 
     const result = await api
-      .get(`/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?${bedset_cols}`)
+      .get(`/api/bedset/${this.props.router.params.bedset_md5sum}/metadata?${bedset_cols}`)
       .then(({ data }) => data);
 
     let res = {}
@@ -72,11 +73,11 @@ export default class BedSetSplash extends React.Component {
           label: bedset_schema[key].label.replaceAll("_", " "),
           size: res[key].size,
           url:
-            `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/file/${bedset_schema[key].label}`,
+            `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/file/${bedset_schema[key].label}`,
           http:
-            `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/file_path/${bedset_schema[key].label}?remoteClass=http`,
+            `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/file_path/${bedset_schema[key].label}?remoteClass=http`,
           s3:
-            `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/file_path/${bedset_schema[key].label}?remoteClass=s3`
+            `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/file_path/${bedset_schema[key].label}?remoteClass=s3`
         })
       }
     });
@@ -88,9 +89,9 @@ export default class BedSetSplash extends React.Component {
         bedSetFig.push({
           id: key,
           src_pdf:
-            `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/img/${bedset_schema[key].label}?format=pdf`,
+            `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/img/${bedset_schema[key].label}?format=pdf`,
           src_png:
-            `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/img/${bedset_schema[key].label}?format=png`,
+            `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/img/${bedset_schema[key].label}?format=png`,
         })
       }
     });
@@ -129,7 +130,7 @@ export default class BedSetSplash extends React.Component {
     });
 
     const result_bed = await api
-      .get(`/api/bedset/${this.props.match.params.bedset_md5sum}/bedfiles?${bed_cols}`)
+      .get(`/api/bedset/${this.props.router.params.bedset_md5sum}/bedfiles?${bed_cols}`)
       .then(({ data }) => data);
 
     let res_bed = []
@@ -148,7 +149,7 @@ export default class BedSetSplash extends React.Component {
       bedSetTableData: res_bed,
       bedSchema: bed_schema,
       hubFilePath:
-        `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome.alias}&hubUrl=${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/track_hub`,
+        `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome.alias}&hubUrl=${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/track_hub`,
       bedSetStat: [
         {
           label: bed_schema["gc_content"].description,
@@ -192,7 +193,7 @@ export default class BedSetSplash extends React.Component {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    if (prevProps.match.params.bedset_md5sum !== this.props.match.params.bedset_md5sum) {
+    if (prevProps.router.params.bedset_md5sum !== this.props.router.params.bedset_md5sum) {
       window.location.reload(true);
     }
   }
@@ -211,7 +212,7 @@ export default class BedSetSplash extends React.Component {
                 <h3>
                   BED Set: {this.state.bedSetName}
                   <a href={
-                    `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata`
+                    `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/metadata`
                   }>
                     <FaExternalLinkAlt
                       style={{
@@ -223,7 +224,7 @@ export default class BedSetSplash extends React.Component {
                     />
                   </a>
                 </h3>
-                <span> md5sum: {this.props.match.params.bedset_md5sum} </span>
+                <span> md5sum: {this.props.router.params.bedset_md5sum} </span>
               </Col>
               <Col md="auto">
                 <a href={this.state.hubFilePath}>
@@ -323,7 +324,7 @@ export default class BedSetSplash extends React.Component {
                       />
                     </Link>
                     <a href={
-                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?ids=bedset_standard_deviation&ids=bedset_means`
+                      `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/metadata?ids=bedset_standard_deviation&ids=bedset_means`
                     }>
                       <FaExternalLinkAlt
                         style={{
@@ -375,7 +376,7 @@ export default class BedSetSplash extends React.Component {
                   <Card.Header>
                     Downloads
                     <a href={
-                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?${this.state.bedSetFileCols}`
+                      `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/metadata?${this.state.bedSetFileCols}`
                     }>
                       <FaExternalLinkAlt
                         style={{
@@ -422,7 +423,7 @@ export default class BedSetSplash extends React.Component {
                   <Card.Header>
                     BED Set Plots
                     <a href={
-                      `${bedhost_api_url}/api/bedset/${this.props.match.params.bedset_md5sum}/metadata?${this.state.bedSetFigCols}`
+                      `${bedhost_api_url}/api/bedset/${this.props.router.params.bedset_md5sum}/metadata?${this.state.bedSetFigCols}`
                     }>
                       <FaExternalLinkAlt
                         style={{
@@ -486,7 +487,7 @@ export default class BedSetSplash extends React.Component {
             </div>
             {Object.keys(this.state.bedSetTableData).length > 0 ? (
               <BedSetTable
-                bedset_md5sum={this.props.match.params.bedset_md5sum}
+                bedset_md5sum={this.props.router.params.bedset_md5sum}
                 bedSetTableData={this.state.bedSetTableData}
                 schema={this.state.bedSchema}
               />) : null}
@@ -496,3 +497,5 @@ export default class BedSetSplash extends React.Component {
     );
   }
 }
+
+export default withRouter(BedSetSplash);

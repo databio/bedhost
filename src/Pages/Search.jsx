@@ -11,9 +11,6 @@ export default function SearchPage(props) {
     return (
         <>
             <div className="conten-body">
-                {/* <Container style={{ width: "75%" }} fluid className="p-4">
-                    <BedCountsSpan />
-                </Container> */}
                 <Container style={{ width: "75%" }} fluid className="p-4">
                     {searchType === "string" ? (
                         <>
@@ -39,6 +36,7 @@ export default function SearchPage(props) {
                                     defaultActiveKey="bed"
                                     id="uncontrolled-tab-example"
                                     className="justify-content-end"
+                                    unmountOnExit={true}
                                 >
                                     <Tab eventKey="bed" title="Search BED Files">
                                         <AdvancedSearch table_name="bedfiles" />

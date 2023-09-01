@@ -6,8 +6,8 @@ import {
   DialogContentText,
   DialogTitle,
   useMediaQuery
-} from "@material-ui/core";
-import { useTheme } from "@material-ui/core/styles";
+} from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import copy from "copy-to-clipboard";
 
 export default function ResponsiveDialog(props) {

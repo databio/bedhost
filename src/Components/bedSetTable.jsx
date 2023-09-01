@@ -7,7 +7,7 @@ import {
   ToggleButtonGroup, ToggleButton
 } from "react-bootstrap";
 import MaterialTable, { MTableActions } from "@material-table/core";
-import { Paper, TablePagination } from "@material-ui/core";
+import { Paper, TablePagination } from "@mui/material";
 import Modal from "react-bootstrap/Modal";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
@@ -179,7 +179,7 @@ export default class BedSetTable extends React.Component {
   getFigButton() {
     return (
       <DropdownButton
-        alignRight
+        alignright="true"
         className="dropdown-btn"
         title={this.state.figType.length > 0 ? this.state.figType[0] : "Select figure type"
         }
@@ -257,24 +257,28 @@ export default class BedSetTable extends React.Component {
                       }}
                     >
                       <ToggleButtonGroup
+                        component="div"
                         style={{
                           marginTop: "15px",
                           marginLeft: "10px"
                         }}
-                        type='radio'
                         name='stats type'
                         value={this.state.hideCol}
                         onChange={this.handleStatsType.bind(this)}
                       >
                         <ToggleButton
+                          component="div"
                           className="btn-xs"
+                          type='radio'
                           style={{ padding: "5px", fontSize: "10pt" }}
                           value={"frequency"}
                         >
                           Percentage
                         </ToggleButton>
                         <ToggleButton
+                          component="div"
                           className="btn-xs"
+                          type='radio'
                           style={{ padding: "5px", fontSize: "10pt" }}
                           value={"percentage"}
                         >
@@ -283,7 +287,7 @@ export default class BedSetTable extends React.Component {
                       </ToggleButtonGroup>
                     </Col>
                     <Col md="auto" style={{ padding: "0px" }}>
-                      <TablePagination
+                      <TablePagination component="div"
                         {...props}
                       />
                     </Col>

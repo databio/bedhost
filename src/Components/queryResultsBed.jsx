@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Spinner } from 'react-bootstrap';
 import MaterialTable from "@material-table/core";
-import { Paper, TablePagination } from "@material-ui/core";
+import { Paper, TablePagination } from "@mui/material";
 import { tableIcons } from "./tableIcons";
 import { BsFolderPlus } from "react-icons/bs";
 import bedhost_api_url from "../const/server";
@@ -230,7 +230,7 @@ export default class ResultsBed extends React.Component {
               Container: props => <Paper {...props} elevation={0} />,
               Pagination: (props) => (
                 <Row className="justify-content-end">
-                  <TablePagination
+                  <TablePagination component="div"
                     {...props}
                   />
                 </Row>

@@ -1,28 +1,26 @@
 import React from "react";
-import { ImageList, ImageListItem, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { ImageList, ImageListItem, Tooltip } from "@mui/material";
+import { styled } from "@mui/system"
 import ModalImage from "./modalImage";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = styled({
   root: {
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "space-around",
-    overflow: "hidden",
-    backgroundColor: theme.palette.background.paper,
+    overflow: "hidden"
   }
-}));
+});
 
 export default function ImgGrid(props) {
-  const classes = useStyles();
-  const gridWidth = 1000;
-  const rowHeight = (props.page === "bed") ? 215 : 350;
+  const classes = useStyles;
+  const rowHeight = (props.page === "bed") ? 210 : 350;
   const gridCols = 3;
   const style = (props.page === "bed") ? { height: "650px" } : { height: "700px", overflow: "scroll" }
 
   return (
     <div className={classes.root} style={style}>
-      < ImageList component="span" style={{ width: gridWidth }} rowHeight={rowHeight} cols={gridCols}>
+      < ImageList component="span" style={{ width: '100%', height: '100%' }} rowHeight={rowHeight} cols={gridCols}>
         {props.imgList.map((image, index) => {
           return (
             < ImageListItem key={index}>

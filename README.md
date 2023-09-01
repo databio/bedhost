@@ -15,7 +15,7 @@ npm install
 Start Node server in the development mode on port 3000 by running the start react-script (defined in `package.json`).
 
 ```
-npm start
+npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser. Changes made in `./src` will cause server updates
