@@ -33,7 +33,6 @@ class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
-    console.log(this.props)
     let schema = await api.get("/api/bed/schema").then(({ data }) => data);
     this.setState({ bedSchema: schema });
 

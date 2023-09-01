@@ -13,10 +13,6 @@ class Main extends React.Component {
         searchTerms: ""
     };
 
-    handleRoute = route => () => {
-        this.props.history.push({ pathname: route });
-    };
-
     handleSearchInput = (e) => {
         this.setState({
             searchTerms: e.target.value
@@ -27,10 +23,7 @@ class Main extends React.Component {
         if (e.key === 'Enter') {
             if (this.state.searchTerms) {
                 e.preventDefault();
-                this.props.history.push({
-                    pathname: `/search`,
-                    search: "?" + new URLSearchParams(`terms=${this.state.searchTerms}`)
-                });
+                this.props.router.navigate(`/search?terms=${this.state.searchTerms}`);
             } else {
                 alert("Please enter some search text!");
             }
@@ -59,7 +52,7 @@ class Main extends React.Component {
                         </Navbar.Brand>
 
                         <Nav className="float-right" >
-                            {window.location.pathname !== "/" && window.location.pathname !== "/search" ? (
+                            {this.props.router.location.pathname !== "/" && this.props.router.location.pathname !== "/search" ? (
                                 <Form inline="true" >
                                     <FormControl
                                         style={{
@@ -89,21 +82,7 @@ class Main extends React.Component {
                                 </h5>
                             </Nav.Link>
 
-                            {/* <Nav.Link href={`${bedhost_api_url}/graphql`}>
-                                    <h5>
-                                        <FaCode
-                                            size={20}
-                                            style={{ 
-                                                fill: "gray", 
-                                                marginRight: "5px", 
-                                                marginBottom: "5px" 
-                                            }}
-                                        />
-                                        GraphiQL
-                                    </h5>
-                                </Nav.Link> */}
-
-                            <Nav.Link onClick={this.handleRoute("/createBedSet")}>
+                            <Nav.Link href="createBedSet">
                                 <h5>
                                     <BsFillInboxesFill
                                         size={20}
@@ -131,7 +110,7 @@ class Main extends React.Component {
                                 </h5>
                             </Nav.Link>
 
-                            <Nav.Link onClick={this.handleRoute("/about")}>
+                            <Nav.Link href="About">
                                 <h5>
                                     <BsFillInfoCircleFill
                                         size={20}

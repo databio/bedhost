@@ -18,8 +18,6 @@ export default class ResultsBed extends React.Component {
     super();
     this.state = {
       bedData: [],
-      columns: [],
-      data: [],
       pageSize: -1,
       pageSizeOptions: [],
       myBedSet: JSON.parse(localStorage.getItem('myBedSet')) || []
@@ -67,7 +65,7 @@ export default class ResultsBed extends React.Component {
 
     this.props.setSearchingFalse(false);
     this.getColumns();
-    this.getData();
+
   }
 
 
@@ -142,9 +140,7 @@ export default class ResultsBed extends React.Component {
         });
       }
     }
-    this.setState({
-      columns: tableColumns,
-    });
+    return (tableColumns)
   }
 
   getData() {
@@ -160,9 +156,7 @@ export default class ResultsBed extends React.Component {
       return row;
     })
 
-    this.setState({
-      data: data,
-    });
+    return (data)
   }
 
   perc2Color(perc) {
@@ -224,13 +218,14 @@ export default class ResultsBed extends React.Component {
   render() {
     return this.props.md5sum === this.state.md5sum ||
       this.props.query === this.state.query ||
-      this.props.term === this.state.term ? (
+      this.props.term === this.state.term ||
+      this.state.bedData ? (
       this.state.pageSize !== -1 ? (
         <div style={{ marginTop: "20px" }}>
           <MaterialTable
             icons={tableIcons}
-            columns={this.state.columns}
-            data={this.state.data}
+            columns={this.getColumns()}
+            data={this.getData()}
             actions={[
               {
                 icon: () => < BsFolderPlus className="my-icon" />,
@@ -256,7 +251,7 @@ export default class ResultsBed extends React.Component {
               Container: (props) => <Paper {...props} elevation={0} />,
               Pagination: (props) => (
                 <Row className="justify-content-end">
-                  <TablePagination
+                  <TablePagination component="div"
                     {...props}
                   />
                 </Row>

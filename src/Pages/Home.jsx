@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { withRouter } from '../Components/withRouter';
 import {
   Container,
   Row,
@@ -16,7 +17,7 @@ const api = axios.create({
 });
 
 
-export default class Home extends React.Component {
+class Home extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -65,10 +66,7 @@ export default class Home extends React.Component {
     if (e.key === 'Enter') {
       if (this.state.searchTerms) {
         e.preventDefault();
-        this.props.history.push({
-          pathname: `/search`,
-          search: "?" + new URLSearchParams(`terms=${this.state.searchTerms}`)
-        });
+        this.props.router.navigate(`/search?terms=${this.state.searchTerms}`);
       } else {
         alert("Please enter some search text!");
       }
@@ -77,10 +75,7 @@ export default class Home extends React.Component {
 
   handleSearchSubmit = () => {
     if (this.state.searchTerms) {
-      this.props.history.push({
-        pathname: `/search`,
-        search: "?" + new URLSearchParams(`terms=${this.state.searchTerms}`)
-      });
+      this.props.router.navigate(`/search?terms=${this.state.searchTerms}`);
     } else {
       alert("Please enter some search text!");
     }
@@ -215,3 +210,5 @@ export default class Home extends React.Component {
     );
   }
 }
+
+export default withRouter(Home);

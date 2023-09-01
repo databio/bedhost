@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useLocation } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
+
 import ResultsBed from "./searchResult";
 import { Row, Col } from "react-bootstrap";
 import { Dropdown, DropdownButton } from "react-bootstrap";
@@ -11,40 +12,37 @@ const api = axios.create({
 });
 
 export default function StringSearch() {
+  const { search } = useLocation();
+  const query = useMemo(() => new URLSearchParams(search), [search]);
+
   const [showResults, setShowResults] = useState(false);
-  const [searchTerms, setSearchTerms] = useState();
+  const [searchTerms, setSearchTerms] = useState(query.get("terms"));
   const [genomeList, setGenomeList] = useState([]);
   const [genome, setGenome] = useState("hg38");
   const [searching, setSearching] = useState(false);
+  const [temp, setTemp] = useState(query.get("terms"));
+
+  let navigate = useNavigate();
 
   useEffect(() => {
     api.get("/api/bed/genomes").then(result => setGenomeList(result.data));
   }, []);
 
-  const { search } = useLocation();
-  const query = useMemo(() => new URLSearchParams(search), [search]);
-
   useEffect(() => {
-    setSearchTerms(query.get("terms"))
     if (searchTerms) {
       setShowResults(true)
     }
   }, [query, searchTerms]);
 
   const handleShowResults = () => {
+    navigate(`/search?terms=${temp}`)
     setShowResults(true)
-    setSearching(true)
+    setSearching(false)
   }
 
   const handleSearching = (val) => {
     setSearching(val)
   };
-
-  const handleSearchTerms = (e) => {
-    setSearchTerms(e.target.value)
-    setShowResults(false)
-    // this.forceUpdate();
-  }
 
   const handleSelect = (e) => {
     setGenome(e)
@@ -54,11 +52,15 @@ export default function StringSearch() {
   const handleSearchSubmit = (e) => {
     //it triggers by pressing the enter key
     if (e.key === 'Enter') {
-      if (searchTerms) {
-        handleShowResults();
-      } else {
-        alert("Please enter some search text!");
-      }
+      setSearchTerms(temp)
+      handleShowResults();
+    } else if (e.key === "Backspace") {
+      setShowResults(false)
+      const input = temp.substring(0, temp.length)
+      setTemp(input)
+    } else {
+      setShowResults(false)
+      setTemp(e.target.value)
     }
   }
 
@@ -78,20 +80,20 @@ export default function StringSearch() {
           <input
             className="float-left search-input"
             type="text"
-            value={searchTerms || ""}
+            value={temp || ""}
             placeholder="Search BEDbase (ex. K562)"
-            onChange={handleSearchTerms}
+            onChange={handleSearchSubmit}
             onKeyDown={handleSearchSubmit}
           />
         </Col>
         <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
           <DropdownButton
-           alignright="true"
+            alignright="true"
             className="dropdown-btn"
             title={genome ? genome : "Select Genome"}
             id="select-genome"
             onSelect={handleSelect}
-            onKeyPress={handleSearchSubmit}
+          // onKeyPress={handleSearchSubmit}
           >
             {Array.from(new Set(genomeList.map(obj => obj.genome.alias))).map((value, index) => {
               return (
@@ -106,7 +108,7 @@ export default function StringSearch() {
           <button
             className="float-right btn btn-search"
             onClick={handleShowResults}
-            disabled={searching ? "true" : ""}
+            disabled={searching ? true : false}
           >
             SEARCH
           </button>

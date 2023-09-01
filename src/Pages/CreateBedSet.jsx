@@ -159,7 +159,7 @@ export default class CreateBedSet extends React.Component {
                   Container: (props) => <Paper {...props} elevation={0} />,
                   Pagination: (props) => (
                     <Row className="justify-content-end">
-                      <TablePagination
+                      <TablePagination component="div"
                         {...props}
                       />
                     </Row>
