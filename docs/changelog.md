@@ -2,13 +2,21 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format. 
 
-## [0.1.2] -- 2023-2-6
+## [0.2.0] -- Unreleased
+- remove all graphql
+- remove local static hosting of UI
+- update to new pipestat-based bbconf (pending)
+
+## [0.1.3] -- 2023-09-0
+- allow all origins
+
+## [0.1.2] -- 2023-02-06
 ### change
--   change `/bedset/my_bedset/file_paths`endpoint from GET to POST
+- change `/bedset/my_bedset/file_paths`endpoint from GET to POST
 
 ## [0.1.1] -- 2021-10-30
 ### change
--   `/bed/genomes` and `bedset/genomes`: impove speed
+- `/bed/genomes` and `bedset/genomes`: impove speed
 
 ## [0.1.0] -- 2021-10-25
 ### add

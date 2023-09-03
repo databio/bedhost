@@ -102,3 +102,8 @@ For development, you can now also run it with `uvicorn`, which gives you auto-re
 source ../bedboss/environment/production.env
 BEDBASE_CONFIG=../bedbase.org/config/bedbase.yaml uvicorn bedhost.main:app --reload
 ```
+
+Using a local config:
+
+BEDBASE_CONFIG=../bbconf/tests/data/config.yaml uvicorn bedhost.main:app --reload
+

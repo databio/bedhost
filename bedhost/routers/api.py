@@ -279,6 +279,13 @@ async def get_image_for_bedfile(
     return serve_file(path, remote)
 
 
+@router.get("/search/{query}")
+async def text_to_bed_search(
+    query: str = Query(..., description="Search query string")
+):
+    return bbc.t2bsi.nl_search(query)
+
+
 @router.get("/bed/{md5sum}/img_path/{id}")
 async def get_image_path_for_bedfile(
     md5sum: str = bd,

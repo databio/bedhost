@@ -24,13 +24,7 @@ app = FastAPI(
 # uncomment below for development, to allow cross origin resource sharing
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:8000",
-        "http://dev1.bedbase.org",
-        "http://data.bedbase.org",
-        "http://bedbase.org",
-    ],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
