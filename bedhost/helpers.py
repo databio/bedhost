@@ -239,7 +239,7 @@ def serve_schema_for_table(bbc, table_name):
     :param str table_name: table name to get schema for
     :return:
     """
-
+    # table_manager is a PipestatManager for a particular table
     table_manager = getattr(bbc, table_name2attr(table_name), None)
 
     return table_manager.schema
@@ -359,10 +359,12 @@ def get_id_map(bbc, table_name, file_type):
     id_map = {}
 
     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-    if table_name == BED_TABLE:
-        schema = bbc.bed.schema
-    if table_name == BEDSET_TABLE:
-        schema = bbc.bedset.schema
+    # This is basically just doing this:
+    # if table_name == BED_TABLE:
+    #     schema = bbc.bed.schema
+    # if table_name == BEDSET_TABLE:
+    #     schema = bbc.bedset.schema
+    # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
     for key, value in schema.sample_level_data.items():
         if value["type"] == file_type:
             id_map[value["label"]] = key
