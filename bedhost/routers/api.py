@@ -28,8 +28,18 @@ RemoteClassEnum = Enum(
     else {"http": "http"},
 )
 
+# This is using Python's Functional API to create enumerations without the typical
+# class syntax. This is useful for creating enumerations dynamically, which is
+# what we're doing here. We're creating a new enumeration for each table in the
+# database, and then creating a new enumeration for each column in each table.
+# This is done by calling the `get_enum_map` function, which returns a dictionary
+# of column names and values. The `enum.Enum` function then creates a new
+# enumeration class with the given name and values.
+
+
 FileColumnBedset = enum.Enum(
-    "FileColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "file")
+    value="FileColumnBedset",  # name of the enumeration
+    names=get_enum_map(bbc, BEDSET_TABLE, "file")  # dictionary of names and values
 )
 
 FileColumnBed = enum.Enum("FileColumnBed", get_enum_map(bbc, BED_TABLE, "file"))
@@ -105,7 +115,7 @@ async def get_bed_genome_assemblies():
     Returns available genome assemblies in the database
     """
 
-    return bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"])
+    return bbc.bed.backend.select_distinct(table_name=BED_TABLE, columns=["genome"])
 
 
 @router.get("/bed/count", response_model=int)
@@ -127,7 +137,7 @@ async def get_all_bed_metadata(
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
 
-    res = bbc.bed.select(columns=ids, limit=limit)
+    res = bbc.bed.backend.select(columns=ids, limit=limit)
 
     if res:
         if ids:

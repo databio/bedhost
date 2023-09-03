@@ -1,5 +1,4 @@
 import enum
-from logging import getLogger
 from urllib import parse
 
 from starlette.exceptions import HTTPException
@@ -7,10 +6,9 @@ from starlette.responses import FileResponse, RedirectResponse
 from ubiquerg import VersionInHelpParser
 from yacman import get_first_env_var
 
+from . import _LOGGER
 from ._version import __version__ as v
 from .const import *
-
-_LOGGER = getLogger(PKG_NAME)
 
 
 def build_parser():
@@ -374,7 +372,11 @@ def get_enum_map(bbc, table_name, file_type):
     """
 
     enum_map = {}
+    _LOGGER.debug(f"Getting enum map for {file_type} in {table_name}")
+
+    # TO FIX: I think we need a different way to get the schema
     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
+
     for key, value in schema.sample_level_data.items():
         if value["type"] == file_type:
             enum_map[value["label"]] = value["label"]

@@ -1,6 +1,6 @@
 import bbconf
 import logmuse
-import logging
+
 import sys
 import uvicorn
 
@@ -10,12 +10,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from logging import DEBUG, INFO
 from typing import Dict, List, Optional
 
+from . import _LOGGER
 from .const import *
 from .data_models import DBResponse
 from .helpers import *
 
-global _LOGGER
-_LOGGER = logging.getLogger(__name__)
 app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
@@ -96,10 +95,16 @@ def main():
             port=bbc.config[CFG_SERVER_KEY][CFG_PORT_KEY],
         )
 
-
 def register_globals(cfg):
+    import logging
+    _LOGGER.setLevel(logging.DEBUG)
+    stream = logging.StreamHandler(sys.stdout)
+    stream.setLevel(logging.DEBUG)
+    _LOGGER.addHandler(stream)
     global bbc
     bbc = BedBaseConf(bbconf.get_bedbase_cfg(cfg))
+
+    _LOGGER.debug("Registering uvicorn globals")
 
 if __name__ != "__main__":
     # TODO: streamline this to make it work easily with either CLI or uvicorn
@@ -109,8 +114,12 @@ if __name__ != "__main__":
         register_globals(os.environ.get("BEDBASE_CONFIG"))
         from .routers import api, private_api
 
+        _LOGGER.debug("Mounting routers")
         app.include_router(api.router)
         app.include_router(private_api.router, prefix="/_private_api")
+
+        
+        
 
     else:
         # Warn
