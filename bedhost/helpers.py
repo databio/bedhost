@@ -1,6 +1,7 @@
 import enum
 from urllib import parse
 
+from bbconf import BED_TABLE, BEDSET_TABLE
 from starlette.exceptions import HTTPException
 from starlette.responses import FileResponse, RedirectResponse
 from ubiquerg import VersionInHelpParser
@@ -290,11 +291,14 @@ def table_name2attr(table_name):
     :return str: name of the BedBaseConf attribute to use
     """
     # TODO: just switch to the actual bbconf attributes?
-    if table_name == "bedfiles":
+
+    if table_name == BED_TABLE:
         return "bed"
-    elif table_name == "bedsets":
+    elif table_name == BEDSET_TABLE:
         return "bedset"
-    return table_name
+    else:
+        _LOGGER.warning(f"Unknown table name: {table_name}")
+        return table_name
 
 
 def is_data_remote(bbc):
@@ -355,6 +359,10 @@ def get_id_map(bbc, table_name, file_type):
     id_map = {}
 
     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
+    if table_name == BED_TABLE:
+        schema = bbc.bed.schema
+    if table_name == BEDSET_TABLE:
+        schema = bbc.bedset.schema
     for key, value in schema.sample_level_data.items():
         if value["type"] == file_type:
             id_map[value["label"]] = key
