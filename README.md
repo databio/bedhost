@@ -107,3 +107,6 @@ Using a local config:
 
 BEDBASE_CONFIG=../bbconf/tests/data/config.yaml uvicorn bedhost.main:app --reload
 
+With new database:
+
+BEDBASE_CONFIG=../bedbase.org/config/bedbase2.yaml uvicorn bedhost.main:app --reload
