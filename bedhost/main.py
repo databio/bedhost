@@ -80,7 +80,7 @@ def main():
         if os.path.exists(UI_PATH):
             _LOGGER.debug(f"Determined React UI path: {UI_PATH}")
         else:
-            raise FileNotFoundError(f"React UI path to mount not found: {UI_PATH}")
+            _LOGGER.debug(f"React UI path to mount not found: {UI_PATH}")
 
         _LOGGER.info(f"running {PKG_NAME} app")
         uvicorn.run(
