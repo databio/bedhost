@@ -219,7 +219,6 @@ def assert_table_columns_match(bbc, table_name, columns):
     if isinstance(columns, str):
         columns = [columns]
     schema = serve_schema_for_table(bbc, table_name)
-    # schema = getattr(getattr(bbc, table_name2attr(table_name), None), "schema", None)
     if schema is None:
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
@@ -245,41 +244,41 @@ def serve_schema_for_table(bbc, table_name):
     return table_manager.schema
 
 
-def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
-    """
-    Serve data from selected columns for selected table
+# def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
+#     """
+#     Serve data from selected columns for selected table
 
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :param str table_name: table name to query
-    :param list[str] columns: columns to return
-    :param str digest: entry digest to restrict the results to
-    :return dict: servable DB search result, selected column names and data
-    """
-    if columns:
-        assert_table_columns_match(bbc=bbc, table_name=table_name, columns=columns)
+#     :param bbconf.BedBaseConf bbc: bedbase configuration object
+#     :param str table_name: table name to query
+#     :param list[str] columns: columns to return
+#     :param str digest: entry digest to restrict the results to
+#     :return dict: servable DB search result, selected column names and data
+#     """
+#     if columns:
+#         assert_table_columns_match(bbc=bbc, table_name=table_name, columns=columns)
 
-    table_manager = getattr(bbc, table_name2attr(table_name), None)
-    if table_manager is None:
-        msg = (
-            f"Failed to serve columns for '{table_name}' table, "
-            f"PipestatManager object not accessible."
-        )
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
-    res = table_manager.select(
-        filter_conditions=[("md5sum", "eq", digest)] if digest else None,
-        columns=columns,
-        limit=limit,
-    )
-    if res:
-        colnames = list(res[0].keys())
-        values = [list(x) for x in res]
-        _LOGGER.info(f"Serving data for columns: {colnames}")
-    else:
-        _LOGGER.warning("No records matched the query")
-        colnames = []
-        values = [[]]
-    return {"columns": colnames, "data": values}
+#     table_manager = getattr(bbc, table_name2attr(table_name), None)
+#     if table_manager is None:
+#         msg = (
+#             f"Failed to serve columns for '{table_name}' table, "
+#             f"PipestatManager object not accessible."
+#         )
+#         _LOGGER.warning(msg)
+#         raise HTTPException(status_code=404, detail=msg)
+#     res = table_manager.select(
+#         filter_conditions=[("md5sum", "eq", digest)] if digest else None,
+#         columns=columns,
+#         limit=limit,
+#     )
+#     if res:
+#         colnames = list(res[0].keys())
+#         values = [list(x) for x in res]
+#         _LOGGER.info(f"Serving data for columns: {colnames}")
+#     else:
+#         _LOGGER.warning("No records matched the query")
+#         colnames = []
+#         values = [[]]
+#     return {"columns": colnames, "data": values}
 
 
 def table_name2attr(table_name):
