@@ -67,7 +67,7 @@ img_map_bed = get_id_map(bbc, BED_TABLE, "image")
 ex_chr = "chr1"
 
 # API query path definitions
-bd = Path(
+BedDigest = Path(
     ...,
     description="BED digest",
     regex=r"^\w+$",
@@ -76,7 +76,7 @@ bd = Path(
     # example=ex_bed_digest,
 )
 
-bsd = Path(
+BedsetDigest = Path(
     ...,
     description="BED set digest",
     regex=r"^\w+$",
@@ -166,7 +166,7 @@ async def get_bed_schema():
 
 @router.get("/bed/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedfile_metadata(
-    md5sum: str = bd,
+    md5sum: str = BedDigest,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
@@ -175,7 +175,7 @@ async def get_bedfile_metadata(
     Returns metadata from selected columns for selected bedfile
     """
 
-    res = bbc.bed.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
+    res = bbc.bed.backend.select(columns=ids, filter_conditions=[("md5sum", "eq", md5sum)])
 
     if res:
         if ids:
@@ -197,7 +197,7 @@ async def get_bedfile_metadata(
 @router.head("/bed/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bed/{md5sum}/file/{id}")
 async def get_file_for_bedfile(
-    md5sum: str = bd,
+    md5sum: str = BedDigest,
     id: FileColumnBed = Path(..., description="File identifier"),
 ):
 
@@ -221,7 +221,7 @@ async def get_file_for_bedfile(
 
 @router.get("/bed/{md5sum}/file_path/{id}")
 async def get_file_path_for_bedfile(
-    md5sum: str = bd,
+    md5sum: str = BedDigest,
     id: FileColumnBed = Path(..., description="File identifier"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
@@ -250,17 +250,18 @@ async def get_file_path_for_bedfile(
 
 @router.get("/bed/{md5sum}/img/{id}")
 async def get_image_for_bedfile(
-    md5sum: str = bd,
+    md5sum: str = BedDigest,
     id: ImgColumnBed = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    hit = bbc.bed.select(
+    hit = bbc.bed.backend.select(
         filter_conditions=[("md5sum", "eq", md5sum)],
         columns=["name", img_map_bed[id.value]],
     )[0]
+
 
     img = getattr(hit, img_map_bed[id.value])
     remote = True if CFG_REMOTE_KEY in bbc.config else False
@@ -288,7 +289,7 @@ async def text_to_bed_search(
 
 @router.get("/bed/{md5sum}/img_path/{id}")
 async def get_image_path_for_bedfile(
-    md5sum: str = bd,
+    md5sum: str = BedDigest,
     id: ImgColumnBed = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
     remoteClass: RemoteClassEnum = Query(
@@ -322,7 +323,7 @@ async def get_image_path_for_bedfile(
 
 @router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
 def get_regions_for_bedfile(
-    md5sum: str = bd,
+    md5sum: str = BedDigest,
     chr_num: str = c,
     start: Optional[str] = Query(None, description="query range: start coordinate"),
     end: Optional[str] = Query(None, description="query range: end coordinate"),
@@ -511,7 +512,7 @@ async def get_bedset_schema():
 
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
-    md5sum: str = bsd,
+    md5sum: str = BedsetDigest,
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
 ):
     if ids:
@@ -542,7 +543,7 @@ async def get_bedfiles_in_bedset(
 
 @router.get("/bedset/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedset_metadata(
-    md5sum: str = bsd,
+    md5sum: str = BedsetDigest,
     ids: Optional[List[str]] = Query(
         None, description="Column name to select from the table"
     ),
@@ -572,7 +573,7 @@ async def get_bedset_metadata(
 @router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
 @router.get("/bedset/{md5sum}/file/{id}")
 async def get_file_for_bedset(
-    md5sum: str = bsd,
+    md5sum: str = BedsetDigest,
     id: FileColumnBedset = Path(..., description="File identifier"),
 ):
 
@@ -596,7 +597,7 @@ async def get_file_for_bedset(
 
 @router.get("/bedset/{md5sum}/file_path/{id}")
 async def get_file_path_for_bedset(
-    md5sum: str = bsd,
+    md5sum: str = BedsetDigest,
     id: FileColumnBedset = Path(..., description="File identifier"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
@@ -624,7 +625,7 @@ async def get_file_path_for_bedset(
 
 @router.get("/bedset/{md5sum}/img/{id}")
 async def get_image_for_bedset(
-    md5sum: str = bsd,
+    md5sum: str = BedsetDigest,
     id: ImgColumnBedset = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
     remoteClass: RemoteClassEnum = Query(
@@ -659,7 +660,7 @@ async def get_image_for_bedset(
 
 @router.get("/bedset/{md5sum}/img_path/{id}")
 async def get_image_path_for_bedset(
-    md5sum: str = bsd,
+    md5sum: str = BedsetDigest,
     id: ImgColumnBedset = Path(..., description="Figure identifier"),
     format: FigFormat = Query("pdf", description="Figure file format"),
     remoteClass: RemoteClassEnum = Query(
@@ -694,7 +695,7 @@ async def get_image_path_for_bedset(
 
 
 @router.get("/bedset/{md5sum}/track_hub")
-async def get_track_hub_bedset(request: Request, md5sum: str = bsd):
+async def get_track_hub_bedset(request: Request, md5sum: str = BedsetDigest):
     """
     Generate track hub files for the BED set
     """
@@ -715,7 +716,7 @@ async def get_track_hub_bedset(request: Request, md5sum: str = bsd):
 
 
 @router.get("/bedset/{md5sum}/track_hub_genome_file", include_in_schema=False)
-async def get_genomes_file_bedset(request: Request, md5sum: str = bsd):
+async def get_genomes_file_bedset(request: Request, md5sum: str = BedsetDigest):
     """
     Generate genomes file for the BED set track hub
     """
@@ -732,7 +733,7 @@ async def get_genomes_file_bedset(request: Request, md5sum: str = bsd):
 
 
 @router.get("/bedset/{md5sum}/track_hub_trackDb_file", include_in_schema=False)
-async def get_trackDb_file_bedset(request: Request, md5sum: str = bsd):
+async def get_trackDb_file_bedset(request: Request, md5sum: str = BedsetDigest):
     """
     Generate trackDb file for the BED set track hub
     """
