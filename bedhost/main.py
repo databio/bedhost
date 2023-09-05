@@ -4,15 +4,14 @@ import logmuse
 import sys
 import uvicorn
 
-from bbconf import BedBaseConf
 from fastapi import FastAPI, HTTPException, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
 from logging import DEBUG, INFO
 from typing import Dict, List, Optional
 
 from . import _LOGGER
+from .cli import build_parser
 from .const import *
-from .data_models import DBResponse
 from .helpers import *
 
 app = FastAPI(
@@ -30,12 +29,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def index():
     """
     Display the index UI page
     """
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
+
 
 def main():
     global _LOGGER
@@ -50,12 +51,12 @@ def main():
     _LOGGER = logmuse.setup_logger(name=PKG_NAME, level=log_level)
     logmuse.init_logger(name="bbconf", level=log_level)
     _LOGGER.info("get bedbase cfg")
-    bbc = BedBaseConf(bbconf.get_bedbase_cfg(args.config))
+    bbc = BedHostConf(bbconf.get_bedbase_cfg(args.config))
     _LOGGER.info("finish getting bedbase cfg")
     if args.command == "serve":
-        from .routers import api, private_api
+        from .routers import private_api
 
-        app.include_router(api.router)
+        app.include_router(bed_api.router)
         app.include_router(private_api.router, prefix="/_private_api")
         if not CFG_REMOTE_KEY in bbc.config:
             _LOGGER.debug(
@@ -89,16 +90,19 @@ def main():
             port=bbc.config[CFG_SERVER_KEY][CFG_PORT_KEY],
         )
 
+
 def register_globals(cfg):
     import logging
+
     _LOGGER.setLevel(logging.DEBUG)
     stream = logging.StreamHandler(sys.stdout)
     stream.setLevel(logging.DEBUG)
     _LOGGER.addHandler(stream)
     global bbc
-    bbc = BedBaseConf(bbconf.get_bedbase_cfg(cfg))
+    bbc = BedHostConf(bbconf.get_bedbase_cfg(cfg))
 
     _LOGGER.debug("Registering uvicorn globals")
+
 
 if __name__ != "__main__":
     # TODO: streamline this to make it work easily with either CLI or uvicorn
@@ -106,14 +110,12 @@ if __name__ != "__main__":
     if os.environ.get("BEDBASE_CONFIG"):
         # Establish global config when running through uvicorn CLI
         register_globals(os.environ.get("BEDBASE_CONFIG"))
-        from .routers import api, private_api
+        from .routers import api, bedset_api, private_api
 
         _LOGGER.debug("Mounting routers")
         app.include_router(api.router)
+        app.include_router(bedset_api.router)
         app.include_router(private_api.router, prefix="/_private_api")
-
-        
-        
 
     else:
         # Warn

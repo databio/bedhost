@@ -113,7 +113,6 @@ BEDBASE_CONFIG=../bedbase.org/config/bedbase2.yaml uvicorn bedhost.main:app --re
 
 
 Example bed md5sum: `78c0e4753d04b238fc07e4ebe5a02984`
-
-127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/img/open_chromatin
-
-
+- 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/img/open_chromatin
+- 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/img_path/open_chromatin
+- 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/file/bedfile

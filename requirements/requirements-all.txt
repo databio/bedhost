@@ -4,7 +4,6 @@ fastapi>=0.61.2
 itsdangerous
 logmuse
 pipestat
-pipestat_reader
 python-multipart
 pyyaml
 requests

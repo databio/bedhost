@@ -31,7 +31,6 @@ async def get_bedfiles_in_distance(
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
 ):
-
     if ids:
         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
 
@@ -89,7 +88,6 @@ async def get_query_results(
     print(text(statement_str.format(columns, table_name.value, query.query)))
     try:
         if table_name.value == BED_TABLE:
-
             with bbc.bed.session as s:
                 res = s.execute(
                     text(statement_str.format(columns, table_name.value, query.query)),

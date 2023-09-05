@@ -1,92 +1,59 @@
 import enum
 from urllib import parse
 
-from bbconf import BED_TABLE, BEDSET_TABLE
+from bbconf import BED_TABLE, BEDSET_TABLE, BedBaseConf
 from starlette.exceptions import HTTPException
 from starlette.responses import FileResponse, RedirectResponse
-from ubiquerg import VersionInHelpParser
-from yacman import get_first_env_var
 
 from . import _LOGGER
 from ._version import __version__ as v
 from .const import *
+from typing import Union, List
 
-
-def build_parser():
+class BedHostConf(BedBaseConf):
     """
-    Building argument parser
-
-    :return argparse.ArgumentParser
+    An extended BedBaseConf object that adds some BedHost-specific functions
     """
-    env_var_val = (
-        get_first_env_var(CFG_ENV_VARS)[1]
-        if get_first_env_var(CFG_ENV_VARS) is not None
-        else "not set"
-    )
-    banner = "%(prog)s - REST API for the bedstat pipeline produced statistics"
-    additional_description = (
-        "For subcommand-specific options, type: '%(prog)s <subcommand> -h'"
-    )
-    additional_description += "\nhttps://github.com/databio/bedhost"
 
-    parser = VersionInHelpParser(
-        prog=PKG_NAME, description=banner, epilog=additional_description
-    )
+    def __init__(self, config_path: str = None):
+        super().__init__(config_path)
 
-    parser.add_argument(
-        "-V", "--version", action="version", version="%(prog)s {v}".format(v=v)
-    )
+    def serve_file(self, path, remote=None):
+        """
+        Serve a local or remote file
 
-    msg_by_cmd = {"serve": "run the server"}
+        :param str path: relative path to serve
+        :param bool remote: whether to redirect to a remote source or serve local
+        """
+        remote = remote or self.is_remote
+        if remote:
+            _LOGGER.info(f"Redirecting to: {path}")
+            return RedirectResponse(path)
+        _LOGGER.info(f"Returning local: {path}")
+        if os.path.isfile(path):
+            return FileResponse(
+                path,
+                headers={
+                    "Content-Disposition": f"inline; filename={os.path.basename(path)}"
+                },
+            )
+        else:
+            msg = f"File not found on server: {path}"
+            _LOGGER.warning(msg)
+            raise HTTPException(status_code=404, detail=msg)
 
-    subparsers = parser.add_subparsers(dest="command")
-
-    def add_subparser(cmd, description):
-        return subparsers.add_parser(cmd, description=description, help=description)
-
-    sps = {}
-    # add arguments that are common for both subparsers
-    for cmd, desc in msg_by_cmd.items():
-        sps[cmd] = add_subparser(cmd, desc)
-        sps[cmd].add_argument(
-            "-c",
-            "--config",
-            required=False,
-            dest="config",
-            help="A path to the bedhost config file (YAML). If not provided, "
-            "the first available environment variable among: '{}' will be used if set."
-            " Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val),
+    def find_path(self, digest, column: str):
+        hit = self.bed.select(
+            filter_conditions=[("md5sum", "eq", digest)],
+            columns=[column],
+        )[0]
+        return hit
+    
+    def find_paths(self, digest, columns: List):
+        return self.bed.select(
+            filter_conditions=[("md5sum", "eq", digest)],
+            columns=columns,
         )
-        sps[cmd].add_argument(
-            "-d",
-            "--dbg",
-            action="store_true",
-            dest="debug",
-            help="Set logger verbosity to debug",
-        )
-    return parser
-
-
-def is_data_remote(bbc):
-    """
-    Determine if server config defines a 'remotes' key, 'http is one of them and
-     additionally assert the correct structure -- 'prefix' key defined.
-    :param BedBaseConf bbc: server config object
-    :return bool: whether remote data source is configured
-    """
-
-    return (
-        True
-        if CFG_REMOTE_KEY in bbc.config
-        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
-        and all(
-            [
-                "prefix" in r and isinstance(r["prefix"], str)
-                for r in bbc.config[CFG_REMOTE_KEY].values()
-            ]
-        )
-        else False
-    )
 
 
 def get_search_setup(schema):
@@ -298,52 +265,6 @@ def table_name2attr(table_name):
     else:
         _LOGGER.warning(f"Unknown table name: {table_name}")
         return table_name
-
-
-def is_data_remote(bbc):
-    """
-    Determine if server config defines a 'remotes' key, 'http is one of them and
-     additionally assert the correct structure -- 'prefix' key defined.
-    :param BedBaseConf bbc: server config object
-    :return bool: whether remote data source is configured
-    """
-
-    return (
-        True
-        if CFG_REMOTE_KEY in bbc.config
-        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
-        and all(
-            [
-                "prefix" in r and isinstance(r["prefix"], str)
-                for r in bbc.config[CFG_REMOTE_KEY].values()
-            ]
-        )
-        else False
-    )
-
-
-def serve_file(path, remote):
-    """
-    Serve a local or remote file
-
-    :param str path: relative path to serve
-    :param bool remote: whether to redirect to a remote source or serve local
-    """
-    if remote:
-        _LOGGER.info(f"Redirecting to: {path}")
-        return RedirectResponse(path)
-    _LOGGER.info(f"Returning local: {path}")
-    if os.path.isfile(path):
-        return FileResponse(
-            path,
-            headers={
-                "Content-Disposition": f"inline; filename={os.path.basename(path)}"
-            },
-        )
-    else:
-        msg = f"File not found on server: {path}"
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
 
 
 def get_id_map(bbc, table_name, file_type):
