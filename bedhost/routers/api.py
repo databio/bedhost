@@ -247,38 +247,27 @@ async def get_file_path_for_bedfile(
 
     return Response(path, media_type="text/plain")
 
+    
 
-@router.get("/bed/{md5sum}/img/{id}")
+@router.get("/bed/{md5sum}/img/{image_id}")
 async def get_image_for_bedfile(
-    md5sum: str = BedDigest,
-    id: ImgColumnBed = Path(..., description="Figure identifier"),
+    md5sum: str,
+    image_id: str,
     format: FigFormat = Query("pdf", description="Figure file format"),
 ):
     """
-    Returns the bedfile plot with provided ID in provided format
+    Returns the specified image associated with the specified bed file.
     """
+
     hit = bbc.bed.backend.select(
         filter_conditions=[("md5sum", "eq", md5sum)],
-        columns=["name", img_map_bed[id.value]],
+        columns=["name", image_id],
     )[0]
-
-
-    img = getattr(hit, img_map_bed[id.value])
-    remote = True if CFG_REMOTE_KEY in bbc.config else False
-
-    path = (
-        os.path.join(
-            bbc.config[CFG_REMOTE_KEY]["http"]["prefix"],
-            img["path" if format == "pdf" else "thumbnail_path"],
-        )
-        if remote
-        else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
-            img["path" if format == "pdf" else "thumbnail_path"],
-        )
-    )
-    return serve_file(path, remote)
-
+    img = hit[image_id]
+    identifier = img["path" if format == "pdf" else "thumbnail_path"]
+    path = bbc.get_prefixed_uri(identifier)
+    return serve_file(path, True)
+    return hit
 
 @router.get("/search/{query}")
 async def text_to_bed_search(
@@ -305,19 +294,20 @@ async def get_image_path_for_bedfile(
         columns=["name", img_map_bed[id.value]],
     )[0]
     img = getattr(hit, img_map_bed[id.value])
-    remote = True if CFG_REMOTE_KEY in bbc.config else False
-
-    path = (
-        os.path.join(
-            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"],
-            img["path" if format == "pdf" else "thumbnail_path"],
-        )
-        if remote
-        else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
-            img["path" if format == "pdf" else "thumbnail_path"],
-        )
-    )
+    # remote = True if CFG_REMOTE_KEY in bbc.config else False
+    # path = (
+    #     os.path.join(
+    #         bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"],
+    #         img["path" if format == "pdf" else "thumbnail_path"],
+    #     )
+    #     if remote
+    #     else os.path.join(
+    #         bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
+    #         img["path" if format == "pdf" else "thumbnail_path"],
+    #     )
+    # )
+    identifier = img["path" if format == "pdf" else "thumbnail_path"]
+    path = bbc.get_prefixed_uri(identifier, remoteClass.value)
     return Response(path, media_type="text/plain")
 
 
