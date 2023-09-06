@@ -24,6 +24,7 @@ from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
+
 @router.get("/bed/genomes")
 async def get_bed_genome_assemblies():
     """
@@ -48,7 +49,9 @@ async def get_bed_schema():
     # TODO: Fix the ParsedSchema representation so it can be represented as a dict
     return bbc.bed.schema.__dict__
 
+
 from pipestat.exceptions import PipestatError
+
 
 @router.get("/bed/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedfile_metadata(
@@ -202,6 +205,7 @@ async def get_regions_for_bedfile(
 
     """
     import tempfile
+
     f = tempfile.NamedTemporaryFile(mode="w+")
     f.write(f"{chr_num}\t{start}\t{end}\n")
     f.read()
@@ -289,4 +293,3 @@ async def get_regions_for_bedfile(
 #         values = [[]]
 
 #     return {"columns": colnames, "data": values}
-

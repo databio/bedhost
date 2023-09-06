@@ -236,7 +236,7 @@ async def get_image_path_for_bedset(
 
 
 @router.get("/bedset/{md5sum}/track_hub")
-async def get_track_hub_bedset(request: Request,md5sum: str = BedsetDigest):
+async def get_track_hub_bedset(request: Request, md5sum: str = BedsetDigest):
     """
     Generate track hub files for the BED set
     """
