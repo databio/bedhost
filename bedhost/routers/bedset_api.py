@@ -139,8 +139,8 @@ async def get_file_for_bedset(
 
 @router.get("/bedset/{md5sum}/file_path/{id}")
 async def get_file_path_for_bedset(
-    md5sum: str = BedsetDigest,
-    id: FileColumnBedset = Path(..., description="File identifier"),
+    md5sum: str,
+    id: str,
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),
@@ -166,8 +166,8 @@ async def get_file_path_for_bedset(
 
 @router.get("/bedset/{md5sum}/img/{id}")
 async def get_image_for_bedset(
-    md5sum: str = BedsetDigest,
-    id: ImgColumnBedset = Path(..., description="Figure identifier"),
+    md5sum: str,
+    id: str,
     format: FigFormat = Query("pdf", description="Figure file format"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
@@ -199,10 +199,10 @@ async def get_image_for_bedset(
     return serve_file(path, remote)
 
 
-@router.get("/bedset/{md5sum}/img_path/{id}")
+@router.get("/bedset/{md5sum}/img_path/{image_id}")
 async def get_image_path_for_bedset(
-    md5sum: str = BedsetDigest,
-    id: ImgColumnBedset = Path(..., description="Figure identifier"),
+    md5sum: str,
+    image_id: str,
     format: FigFormat = Query("pdf", description="Figure file format"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
@@ -214,9 +214,9 @@ async def get_image_path_for_bedset(
 
     hit = bbc.bedset.select(
         filter_conditions=[("md5sum", "eq", md5sum)],
-        columns=["name", img_map_bedset[id.value]],
+        columns=["name", img_map_bedset[image_id.value]],
     )[0]
-    img = getattr(hit, img_map_bedset[id.value])
+    img = getattr(hit, img_map_bedset[image_id.value])
 
     remote = True if CFG_REMOTE_KEY in bbc.config else False
 
@@ -236,7 +236,7 @@ async def get_image_path_for_bedset(
 
 
 @router.get("/bedset/{md5sum}/track_hub")
-async def get_track_hub_bedset(request: Request, md5sum: str = BedsetDigest):
+async def get_track_hub_bedset(request: Request,md5sum: str = BedsetDigest):
     """
     Generate track hub files for the BED set
     """

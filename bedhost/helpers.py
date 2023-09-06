@@ -44,32 +44,11 @@ class BedHostConf(BedBaseConf):
             raise HTTPException(status_code=404, detail=msg)
 
     def bed_retrieve(self, digest, column: str):
-        # hit = self.bed.select(
-        #     filter_conditions=[("md5sum", "eq", digest)],
-        #     columns=[column],
-        # )[0]
-        hit = self.bed.retrieve(digest)[column]
-        # TODO: should be retrieve(digest, column)
-        return hit
+        ## TODO: Should be self.bed.retrieve(digest, column)
+        return self.bed.retrieve(digest)[column]
 
     def bedset_retrieve(self, digest, column: str):
-        hit = self.bedset.retrieve(digest)[column]
-        return hit
-    
-    def retrieve(self, type, digest, column: str):
-        if type == "bed":
-            return self.bed_retrieve(digest, column)
-        elif type == "bedset":
-            return self.bedset_retrieve(digest, column)
-        else:
-            raise ValueError(f"Unknown table type: {type}")
-
-    def find_paths(self, digest, columns: List):
-        # TODO: switch to retrieve
-        return self.bed.select(
-            filter_conditions=[("md5sum", "eq", digest)],
-            columns=columns,
-        )
+        return self.bedset.retrieve(digest)[column]
 
 
 def get_search_setup(schema):

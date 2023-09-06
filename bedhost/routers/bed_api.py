@@ -1,3 +1,7 @@
+"""
+/bed endpoints
+"""
+
 from email.header import Header
 import enum
 from fileinput import filename
@@ -18,29 +22,8 @@ from ..data_models import *
 from ..helpers import *
 from ..main import _LOGGER, app, bbc
 
-
 router = APIRouter()
 
-
-# misc endpoints
-@router.get("/versions", response_model=Dict[str, str])
-async def get_version_info():
-    """
-    Returns app version information
-    """
-    versions = ALL_VERSIONS
-    versions.update({"openapi_version": get_openapi_version(app)})
-    return versions
-
-
-@router.get("/search/{query}")
-async def text_to_bed_search(
-    query: str = Query(..., description="Search query string")
-):
-    return bbc.t2bsi.nl_search(query)
-
-
-# bed endpoints
 @router.get("/bed/genomes")
 async def get_bed_genome_assemblies():
     """
@@ -57,37 +40,6 @@ async def get_bedfile_count():
     return int(bbc.bed.record_count)
 
 
-# TODO: Probably remove this... it's not realistic to return all the metadata
-# @router.get("/bed/all/metadata")
-# async def get_all_bed_metadata(
-#     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
-#     limit: int = Query(None, description="number of rows returned by the query"),
-# ):
-#     """
-#     Get bedfiles metadata for selected columns
-#     """
-#     if ids:
-#         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
-
-#     res = bbc.bed.select(columns=ids, limit=limit)
-
-#     if res:
-#         if ids:
-#             colnames = ids
-#             values = [list(x) for x in res]
-#         else:
-#             colnames = list(res[0].__dict__.keys())[1:]
-#             values = [list(x.__dict__.values())[1:] for x in res]
-
-#         _LOGGER.info(f"Serving data for columns: {colnames}")
-#     else:
-#         _LOGGER.warning("No records matched the query")
-#         colnames = []
-#         values = [[]]
-
-#     return {"columns": colnames, "data": values}
-
-
 @router.get("/bed/schema", response_model=Dict)
 async def get_bed_schema():
     """
@@ -96,6 +48,7 @@ async def get_bed_schema():
     # TODO: Fix the ParsedSchema representation so it can be represented as a dict
     return bbc.bed.schema.__dict__
 
+from pipestat.exceptions import PipestatError
 
 @router.get("/bed/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedfile_metadata(
@@ -108,21 +61,14 @@ async def get_bedfile_metadata(
     Returns metadata from selected columns for selected bedfile
     """
 
-    res = bbc.find_paths(md5sum, attr_ids)
-    if res:
-        if attr_ids:
-            colnames = attr_ids
-            values = res[0]
-        else:
-            colnames = list(res[0].__dict__.keys())[1:]
-            values = [list(x.__dict__.values())[1:] for x in res]
-
+    try:
+        values = bbc.bed.retrieve(md5sum, attr_ids)
+        colnames = attr_ids or list(values.keys())
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
-    else:
+    except PipestatError:  # Should be RecordNotFoundError
         _LOGGER.warning("No records matched the query")
         colnames = []
         values = [[]]
-
     return {"columns": colnames, "data": values}
 
 
@@ -132,7 +78,7 @@ async def get_file_for_bedfile(
     md5sum: str,
     file_id: str,
 ):
-    res = bbc.retrieve(md5sum, file_id)
+    res = bbc.bed_retrieve(md5sum, file_id)
     path = bbc.get_prefixed_uri(res["path"])
     return bbc.serve_file(path)
 
@@ -145,7 +91,7 @@ async def get_file_path_for_bedfile(
         RemoteClassEnum("http"), description="Remote data provider class"
     ),
 ):
-    res = bbc.retrieve(md5sum, file_id)
+    res = bbc.bed_retrieve(md5sum, file_id)
     path = bbc.get_prefixed_uri(res["path"], remoteClass.value)
     return Response(path, media_type="text/plain")
 
@@ -159,7 +105,7 @@ async def get_image_for_bedfile(
     """
     Returns the specified image associated with the specified bed file.
     """
-    img = bbc.retrieve(md5sum, image_id)
+    img = bbc.bed_retrieve(md5sum, image_id)
     identifier = img["path" if format == "pdf" else "thumbnail_path"]
     path = bbc.get_prefixed_uri(identifier)
     return bbc.serve_file(path)
@@ -177,7 +123,7 @@ async def get_image_path_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    img = bbc.retrieve(md5sum, image_id)
+    img = bbc.bed_retrieve(md5sum, image_id)
     identifier = img["path" if format == "pdf" else "thumbnail_path"]
     path = bbc.get_prefixed_uri(identifier, remoteClass.value)
     return Response(path, media_type="text/plain")
@@ -192,7 +138,6 @@ def get_regions_for_bedfile(
 ):
     """
     Returns the queried regions with provided ID and optional query parameters
-
     """
     hit = bbc.bed.select(
         filter_conditions=[("md5sum", "eq", md5sum)],
@@ -253,13 +198,11 @@ async def get_regions_for_bedfile(
     end: int = Path(..., description="end coordinate", example=2103332),
 ):
     """
-    Returns the list of BED files have regions overlapped with given genome coordinates
+    Returns the list of BED files have regions overlapping given genome coordinates
 
     """
     import tempfile
-
     f = tempfile.NamedTemporaryFile(mode="w+")
-
     f.write(f"{chr_num}\t{start}\t{end}\n")
     f.read()
 
@@ -314,3 +257,36 @@ async def get_regions_for_bedfile(
             )
     f.close()
     return {"columns": colnames, "data": values}
+
+
+# TODO: Probably remove this... it's not realistic to return all the metadata
+# BUT it's being used by get_regions_for_bedfile, so maybe convert to function?
+# @router.get("/bed/all/metadata")
+# async def get_all_bed_metadata(
+#     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
+#     limit: int = Query(None, description="number of rows returned by the query"),
+# ):
+#     """
+#     Get bedfiles metadata for selected columns
+#     """
+#     if ids:
+#         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+
+#     res = bbc.bed.select(columns=ids, limit=limit)
+
+#     if res:
+#         if ids:
+#             colnames = ids
+#             values = [list(x) for x in res]
+#         else:
+#             colnames = list(res[0].__dict__.keys())[1:]
+#             values = [list(x.__dict__.values())[1:] for x in res]
+
+#         _LOGGER.info(f"Serving data for columns: {colnames}")
+#     else:
+#         _LOGGER.warning("No records matched the query")
+#         colnames = []
+#         values = [[]]
+
+#     return {"columns": colnames, "data": values}
+

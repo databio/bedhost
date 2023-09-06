@@ -29,14 +29,28 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+# misc endpoints
 @app.get("/")
 async def index():
     """
-    Display the index UI page
+    Display the dummy index UI page
     """
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
 
+@app.get("/versions", response_model=Dict[str, str])
+async def get_version_info():
+    """
+    Returns app version information
+    """
+    versions = ALL_VERSIONS
+    versions.update({"openapi_version": get_openapi_version(app)})
+    return versions
+
+@app.get("/search/{query}")
+async def text_to_bed_search(
+    query: str = Query(..., description="Search query string")
+):
+    return bbc.t2bsi.nl_search(query)
 
 def main():
     global _LOGGER
@@ -110,10 +124,10 @@ if __name__ != "__main__":
     if os.environ.get("BEDBASE_CONFIG"):
         # Establish global config when running through uvicorn CLI
         register_globals(os.environ.get("BEDBASE_CONFIG"))
-        from .routers import api, bedset_api, private_api
+        from .routers import bed_api, bedset_api, private_api
 
         _LOGGER.debug("Mounting routers")
-        app.include_router(api.router)
+        app.include_router(bed_api.router)
         app.include_router(bedset_api.router)
         app.include_router(private_api.router, prefix="/_private_api")
 
