@@ -231,26 +231,6 @@ def assert_table_columns_match(bbc, table_name, columns):
 #         values = [[]]
 #     return {"columns": colnames, "data": values}
 
-
-def table_name2attr(table_name):
-    """
-    Convert the table name to attribute that can be used to refer to the
-    table managers
-
-    :param str table_name: name to convert
-    :return str: name of the BedBaseConf attribute to use
-    """
-    # TODO: just switch to the actual bbconf attributes?
-
-    if table_name == BED_TABLE:
-        return "bed"
-    elif table_name == BEDSET_TABLE:
-        return "bedset"
-    else:
-        _LOGGER.warning(f"Unknown table name: {table_name}")
-        return table_name
-
-
 # def get_id_map(bbc, table_name, file_type):
 #     """
 #     Get a dict for avalible file/figure ids
