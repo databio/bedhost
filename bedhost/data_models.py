@@ -7,6 +7,7 @@ from .helpers import get_enum_map, get_id_map
 from .main import bbc
 from .const import *
 
+
 class DBResponse(BaseModel):
     """
     Database response data model
@@ -50,10 +51,9 @@ file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
 
 img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
 
+
 class BEDLIST(BaseModel):
     md5sums: list
-
-
 
 
 # This is using Python's Functional API to create enumerations without the typical
@@ -98,4 +98,3 @@ chromosome_number = Path(
     regex=r"^\S+$",
     example=ex_chr,
 )
-

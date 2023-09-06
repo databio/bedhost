@@ -1,4 +1,3 @@
-
 from ubiquerg import VersionInHelpParser
 from yacman import get_first_env_var
 

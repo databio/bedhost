@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
 from typing import Optional
 
@@ -8,6 +7,7 @@ from ..helpers import *
 from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
+
 
 # bedset endpoints
 @router.get("/bedset/genomes")

@@ -10,6 +10,7 @@ from ._version import __version__ as v
 from .const import *
 from typing import Union, List
 
+
 class BedHostConf(BedBaseConf):
     """
     An extended BedBaseConf object that adds some BedHost-specific functions
@@ -47,16 +48,29 @@ class BedHostConf(BedBaseConf):
         #     filter_conditions=[("md5sum", "eq", digest)],
         #     columns=[column],
         # )[0]
-        hit = self.bed.retrieve(digest)[column]  
-        #TODO: should be retrieve(digest, column)
+        hit = self.bed.retrieve(digest)[column]
+        # TODO: should be retrieve(digest, column)
         return hit
-    
+
     def find_paths(self, digest, columns: List):
         # TODO: switch to retrieve
         return self.bed.select(
             filter_conditions=[("md5sum", "eq", digest)],
             columns=columns,
         )
+
+    def serve_schema_for_table(bbc, table_name):
+        """
+        Serve the schema for the selected table
+
+        :param bbconf.BedBaseConf bbc: bedbase configuration object
+        :param str table_name: table name to get schema for
+        :return:
+        """
+        # table_manager is a PipestatManager for a particular table
+        table_manager = getattr(bbc, table_name2attr(table_name), None)
+
+        return table_manager.schema
 
 
 def get_search_setup(schema):
@@ -198,20 +212,6 @@ def assert_table_columns_match(bbc, table_name, columns):
         msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
         _LOGGER.warning(msg)
         raise HTTPException(status_code=404, detail=msg)
-
-
-def serve_schema_for_table(bbc, table_name):
-    """
-    Serve the schema for the selected table
-
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :param str table_name: table name to get schema for
-    :return:
-    """
-    # table_manager is a PipestatManager for a particular table
-    table_manager = getattr(bbc, table_name2attr(table_name), None)
-
-    return table_manager.schema
 
 
 # def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
