@@ -42,14 +42,17 @@ class BedHostConf(BedBaseConf):
             _LOGGER.warning(msg)
             raise HTTPException(status_code=404, detail=msg)
 
-    def find_path(self, digest, column: str):
-        hit = self.bed.select(
-            filter_conditions=[("md5sum", "eq", digest)],
-            columns=[column],
-        )[0]
+    def retrieve(self, digest, column: str):
+        # hit = self.bed.select(
+        #     filter_conditions=[("md5sum", "eq", digest)],
+        #     columns=[column],
+        # )[0]
+        hit = self.bed.retrieve(digest)[column]  
+        #TODO: should be retrieve(digest, column)
         return hit
     
     def find_paths(self, digest, columns: List):
+        # TODO: switch to retrieve
         return self.bed.select(
             filter_conditions=[("md5sum", "eq", digest)],
             columns=columns,

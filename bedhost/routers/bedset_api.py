@@ -57,12 +57,13 @@ async def get_all_bedset_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.get("/bedset/schema", response_model=Dict[str, SchemaElement])
+@router.get("/bedset/schema", response_model=Dict)
 async def get_bedset_schema():
     """
     Get bedsets pipestat schema
     """
-    return serve_schema_for_table(bbc=bbc, table_name=BEDSET_TABLE)
+
+    return bbc.bedset.schema.__dict__
 
 
 @router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)

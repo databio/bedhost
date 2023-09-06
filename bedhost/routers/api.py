@@ -57,7 +57,7 @@ BedDigest = Path(
     # example=ex_bed_digest,
 )
 
-c = Path(
+chromosome_number = Path(
     ...,
     description="Chromosome number",
     regex=r"^\S+$",
@@ -86,7 +86,6 @@ async def get_bed_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
-
     return bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"])
 
 
@@ -98,42 +97,44 @@ async def get_bedfile_count():
     return int(bbc.bed.record_count)
 
 
-@router.get("/bed/all/metadata")
-async def get_all_bed_metadata(
-    ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
-    limit: int = Query(None, description="number of rows returned by the query"),
-):
-    """
-    Get bedfiles metadata for selected columns
-    """
-    if ids:
-        assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+# TODO: Probably remove this... it's not realistic to return all the metadata
+# @router.get("/bed/all/metadata")
+# async def get_all_bed_metadata(
+#     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
+#     limit: int = Query(None, description="number of rows returned by the query"),
+# ):
+#     """
+#     Get bedfiles metadata for selected columns
+#     """
+#     if ids:
+#         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
 
-    res = bbc.bed.select(columns=ids, limit=limit)
+#     res = bbc.bed.select(columns=ids, limit=limit)
 
-    if res:
-        if ids:
-            colnames = ids
-            values = [list(x) for x in res]
-        else:
-            colnames = list(res[0].__dict__.keys())[1:]
-            values = [list(x.__dict__.values())[1:] for x in res]
+#     if res:
+#         if ids:
+#             colnames = ids
+#             values = [list(x) for x in res]
+#         else:
+#             colnames = list(res[0].__dict__.keys())[1:]
+#             values = [list(x.__dict__.values())[1:] for x in res]
 
-        _LOGGER.info(f"Serving data for columns: {colnames}")
-    else:
-        _LOGGER.warning("No records matched the query")
-        colnames = []
-        values = [[]]
+#         _LOGGER.info(f"Serving data for columns: {colnames}")
+#     else:
+#         _LOGGER.warning("No records matched the query")
+#         colnames = []
+#         values = [[]]
 
-    return {"columns": colnames, "data": values}
+#     return {"columns": colnames, "data": values}
 
 
-@router.get("/bed/schema", response_model=Dict[str, SchemaElement])
+@router.get("/bed/schema", response_model=Dict)
 async def get_bed_schema():
     """
     Get bedfiles pipestat schema
     """
-    return serve_schema_for_table(bbc=bbc, table_name=BED_TABLE)
+    # TODO: Fix the ParsedSchema representation so it can be represented as a dict
+    return bbc.bed.schema.__dict__
 
 
 @router.get("/bed/{md5sum}/metadata", response_model=DBResponse)
@@ -148,7 +149,6 @@ async def get_bedfile_metadata(
     """
 
     res = bbc.find_paths(md5sum, attr_ids) 
-    print(res)
     if res:
         if attr_ids:
             colnames = attr_ids
@@ -172,36 +172,21 @@ async def get_file_for_bedfile(
     md5sum: str,
     file_id: str,
 ):
-    res =  bbc.find_path(md5sum, file_id)
+    res = bbc.retrieve(md5sum, file_id)
     path = bbc.get_prefixed_uri(res["path"])
     return bbc.serve_file(path)
 
 
-@router.get("/bed/{md5sum}/file_path/{id}")
+@router.get("/bed/{md5sum}/file_path/{file_id}")
 async def get_file_path_for_bedfile(
     md5sum: str,
-    id: str,
+    file_id: str,
     remoteClass: RemoteClassEnum = Query(
         RemoteClassEnum("http"), description="Remote data provider class"
     ),
 ):
-    hit = bbc.bed.select(
-        filter_conditions=[("md5sum", "eq", md5sum)],
-        columns=[file_map_bed[id.value]],
-    )[0]
-
-    file = getattr(hit, file_map_bed[id.value])
-    remote = True if CFG_REMOTE_KEY in bbc.config else False
-    path = (
-        os.path.join(
-            bbc.config[CFG_REMOTE_KEY][remoteClass.value]["prefix"], file["path"]
-        )
-        if remote
-        else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
-        )
-    )
-
+    res = bbc.retrieve(md5sum, file_id)
+    path = bbc.get_prefixed_uri(res["path"], remoteClass.value)
     return Response(path, media_type="text/plain")
 
 
@@ -214,11 +199,10 @@ async def get_image_for_bedfile(
     """
     Returns the specified image associated with the specified bed file.
     """
-    img = bbc.find_path(md5sum, image_id)
+    img = bbc.retrieve(md5sum, image_id)
     identifier = img["path" if format == "pdf" else "thumbnail_path"]
     path = bbc.get_prefixed_uri(identifier)
     return bbc.serve_file(path)
-
 
 
 @router.get("/bed/{md5sum}/img_path/{image_id}")
@@ -233,9 +217,8 @@ async def get_image_path_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    img = bbc.find_path(md5sum, image_id)
+    img = bbc.retrieve(md5sum, image_id)
     identifier = img["path" if format == "pdf" else "thumbnail_path"]
-    print(remoteClass)
     path = bbc.get_prefixed_uri(identifier, remoteClass.value)
     return Response(path, media_type="text/plain")
 
@@ -243,7 +226,7 @@ async def get_image_path_for_bedfile(
 @router.get("/bed/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
 def get_regions_for_bedfile(
     md5sum: str = BedDigest,
-    chr_num: str = c,
+    chr_num: str = chromosome_number,
     start: Optional[str] = Query(None, description="query range: start coordinate"),
     end: Optional[str] = Query(None, description="query range: end coordinate"),
 ):
@@ -305,7 +288,7 @@ def get_regions_for_bedfile(
     include_in_schema=False,
 )
 async def get_regions_for_bedfile(
-    chr_num: str = c,
+    chr_num: str = chromosome_number,
     start: int = Path(..., description="start coordinate", example=1103243),
     end: int = Path(..., description="end coordinate", example=2103332),
 ):
@@ -367,7 +350,7 @@ async def get_regions_for_bedfile(
         except FileNotFoundError:
             _LOGGER.warning("bedIntersect is not installed.")
             raise HTTPException(
-                status_code=500, detail="ERROR: bigBedToBed is not installed."
+                status_code=500, detail="ERROR: bedIntersect is not installed."
             )
     f.close()
     return {"columns": colnames, "data": values}
