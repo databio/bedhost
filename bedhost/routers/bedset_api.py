@@ -126,28 +126,15 @@ async def get_bedset_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.head("/bedset/{md5sum}/file/{id}", include_in_schema=False)
-@router.get("/bedset/{md5sum}/file/{id}")
+@router.head("/bedset/{md5sum}/file/{file_id}", include_in_schema=False)
+@router.get("/bedset/{md5sum}/file/{file_id}")
 async def get_file_for_bedset(
-    md5sum: str = BedsetDigest,
-    id: FileColumnBedset = Path(..., description="File identifier"),
+    md5sum: str,
+    file_id: str,
 ):
-    hit = bbc.bedset.select(
-        filter_conditions=[("md5sum", "eq", md5sum)],
-        columns=[file_map_bedset[id.value]],
-    )[0]
-    file = getattr(hit, file_map_bedset[id.value])
-    remote = True if CFG_REMOTE_KEY in bbc.config else False
-
-    path = (
-        os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], file["path"])
-        if remote
-        else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
-        )
-    )
-
-    return serve_file(path, remote)
+    res = bbc.retrieve("bedset", md5sum, file_id)
+    path = bbc.get_prefixed_uri(res["path"])
+    return bbc.serve_file(path)
 
 
 @router.get("/bedset/{md5sum}/file_path/{id}")

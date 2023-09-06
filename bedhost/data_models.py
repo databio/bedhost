@@ -3,7 +3,7 @@ import enum
 from pydantic import BaseModel
 from fastapi import Path
 
-from .helpers import get_enum_map, get_id_map
+# from .helpers import get_enum_map, get_id_map
 from .main import bbc
 from .const import *
 
@@ -40,16 +40,16 @@ BedsetDigest = Path(
     # example=ex_bedset_digest,
 )
 
-FileColumnBedset = enum.Enum(
-    value="FileColumnBedset",  # name of the enumeration
-    names=get_enum_map(bbc, BEDSET_TABLE, "file"),  # dictionary of names and values
-)
+# FileColumnBedset = enum.Enum(
+#     value="FileColumnBedset",  # name of the enumeration
+#     names=get_enum_map(bbc, BEDSET_TABLE, "file"),  # dictionary of names and values
+# )
 
-ImgColumnBedset = enum.Enum("ImgColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "image"))
+# ImgColumnBedset = enum.Enum("ImgColumnBedset", get_enum_map(bbc, BEDSET_TABLE, "image"))
 
-file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
+# file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
 
-img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
+# img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
 
 
 class BEDLIST(BaseModel):
@@ -64,13 +64,13 @@ class BEDLIST(BaseModel):
 # of column names and values. The `enum.Enum` function then creates a new
 # enumeration class with the given name and values.
 
-FileColumnBed = enum.Enum("FileColumnBed", get_enum_map(bbc, BED_TABLE, "file"))
+# FileColumnBed = enum.Enum("FileColumnBed", get_enum_map(bbc, BED_TABLE, "file"))
 
-ImgColumnBed = enum.Enum("ImgColumnBed", get_enum_map(bbc, BED_TABLE, "image"))
+# ImgColumnBed = enum.Enum("ImgColumnBed", get_enum_map(bbc, BED_TABLE, "image"))
 
-file_map_bed = get_id_map(bbc, BED_TABLE, "file")
+# file_map_bed = get_id_map(bbc, BED_TABLE, "file")
 
-img_map_bed = get_id_map(bbc, BED_TABLE, "image")
+# img_map_bed = get_id_map(bbc, BED_TABLE, "image")
 
 # ex_bed_digest = serve_columns_for_table(
 #     bbc=bbc, table_name=BED_TABLE, columns=["md5sum"], limit=1

@@ -43,7 +43,7 @@ class BedHostConf(BedBaseConf):
             _LOGGER.warning(msg)
             raise HTTPException(status_code=404, detail=msg)
 
-    def retrieve(self, digest, column: str):
+    def bed_retrieve(self, digest, column: str):
         # hit = self.bed.select(
         #     filter_conditions=[("md5sum", "eq", digest)],
         #     columns=[column],
@@ -52,25 +52,24 @@ class BedHostConf(BedBaseConf):
         # TODO: should be retrieve(digest, column)
         return hit
 
+    def bedset_retrieve(self, digest, column: str):
+        hit = self.bedset.retrieve(digest)[column]
+        return hit
+    
+    def retrieve(self, type, digest, column: str):
+        if type == "bed":
+            return self.bed_retrieve(digest, column)
+        elif type == "bedset":
+            return self.bedset_retrieve(digest, column)
+        else:
+            raise ValueError(f"Unknown table type: {type}")
+
     def find_paths(self, digest, columns: List):
         # TODO: switch to retrieve
         return self.bed.select(
             filter_conditions=[("md5sum", "eq", digest)],
             columns=columns,
         )
-
-    def serve_schema_for_table(bbc, table_name):
-        """
-        Serve the schema for the selected table
-
-        :param bbconf.BedBaseConf bbc: bedbase configuration object
-        :param str table_name: table name to get schema for
-        :return:
-        """
-        # table_manager is a PipestatManager for a particular table
-        table_manager = getattr(bbc, table_name2attr(table_name), None)
-
-        return table_manager.schema
 
 
 def get_search_setup(schema):
@@ -202,7 +201,10 @@ def assert_table_columns_match(bbc, table_name, columns):
     """
     if isinstance(columns, str):
         columns = [columns]
-    schema = serve_schema_for_table(bbc, table_name)
+    if table_name == "bedfiles":
+        schema = bbc.bed.schema
+    elif table_name == "bedsets":
+        schema = bbc.bedset.schema
     if schema is None:
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
@@ -270,48 +272,48 @@ def table_name2attr(table_name):
         return table_name
 
 
-def get_id_map(bbc, table_name, file_type):
-    """
-    Get a dict for avalible file/figure ids
+# def get_id_map(bbc, table_name, file_type):
+#     """
+#     Get a dict for avalible file/figure ids
 
-    :param str table_name: table name to query
-    :param st file_type: "file" or "image"
-    :return dict
-    """
+#     :param str table_name: table name to query
+#     :param st file_type: "file" or "image"
+#     :return dict
+#     """
 
-    id_map = {}
+#     id_map = {}
 
-    schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-    # This is basically just doing this:
-    # if table_name == BED_TABLE:
-    #     schema = bbc.bed.schema
-    # if table_name == BEDSET_TABLE:
-    #     schema = bbc.bedset.schema
-    # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
-    for key, value in schema.sample_level_data.items():
-        if value["type"] == file_type:
-            id_map[value["label"]] = key
+#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
+#     # This is basically just doing this:
+#     # if table_name == BED_TABLE:
+#     #     schema = bbc.bed.schema
+#     # if table_name == BEDSET_TABLE:
+#     #     schema = bbc.bedset.schema
+#     # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
+#     for key, value in schema.sample_level_data.items():
+#         if value["type"] == file_type:
+#             id_map[value["label"]] = key
 
-    return id_map
+#     return id_map
 
 
-def get_enum_map(bbc, table_name, file_type):
-    """
-    Get a dict of file/figure labels
+# def get_enum_map(bbc, table_name, file_type):
+#     """
+#     Get a dict of file/figure labels
 
-    :param str table_name: table name to query
-    :param st file_type: "file" or "image"
-    :return dict
-    """
+#     :param str table_name: table name to query
+#     :param st file_type: "file" or "image"
+#     :return dict
+#     """
 
-    enum_map = {}
-    _LOGGER.debug(f"Getting enum map for {file_type} in {table_name}")
+#     enum_map = {}
+#     _LOGGER.debug(f"Getting enum map for {file_type} in {table_name}")
 
-    # TO FIX: I think we need a different way to get the schema
-    schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
+#     # TO FIX: I think we need a different way to get the schema
+#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
 
-    for key, value in schema.sample_level_data.items():
-        if value["type"] == file_type:
-            enum_map[value["label"]] = value["label"]
+#     for key, value in schema.sample_level_data.items():
+#         if value["type"] == file_type:
+#             enum_map[value["label"]] = value["label"]
 
-    return enum_map
+#     return enum_map
