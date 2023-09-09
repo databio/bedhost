@@ -1,10 +1,10 @@
 from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
 from typing import Optional
 
+from .. import _LOGGER
 from ..const import *
 from ..data_models import *
 from ..helpers import *
-from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 

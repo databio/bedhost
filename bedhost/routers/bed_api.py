@@ -17,10 +17,10 @@ from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
 from fastapi.responses import PlainTextResponse, StreamingResponse
 from sqlalchemy import false
 
+from .. import _LOGGER
 from ..const import *
 from ..data_models import *
 from ..helpers import *
-from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
@@ -47,7 +47,7 @@ async def get_bed_schema():
     Get bedfiles pipestat schema
     """
     # TODO: Fix the ParsedSchema representation so it can be represented as a dict
-    return bbc.bed.schema.__dict__
+    return vars(bbc.bed.schema._sample_level_data)
 
 
 from pipestat.exceptions import PipestatError

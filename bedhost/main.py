@@ -53,7 +53,9 @@ async def get_version_info():
 async def text_to_bed_search(
     query: str = Query(..., description="Search query string")
 ):
-    return bbc.t2bsi.nl_search(query)
+    _LOGGER.info(f"Searching for: {query}")
+    _LOGGER.info(f"Using backend: {bbc.t2bsi}")
+    return bbc.t2bsi.nl_vec_search(query)
 
 
 def attach_routers(app):

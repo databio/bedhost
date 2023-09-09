@@ -3,10 +3,10 @@ from typing import Optional
 from fastapi import APIRouter, Path, Query
 from sqlalchemy import text
 
+from .. import _LOGGER
 from ..const import *
 from ..data_models import *
 from ..helpers import *
-from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 

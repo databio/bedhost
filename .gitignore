@@ -17,3 +17,7 @@ build
 
 docs_jupyter/bedbase_tutorial
 bedhost/static/bedhost-ui/
+
+
+# Models
+*.h5

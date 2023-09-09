@@ -99,7 +99,7 @@ For development, you can now also run it with `uvicorn`, which gives you auto-re
 2. We need some environment vars set.
 
 ```
-source ../bedboss/environment/production.env
+source ../bedbase.org/environment/production.env
 BEDBASE_CONFIG=../bedbase.org/config/bedbase.yaml uvicorn bedhost.main:app --reload
 ```
 
