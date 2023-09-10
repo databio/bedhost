@@ -45,11 +45,16 @@ class BedHostConf(BedBaseConf):
 
     def bed_retrieve(self, digest, column: str):
         ## TODO: Should be self.bed.retrieve(digest, column)
-        return self.bed.retrieve(digest)[column]
+        try:
+            return self.bed.retrieve(digest)[column]
+        except KeyError:  # Probably should be something else
+            return {}
 
     def bedset_retrieve(self, digest, column: str):
-        return self.bedset.retrieve(digest)[column]
-
+        try:
+            return self.bedset.retrieve(digest)[column]
+        except KeyError:
+            return {}
 
 def get_search_setup(schema):
     """

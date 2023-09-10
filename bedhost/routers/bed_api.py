@@ -17,10 +17,10 @@ from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
 from fastapi.responses import PlainTextResponse, StreamingResponse
 from sqlalchemy import false
 
-from .. import _LOGGER
 from ..const import *
 from ..data_models import *
 from ..helpers import *
+from ..main import _LOGGER, app, bbc
 
 router = APIRouter()
 
@@ -47,7 +47,7 @@ async def get_bed_schema():
     Get bedfiles pipestat schema
     """
     # TODO: Fix the ParsedSchema representation so it can be represented as a dict
-    return vars(bbc.bed.schema._sample_level_data)
+    return bbc.bed.schema.__dict__
 
 
 from pipestat.exceptions import PipestatError
@@ -94,7 +94,11 @@ async def get_file_path_for_bedfile(
         RemoteClassEnum("http"), description="Remote data provider class"
     ),
 ):
-    res = bbc.bed_retrieve(md5sum, file_id)
+    try:
+        res = bbc.bed.retrieve(md5sum)[file_id]
+    except KeyError:
+        raise HTTPException(status_code=404, detail="Record or attribute not found")
+    print(res)
     path = bbc.get_prefixed_uri(res["path"], remoteClass.value)
     return Response(path, media_type="text/plain")
 
@@ -263,33 +267,51 @@ async def get_regions_for_bedfile(
     return {"columns": colnames, "data": values}
 
 
+@router.get("/bed/example")
+async def get_bed_example():
+    # TODO: This is a hack to get the first record in the table
+    # It should be eventually moved away from the .backend into a generic interface
+    x = bbc.bed.backend.get_records()
+
+    return x[0][0]
+
+@router.get("/bedset/example")
+async def get_bed_example():
+    # TODO: This is a hack to get the first record in the table
+    # It should be eventually moved away from the .backend into a generic interface
+    x = bbc.bedset.backend.get_records()
+    
+    return x[0][0]
+
+
+
 # TODO: Probably remove this... it's not realistic to return all the metadata
 # BUT it's being used by get_regions_for_bedfile, so maybe convert to function?
-# @router.get("/bed/all/metadata")
-# async def get_all_bed_metadata(
-#     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
-#     limit: int = Query(None, description="number of rows returned by the query"),
-# ):
-#     """
-#     Get bedfiles metadata for selected columns
-#     """
-#     if ids:
-#         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+@router.get("/bed/all/metadata")
+async def get_all_bed_metadata(
+    ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
+    limit: int = Query(None, description="number of rows returned by the query"),
+):
+    """
+    Get bedfiles metadata for selected columns
+    """
+    if ids:
+        assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
 
-#     res = bbc.bed.select(columns=ids, limit=limit)
+    res = bbc.bed.select(columns=ids, limit=limit)
 
-#     if res:
-#         if ids:
-#             colnames = ids
-#             values = [list(x) for x in res]
-#         else:
-#             colnames = list(res[0].__dict__.keys())[1:]
-#             values = [list(x.__dict__.values())[1:] for x in res]
+    if res:
+        if ids:
+            colnames = ids
+            values = [list(x) for x in res]
+        else:
+            colnames = list(res[0].__dict__.keys())[1:]
+            values = [list(x.__dict__.values())[1:] for x in res]
 
-#         _LOGGER.info(f"Serving data for columns: {colnames}")
-#     else:
-#         _LOGGER.warning("No records matched the query")
-#         colnames = []
-#         values = [[]]
+        _LOGGER.info(f"Serving data for columns: {colnames}")
+    else:
+        _LOGGER.warning("No records matched the query")
+        colnames = []
+        values = [[]]
 
-#     return {"columns": colnames, "data": values}
+    return {"columns": colnames, "data": values}

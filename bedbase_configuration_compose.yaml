@@ -16,8 +16,8 @@ server:
   port: 8000
 remotes:
   http:
-    prefix: http://data.bedbase.org/
+    prefix: http://data2.bedbase.org/
     description: HTTP compatible path
   s3:
-    prefix: s3://data.bedbase.org/
+    prefix: s3://data2.bedbase.org/
     description: S3 compatible path
