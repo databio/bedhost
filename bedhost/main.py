@@ -59,7 +59,7 @@ async def get_version_info():
 
 @app.get("/search/{query}")
 async def text_to_bed_search(
-    query: str = Query(..., description="Search query string")
+    query
 ):
     _LOGGER.info(f"Searching for: {query}")
     _LOGGER.info(f"Using backend: {bbc.t2bsi}")
@@ -70,6 +70,12 @@ async def text_to_bed_search(
         del result["vector"]  # no need to return the actual vectors
     return results
 
+# @app.post("/search/bed")
+# async def bed_to_bed_search(
+#     file
+# ):
+#     search_vector = ...
+#     return bbc.t2bsi.search_backend.search(search_vector, k)
 
 def attach_routers(app):
     _LOGGER.debug("Mounting routers")
