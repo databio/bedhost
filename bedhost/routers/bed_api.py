@@ -47,7 +47,11 @@ async def get_bed_schema():
     Get bedfiles pipestat schema
     """
     # TODO: Fix the ParsedSchema representation so it can be represented as a dict
-    return bbc.bed.schema.__dict__
+    d = bbc.bed.schema.to_dict()
+    d["samples"]["sample_name"] = d["samples"]["name"]
+    del d["samples"]["name"]
+    print(d)
+    return d
 
 
 from pipestat.exceptions import PipestatError
@@ -66,6 +70,9 @@ async def get_bedfile_metadata(
 
     try:
         values = bbc.bed.retrieve(md5sum, attr_ids)
+        values["sample_name"] = values["name"]
+        del values["name"]
+        del values['id']
         colnames = attr_ids or list(values.keys())
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
     except PipestatError:  # Should be RecordNotFoundError
