@@ -31,7 +31,7 @@ class Home extends React.Component {
   async componentDidMount() {
 
     let bfcount = await api
-      .get("/api/bed/count")
+      .get("/bed/count")
       .catch(function (error) {
         alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
@@ -39,19 +39,20 @@ class Home extends React.Component {
     this.setState({ bed: bfcount.data });
 
     let bscount = await api
-      .get("/api/bedset/count")
+      .get("/bedset/count")
       .catch(function (error) {
         alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
       });
     // console.log("BED set count retrieved from the server: ", bscount.data);
     this.setState({ bedSet: bscount.data });
 
-    let bed = await api.get("/api/bed/all/metadata?ids=md5sum&limit=1").then(({ data }) => data);
-    let bedurl = `/bedsplash/${bed.data[0][0]}`
+    let bed = await api.get("/bed/example").then(({ data }) => data);
+    let bedurl = `/bedsplash/${bed}`
     this.setState({ sampleBed: bedurl });
 
-    let bedset = await api.get("/api/bedset/all/metadata?ids=md5sum&limit=1").then(({ data }) => data)
-    let bedseturl = `/bedsetsplash/${bedset.data[0][0]}`
+    // let bedset = await api.get("/bedset/all/metadata?ids=md5sum&limit=1").then(({ data }) => data)
+    // let bedseturl = `/bedsetsplash/${bedset.data[0][0]}`
+    let bedseturl = `/broken`
     this.setState({ sampleBedSet: bedseturl });
   }
 

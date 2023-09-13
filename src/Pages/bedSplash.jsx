@@ -33,10 +33,10 @@ class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
-    let schema = await api.get("/api/bed/schema").then(({ data }) => data);
+    let schema = await api.get("/bed/schema").then(({ data }) => data["samples"])
     this.setState({ bedSchema: schema });
-
-    await api.get(`/api/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=http`)
+    console.log("bed schema: ", schema)
+    await api.get(`/bed/${this.props.router.params.bed_md5sum}/file_path/bigbedfile?remoteClass=http`)
       .then((res) => {
         if (res.status === 200) {
           this.setState({ bigbed: true });
@@ -54,6 +54,7 @@ class BedSplash extends React.Component {
     let bedstats_cols = ""
 
     bed_splash_cols.forEach((col, idx) => {
+      console.log(col, idx)
       if (idx === 0) {
         bed_cols = `ids=${col}`
       } else {
@@ -89,14 +90,16 @@ class BedSplash extends React.Component {
     });
 
     const result = await api
-      .get(`/api/bed/${this.props.router.params.bed_md5sum}/metadata?${bed_cols}`)
+      .get(`/bed/${this.props.router.params.bed_md5sum}/metadata?${bed_cols}`)
       .then(({ data }) => data);
-
-    let res = {}
-    result.columns.forEach((key, i) => res[key] = result.data[0][i]);
+      // let res = {}
+      // result.columns.forEach((key, i) => res[key] = result.data[0][i]);
+      let res = result.data
+      console.log("res:", res)
 
     let bedStats = []
     Object.entries(res).forEach(([key, value], index) => {
+      console.log(key)
       if (schema[key].type === "number") {
         bedStats.push(
           {
@@ -115,9 +118,9 @@ class BedSplash extends React.Component {
             id: key,
             title: value.description,
             src_pdf:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=pdf`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=pdf`,
             src_png:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=png`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=png`,
           }
         )
       }
@@ -150,21 +153,21 @@ class BedSplash extends React.Component {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file/bed`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bed`,
             http:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
             s3:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
           },
           bigBED_File: {
             id: "bigbedfile",
             label: "bigBed file",
             url:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file/bigBed`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bigBed`,
             http:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
             s3:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
           },
         },
       });
@@ -175,11 +178,11 @@ class BedSplash extends React.Component {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file/bed`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bed`,
             http:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
             s3:
-              `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
           },
         },
       });
@@ -205,7 +208,7 @@ class BedSplash extends React.Component {
               <Col md={10}>
                 <h3> BED File: {this.state.bedName}
                   <a href={
-                    `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/metadata`
+                    `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/metadata`
                   }>
                     <FaExternalLinkAlt
                       style={{
@@ -256,7 +259,7 @@ class BedSplash extends React.Component {
                   <Card.Header>
                     Downloads
                     <a href={
-                      `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
+                      `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
                     }>
                       <FaExternalLinkAlt
                         style={{
@@ -298,7 +301,7 @@ class BedSplash extends React.Component {
                   <Card.Header>
                     GenomicDistribution Plots
                     <a href={
-                      `${bedhost_api_url}/api/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
+                      `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
                     }>
                       <FaExternalLinkAlt
                         style={{

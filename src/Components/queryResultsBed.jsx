@@ -83,7 +83,7 @@ export default class ResultsBed extends React.Component {
 
   async getBedByBedSet() {
     let res = await api.get(
-      `/api/bedset/${this.props.bedset_md5sum}/bedfiles?ids=name&ids=md5sum&ids=other&limit=${this.props.limit}`
+      `/bedset/${this.props.bedset_md5sum}/bedfiles?ids=name&ids=md5sum&ids=other&limit=${this.props.limit}`
     )
       .then(({ data }) => data)
 

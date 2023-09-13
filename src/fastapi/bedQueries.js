@@ -1,5 +1,5 @@
 export const bed_splash_cols = [
-    "name",
+    "sample_name",
     "genome",
     "bedfile",
     "bigbedfile",

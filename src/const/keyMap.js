@@ -1,6 +1,6 @@
 export const FILE_MAP_BED = {
   bedfile: "bed",
-  bigbedfile: "bigBed",
+  bigbedfile: "bigbedfile",  // bigBed
 };
 
 // export const FILE_MAP_BEDSET = {};

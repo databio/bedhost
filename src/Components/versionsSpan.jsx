@@ -20,7 +20,7 @@ export default class VersionsSpan extends React.Component {
 
   async componentDidMount() {
     let data = await api
-      .get("/api/versions")
+      .get("/versions")
       .then(({ data }) => data)
       .catch(function (error) {
         alert(`${error}; is bedhost running at ${bedhost_api_url}?`);

@@ -44,3 +44,5 @@ Thumbs.db
 
 # IDE-specific items
 .idea/
+
+dist/

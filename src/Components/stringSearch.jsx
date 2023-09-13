@@ -25,7 +25,7 @@ export default function StringSearch() {
   let navigate = useNavigate();
 
   useEffect(() => {
-    api.get("/api/bed/genomes").then(result => setGenomeList(result.data));
+    api.get("/bed/genomes").then(result => setGenomeList(result.data));
   }, []);
 
   useEffect(() => {

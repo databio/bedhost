@@ -13,8 +13,8 @@ export default function ShowFig(props) {
       figList.push({
         id: props.figType[0],
         title: props.bedNames[i],
-        src_pdf: `${bedhost_api_url}/api/bed/${props.bedIds[i]}/img/${props.figType[1]}?format=pdf`,
-        src_png: `${bedhost_api_url}/api/bed/${props.bedIds[i]}/img/${props.figType[1]}?format=png`
+        src_pdf: `${bedhost_api_url}/bed/${props.bedIds[i]}/img/${props.figType[1]}?format=pdf`,
+        src_png: `${bedhost_api_url}/bed/${props.bedIds[i]}/img/${props.figType[1]}?format=png`
       });
     }
   };

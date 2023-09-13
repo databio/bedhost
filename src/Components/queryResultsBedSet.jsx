@@ -74,7 +74,7 @@ export default class ResultsBedSet extends React.Component {
   }
 
   async getBedCount(id) {
-    let count = await api.get(`/api/bedset/${id}/bedfiles`)
+    let count = await api.get(`/bedset/${id}/bedfiles`)
       .then(({ data }) => data.data.length)
     return count
   }

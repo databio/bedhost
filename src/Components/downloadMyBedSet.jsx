@@ -55,7 +55,7 @@ export default class DownloadBedSetDialog extends React.Component {
 
     async handleClick(e) {
         this.setState({ type: e.target.id })
-        await api.post(`/api/bedset/my_bedset/file_paths?remoteClass=${e.target.id}`, this.state.request)
+        await api.post(`/bedset/my_bedset/file_paths?remoteClass=${e.target.id}`, this.state.request)
             .then(res => {
                 var data = new Blob([res.data], { type: 'text/csv' });
                 var url = window.URL.createObjectURL(data);

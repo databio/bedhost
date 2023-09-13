@@ -16,7 +16,7 @@ export default function BedInfo(props) {
         <Card.Header>
           Summary
           <a href={
-            `${bedhost_api_url}/api/bed/${params.bed_md5sum}/metadata?ids=other`
+            `${bedhost_api_url}/bed/${params.bed_md5sum}/metadata?ids=other`
           }>
             <FaExternalLinkAlt
               style={{
@@ -32,7 +32,7 @@ export default function BedInfo(props) {
             padding: "10px",
           }}
         >
-          <Col>
+          <Col> {console.log(props)}
             {Object.entries(props.bed_info).map(([key, value], index) => {
               const hide = [
                 "bigbed",
@@ -112,7 +112,7 @@ export default function BedInfo(props) {
             />
           </Link>
           <a href={
-            `${bedhost_api_url}/api/bed/${params.bed_md5sum}/metadata?${props.bedStats_cols}`
+            `${bedhost_api_url}/bed/${params.bed_md5sum}/metadata?${props.bedStats_cols}`
           }>
             <FaExternalLinkAlt
               style={{
