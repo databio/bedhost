@@ -1,6 +1,8 @@
 from ubiquerg import VersionInHelpParser
 from yacman import get_first_env_var
 
+from bedhost import PKG_NAME
+
 
 def build_parser():
     """
@@ -44,8 +46,8 @@ def build_parser():
             required=False,
             dest="config",
             help="A path to the bedhost config file (YAML). If not provided, "
-            "the first available environment variable among: '{}' will be used if set."
-            " Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val),
+            f"the first available environment variable among: {', '.join(CFG_ENV_VARS)} will be used if set."
+            f" Currently: {env_var_val}"
         )
         sps[cmd].add_argument(
             "-d",

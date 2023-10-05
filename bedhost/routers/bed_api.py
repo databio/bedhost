@@ -30,7 +30,7 @@ async def get_bed_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
-    return bbc.bed.select_distinct(table_name=BED_TABLE, columns=["genome"])
+    return bbc.bed.backend.select_distinct(columns=["genome"])
 
 
 @router.get("/bed/count", response_model=int)
@@ -72,7 +72,7 @@ async def get_bedfile_metadata(
         values = bbc.bed.retrieve(md5sum, attr_ids)
         values["sample_name"] = values["name"]
         del values["name"]
-        del values['id']
+        del values["id"]
         colnames = attr_ids or list(values.keys())
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
     except PipestatError:  # Should be RecordNotFoundError
@@ -282,14 +282,14 @@ async def get_bed_example():
 
     return x[0][0]
 
+
 @router.get("/bedset/example")
 async def get_bed_example():
     # TODO: This is a hack to get the first record in the table
     # It should be eventually moved away from the .backend into a generic interface
     x = bbc.bedset.backend.get_records()
-    
-    return x[0][0]
 
+    return x[0][0]
 
 
 # TODO: Probably remove this... it's not realistic to return all the metadata

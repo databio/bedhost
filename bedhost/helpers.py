@@ -1,14 +1,14 @@
 import enum
 from urllib import parse
 
-from bbconf import BED_TABLE, BEDSET_TABLE, BedBaseConf
+from bbconf import BedBaseConf
 from starlette.exceptions import HTTPException
 from starlette.responses import FileResponse, RedirectResponse
 
-from . import _LOGGER
 from ._version import __version__ as v
 from .const import *
-from typing import Union, List
+
+from bedhost import _LOGGER
 
 
 class BedHostConf(BedBaseConf):
@@ -55,6 +55,7 @@ class BedHostConf(BedBaseConf):
             return self.bedset.retrieve(digest)[column]
         except KeyError:
             return {}
+
 
 def get_search_setup(schema):
     """
