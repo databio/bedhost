@@ -67,7 +67,7 @@ async def get_bedfiles_in_distance(
 @router.post("/query/{table_name}", include_in_schema=False)
 async def get_query_results(
     query: MyQuery,
-    table_name: TableName = Path(..., description="DB Table name"),
+    table_name: TABLE_NAME = Path(..., description="DB Table name"),
     ids: Optional[List[str]] = Query(
         None, description="Column names to include in the query result"
     ),
@@ -128,7 +128,7 @@ async def get_query_results(
 
 @router.get("/filters/{table_name}", include_in_schema=False)
 async def get_search_setup_for_table(
-    table_name: TableName = Path(..., description="DB Table name")
+    table_name: TABLE_NAME = Path(..., description="DB Table name")
 ):
     """
     Returns the filters mapping to based on the selected table schema to

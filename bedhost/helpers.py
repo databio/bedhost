@@ -1,14 +1,17 @@
-import enum
+import os
 from urllib import parse
 
 from bbconf import BedBaseConf
 from starlette.exceptions import HTTPException
 from starlette.responses import FileResponse, RedirectResponse
 
-from ._version import __version__ as v
-from .const import *
-
 from bedhost import _LOGGER
+
+from bedhost.const import (
+    TYPES_MAPPING,
+    VALIDATIONS_MAPPING,
+    OPERATORS_MAPPING,
+)
 
 
 class BedHostConf(BedBaseConf):
@@ -19,7 +22,7 @@ class BedHostConf(BedBaseConf):
     def __init__(self, config_path: str = None):
         super().__init__(config_path)
 
-    def serve_file(self, path, remote=None):
+    def serve_file(self, path: str, remote: bool = None):
         """
         Serve a local or remote file
 
@@ -43,14 +46,14 @@ class BedHostConf(BedBaseConf):
             _LOGGER.warning(msg)
             raise HTTPException(status_code=404, detail=msg)
 
-    def bed_retrieve(self, digest, column: str):
+    def bed_retrieve(self, digest: str, column: str) -> dict:
         ## TODO: Should be self.bed.retrieve(digest, column)
         try:
             return self.bed.retrieve(digest)[column]
         except KeyError:  # Probably should be something else
             return {}
 
-    def bedset_retrieve(self, digest, column: str):
+    def bedset_retrieve(self, digest: str, column: str):
         try:
             return self.bedset.retrieve(digest)[column]
         except KeyError:
@@ -190,6 +193,8 @@ def assert_table_columns_match(bbc, table_name, columns):
         schema = bbc.bed.schema
     elif table_name == "bedsets":
         schema = bbc.bedset.schema
+    else:
+        raise HTTPException(status_code=404, detail=f"Unknown table: {table_name}")
     if schema is None:
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)

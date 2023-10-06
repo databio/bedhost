@@ -1,11 +1,13 @@
-from typing import Dict, List, Optional, Text, Union, Tuple
 import enum
-from pydantic import BaseModel
-from fastapi import Path
+from typing import Dict, List, Optional, Text, Tuple, Union
 
-# from .helpers import get_enum_map, get_id_map
-from .main import bbc
-from .const import *
+from fastapi import Path
+from pydantic import BaseModel
+from enum import Enum
+
+from bedhost.const import CFG_REMOTE_KEY
+
+from bedhost.main import bbc
 
 
 class DBResponse(BaseModel):
@@ -15,16 +17,6 @@ class DBResponse(BaseModel):
 
     columns: List
     data: Union[List[List], List[Dict], Tuple, Dict]
-
-
-# class SchemaElement(BaseModel):
-#     """
-#     Schema element data model
-#     """
-
-#     type: Text
-#     label: Optional[Text]
-#     description: Text
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -39,6 +31,15 @@ BedsetDigest = Path(
     min_length=32,
     # example=ex_bedset_digest,
 )
+
+# class SchemaElement(BaseModel):
+#     """
+#     Schema element data model
+#     """
+
+#     type: Text
+#     label: Optional[Text]
+#     description: Text
 
 # FileColumnBedset = enum.Enum(
 #     value="FileColumnBedset",  # name of the enumeration

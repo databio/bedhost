@@ -1,27 +1,31 @@
-import sys
-
 import logging
-import coloredlogs
+import sys
 from typing import Dict, List, Optional
 
-import uvicorn
-
 import bbconf
-
+from bbconf.const import BED_TABLE, BEDSET_TABLE
+import coloredlogs
+import uvicorn
 from fastapi import FastAPI, HTTPException, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
 
+from bedhost import _LOGGER
 from bedhost.cli import build_parser
 from bedhost.const import (
     CFG_PATH_KEY,
-    CFG_REMOTE_KEY,
-    CFG_SERVER_KEY,
     CFG_PATH_PIPELINE_OUTPUT_KEY,
+    CFG_REMOTE_KEY,
     CFG_SERVER_HOST_KEY,
+    CFG_SERVER_KEY,
     CFG_SERVER_PORT_KEY,
+    PKG_NAME,
+    STATIC_PATH,
+    SERVER_VERSION,
 )
+
+# from bedhost.routers import bed_api, bedset_api, base
+
 from bedhost.helpers import *
-from bedhost import _LOGGER
 
 _LOGGER_BEDHOST = logging.getLogger("uvicorn.access")
 coloredlogs.install(
@@ -35,7 +39,8 @@ coloredlogs.install(
 app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
-    version=server_v,
+    version=SERVER_VERSION,
+    docs_url="/api/docs",
 )
 
 origins = [
@@ -56,7 +61,6 @@ app.add_middleware(
 )
 
 
-# misc endpoints
 @app.get("/")
 async def index():
     """
@@ -65,43 +69,14 @@ async def index():
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
 
 
-@app.get("/versions", response_model=Dict[str, str])
-async def get_version_info():
-    """
-    Returns app version information
-    """
-    versions = ALL_VERSIONS
-    versions.update({"openapi_version": get_openapi_version(app)})
-    return versions
-
-
-@app.get("/search/{query}")
-async def text_to_bed_search(query):
-    _LOGGER.info(f"Searching for: {query}")
-    _LOGGER.info(f"Using backend: {bbc.t2bsi}")
-    results = bbc.t2bsi.nl_vec_search(query, k=10)
-    for result in results:
-        # qdrant automatically adds hypens to the ids. remove them.
-        result["metadata"] = bbc.bed.retrieve(result["id"].replace("-", ""))
-        del result["vector"]  # no need to return the actual vectors
-    return results
-
-
-# @app.post("/search/bed")
-# async def bed_to_bed_search(
-#     file
-# ):
-#     search_vector = ...
-#     return bbc.t2bsi.search_backend.search(search_vector, k)
-
-
 def attach_routers(app):
     _LOGGER.debug("Mounting routers")
-    from .routers import bed_api, bedset_api, private_api
+    from bedhost.routers import bed_api, bedset_api, private_api, base
 
+    app.include_router(base.router)
     app.include_router(bed_api.router)
     app.include_router(bedset_api.router)
-    app.include_router(private_api.router, prefix="/_private_api")
+    # app.include_router(private_api.router, prefix="/_private_api")
 
     if not CFG_REMOTE_KEY in bbc.config:
         _LOGGER.debug(
