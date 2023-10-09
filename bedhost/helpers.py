@@ -197,7 +197,7 @@ def get_openapi_version(app):
 
 def assert_table_columns_match(bbc: BedBaseConf, table_name: str, columns: Union[List[str], str]):
     """
-    Verify that the selected list of columns exists in the database and react approprietly
+    Verify that the selected list of columns exists in the database and react appropriately
 
     :param bbconf.BedBaseConf bbc: bedbase configuration object
     :param str table_name: name of the table, either bedfiles or bedsets

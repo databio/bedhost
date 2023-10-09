@@ -6,7 +6,7 @@ import tempfile
 from bbconf.const import BED_TABLE
 from fastapi import APIRouter, HTTPException, Query, Response, Path, Depends
 from fastapi.responses import PlainTextResponse, StreamingResponse
-from pipestat.exceptions import PipestatError
+from pipestat.exceptions import RecordNotFoundError
 
 from bedhost.main import _LOGGER, app, bbc
 from bedhost.data_models import (
@@ -53,7 +53,7 @@ async def get_bed_schema():
 @router.get("/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedfile_metadata(
     md5sum: str = BedDigest,
-    attr_ids: Optional[List[str]] = Query(
+    attr_id: Optional[str] = Query(
         None, description="Column name to select from the table"
     ),
 ):
@@ -62,13 +62,17 @@ async def get_bedfile_metadata(
     """
 
     try:
-        values = bbc.bed.retrieve(md5sum, attr_ids)
-        values["sample_name"] = values["name"]
-        del values["name"]
-        del values["id"]
-        colnames = attr_ids or list(values.keys())
+        values = bbc.bed.retrieve(md5sum, attr_id)
+        if not isinstance(values, dict) or attr_id:
+            values = {
+                      attr_id: values,
+                      "record_identifier": md5sum,
+            }
+        if "id" in values:
+            del values["id"]
+        colnames = list(values.keys())
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
-    except PipestatError:  # Should be RecordNotFoundError
+    except RecordNotFoundError:
         _LOGGER.warning("No records matched the query")
         colnames = []
         values = [[]]
@@ -289,8 +293,8 @@ async def get_all_bed_metadata(
     """
     Get bedfiles metadata for selected columns
     """
-    if ids:
-        assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+    # if ids:
+    #     assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
 
     res = bbc.bed.backend.select(columns=ids, limit=limit)
 
