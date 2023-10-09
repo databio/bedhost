@@ -1,8 +1,8 @@
 import os
 from urllib import parse
+from typing import List, Union
 
 from bbconf import BedBaseConf
-from starlette.exceptions import HTTPException
 from starlette.responses import FileResponse, RedirectResponse
 
 from bedhost import _LOGGER
@@ -12,6 +12,7 @@ from bedhost.const import (
     VALIDATIONS_MAPPING,
     OPERATORS_MAPPING,
 )
+from bedhost.exceptions import IncorrectSchemaException
 
 
 class BedHostConf(BedBaseConf):
@@ -28,6 +29,7 @@ class BedHostConf(BedBaseConf):
 
         :param str path: relative path to serve
         :param bool remote: whether to redirect to a remote source or serve local
+        :exception :
         """
         remote = remote or self.is_remote
         if remote:
@@ -44,23 +46,36 @@ class BedHostConf(BedBaseConf):
         else:
             msg = f"File not found on server: {path}"
             _LOGGER.warning(msg)
-            raise HTTPException(status_code=404, detail=msg)
+            raise FileNotFoundError(msg)
 
     def bed_retrieve(self, digest: str, column: str) -> dict:
-        ## TODO: Should be self.bed.retrieve(digest, column)
+        """
+        Retrieve a single column from the bed table
+
+        :param digest: bed file digest
+        :param column: column name to retrieve
+        :return: result
+        """
         try:
             return self.bed.retrieve(digest)[column]
         except KeyError:  # Probably should be something else
             return {}
 
     def bedset_retrieve(self, digest: str, column: str):
+        """
+        Retrieve a single column from the bedset table
+
+        :param digest: bedset digest
+        :param column: column name to retrieve
+        :return: result
+        """
         try:
             return self.bedset.retrieve(digest)[column]
         except KeyError:
             return {}
 
 
-def get_search_setup(schema):
+def get_search_setup(schema: dict):
     """
     Create a query setup for QueryBuilder to interface the DB.
 
@@ -89,7 +104,7 @@ def get_search_setup(schema):
     return setup_dicts
 
 
-def construct_search_data(hits, request):
+def construct_search_data(hits: list, request) -> List[str]:
     """
     Construct a list of links to display as the search result
 
@@ -101,7 +116,7 @@ def construct_search_data(hits, request):
     for h in hits:
         bed_data_url_template = request.url_for(
             "bedfile"
-        ) + "?md5sum={}&format=".format(h["md5sum"])
+        ) + f"?md5sum={h['md5sum']}&format="
         template_data.append(
             [h["name"]]
             + [bed_data_url_template + ext for ext in ["html", "bed", "json"]]
@@ -109,7 +124,7 @@ def construct_search_data(hits, request):
     return template_data
 
 
-def get_mounted_symlink_path(symlink):
+def get_mounted_symlink_path(symlink: str) -> str:
     """
     Get path to the symlinks target on a mounted filesystem volume.
     Accounts for both transformed and non-transformed symlink targets
@@ -135,7 +150,7 @@ def get_mounted_symlink_path(symlink):
     return os.path.join(mnt_point, rel_tgt)
 
 
-def get_all_bedset_urls_mapping(bbc, request):
+def get_all_bedset_urls_mapping(bbc: BedBaseConf, request):
     """
     Get a mapping of all bedset ids and corrsponding splaspages urls
 
@@ -173,19 +188,21 @@ def get_openapi_version(app):
     :param fastapi.FastAPI app: app object
     :return str: openAPI version in use
     """
-    try:
-        return app.openapi()["openapi"]
-    except Exception:
-        return "3.0.2"
+    # try:
+    return app.openapi()["openapi"]
+    # except Exception:
+    #     return "3.0.2"
+    # TODO: why there is catching exception?
 
 
-def assert_table_columns_match(bbc, table_name, columns):
+def assert_table_columns_match(bbc: BedBaseConf, table_name: str, columns: Union[List[str], str]):
     """
     Verify that the selected list of columns exists in the database and react approprietly
 
+    :param bbconf.BedBaseConf bbc: bedbase configuration object
     :param str table_name: name of the table, either bedfiles or bedsets
     :param str | list[str] columns: collection columns to check
-    :raises HTTPException: in case there is a columns mismatch
+    :raises IncorrectSchemaException: in case there is a columns mismatch
     """
     if isinstance(columns, str):
         columns = [columns]
@@ -194,16 +211,17 @@ def assert_table_columns_match(bbc, table_name, columns):
     elif table_name == "bedsets":
         schema = bbc.bedset.schema
     else:
-        raise HTTPException(status_code=404, detail=f"Unknown table: {table_name}")
+       raise IncorrectSchemaException(f"Unknown table: {table_name}")
+
     if schema is None:
         msg = f"Could not determine columns for table: {table_name}"
         _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
+        raise IncorrectSchemaException(f"Unknown table: {table_name}")
     diff = set(columns).difference(list(schema.sample_level_data.keys()))
     if diff:
         msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
         _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
+        raise IncorrectSchemaException(msg)
 
 
 # def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):

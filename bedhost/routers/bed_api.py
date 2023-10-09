@@ -90,16 +90,16 @@ async def get_file_for_bedfile(
 async def get_file_path_for_bedfile(
     md5sum: str,
     file_id: str,
-    remoteClass: RemoteClassEnum = Query(
+    remote_class: RemoteClassEnum = Query(
         RemoteClassEnum("http"), description="Remote data provider class"
     ),
 ):
     try:
-        res = bbc.bed.retrieve(md5sum)[file_id]
+        res = bbc.bed.retrieve(md5sum, file_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Record or attribute not found")
     print(res)
-    path = bbc.get_prefixed_uri(res["path"], remoteClass.value)
+    path = bbc.get_prefixed_uri(res["path"], remote_class.value)
     return Response(path, media_type="text/plain")
 
 
@@ -202,9 +202,9 @@ def get_regions_for_bedfile(
     include_in_schema=False,
 )
 async def get_regions_for_bedfile(
+    start: Annotated[int, Path(description="start coordinate", example=1103243)],
+    end: Annotated[int, Path(description="end coordinate", example=2103332)],
     chr_num: str = chromosome_number,
-    start: Annotated[int, Path(description="start coordinate", example=1103243)] = ...,
-    end: Annotated[int, Path(description="end coordinate", example=2103332)] = ...,
 ):
     """
     Returns the list of BED files have regions overlapping given genome coordinates

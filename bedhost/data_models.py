@@ -32,6 +32,29 @@ BedsetDigest = Path(
     # example=ex_bedset_digest,
 )
 
+class BEDLIST(BaseModel):
+    md5sums: list
+
+ex_chr = "chr1"
+
+# API query path definitions
+BedDigest = Path(
+    ...,
+    description="BED digest",
+    regex=r"^\w+$",
+    max_length=32,
+    min_length=32,
+    # example=ex_bed_digest,
+)
+
+chromosome_number = Path(
+    ...,
+    description="Chromosome number",
+    regex=r"^\S+$",
+    example=ex_chr,
+)
+
+
 # class SchemaElement(BaseModel):
 #     """
 #     Schema element data model
@@ -52,9 +75,6 @@ BedsetDigest = Path(
 
 # img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
 
-
-class BEDLIST(BaseModel):
-    md5sums: list
 
 
 # This is using Python's Functional API to create enumerations without the typical
@@ -80,22 +100,3 @@ class BEDLIST(BaseModel):
 # ex_bedset_digest = serve_columns_for_table(
 #     bbc=bbc, table_name=BEDSET_TABLE, columns=["md5sum"], limit=1
 # ).get("data")[0][0]
-
-ex_chr = "chr1"
-
-# API query path definitions
-BedDigest = Path(
-    ...,
-    description="BED digest",
-    regex=r"^\w+$",
-    max_length=32,
-    min_length=32,
-    # example=ex_bed_digest,
-)
-
-chromosome_number = Path(
-    ...,
-    description="Chromosome number",
-    regex=r"^\S+$",
-    example=ex_chr,
-)

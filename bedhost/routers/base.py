@@ -17,6 +17,8 @@ from bedhost.const import (
     CFG_SERVER_HOST_KEY,
     CFG_SERVER_KEY,
     CFG_SERVER_PORT_KEY,
+    STATIC_PATH,
+    ALL_VERSIONS,
 )
 from bedhost.routers import bed_api, bedset_api
 from fastapi import APIRouter, HTTPException, Path, Query, Request, Response

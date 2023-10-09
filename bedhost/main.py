@@ -27,6 +27,9 @@ from bedhost.const import (
 
 from bedhost.helpers import *
 
+
+bbc = BedHostConf
+
 _LOGGER_BEDHOST = logging.getLogger("uvicorn.access")
 coloredlogs.install(
     logger=_LOGGER_BEDHOST,
