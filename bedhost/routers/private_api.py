@@ -20,48 +20,49 @@ class MyQuery(BaseModel):
     query: str
 
 
-# private API
-@router.post(
-    "/distance/bedfiles/terms",
-    response_model=DBResponse,
-    include_in_schema=False,
-)
-async def get_bedfiles_in_distance(
-    terms: Terms,
-    ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
-    limit: int = Query(None, description="number of rows returned by the query"),
-):
-    if ids:
-        assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
-
-    res = bbc.select_bedfiles_for_distance(
-        terms=terms.terms,
-        genome=terms.genome,
-        bedfile_cols=ids,
-        limit=limit if limit else None,
-    )
-
-    values = []
-    for x in res:
-        values.append(list(x.values()))
-
-    if values:
-        if ids:
-            colnames = ids
-            colnames.extend(["score"])
-        else:
-            colnames = list(
-                serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys()
-            )
-            colnames.extend(["score"])
-
-        _LOGGER.info(f"Serving data for columns: {colnames}")
-    else:
-        _LOGGER.warning("No records matched the query")
-        colnames = []
-        values = [[]]
-
-    return {"columns": colnames, "data": values}
+# distances doesn't exist anymore
+# # private API
+# @router.post(
+#     "/distance/bedfiles/terms",
+#     response_model=DBResponse,
+#     include_in_schema=False,
+# )
+# async def get_bedfiles_in_distance(
+#     terms: Terms,
+#     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
+#     limit: int = Query(None, description="number of rows returned by the query"),
+# ):
+#     if ids:
+#         assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
+#
+#     res = bbc.select_bedfiles_for_distance(
+#         terms=terms.terms,
+#         genome=terms.genome,
+#         bedfile_cols=ids,
+#         limit=limit if limit else None,
+#     )
+#
+#     values = []
+#     for x in res:
+#         values.append(list(x.values()))
+#
+#     if values:
+#         if ids:
+#             colnames = ids
+#             colnames.extend(["score"])
+#         else:
+#             colnames = list(
+#                 serve_schema_for_table(bbc=bbc, table_name=BED_TABLE).keys()
+#             )
+#             colnames.extend(["score"])
+#
+#         _LOGGER.info(f"Serving data for columns: {colnames}")
+#     else:
+#         _LOGGER.warning("No records matched the query")
+#         colnames = []
+#         values = [[]]
+#
+#     return {"columns": colnames, "data": values}
 
 
 @router.post("/query/{table_name}", include_in_schema=False)

@@ -8,15 +8,19 @@ from fastapi import APIRouter, HTTPException, Query, Response, Path, Depends
 from fastapi.responses import PlainTextResponse, StreamingResponse
 from pipestat.exceptions import RecordNotFoundError
 
-from bedhost.main import _LOGGER, app, bbc
+from bedhost.main import _LOGGER, bbc
 from bedhost.data_models import (
     DBResponse,
     RemoteClassEnum,
     BedDigest,
     chromosome_number,
 )
-from bedhost.helpers import assert_table_columns_match
-from bedhost.const import CFG_PATH_PIPELINE_OUTPUT_KEY, CFG_REMOTE_KEY, CFG_PATH_KEY, FIG_FORMAT
+from bedhost.const import (
+    CFG_PATH_PIPELINE_OUTPUT_KEY,
+    CFG_REMOTE_KEY,
+    CFG_PATH_KEY,
+    FIG_FORMAT,
+)
 
 
 router = APIRouter(prefix="/api/bed", tags=["bed"])
@@ -50,6 +54,13 @@ async def get_bed_schema():
     return d
 
 
+@router.get("/example")
+async def get_bed_example():
+    x = bbc.bed.backend.get_records(limit=1)
+
+    return bbc.bed.retrieve(x.get("records", [])[0])
+
+
 @router.get("/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedfile_metadata(
     md5sum: str = BedDigest,
@@ -65,8 +76,8 @@ async def get_bedfile_metadata(
         values = bbc.bed.retrieve(md5sum, attr_id)
         if not isinstance(values, dict) or attr_id:
             values = {
-                      attr_id: values,
-                      "record_identifier": md5sum,
+                attr_id: values,
+                "record_identifier": md5sum,
             }
         if "id" in values:
             del values["id"]
@@ -102,7 +113,7 @@ async def get_file_path_for_bedfile(
         res = bbc.bed.retrieve(md5sum, file_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Record or attribute not found")
-    print(res)
+
     path = bbc.get_prefixed_uri(res["path"], remote_class.value)
     return Response(path, media_type="text/plain")
 
@@ -146,17 +157,26 @@ async def get_image_path_for_bedfile(
 def get_regions_for_bedfile(
     md5sum: str = BedDigest,
     chr_num: str = chromosome_number,
-    start: Annotated[Optional[str], Query(description="query range: start coordinate")] = None,
-    end: Annotated[Optional[str], Query(description="query range: start coordinate")] = None,
+    start: Annotated[
+        Optional[str], Query(description="query range: start coordinate")
+    ] = None,
+    end: Annotated[
+        Optional[str], Query(description="query range: start coordinate")
+    ] = None,
 ):
     """
     Returns the queried regions with provided ID and optional query parameters
     """
-    hit = bbc.bed.select(
-        filter_conditions=[("md5sum", "eq", md5sum)],
+    hit = bbc.bed.backend.select(
         columns=["bigbedfile"],
+        filter_conditions=[("record_identifier", "eq", md5sum)],
     )[0]
-    file = getattr(hit, "bigbedfile")
+    if isinstance(hit, dict):
+        file = hit.get("bigbedfile")
+    else:
+        raise HTTPException(
+            status_code=404, detail="ERROR: bigBed file doesn't exists. Can't query."
+        )
     remote = True if CFG_REMOTE_KEY in bbc.config else False
 
     path = (
@@ -203,7 +223,7 @@ def get_regions_for_bedfile(
 @router.get(
     "/search_by_genome_coordinates/regions/{chr_num}/{start}/{end}",
     response_model=DBResponse,
-    include_in_schema=False,
+    include_in_schema=True,
 )
 async def get_regions_for_bedfile(
     start: Annotated[int, Path(description="start coordinate", example=1103243)],
@@ -213,70 +233,65 @@ async def get_regions_for_bedfile(
     """
     Returns the list of BED files have regions overlapping given genome coordinates
     """
-    f = tempfile.NamedTemporaryFile(mode="w+")
-    f.write(f"{chr_num}\t{start}\t{end}\n")
-    f.read()
+    with tempfile.NamedTemporaryFile(mode="w+") as f:
+        f.write(f"{chr_num}\t{start}\t{end}\n")
 
-    bed_files = await get_all_bed_metadata(ids=["name", "md5sum", "bedfile"])
-
-    colnames = ["name", "md5sum", "overlapped_regions"]
-    values = []
-
-    for bed in bed_files["data"]:
-        name = bed[0]
-        md5sum = bed[1]
-        remote = True if CFG_REMOTE_KEY in bbc.config else False
-        path = (
-            os.path.join(bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], bed[2]["path"])
-            if remote
-            else os.path.join(
-                bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY], bed[2]["path"]
-            )
+        bed_files = await get_all_bed_metadata(
+            ids=["name", "record_identifier", "bedfile"]
         )
 
-        cmd = [
-            "bedIntersect",
-            f.name,
-            path,
-            "stdout",
-        ]
-
-        _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | wc -l")
-
-        try:
-            ct_process = subprocess.Popen(
-                ["wc", "-l"],
-                stdin=subprocess.PIPE,
-                stdout=subprocess.PIPE,
-                universal_newlines=True,
+        colnames = ["name", "record_identifier", "overlapped_regions"]
+        values = []
+        print(bed_files)
+        for bed in bed_files["data"]:
+            print(bed)
+            name = bed[0]
+            md5sum = bed[1]
+            remote = True if CFG_REMOTE_KEY in bbc.config else False
+            path = (
+                os.path.join(
+                    bbc.config[CFG_REMOTE_KEY]["http"]["prefix"], bed[2]["path"]
+                )
+                if remote
+                else os.path.join(
+                    bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY],
+                    bed[2]["path"],
+                )
             )
 
-            subprocess.Popen(
-                cmd,
-                stdout=ct_process.stdin,
-                text=True,
-            )
-            if int(ct_process.communicate()[0].rstrip("\n")) != 0:
-                values.append(
-                    [name, md5sum, int(ct_process.communicate()[0].rstrip("\n"))]
+            cmd = [
+                "bedIntersect",
+                f.name,
+                path,
+                "stdout",
+            ]
+
+            _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | wc -l")
+
+            try:
+                ct_process = subprocess.Popen(
+                    ["wc", "-l"],
+                    stdin=subprocess.PIPE,
+                    stdout=subprocess.PIPE,
+                    universal_newlines=True,
                 )
 
-        except FileNotFoundError:
-            _LOGGER.warning("bedIntersect is not installed.")
-            raise HTTPException(
-                status_code=500, detail="ERROR: bedIntersect is not installed."
-            )
-    f.close()
+                subprocess.Popen(
+                    cmd,
+                    stdout=ct_process.stdin,
+                    text=True,
+                )
+                if int(ct_process.communicate()[0].rstrip("\n")) != 0:
+                    values.append(
+                        [name, md5sum, int(ct_process.communicate()[0].rstrip("\n"))]
+                    )
+
+            except FileNotFoundError:
+                _LOGGER.warning("bedIntersect is not installed.")
+                raise HTTPException(
+                    status_code=500, detail="ERROR: bedIntersect is not installed."
+                )
     return {"columns": colnames, "data": values}
-
-
-@router.get("/example")
-async def get_bed_example():
-    # TODO: This is a hack to get the first record in the table
-    # It should be eventually moved away from the .backend into a generic interface
-    x = bbc.bed.backend.get_records()
-
-    return x[0][0]
 
 
 # TODO: Probably remove this... it's not realistic to return all the metadata
@@ -293,23 +308,25 @@ async def get_all_bed_metadata(
     """
     Get bedfiles metadata for selected columns
     """
-    # if ids:
-    #     assert_table_columns_match(bbc=bbc, table_name=BED_TABLE, columns=ids)
-
-    res = bbc.bed.backend.select(columns=ids, limit=limit)
+    if ids and "record_identifier" not in ids:
+        ids.append("record_identifier")
+    try:
+        res = bbc.bed.backend.select(columns=ids, limit=limit)
+    except AttributeError:
+        raise HTTPException(
+            status_code=404, detail=f"Table results for {ids} not found"
+        )
 
     if res:
         if ids:
             colnames = ids
-            values = [list(x) for x in res]
+            values = [list(x) if isinstance(x, tuple) else list(x) for x in res]
         else:
             colnames = list(res[0].__dict__.keys())[1:]
             values = [list(x.__dict__.values())[1:] for x in res]
-
-        _LOGGER.info(f"Serving data for columns: {colnames}")
     else:
-        _LOGGER.warning("No records matched the query")
-        colnames = []
-        values = [[]]
+        _LOGGER.warning(f"No records matched the query")
+        return {"columns": [], "data": [[]]}
 
+    _LOGGER.debug(f"Serving data for columns: {colnames}")
     return {"columns": colnames, "data": values}

@@ -29,7 +29,7 @@ class BedHostConf(BedBaseConf):
 
         :param str path: relative path to serve
         :param bool remote: whether to redirect to a remote source or serve local
-        :exception :
+        :exception FileNotFoundError: if file not found
         """
         remote = remote or self.is_remote
         if remote:
@@ -61,7 +61,7 @@ class BedHostConf(BedBaseConf):
         except KeyError:  # Probably should be something else
             return {}
 
-    def bedset_retrieve(self, digest: str, column: str):
+    def bedset_retrieve(self, digest: str, column: str) -> dict:
         """
         Retrieve a single column from the bedset table
 
@@ -114,9 +114,9 @@ def construct_search_data(hits: list, request) -> List[str]:
     """
     template_data = []
     for h in hits:
-        bed_data_url_template = request.url_for(
-            "bedfile"
-        ) + f"?md5sum={h['md5sum']}&format="
+        bed_data_url_template = (
+            request.url_for("bedfile") + f"?md5sum={h['md5sum']}&format="
+        )
         template_data.append(
             [h["name"]]
             + [bed_data_url_template + ext for ext in ["html", "bed", "json"]]
@@ -158,7 +158,7 @@ def get_all_bedset_urls_mapping(bbc: BedBaseConf, request):
     :param starlette.requests.Request request: request context for url generation
     :return Mapping: a mapping of bedset ids and the urls to the corresponding splashpages
     """
-    hits = bbc.bedset.select(columns=["name", "md5sum"])
+    hits = bbc.bedset.backend.select(columns=["name", "md5sum"])
     if not hits:
         return
     # TODO: don't hardcode url path element name, use operationID?
@@ -195,33 +195,34 @@ def get_openapi_version(app):
     # TODO: why there is catching exception?
 
 
-def assert_table_columns_match(bbc: BedBaseConf, table_name: str, columns: Union[List[str], str]):
-    """
-    Verify that the selected list of columns exists in the database and react appropriately
-
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :param str table_name: name of the table, either bedfiles or bedsets
-    :param str | list[str] columns: collection columns to check
-    :raises IncorrectSchemaException: in case there is a columns mismatch
-    """
-    if isinstance(columns, str):
-        columns = [columns]
-    if table_name == "bedfiles":
-        schema = bbc.bed.schema
-    elif table_name == "bedsets":
-        schema = bbc.bedset.schema
-    else:
-       raise IncorrectSchemaException(f"Unknown table: {table_name}")
-
-    if schema is None:
-        msg = f"Could not determine columns for table: {table_name}"
-        _LOGGER.warning(msg)
-        raise IncorrectSchemaException(f"Unknown table: {table_name}")
-    diff = set(columns).difference(list(schema.sample_level_data.keys()))
-    if diff:
-        msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
-        _LOGGER.warning(msg)
-        raise IncorrectSchemaException(msg)
+# we don't need this anymore
+# def assert_table_columns_match(bbc: BedBaseConf, table_name: str, columns: Union[List[str], str]):
+#     """
+#     Verify that the selected list of columns exists in the database and react appropriately
+#
+#     :param bbconf.BedBaseConf bbc: bedbase configuration object
+#     :param str table_name: name of the table, either bedfiles or bedsets
+#     :param str | list[str] columns: collection columns to check
+#     :raises IncorrectSchemaException: in case there is a columns mismatch
+#     """
+#     if isinstance(columns, str):
+#         columns = [columns]
+#     if table_name == "bedfiles":
+#         schema = bbc.bed.schema
+#     elif table_name == "bedsets":
+#         schema = bbc.bedset.schema
+#     else:
+#        raise IncorrectSchemaException(f"Unknown table: {table_name}")
+#
+#     if schema is None:
+#         msg = f"Could not determine columns for table: {table_name}"
+#         _LOGGER.warning(msg)
+#         raise IncorrectSchemaException(f"Unknown table: {table_name}")
+#     diff = set(columns).difference(list(schema.sample_level_data.keys()))
+#     if diff:
+#         msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
+#         _LOGGER.warning(msg)
+#         raise IncorrectSchemaException(msg)
 
 
 # def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
@@ -260,29 +261,30 @@ def assert_table_columns_match(bbc: BedBaseConf, table_name: str, columns: Union
 #         values = [[]]
 #     return {"columns": colnames, "data": values}
 
-# def get_id_map(bbc, table_name, file_type):
-#     """
-#     Get a dict for avalible file/figure ids
 
-#     :param str table_name: table name to query
-#     :param st file_type: "file" or "image"
-#     :return dict
-#     """
+def get_id_map(bbc, table_name, file_type):
+    """
+    Get a dict for avalible file/figure ids
 
-#     id_map = {}
+    :param str table_name: table name to query
+    :param st file_type: "file" or "image"
+    :return dict
+    """
 
-#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-#     # This is basically just doing this:
-#     # if table_name == BED_TABLE:
-#     #     schema = bbc.bed.schema
-#     # if table_name == BEDSET_TABLE:
-#     #     schema = bbc.bedset.schema
-#     # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
-#     for key, value in schema.sample_level_data.items():
-#         if value["type"] == file_type:
-#             id_map[value["label"]] = key
+    id_map = {}
 
-#     return id_map
+    schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
+    # This is basically just doing this:
+    # if table_name == BED_TABLE:
+    #     schema = bbc.bed.schema
+    # if table_name == BEDSET_TABLE:
+    #     schema = bbc.bedset.schema
+    # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
+    for key, value in schema.sample_level_data.items():
+        if value["type"] == file_type:
+            id_map[value["label"]] = key
+
+    return id_map
 
 
 # def get_enum_map(bbc, table_name, file_type):

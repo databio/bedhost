@@ -1,12 +1,12 @@
 import logging
 import sys
+import os
 from typing import Dict, List, Optional
 
 import bbconf
-from bbconf.const import BED_TABLE, BEDSET_TABLE
 import coloredlogs
 import uvicorn
-from fastapi import FastAPI, HTTPException, Path, Query
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from bedhost import _LOGGER
@@ -23,12 +23,14 @@ from bedhost.const import (
     SERVER_VERSION,
 )
 
-# from bedhost.routers import bed_api, bedset_api, base
+from bedhost.helpers import BedHostConf, FileResponse
 
-from bedhost.helpers import *
-
-
-bbc = BedHostConf
+try:
+    bbc = BedHostConf(
+        "/home/bnt4me/virginia/repos/bedbase_all/bedhost/bedbase_configuration_compose.yaml"
+    )
+except Exception as e:
+    pass
 
 _LOGGER_BEDHOST = logging.getLogger("uvicorn.access")
 coloredlogs.install(
@@ -74,11 +76,12 @@ async def index():
 
 def attach_routers(app):
     _LOGGER.debug("Mounting routers")
-    from bedhost.routers import bed_api, bedset_api, private_api, base
+    from bedhost.routers import bed_api, bedset_api, private_api, base, search_api
 
     app.include_router(base.router)
     app.include_router(bed_api.router)
     app.include_router(bedset_api.router)
+    app.include_router(search_api.search_router)
     # app.include_router(private_api.router, prefix="/_private_api")
 
     if not CFG_REMOTE_KEY in bbc.config:
@@ -86,16 +89,16 @@ def attach_routers(app):
             f"Using local files for serving: "
             f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
         )
-        app.mount(
-            bbc.get_bedstat_output_path(),
-            StaticFiles(directory=bbc.get_bedstat_output_path()),
-            name=BED_TABLE,
-        )
-        app.mount(
-            bbc.get_bedbuncher_output_path(),
-            StaticFiles(directory=bbc.get_bedbuncher_output_path()),
-            name=BEDSET_TABLE,
-        )
+        # app.mount(
+        #     bbc.get_bedstat_output_path(),
+        #     StaticFiles(directory=bbc.get_bedstat_output_path()),
+        #     name=BED_TABLE,
+        # )
+        # app.mount(
+        #     bbc.get_bedbuncher_output_path(),
+        #     StaticFiles(directory=bbc.get_bedbuncher_output_path()),
+        #     name=BEDSET_TABLE,
+        # )
     else:
         _LOGGER.debug(
             f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"

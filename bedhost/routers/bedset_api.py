@@ -1,11 +1,21 @@
-from typing import Optional
-
+from typing import Optional, List, Dict
 from fastapi import APIRouter, HTTPException, Path, Query, Request, Response
+from fastapi.responses import StreamingResponse
+import io
+import os
 
-from .. import _LOGGER
-from ..const import *
-from ..data_models import *
-from ..helpers import *
+
+from bedhost import _LOGGER
+from bedhost.main import bbc
+from bedhost.const import (
+    CFG_REMOTE_KEY,
+    CFG_PATH_KEY,
+    CFG_PATH_PIPELINE_OUTPUT_KEY,
+    FIG_FORMAT,
+)
+
+# from bedhost.helpers import
+from bedhost.data_models import DBResponse, RemoteClassEnum, BedsetDigest, BEDLIST
 
 router = APIRouter(prefix="/api/bedset", tags=["bedset"])
 
@@ -17,7 +27,7 @@ async def get_bedset_genome_assemblies():
     Returns available genome assemblies in the database
     """
 
-    return bbc.bedset.select_distinct(table_name=BEDSET_TABLE, columns=["genome"])
+    return bbc.bedset.select_distinct(columns=["genome"])
 
 
 @router.get("/bedset/count", response_model=int)
@@ -36,15 +46,15 @@ async def get_all_bedset_metadata(
     """
     Get bedsets metadata for selected columns
     """
-    if ids:
-        assert_table_columns_match(bbc=bbc, table_name=BEDSET_TABLE, columns=ids)
+    # if ids:
+    #     assert_table_columns_match(bbc=bbc, table_name=BEDSET_TABLE, columns=ids)
 
-    res = bbc.bedset.select(columns=ids, limit=limit)
+    res = bbc.bedset.backend.select(columns=ids, limit=limit)
 
     if res:
         if ids:
             colnames = ids
-            values = [list(x) for x in res]
+            values = [[x] for x in res]
         else:
             colnames = list(res[0].__dict__.keys())[1:]
             values = [list(x.__dict__.values())[1:] for x in res]
@@ -67,6 +77,7 @@ async def get_bedset_schema():
     return bbc.bedset.schema.__dict__
 
 
+# TODO: FIX it!!!
 @router.get("/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
     md5sum: str = BedsetDigest,
@@ -113,7 +124,7 @@ async def get_bedset_metadata(
     if res:
         if ids:
             colnames = ids
-            values = [list(x) for x in res]
+            values = [[x] for x in res]
         else:
             colnames = list(res[0].__dict__.keys())[1:]
             values = [list(x.__dict__.values())[1:] for x in res]
@@ -127,7 +138,6 @@ async def get_bedset_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.head("/{md5sum}/file/{file_id}", include_in_schema=False)
 @router.get("/{md5sum}/file/{file_id}")
 async def get_file_for_bedset(
     md5sum: str,
@@ -158,7 +168,7 @@ async def get_file_path_for_bedset(
         )
         if remote
         else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+            bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY], file["path"]
         )
     )
 
@@ -192,12 +202,12 @@ async def get_image_for_bedset(
         )
         if remote
         else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
+            bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
     )
 
-    return serve_file(path, remote)
+    return bbc.serve_file(path, remote)
 
 
 @router.get("/{md5sum}/img_path/{image_id}")
@@ -228,7 +238,7 @@ async def get_image_path_for_bedset(
         )
         if remote
         else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
+            bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
     )
@@ -363,7 +373,6 @@ async def get_mybedset_file_path(
 
     paths = ""
     for bed in md5sums.md5sums:
-        print(bed)
         hit = bbc.bed.select(
             filter_conditions=[("md5sum", "eq", bed)],
             columns=[file_map_bed["bed"]],
@@ -377,7 +386,7 @@ async def get_mybedset_file_path(
             )
             if remote
             else os.path.join(
-                bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+                bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY], file["path"]
             )
         )
         paths = paths + path + "\n"

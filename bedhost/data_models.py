@@ -1,12 +1,9 @@
-import enum
 from typing import Dict, List, Optional, Text, Tuple, Union
-
 from fastapi import Path
 from pydantic import BaseModel
 from enum import Enum
 
 from bedhost.const import CFG_REMOTE_KEY
-
 from bedhost.main import bbc
 
 
@@ -17,6 +14,7 @@ class DBResponse(BaseModel):
 
     columns: List
     data: Union[List[List], List[Dict], Tuple, Dict]
+
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -32,8 +30,10 @@ BedsetDigest = Path(
     # example=ex_bedset_digest,
 )
 
+
 class BEDLIST(BaseModel):
     md5sums: list
+
 
 ex_chr = "chr1"
 
@@ -74,7 +74,6 @@ chromosome_number = Path(
 # file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
 
 # img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
-
 
 
 # This is using Python's Functional API to create enumerations without the typical

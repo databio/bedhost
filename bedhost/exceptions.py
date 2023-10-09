@@ -8,5 +8,3 @@ class BedHostException(Exception):
 class IncorrectSchemaException(BedHostException):
     def __init__(self, msg=""):
         super().__init__(f"""Incorrect schema. {msg}""")
-
-
