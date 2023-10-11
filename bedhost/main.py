@@ -1,13 +1,12 @@
 import logging
 import sys
 import os
-from typing import Dict, List, Optional
 
-import bbconf
 import coloredlogs
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from bedhost import _LOGGER
 from bedhost.cli import build_parser
@@ -25,14 +24,20 @@ from bedhost.const import (
 
 from bedhost.helpers import BedHostConf, FileResponse
 
-try:
-    bbc = BedHostConf(
-        "/home/bnt4me/virginia/repos/bedbase_all/bedhost/bedbase_configuration_compose.yaml"
-    )
-except Exception as e:
-    pass
+from bedhost.routers import bed_api, bedset_api, private_api, base, search_api
+from bedhost.dependencies import get_bbconf
 
-_LOGGER_BEDHOST = logging.getLogger("uvicorn.access")
+
+_LOGGER_UVICORN = logging.getLogger("uvicorn.access")
+coloredlogs.install(
+    logger=_LOGGER_UVICORN,
+    level=logging.INFO,
+    datefmt="%b %d %Y %H:%M:%S",
+    fmt="[%(levelname)s] [%(asctime)s] [BEDHOST] %(message)s",
+)
+
+
+_LOGGER_BEDHOST = logging.getLogger("bedhost")
 coloredlogs.install(
     logger=_LOGGER_BEDHOST,
     level=logging.INFO,
@@ -76,7 +81,6 @@ async def index():
 
 def attach_routers(app):
     _LOGGER.debug("Mounting routers")
-    from bedhost.routers import bed_api, bedset_api, private_api, base, search_api
 
     app.include_router(base.router)
     app.include_router(bed_api.router)
@@ -84,42 +88,27 @@ def attach_routers(app):
     app.include_router(search_api.search_router)
     # app.include_router(private_api.router, prefix="/_private_api")
 
+    bbc = get_bbconf()
+
     if not CFG_REMOTE_KEY in bbc.config:
         _LOGGER.debug(
             f"Using local files for serving: "
             f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
         )
-        # app.mount(
-        #     bbc.get_bedstat_output_path(),
-        #     StaticFiles(directory=bbc.get_bedstat_output_path()),
-        #     name=BED_TABLE,
-        # )
-        # app.mount(
-        #     bbc.get_bedbuncher_output_path(),
-        #     StaticFiles(directory=bbc.get_bedbuncher_output_path()),
-        #     name=BEDSET_TABLE,
-        # )
+        app.mount(
+            bbc.get_bedstat_output_path(),
+            StaticFiles(directory=bbc.get_bedstat_output_path()),
+            name="bedfile",
+        )
+        app.mount(
+            bbc.get_bedbuncher_output_path(),
+            StaticFiles(directory=bbc.get_bedbuncher_output_path()),
+            name="bedset",
+        )
     else:
         _LOGGER.debug(
             f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
         )
-
-
-def register_globals(cfg: str) -> None:
-    """
-    TODO: what does it meand?
-    """
-    _LOGGER.debug("Registering uvicorn globals")
-
-    _LOGGER.setLevel(logging.DEBUG)
-    stream = logging.StreamHandler(sys.stdout)
-    stream.setLevel(logging.DEBUG)
-    _LOGGER.addHandler(stream)
-
-    global bbc
-    _LOGGER.info("Getting bedbase cfg...")
-    bbc = BedHostConf(bbconf.get_bedbase_cfg(cfg))
-    _LOGGER_BEDHOST.info("Finish getting bedbase cfg")
 
 
 def main():
@@ -130,11 +119,12 @@ def main():
         print("No subcommand given")
         sys.exit(1)
 
-    register_globals(args.config)
+    # register_globals(args.config)
 
     if args.command == "serve":
         attach_routers(app)
         _LOGGER.info(f"Running {PKG_NAME} app...")
+        bbc = get_bbconf()
         uvicorn.run(
             app,
             host=bbc.config[CFG_SERVER_KEY][CFG_SERVER_HOST_KEY],
@@ -143,9 +133,7 @@ def main():
 
 
 if __name__ != "__main__":
-    # Establish global config when running through uvicorn CLI
     if os.environ.get("BEDBASE_CONFIG"):
-        register_globals(os.environ.get("BEDBASE_CONFIG"))
         attach_routers(app)
     else:
         raise EnvironmentError(

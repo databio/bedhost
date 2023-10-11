@@ -1,7 +1,7 @@
-from bedhost.main import bbc
-
 from fastapi import APIRouter
+from bedhost.dependencies import get_bbconf
 
+bbc = get_bbconf()
 
 search_router = APIRouter(prefix="/api/search", tags=["search"])
 

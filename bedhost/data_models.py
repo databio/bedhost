@@ -4,7 +4,11 @@ from pydantic import BaseModel
 from enum import Enum
 
 from bedhost.const import CFG_REMOTE_KEY
-from bedhost.main import bbc
+
+# from bedhost.main import bbc
+from bedhost.dependencies import get_bbconf
+
+bbc = get_bbconf()
 
 
 class DBResponse(BaseModel):

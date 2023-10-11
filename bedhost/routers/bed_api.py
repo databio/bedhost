@@ -3,12 +3,12 @@ import os
 from typing import Annotated, Dict, Optional, List
 import tempfile
 
-from bbconf.const import BED_TABLE
 from fastapi import APIRouter, HTTPException, Query, Response, Path, Depends
 from fastapi.responses import PlainTextResponse, StreamingResponse
 from pipestat.exceptions import RecordNotFoundError
 
-from bedhost.main import _LOGGER, bbc
+from bedhost.main import _LOGGER
+
 from bedhost.data_models import (
     DBResponse,
     RemoteClassEnum,
@@ -21,9 +21,11 @@ from bedhost.const import (
     CFG_PATH_KEY,
     FIG_FORMAT,
 )
+from bedhost.dependencies import get_bbconf
 
 
 router = APIRouter(prefix="/api/bed", tags=["bed"])
+bbc = get_bbconf()
 
 
 @router.get("/genomes")
@@ -48,7 +50,7 @@ async def get_bed_schema():
     Get bedfiles pipestat schema
     """
     # TODO: Fix the ParsedSchema representation so it can be represented as a dict
-    d = bbc.bed.schema.to_dict()
+    d = bbc.bed.schema
     d["samples"]["sample_name"] = d["samples"]["name"]
     del d["samples"]["name"]
     return d
@@ -294,8 +296,6 @@ async def get_regions_for_bedfile(
     return {"columns": colnames, "data": values}
 
 
-# TODO: Probably remove this... it's not realistic to return all the metadata
-# BUT it's being used by get_regions_for_bedfile, so maybe convert to function?
 @router.get("/bed/all/metadata")
 async def get_all_bed_metadata(
     ids: Annotated[

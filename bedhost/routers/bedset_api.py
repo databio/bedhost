@@ -6,7 +6,6 @@ import os
 
 
 from bedhost import _LOGGER
-from bedhost.main import bbc
 from bedhost.const import (
     CFG_REMOTE_KEY,
     CFG_PATH_KEY,
@@ -16,6 +15,9 @@ from bedhost.const import (
 
 # from bedhost.helpers import
 from bedhost.data_models import DBResponse, RemoteClassEnum, BedsetDigest, BEDLIST
+from bedhost.dependencies import get_bbconf
+
+bbc = get_bbconf()
 
 router = APIRouter(prefix="/api/bedset", tags=["bedset"])
 
