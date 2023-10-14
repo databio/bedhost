@@ -278,9 +278,14 @@ async def get_regions_for_bedfile(
 async def get_bed_example():
     # TODO: This is a hack to get the first record in the table
     # It should be eventually moved away from the .backend into a generic interface
-    x = bbc.bed.backend.get_records()
+    x = bbc.bed.get_records()
+    return x["records"][0]
 
-    return x[0][0]
+@router.get("/bed/all")
+async def list_beds():
+    x = bbc.bed.get_records()
+    return x
+
 
 @router.get("/bedset/example")
 async def get_bed_example():
@@ -288,8 +293,12 @@ async def get_bed_example():
     # It should be eventually moved away from the .backend into a generic interface
     x = bbc.bedset.backend.get_records()
     
-    return x[0][0]
+    return x["records"][0]
 
+@router.get("/bedset/all")
+async def list_bedsets():
+    x = bbc.bedset.get_records()
+    return x
 
 
 # TODO: Probably remove this... it's not realistic to return all the metadata
