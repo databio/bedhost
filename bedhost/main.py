@@ -7,6 +7,7 @@ import uvicorn
 from fastapi import FastAPI, HTTPException, Path, Query
 from fastapi.middleware.cors import CORSMiddleware
 from logging import DEBUG, INFO
+from pipestat.exceptions import RecordNotFoundError
 from typing import Dict, List, Optional
 
 from . import _LOGGER
@@ -56,7 +57,6 @@ async def get_version_info():
     versions.update({"openapi_version": get_openapi_version(app)})
     return versions
 
-
 @app.get("/search/{query}")
 async def text_to_bed_search(
     query
@@ -65,9 +65,12 @@ async def text_to_bed_search(
     _LOGGER.info(f"Using backend: {bbc.t2bsi}")
     results = bbc.t2bsi.nl_vec_search(query, k=10)
     for result in results:
-        # qdrant automatically adds hypens to the ids. remove them.
-        result["metadata"] = bbc.bed.retrieve(result['id'].replace('-', ''))
         del result["vector"]  # no need to return the actual vectors
+        try:
+            # qdrant automatically adds hyphens to the ids. remove them.
+            result["metadata"] = bbc.bed.retrieve(result['id'].replace('-', ''))
+        except RecordNotFoundError as E:
+            _LOGGER.info(f"Couldn't find qdrant result in bedbase database: {result['id']}")
     return results
 
 # @app.post("/search/bed")

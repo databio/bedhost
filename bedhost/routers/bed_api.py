@@ -276,28 +276,30 @@ async def get_regions_for_bedfile(
 
 @router.get("/bed/example")
 async def get_bed_example():
-    # TODO: This is a hack to get the first record in the table
-    # It should be eventually moved away from the .backend into a generic interface
-    x = bbc.bed.get_records()
+    """
+    Return an example BED file id
+    """
+    x = bbc.bed.get_records(limit=1)
     return x["records"][0]
 
 @router.get("/bed/all")
-async def list_beds():
-    x = bbc.bed.get_records()
+async def list_beds(limit: int=1000, offset: int=0):
+    """ List all bedfile ids, paged """
+    x = bbc.bed.get_records(limit=limit, offset=offset)
     return x
-
 
 @router.get("/bedset/example")
 async def get_bed_example():
-    # TODO: This is a hack to get the first record in the table
-    # It should be eventually moved away from the .backend into a generic interface
-    x = bbc.bedset.backend.get_records()
-    
+    """
+    Return an example BEDset id
+    """
+    x = bbc.bedset.get_records(limit=1)
     return x["records"][0]
 
 @router.get("/bedset/all")
-async def list_bedsets():
-    x = bbc.bedset.get_records()
+async def list_bedsets(limit: int=1000, offset: int=0):
+    """ List all bedset ids, paged """
+    x = bbc.bedset.get_records(limit=limit, offset=offset)
     return x
 
 
