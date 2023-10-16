@@ -6,5 +6,8 @@ class BedHostException(Exception):
 
 
 class IncorrectSchemaException(BedHostException):
+    """
+    Exception raised for errors in the pipestat input schema.
+    """
     def __init__(self, msg=""):
         super().__init__(f"""Incorrect schema. {msg}""")
