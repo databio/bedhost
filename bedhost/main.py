@@ -22,10 +22,10 @@ from bedhost.const import (
     SERVER_VERSION,
 )
 
-from bedhost.helpers import BedHostConf, FileResponse
+from bedhost.helpers import FileResponse
 
-from bedhost.routers import bed_api, bedset_api, base, search_api
 from bedhost.dependencies import get_bbconf
+from bedhost.routers import bed_api, bedset_api, base, search_api
 
 
 _LOGGER_UVICORN = logging.getLogger("uvicorn.access")

@@ -1,6 +1,6 @@
 import sys
 
-from bedhost.main import main
+from .main import main
 
 if __name__ == "__main__":
     try:
