@@ -33,8 +33,7 @@ async def get_bed_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
-    # TODO: remove backend dependency
-    return bbc.bed.backend.select_distinct(columns=["genome"])
+    return bbc.bed.retrieve_distinct(columns=["genome"])
 
 
 @router.get("/count", response_model=int)
@@ -50,7 +49,6 @@ async def get_bed_schema():
     """
     Get bedfiles pipestat schema
     """
-    # TODO: Fix the ParsedSchema representation so it can be represented as a dict
     d = bbc.bed.schema.to_dict()
     d["samples"]["sample_name"] = d["samples"]["name"]
     del d["samples"]["name"]
@@ -59,9 +57,8 @@ async def get_bed_schema():
 
 @router.get("/example")
 async def get_bed_example():
-    # TODO: remove backend dependency
-    x = bbc.bed.backend.get_records(limit=1)
-    return bbc.bed.retrieve(x.get("records", [])[0])
+    x = bbc.bed.get_records(limit=1)
+    return bbc.bed.retrieve(record_identifier=x.get("records", [])[0], )
 
 
 @router.get("/{md5sum}/metadata", response_model=DBResponse)
@@ -74,7 +71,7 @@ async def get_bedfile_metadata(
     """
     Returns metadata from selected columns for selected bedfile
     """
-
+    # TODO: should accept a list of columns
     try:
         values = bbc.bed.retrieve(md5sum, attr_id)
         if not isinstance(values, dict) or attr_id:
@@ -93,9 +90,10 @@ async def get_bedfile_metadata(
     return {"columns": colnames, "data": values}
 
 
-# @router.head("/{md5sum}/file/{file_id}", include_in_schema=False)
+# UCSC tool expects a head respond. So we added head request
+@router.head("/{md5sum}/file/{file_id}", include_in_schema=False)
 @router.get("/{md5sum}/file/{file_id}")
-async def get_file_for_bedfile(
+async def get_uri_of_bedfile(
     md5sum: str,
     file_id: str,
 ):
@@ -170,11 +168,7 @@ def get_regions_for_bedfile(
     """
     Returns the queried regions with provided ID and optional query parameters
     """
-    # TODO: remove backend dependency
-    hit = bbc.bed.backend.select(
-        columns=["bigbedfile"],
-        filter_conditions=[("record_identifier", "eq", md5sum)],
-    )[0]
+    hit = bbc.bed.retrieve(record_identifier=md5sum, result_identifier="bigbedfile")
     if isinstance(hit, dict):
         file = hit.get("bigbedfile")
     else:
@@ -296,6 +290,7 @@ async def get_regions_for_bedfile(
     return {"columns": colnames, "data": values}
 
 
+# should it be deleted, or disabled for public use?
 @router.get("/bed/all/metadata")
 async def get_all_bed_metadata(
     ids: Annotated[

@@ -118,8 +118,6 @@ def main():
         print("No subcommand given")
         sys.exit(1)
 
-    # register_globals(args.config)
-
     if args.command == "serve":
         attach_routers(app)
         _LOGGER.info(f"Running {PKG_NAME} app...")

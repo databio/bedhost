@@ -29,7 +29,7 @@ async def get_bedset_genome_assemblies():
     Returns available genome assemblies in the database
     """
 
-    return bbc.bedset.select_distinct(columns=["genome"])
+    return bbc.bedset.retrieve_distinct(columns=["genome"])
 
 
 @router.get("/bedset/count", response_model=int)
@@ -145,7 +145,7 @@ async def get_file_for_bedset(
     md5sum: str,
     file_id: str,
 ):
-    res = bbc.retrieve("bedset", md5sum, file_id)
+    res = bbc.bedset.retrieve(md5sum, file_id)
     path = bbc.get_prefixed_uri(res["path"])
     return bbc.serve_file(path)
 

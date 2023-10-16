@@ -1,4 +1,4 @@
-bbconf>=0.4.0a4
+# bbconf>=0.4.0a4
 fastapi>=0.103.0
 logmuse>=0.2.7
 pipestat>=0.6.0a1
