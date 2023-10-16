@@ -1,5 +1,5 @@
 from ubiquerg import VersionInHelpParser
-from yacman import get_first_env_var
+from yacman import select_config
 
 from bedhost import PKG_NAME
 from bedhost._version import __version__
@@ -11,11 +11,7 @@ def build_parser():
 
     :return argparse.ArgumentParser
     """
-    env_var_val = (
-        get_first_env_var(CFG_ENV_VARS)[1]
-        if get_first_env_var(CFG_ENV_VARS) is not None
-        else "not set"
-    )
+    env_var_val = select_config(config_env_vars=CFG_ENV_VARS)
     banner = "%(prog)s - REST API for the bedstat pipeline produced statistics"
     additional_description = (
         "For subcommand-specific options, type: '%(prog)s <subcommand> -h'"
