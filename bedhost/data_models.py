@@ -35,7 +35,7 @@ BedsetDigest = Path(
 )
 
 
-class BEDLIST(BaseModel):
+class BedList(BaseModel):
     md5sums: list
 
 

@@ -14,7 +14,7 @@ from bedhost.const import (
 )
 
 # from bedhost.helpers import
-from bedhost.data_models import DBResponse, RemoteClassEnum, BedsetDigest, BEDLIST
+from bedhost.data_models import DBResponse, RemoteClassEnum, BedsetDigest, BedList
 from bedhost.dependencies import get_bbconf
 
 bbc = get_bbconf()
@@ -362,7 +362,7 @@ async def create_new_bedset(
 
 @router.post("/my_bedset/file_paths", include_in_schema=True)
 async def get_mybedset_file_path(
-    md5sums: BEDLIST,
+    md5sums: BedList,
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),

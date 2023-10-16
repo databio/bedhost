@@ -33,6 +33,7 @@ async def get_bed_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
+    # TODO: remove backend dependency
     return bbc.bed.backend.select_distinct(columns=["genome"])
 
 
@@ -50,7 +51,7 @@ async def get_bed_schema():
     Get bedfiles pipestat schema
     """
     # TODO: Fix the ParsedSchema representation so it can be represented as a dict
-    d = bbc.bed.schema
+    d = bbc.bed.schema.to_dict()
     d["samples"]["sample_name"] = d["samples"]["name"]
     del d["samples"]["name"]
     return d
@@ -58,8 +59,8 @@ async def get_bed_schema():
 
 @router.get("/example")
 async def get_bed_example():
+    # TODO: remove backend dependency
     x = bbc.bed.backend.get_records(limit=1)
-
     return bbc.bed.retrieve(x.get("records", [])[0])
 
 
@@ -169,6 +170,7 @@ def get_regions_for_bedfile(
     """
     Returns the queried regions with provided ID and optional query parameters
     """
+    # TODO: remove backend dependency
     hit = bbc.bed.backend.select(
         columns=["bigbedfile"],
         filter_conditions=[("record_identifier", "eq", md5sum)],
@@ -244,9 +246,7 @@ async def get_regions_for_bedfile(
 
         colnames = ["name", "record_identifier", "overlapped_regions"]
         values = []
-        print(bed_files)
         for bed in bed_files["data"]:
-            print(bed)
             name = bed[0]
             md5sum = bed[1]
             remote = True if CFG_REMOTE_KEY in bbc.config else False
@@ -311,6 +311,7 @@ async def get_all_bed_metadata(
     if ids and "record_identifier" not in ids:
         ids.append("record_identifier")
     try:
+        # TODO: remove backend dependency
         res = bbc.bed.backend.select(columns=ids, limit=limit)
     except AttributeError:
         raise HTTPException(

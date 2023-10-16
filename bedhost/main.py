@@ -24,7 +24,7 @@ from bedhost.const import (
 
 from bedhost.helpers import BedHostConf, FileResponse
 
-from bedhost.routers import bed_api, bedset_api, private_api, base, search_api
+from bedhost.routers import bed_api, bedset_api, base, search_api
 from bedhost.dependencies import get_bbconf
 
 
@@ -50,7 +50,7 @@ app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
     version=SERVER_VERSION,
-    docs_url="/api/docs",
+    docs_url="/docs",
 )
 
 origins = [
@@ -86,7 +86,6 @@ def attach_routers(app):
     app.include_router(bed_api.router)
     app.include_router(bedset_api.router)
     app.include_router(search_api.search_router)
-    # app.include_router(private_api.router, prefix="/_private_api")
 
     bbc = get_bbconf()
 
