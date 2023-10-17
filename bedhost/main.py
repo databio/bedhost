@@ -1,18 +1,14 @@
-import coloredlogs
-import logging
 import os
 import sys
 import uvicorn
 
-from . import _LOGGER
-import bedhost.dependencies as dependencies
-from .helpers import FileResponse, configure, attach_routers
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+from . import _LOGGER
+from .helpers import FileResponse, configure, attach_routers
 from .cli import build_parser
 from .const import (
-    CFG_PATH_KEY,
-    CFG_PATH_PIPELINE_OUTPUT_KEY,
-    CFG_REMOTE_KEY,
     CFG_SERVER_HOST_KEY,
     CFG_SERVER_KEY,
     CFG_SERVER_PORT_KEY,
@@ -20,9 +16,6 @@ from .const import (
     STATIC_PATH,
     SERVER_VERSION,
 )
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title=PKG_NAME,
@@ -53,13 +46,6 @@ async def index():
     Display the dummy index UI page
     """
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
-
-@app.get("/test", response_model=int)
-async def get_bedfile_count():
-    """
-    Returns the number of bedfiles available in the database
-    """
-    return int(bbc.bed.record_count)
 
 def main():
     parser = build_parser()
