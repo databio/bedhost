@@ -1,12 +1,7 @@
-from ubiquerg import VersionInHelpParser
-<<<<<<< Updated upstream
-from yacman import select_config
-=======
-# from yacman import get_first_env_var
->>>>>>> Stashed changes
-
 from bedhost import PKG_NAME
 from bedhost._version import __version__
+from ubiquerg import VersionInHelpParser
+from yacman import select_config
 
 
 def build_parser():
@@ -15,11 +10,9 @@ def build_parser():
 
     :return argparse.ArgumentParser
     """
-<<<<<<< Updated upstream
+
     env_var_val = select_config(config_env_vars=CFG_ENV_VARS)
-=======
-    env_var_val = "not set"
->>>>>>> Stashed changes
+
     banner = "%(prog)s - REST API for the bedstat pipeline produced statistics"
     additional_description = (
         "For subcommand-specific options, type: '%(prog)s <subcommand> -h'"
