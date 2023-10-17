@@ -66,6 +66,12 @@ async def get_bed_example():
     )
 
 
+@router.get("/all")
+async def list_beds(limit: int=1000, offset: int=0):
+    """ List all bedfile ids, paged """
+    x = bbc.bed.get_records(limit=limit, offset=offset)
+    return x
+
 @router.get("/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedfile_metadata(
     md5sum: str = BedDigest,
@@ -296,7 +302,7 @@ async def get_regions_for_bedfile(
 
 
 # should it be deleted, or disabled for public use?
-@router.get("/bed/all/metadata")
+@router.get("/all/metadata")
 async def get_all_bed_metadata(
     ids: Annotated[
         Optional[List[str]], Query(description="Bedfiles table column name")

@@ -4,6 +4,7 @@ import uvicorn
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from typing import Dict
 
 from . import _LOGGER
 from .helpers import FileResponse, configure, attach_routers
@@ -46,6 +47,15 @@ async def index():
     Display the dummy index UI page
     """
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
+
+@app.get("/versions", response_model=Dict[str, str])
+async def get_version_info():
+    """
+    Returns app version information
+    """
+    versions = ALL_VERSIONS
+    versions.update({"openapi_version": get_openapi_version(app)})
+    return versions
 
 def main():
     parser = build_parser()
