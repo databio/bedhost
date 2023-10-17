@@ -1,5 +1,5 @@
-import logging
-from .const import PKG_NAME
+import logmuse
 
-global _LOGGER
-_LOGGER = logging.getLogger(PKG_NAME)
+from bedhost.const import PKG_NAME
+
+_LOGGER = logmuse.init_logger(PKG_NAME)

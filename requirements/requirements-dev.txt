@@ -1,1 +1,1 @@
--e git+https://github.com/cooldudemcgeexl/graphene-sqlalchemy-filter@master#egg=graphene-sqlalchemy-filter
+

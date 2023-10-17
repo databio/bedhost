@@ -1,14 +1,23 @@
 path:
-  pipeline_output_path: $BEDBASE_DATA_PATH/outputs
-  bedstat_dir: bedstat_output
-  bedbuncher_dir: bedbuncher_output
+  pipeline_output_path: /home/bnt4me/virginia/repos/bedbase_all/bedbase_autouploader/bbuploader/outputs
+  bedstat_dir: outputs/bedstat_output
+  bedbuncher_dir: outputs/bedbuncher_output
   remote_url_base: null
+#  region2vec: "add/path/here"
+#  vec2vec: "add/path/here"
 database:
-  host: $DB_HOST_URL
-  port: $POSTGRES_PORT
-  password: $POSTGRES_PASSWORD
-  user: $POSTGRES_USER
-  name: $POSTGRES_DB
+#  host: $DB_HOST_URL
+#  port: $POSTGRES_PORT
+#  password: $POSTGRES_PASSWORD
+#  user: $POSTGRES_USER
+#  name: $POSTGRES_DB
+#  dialect: postgresql
+#  driver: psycopg2
+  host: localhost
+  port: 5432
+  password: docker
+  user: postgres
+  name: pep-db
   dialect: postgresql
   driver: psycopg2
 server:
@@ -16,8 +25,9 @@ server:
   port: 8000
 remotes:
   http:
-    prefix: http://data2.bedbase.org/
+    prefix: /home/bnt4me/virginia/repos/bedbase_all/bedbase_autouploader/bbuploader/outputs/outputs
     description: HTTP compatible path
   s3:
     prefix: s3://data2.bedbase.org/
     description: S3 compatible path
+schema_path: "/home/bnt4me/virginia/repos/bbconf/bbconf/schemas/bedfiles_schema.yaml"
