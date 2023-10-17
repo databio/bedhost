@@ -1,22 +1,35 @@
-from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
-from typing import Optional
+from typing import Optional, List, Dict
+from fastapi import APIRouter, HTTPException, Path, Query, Request, Response
+from fastapi.responses import StreamingResponse
+import io
+import os
 
-from .. import _LOGGER
-from ..const import *
-from ..data_models import *
-from ..helpers import *
 
-router = APIRouter()
+from bedhost import _LOGGER
+from bedhost.const import (
+    CFG_REMOTE_KEY,
+    CFG_PATH_KEY,
+    CFG_PATH_PIPELINE_OUTPUT_KEY,
+    FIG_FORMAT,
+)
+
+# from bedhost.helpers import
+from bedhost.data_models import DBResponse, RemoteClassEnum, BedsetDigest, BedList
+from bedhost.dependencies import get_bbconf
+
+bbc = get_bbconf()
+
+router = APIRouter(prefix="/api/bedset", tags=["bedset"])
 
 
 # bedset endpoints
-@router.get("/bedset/genomes")
+@router.get("/genomes")
 async def get_bedset_genome_assemblies():
     """
     Returns available genome assemblies in the database
     """
 
-    return bbc.bedset.select_distinct(table_name=BEDSET_TABLE, columns=["genome"])
+    return bbc.bedset.retrieve_distinct(columns=["genome"])
 
 
 @router.get("/bedset/count", response_model=int)
@@ -35,15 +48,15 @@ async def get_all_bedset_metadata(
     """
     Get bedsets metadata for selected columns
     """
-    if ids:
-        assert_table_columns_match(bbc=bbc, table_name=BEDSET_TABLE, columns=ids)
+    # if ids:
+    #     assert_table_columns_match(bbc=bbc, table_name=BEDSET_TABLE, columns=ids)
 
-    res = bbc.bedset.select(columns=ids, limit=limit)
+    res = bbc.bedset.backend.select(columns=ids, limit=limit)
 
     if res:
         if ids:
             colnames = ids
-            values = [list(x) for x in res]
+            values = [[x] for x in res]
         else:
             colnames = list(res[0].__dict__.keys())[1:]
             values = [list(x.__dict__.values())[1:] for x in res]
@@ -66,7 +79,8 @@ async def get_bedset_schema():
     return bbc.bedset.schema.__dict__
 
 
-@router.get("/bedset/{md5sum}/bedfiles", response_model=DBResponse)
+# TODO: FIX it!!!
+@router.get("/{md5sum}/bedfiles", response_model=DBResponse)
 async def get_bedfiles_in_bedset(
     md5sum: str = BedsetDigest,
     ids: Optional[List[str]] = Query(None, description="Bedfiles table column name"),
@@ -97,7 +111,7 @@ async def get_bedfiles_in_bedset(
     return {"columns": colnames, "data": values}
 
 
-@router.get("/bedset/{md5sum}/metadata", response_model=DBResponse)
+@router.get("/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedset_metadata(
     md5sum: str = BedsetDigest,
     ids: Optional[List[str]] = Query(
@@ -112,7 +126,7 @@ async def get_bedset_metadata(
     if res:
         if ids:
             colnames = ids
-            values = [list(x) for x in res]
+            values = [[x] for x in res]
         else:
             colnames = list(res[0].__dict__.keys())[1:]
             values = [list(x.__dict__.values())[1:] for x in res]
@@ -126,13 +140,12 @@ async def get_bedset_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.head("/bedset/{md5sum}/file/{file_id}", include_in_schema=False)
-@router.get("/bedset/{md5sum}/file/{file_id}")
+@router.get("/{md5sum}/file/{file_id}")
 async def get_file_for_bedset(
     md5sum: str,
     file_id: str,
 ):
-    res = bbc.retrieve("bedset", md5sum, file_id)
+    res = bbc.bedset.retrieve(md5sum, file_id)
     path = bbc.get_prefixed_uri(res["path"])
     return bbc.serve_file(path)
 
@@ -157,18 +170,18 @@ async def get_file_path_for_bedset(
         )
         if remote
         else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+            bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY], file["path"]
         )
     )
 
     return Response(path, media_type="text/plain")
 
 
-@router.get("/bedset/{md5sum}/img/{id}")
+@router.get("/{md5sum}/img/{id}")
 async def get_image_for_bedset(
     md5sum: str,
     id: str,
-    format: FigFormat = Query("pdf", description="Figure file format"),
+    format: FIG_FORMAT = Query("pdf", description="Figure file format"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),
@@ -191,19 +204,19 @@ async def get_image_for_bedset(
         )
         if remote
         else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
+            bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
     )
 
-    return serve_file(path, remote)
+    return bbc.serve_file(path, remote)
 
 
-@router.get("/bedset/{md5sum}/img_path/{image_id}")
+@router.get("/{md5sum}/img_path/{image_id}")
 async def get_image_path_for_bedset(
     md5sum: str,
     image_id: str,
-    format: FigFormat = Query("pdf", description="Figure file format"),
+    format: FIG_FORMAT = Query("pdf", description="Figure file format"),
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),
@@ -227,7 +240,7 @@ async def get_image_path_for_bedset(
         )
         if remote
         else os.path.join(
-            bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY],
+            bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY],
             img["path" if format == "pdf" else "thumbnail_path"],
         )
     )
@@ -235,7 +248,7 @@ async def get_image_path_for_bedset(
     return Response(path, media_type="text/plain")
 
 
-@router.get("/bedset/{md5sum}/track_hub")
+@router.get("/{md5sum}/track_hub")
 async def get_track_hub_bedset(request: Request, md5sum: str = BedsetDigest):
     """
     Generate track hub files for the BED set
@@ -256,7 +269,7 @@ async def get_track_hub_bedset(request: Request, md5sum: str = BedsetDigest):
     return Response(hub_txt, media_type="text/plain")
 
 
-@router.get("/bedset/{md5sum}/track_hub_genome_file", include_in_schema=False)
+@router.get("/{md5sum}/track_hub_genome_file", include_in_schema=False)
 async def get_genomes_file_bedset(request: Request, md5sum: str = BedsetDigest):
     """
     Generate genomes file for the BED set track hub
@@ -273,7 +286,7 @@ async def get_genomes_file_bedset(request: Request, md5sum: str = BedsetDigest):
     return Response(genome_txt, media_type="text/plain")
 
 
-@router.get("/bedset/{md5sum}/track_hub_trackDb_file", include_in_schema=False)
+@router.get("/{md5sum}/track_hub_trackDb_file", include_in_schema=False)
 async def get_trackDb_file_bedset(request: Request, md5sum: str = BedsetDigest):
     """
     Generate trackDb file for the BED set track hub
@@ -299,7 +312,7 @@ async def get_trackDb_file_bedset(request: Request, md5sum: str = BedsetDigest):
     return Response(trackDb_txt, media_type="text/plain")
 
 
-@router.post("/bedset/create/{name}/{bedfiles}", include_in_schema=False)
+@router.post("/create/{name}/{bedfiles}", include_in_schema=False)
 async def create_new_bedset(
     name: str = Path(..., description="BED set name"),
     bedfiles: str = Path(..., description="BED file ID list (comma sep string)"),
@@ -347,9 +360,9 @@ async def create_new_bedset(
     return Response(m.hexdigest(), media_type="text/plain")
 
 
-@router.post("/bedset/my_bedset/file_paths", include_in_schema=True)
+@router.post("/my_bedset/file_paths", include_in_schema=True)
 async def get_mybedset_file_path(
-    md5sums: BEDLIST,
+    md5sums: BedList,
     remoteClass: RemoteClassEnum = Query(
         "http", description="Remote data provider class"
     ),
@@ -362,7 +375,6 @@ async def get_mybedset_file_path(
 
     paths = ""
     for bed in md5sums.md5sums:
-        print(bed)
         hit = bbc.bed.select(
             filter_conditions=[("md5sum", "eq", bed)],
             columns=[file_map_bed["bed"]],
@@ -376,7 +388,7 @@ async def get_mybedset_file_path(
             )
             if remote
             else os.path.join(
-                bbc.config[CFG_PATH_KEY][CFG_PIPELINE_OUT_PTH_KEY], file["path"]
+                bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY], file["path"]
             )
         )
         paths = paths + path + "\n"
@@ -391,3 +403,12 @@ async def get_mybedset_file_path(
         response.headers["Content-Disposition"] = f"attachment; filename={filename}"
 
     return response
+
+
+@router.get("/bedset/example")
+async def get_bed_example():
+    # TODO: This is a hack to get the first record in the table
+    # It should be eventually moved away from the .backend into a generic interface
+    x = bbc.bedset.backend.get_records()
+
+    return x[0][0]

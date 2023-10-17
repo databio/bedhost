@@ -1,21 +1,15 @@
-aiofiles
-bbconf
-fastapi>=0.61.2
+# bbconf>=0.4.0a4
+fastapi>=0.103.0
+logmuse>=0.2.7
+pipestat>=0.6.0a1
 itsdangerous
-logmuse
-pipestat
+aiofiles
 python-multipart
 pyyaml
 requests
-starlette==0.22.0
 uvicorn
 yacman>=0.7.1
 setuptools
-graphene==3.1
-graphene-sqlalchemy==3.0.0b1
-graphql-core==3.2.1
-graphql-relay==3.2.0
-starlette-graphene3==0.6.0
-
+python-dotenv
 
 

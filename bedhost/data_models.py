@@ -1,11 +1,14 @@
-from typing import Dict, List, Optional, Text, Union, Tuple
-import enum
-from pydantic import BaseModel
+from typing import Dict, List, Optional, Text, Tuple, Union
 from fastapi import Path
+from pydantic import BaseModel
+from enum import Enum
 
-# from .helpers import get_enum_map, get_id_map
-from .main import bbc
-from .const import *
+from bedhost.const import CFG_REMOTE_KEY
+
+# from bedhost.main import bbc
+from bedhost.dependencies import get_bbconf
+
+bbc = get_bbconf()
 
 
 class DBResponse(BaseModel):
@@ -16,15 +19,6 @@ class DBResponse(BaseModel):
     columns: List
     data: Union[List[List], List[Dict], Tuple, Dict]
 
-
-# class SchemaElement(BaseModel):
-#     """
-#     Schema element data model
-#     """
-
-#     type: Text
-#     label: Optional[Text]
-#     description: Text
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -40,6 +34,40 @@ BedsetDigest = Path(
     # example=ex_bedset_digest,
 )
 
+
+class BedList(BaseModel):
+    md5sums: list
+
+
+ex_chr = "chr1"
+
+# API query path definitions
+BedDigest = Path(
+    ...,
+    description="BED digest",
+    regex=r"^\w+$",
+    max_length=32,
+    min_length=32,
+    # example=ex_bed_digest,
+)
+
+chromosome_number = Path(
+    ...,
+    description="Chromosome number",
+    regex=r"^\S+$",
+    example=ex_chr,
+)
+
+
+# class SchemaElement(BaseModel):
+#     """
+#     Schema element data model
+#     """
+
+#     type: Text
+#     label: Optional[Text]
+#     description: Text
+
 # FileColumnBedset = enum.Enum(
 #     value="FileColumnBedset",  # name of the enumeration
 #     names=get_enum_map(bbc, BEDSET_TABLE, "file"),  # dictionary of names and values
@@ -50,10 +78,6 @@ BedsetDigest = Path(
 # file_map_bedset = get_id_map(bbc, BEDSET_TABLE, "file")
 
 # img_map_bedset = get_id_map(bbc, BEDSET_TABLE, "image")
-
-
-class BEDLIST(BaseModel):
-    md5sums: list
 
 
 # This is using Python's Functional API to create enumerations without the typical
@@ -79,22 +103,3 @@ class BEDLIST(BaseModel):
 # ex_bedset_digest = serve_columns_for_table(
 #     bbc=bbc, table_name=BEDSET_TABLE, columns=["md5sum"], limit=1
 # ).get("data")[0][0]
-
-ex_chr = "chr1"
-
-# API query path definitions
-BedDigest = Path(
-    ...,
-    description="BED digest",
-    regex=r"^\w+$",
-    max_length=32,
-    min_length=32,
-    # example=ex_bed_digest,
-)
-
-chromosome_number = Path(
-    ...,
-    description="Chromosome number",
-    regex=r"^\S+$",
-    example=ex_chr,
-)
