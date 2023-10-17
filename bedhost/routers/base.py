@@ -1,18 +1,17 @@
 import os
 
+from fastapi import APIRouter
+from fastapi.responses import FileResponse
 from typing import Dict
 
-from bedhost.const import (
+
+from ..const import (
     STATIC_PATH,
     ALL_VERSIONS,
 )
-from fastapi import APIRouter
-from fastapi.responses import FileResponse
-from bedhost.main import _LOGGER
-from bedhost.helpers import get_openapi_version
-from bedhost.dependencies import get_bbconf
-
-bbc = get_bbconf()
+from ..helpers import get_openapi_version
+from .. import _LOGGER
+from ..main import bbc
 
 router = APIRouter(prefix="/api", tags=["base"])
 

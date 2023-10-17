@@ -1,5 +1,5 @@
-from bedhost import PKG_NAME
-from bedhost._version import __version__
+from . import PKG_NAME
+from ._version import __version__
 from ubiquerg import VersionInHelpParser
 from yacman import select_config
 
@@ -46,12 +46,5 @@ def build_parser():
             help="A path to the bedhost config file (YAML). If not provided, "
             f"the first available environment variable among: {', '.join(CFG_ENV_VARS)} will be used if set."
             f" Currently: {env_var_val}",
-        )
-        sps[cmd].add_argument(
-            "-d",
-            "--dbg",
-            action="store_true",
-            dest="debug",
-            help="Set logger verbosity to debug",
         )
     return parser

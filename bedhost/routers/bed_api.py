@@ -1,31 +1,34 @@
 import subprocess
 import os
-from typing import Annotated, Dict, Optional, List
+try:
+    from typing import Annotated, Dict, Optional, List
+except:
+    from typing_extensions import Annotated
+    from typing import  Dict, Optional, List
+    
 import tempfile
 
 from fastapi import APIRouter, HTTPException, Query, Response, Path, Depends
 from fastapi.responses import PlainTextResponse, StreamingResponse
 from pipestat.exceptions import RecordNotFoundError
 
-from bedhost.main import _LOGGER
-
-from bedhost.data_models import (
-    DBResponse,
-    RemoteClassEnum,
-    BedDigest,
-    chromosome_number,
-)
-from bedhost.const import (
+from .. import _LOGGER
+from ..main import bbc
+from ..const import (
     CFG_PATH_PIPELINE_OUTPUT_KEY,
     CFG_REMOTE_KEY,
     CFG_PATH_KEY,
     FIG_FORMAT,
 )
-from bedhost.dependencies import get_bbconf
+from ..data_models import (
+    DBResponse,
+    RemoteClassEnum,
+    BedDigest,
+    chromosome_number,
+)
 
 
 router = APIRouter(prefix="/api/bed", tags=["bed"])
-bbc = get_bbconf()
 
 
 @router.get("/genomes")

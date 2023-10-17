@@ -1,12 +1,9 @@
 from fastapi import APIRouter
 
-from bedhost.dependencies import get_bbconf
-from bedhost import _LOGGER
-
-bbc = get_bbconf()
+from .. import _LOGGER
+from ..main import bbc
 
 search_router = APIRouter(prefix="/api/search", tags=["search"])
-
 
 @search_router.get("/bed/{query}")
 async def text_to_bed_search(query):

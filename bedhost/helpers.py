@@ -1,19 +1,20 @@
 import os
-from urllib import parse
-from typing import List, Union
 
 from bbconf import BedBaseConf
 from starlette.responses import FileResponse, RedirectResponse
+from typing import List, Union
+from urllib import parse
 
-from bedhost import _LOGGER
-
-from bedhost.const import (
+from . import _LOGGER
+from .const import (
+    CFG_PATH_KEY,
+    CFG_PATH_PIPELINE_OUTPUT_KEY,
+    CFG_REMOTE_KEY,
     TYPES_MAPPING,
     VALIDATIONS_MAPPING,
     OPERATORS_MAPPING,
 )
-from bedhost.exceptions import IncorrectSchemaException
-
+from .exceptions import BedHostException
 
 class BedHostConf(BedBaseConf):
     """
@@ -192,6 +193,46 @@ def get_openapi_version(app):
         return app.openapi()["openapi"]
     except Exception:
         return "3.0.2"
+
+
+def attach_routers(app):
+    _LOGGER.info("Mounting routers...")
+    from .routers import bed_api, bedset_api, base, search_api
+    app.include_router(base.router)
+    app.include_router(bed_api.router)
+    app.include_router(bedset_api.router)
+    app.include_router(search_api.search_router)
+    return app
+
+
+def configure(bbconf_file_path):
+    try:
+        # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
+        _LOGGER.info(f"Loading config...{bbconf_file_path}")
+        bbc = BedHostConf(bbconf_file_path)
+    except Exception as e:
+        raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
+    
+    if not CFG_REMOTE_KEY in bbc.config:
+        _LOGGER.debug(
+            f"Using local files for serving: "
+            f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
+        )
+        app.mount(
+            bbc.get_bedstat_output_path(),
+            StaticFiles(directory=bbc.get_bedstat_output_path()),
+            name="bedfile",
+        )
+        app.mount(
+            bbc.get_bedbuncher_output_path(),
+            StaticFiles(directory=bbc.get_bedbuncher_output_path()),
+            name="bedset",
+        )
+    else:
+        _LOGGER.debug(
+            f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
+        )
+    return bbc
 
 
 # def get_id_map(bbc, table_name, file_type):

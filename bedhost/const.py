@@ -12,7 +12,7 @@ from bbconf.const import (
     CFG_SERVER_PORT_KEY,
 )
 
-from bedhost._version import __version__ as SERVER_VERSION
+from ._version import __version__ as SERVER_VERSION
 
 PKG_NAME = "bedhost"
 LOG_FORMAT = "%(levelname)s in %(funcName)s: %(message)s"

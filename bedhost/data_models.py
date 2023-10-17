@@ -3,13 +3,14 @@ from fastapi import Path
 from pydantic import BaseModel
 from enum import Enum
 
-from bedhost.const import CFG_REMOTE_KEY
+from .const import CFG_REMOTE_KEY
 
 # from bedhost.main import bbc
-from bedhost.dependencies import get_bbconf
+# from bedhost.dependencies import get_bbconf
 
-bbc = get_bbconf()
+# bbc = get_bbconf()
 
+# from .main import bbc
 
 class DBResponse(BaseModel):
     """
@@ -20,9 +21,14 @@ class DBResponse(BaseModel):
     data: Union[List[List], List[Dict], Tuple, Dict]
 
 
+# RemoteClassEnum = Enum(
+#     "RemoteClassEnum",
+#     {r: r for r in bbc.config[CFG_REMOTE_KEY]} if bbc.is_remote else {"http": "http"},
+# )
+
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
-    {r: r for r in bbc.config[CFG_REMOTE_KEY]} if bbc.is_remote else {"http": "http"},
+    {"http": "http"},
 )
 
 BedsetDigest = Path(

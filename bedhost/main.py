@@ -1,16 +1,15 @@
-import logging
-import sys
-import os
-
 import coloredlogs
+import logging
+import os
+import sys
 import uvicorn
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 
-from bedhost import _LOGGER
-from bedhost.cli import build_parser
-from bedhost.const import (
+from . import _LOGGER
+import bedhost.dependencies as dependencies
+from .helpers import FileResponse, configure, attach_routers
+
+from .cli import build_parser
+from .const import (
     CFG_PATH_KEY,
     CFG_PATH_PIPELINE_OUTPUT_KEY,
     CFG_REMOTE_KEY,
@@ -21,30 +20,9 @@ from bedhost.const import (
     STATIC_PATH,
     SERVER_VERSION,
 )
-
-from bedhost.helpers import FileResponse
-
-from bedhost.dependencies import get_bbconf
-from bedhost.routers import bed_api, bedset_api, base, search_api
-
-
-_LOGGER_UVICORN = logging.getLogger("uvicorn.access")
-coloredlogs.install(
-    logger=_LOGGER_UVICORN,
-    level=logging.INFO,
-    datefmt="%b %d %Y %H:%M:%S",
-    fmt="[%(levelname)s] [%(asctime)s] [BEDHOST] %(message)s",
-)
-
-
-_LOGGER_BEDHOST = logging.getLogger("bedhost")
-coloredlogs.install(
-    logger=_LOGGER_BEDHOST,
-    level=logging.INFO,
-    datefmt="%b %d %Y %H:%M:%S",
-    fmt="[%(levelname)s] [%(asctime)s] [BEDHOST] %(message)s",
-)
-
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI(
     title=PKG_NAME,
@@ -58,10 +36,9 @@ origins = [
     "http://localhost:8000",
     "http://localhost:5173",
     "https://bedbase.org",
-    "*",
+    "*", # allow cross origin resource sharing, since this is a public API
 ]
 
-# uncomment below for development, to allow cross origin resource sharing
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -78,37 +55,12 @@ async def index():
     """
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
 
-
-def attach_routers(app):
-    _LOGGER.debug("Mounting routers")
-
-    app.include_router(base.router)
-    app.include_router(bed_api.router)
-    app.include_router(bedset_api.router)
-    app.include_router(search_api.search_router)
-
-    bbc = get_bbconf()
-
-    if not CFG_REMOTE_KEY in bbc.config:
-        _LOGGER.debug(
-            f"Using local files for serving: "
-            f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
-        )
-        app.mount(
-            bbc.get_bedstat_output_path(),
-            StaticFiles(directory=bbc.get_bedstat_output_path()),
-            name="bedfile",
-        )
-        app.mount(
-            bbc.get_bedbuncher_output_path(),
-            StaticFiles(directory=bbc.get_bedbuncher_output_path()),
-            name="bedset",
-        )
-    else:
-        _LOGGER.debug(
-            f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
-        )
-
+@app.get("/test", response_model=int)
+async def get_bedfile_count():
+    """
+    Returns the number of bedfiles available in the database
+    """
+    return int(bbc['conf'].bed.record_count)
 
 def main():
     parser = build_parser()
@@ -119,9 +71,11 @@ def main():
         sys.exit(1)
 
     if args.command == "serve":
-        attach_routers(app)
         _LOGGER.info(f"Running {PKG_NAME} app...")
-        bbc = get_bbconf()
+        bbconf_file_path = args.config or os.environ.get("BEDBASE_CONFIG") or None
+        global bbc
+        bbc = configure(bbconf_file_path)
+        attach_routers(app)
         uvicorn.run(
             app,
             host=bbc.config[CFG_SERVER_KEY][CFG_SERVER_HOST_KEY],
@@ -131,6 +85,9 @@ def main():
 
 if __name__ != "__main__":
     if os.environ.get("BEDBASE_CONFIG"):
+        bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
+        global bbc
+        bbc = configure(bbconf_file_path)
         attach_routers(app)
     else:
         raise EnvironmentError(
