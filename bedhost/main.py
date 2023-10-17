@@ -47,7 +47,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
 @app.get("/")
 async def index():
     """
@@ -60,7 +59,7 @@ async def get_bedfile_count():
     """
     Returns the number of bedfiles available in the database
     """
-    return int(bbc['conf'].bed.record_count)
+    return int(bbc.bed.record_count)
 
 def main():
     parser = build_parser()
@@ -86,8 +85,9 @@ def main():
 if __name__ != "__main__":
     if os.environ.get("BEDBASE_CONFIG"):
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
+        # must be configured before attaching routers to avoid circular imports
         global bbc
-        bbc = configure(bbconf_file_path)
+        bbc = configure(bbconf_file_path)  
         attach_routers(app)
     else:
         raise EnvironmentError(

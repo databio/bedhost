@@ -197,6 +197,7 @@ def get_openapi_version(app):
 
 def attach_routers(app):
     _LOGGER.info("Mounting routers...")
+    # importing routers here avoids circular imports
     from .routers import bed_api, bedset_api, base, search_api
     app.include_router(base.router)
     app.include_router(bed_api.router)
