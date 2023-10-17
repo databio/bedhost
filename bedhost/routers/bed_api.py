@@ -58,7 +58,9 @@ async def get_bed_schema():
 @router.get("/example")
 async def get_bed_example():
     x = bbc.bed.get_records(limit=1)
-    return bbc.bed.retrieve(record_identifier=x.get("records", [])[0], )
+    return bbc.bed.retrieve(
+        record_identifier=x.get("records", [])[0],
+    )
 
 
 @router.get("/{md5sum}/metadata", response_model=DBResponse)
