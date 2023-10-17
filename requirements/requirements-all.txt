@@ -1,15 +1,12 @@
-# bbconf>=0.4.0a4
-fastapi>=0.103.0
-logmuse>=0.2.7
-pipestat>=0.6.0a1
-itsdangerous
 aiofiles
+bbconf>=0.4.0
+fastapi>=0.103.0
+itsdangerous
+logmuse>=0.2.7
+pipestat>=0.6.0
 python-multipart
 pyyaml
 requests
-uvicorn
-yacman>=0.7.1
 setuptools
-python-dotenv
-
-
+uvicorn
+yacman>=0.9.2
