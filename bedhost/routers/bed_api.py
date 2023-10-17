@@ -28,7 +28,7 @@ from ..data_models import (
 )
 
 
-router = APIRouter(prefix="/api/bed", tags=["bed"])
+router = APIRouter(prefix="/bed", tags=["bed"])
 
 
 @router.get("/genomes")

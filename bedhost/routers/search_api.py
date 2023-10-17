@@ -5,7 +5,7 @@ from pipestat.exceptions import RecordNotFoundError
 from .. import _LOGGER
 from ..main import bbc
 
-search_router = APIRouter(prefix="/api/search", tags=["search"])
+search_router = APIRouter(prefix="/search", tags=["search"])
 
 @search_router.get("/bed/{query}")
 async def text_to_bed_search(query):

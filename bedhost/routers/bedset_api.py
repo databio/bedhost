@@ -15,7 +15,7 @@ from ..const import (
 from ..data_models import DBResponse, RemoteClassEnum, BedsetDigest, BedList
 from ..main import bbc
 
-router = APIRouter(prefix="/api/bedset", tags=["bedset"])
+router = APIRouter(prefix="/bedset", tags=["bedset"])
 
 
 # bedset endpoints
