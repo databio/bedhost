@@ -7,9 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import Dict
 
 from . import _LOGGER
-from .helpers import FileResponse, configure, attach_routers
+from .helpers import FileResponse, configure, attach_routers, get_openapi_version
 from .cli import build_parser
 from .const import (
+    ALL_VERSIONS,
     CFG_SERVER_HOST_KEY,
     CFG_SERVER_KEY,
     CFG_SERVER_PORT_KEY,
