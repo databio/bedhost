@@ -53,8 +53,6 @@ async def get_bed_schema():
     Get bedfiles pipestat schema
     """
     d = bbc.bed.schema.to_dict()
-    d["samples"]["sample_name"] = d["samples"]["name"]
-    del d["samples"]["name"]
     return d
 
 
