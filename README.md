@@ -18,8 +18,8 @@ BEDBASE_CONFIG=../bedbase.org/config/bedbase.yaml uvicorn bedhost.main:app --rel
 ```
 
 You can change the database you're connecting to by using a different config file:
-- Using a local config: `BEDBASE_CONFIG=../bbconf/tests/data/config.yaml uvicorn bedhost.main:app --reload``
-- With new database: `BEDBASE_CONFIG=../bedbase.org/config/bedbase2.yaml uvicorn bedhost.main:app --reload``
+- Using a local config: `BEDBASE_CONFIG=../bbconf/tests/data/config.yaml uvicorn bedhost.main:app --reload`
+- With new database: `BEDBASE_CONFIG=../bedbase.org/config/bedbase2.yaml uvicorn bedhost.main:app --reload`
 
 Now, you can access the service at [http://127.0.0.1:8000](http://127.0.0.1:8000). Example endpoints:
 - 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/img/open_chromatin
