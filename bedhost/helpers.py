@@ -209,7 +209,7 @@ def attach_routers(app):
 def configure(bbconf_file_path):
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        _LOGGER.info(f"Loading config...{bbconf_file_path}")
+        _LOGGER.info(f"Loading config: '{bbconf_file_path}'")
         bbc = BedHostConf(bbconf_file_path)
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
