@@ -28,7 +28,7 @@ async def get_bedset_genome_assemblies():
     return bbc.bedset.retrieve_distinct(columns=["genome"])
 
 
-@router.get("/bedset/count", response_model=int)
+@router.get("/count", response_model=int)
 async def get_bedset_count():
     """
     Returns the number of bedsets available in the database
@@ -36,7 +36,7 @@ async def get_bedset_count():
     return int(bbc.bedset.record_count)
 
 
-@router.get("/bedset/all/metadata")
+@router.get("/all/metadata")
 async def get_all_bedset_metadata(
     ids: Optional[List[str]] = Query(None, description="Bedsets table column name"),
     limit: int = Query(None, description="number of rows returned by the query"),
@@ -66,7 +66,7 @@ async def get_all_bedset_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.get("/bedset/schema", response_model=Dict)
+@router.get("/schema", response_model=Dict)
 async def get_bedset_schema():
     """
     Get bedsets pipestat schema
@@ -146,7 +146,7 @@ async def get_file_for_bedset(
     return bbc.serve_file(path)
 
 
-@router.get("/bedset/{md5sum}/file_path/{id}")
+@router.get("/{md5sum}/file_path/{id}")
 async def get_file_path_for_bedset(
     md5sum: str,
     id: str,
@@ -401,7 +401,7 @@ async def get_mybedset_file_path(
     return response
 
 
-@router.get("/bedset/example")
+@router.get("/example")
 async def get_bed_example():
     # TODO: This is a hack to get the first record in the table
     # It should be eventually moved away from the .backend into a generic interface
