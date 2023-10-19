@@ -35,8 +35,8 @@ class BedSplash extends React.Component {
   async componentDidMount() {
     let schema = await api.get("/bed/schema").then(({ data }) => data["samples"])
     this.setState({ bedSchema: schema });
-    console.log("bed schema: ", schema)
-    await api.get(`/bed/${this.props.router.params.bed_md5sum}/file_path/bigbedfile?remoteClass=http`)
+    // console.log("bed schema: ", schema)
+    await api.get(`/bed/${this.props.router.params.bed_md5sum}/file_path/bigbedfile?remote_class=http`)
       .then((res) => {
         if (res.status === 200) {
           this.setState({ bigbed: true });
@@ -54,7 +54,6 @@ class BedSplash extends React.Component {
     let bedstats_cols = ""
 
     bed_splash_cols.forEach((col, idx) => {
-      console.log(col, idx)
       if (idx === 0) {
         bed_cols = `ids=${col}`
       } else {
@@ -92,15 +91,13 @@ class BedSplash extends React.Component {
     const result = await api
       .get(`/bed/${this.props.router.params.bed_md5sum}/metadata?${bed_cols}`)
       .then(({ data }) => data);
-      // let res = {}
-      // result.columns.forEach((key, i) => res[key] = result.data[0][i]);
-      let res = result.data
-      console.log("res:", res)
+
+    let res = result.data
+    // console.log("res:", res)
 
     let bedStats = []
     Object.entries(res).forEach(([key, value], index) => {
-      console.log(key)
-      if (schema[key].type === "number") {
+      if (typeof schema[key] !== "undefined" && schema[key].type === "number") {
         bedStats.push(
           {
             label: schema[key].description,
@@ -112,15 +109,17 @@ class BedSplash extends React.Component {
 
     let newbedFig = []
     Object.entries(schema).forEach(([key, value], index) => {
-      if (value.type === "image") {
+      // console.log("fig:", value.type)
+      if (typeof value.pipestat_type !== "undefined" && value.pipestat_type === "image") {
+        // console.log("figconsol:", key)
         newbedFig.push(
           {
             id: key,
             title: value.description,
             src_pdf:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=pdf`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${key}?format=pdf`,
             src_png:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${schema[key].label}?format=png`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${key}?format=png`,
           }
         )
       }
@@ -128,7 +127,7 @@ class BedSplash extends React.Component {
 
     let newbedFiles = {}
     Object.entries(schema).forEach(([key, value], index) => {
-      if (value.type === "file") {
+      if (typeof value.pipestat_type !== "undefined" && value.pipestat_type === "file") {
         if (res[key]) {
           newbedFiles[key] = res[key].size;
         }
@@ -146,6 +145,8 @@ class BedSplash extends React.Component {
         `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome}&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/${res.name}.bigBed`,
     });
 
+    // console.log("fig list:", this.state.bedFig)
+
     if (this.state.bigbed) {
       this.setState({
         bedDownload: {
@@ -153,11 +154,11 @@ class BedSplash extends React.Component {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bed`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bedfile`,
             http:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=http`,
             s3:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=s3`
           },
           bigBED_File: {
             id: "bigbedfile",
@@ -165,9 +166,9 @@ class BedSplash extends React.Component {
             url:
               `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bigBed`,
             http:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=http`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remote_class=http`,
             s3:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remoteClass=s3`
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remote_class=s3`
           },
         },
       });
@@ -178,11 +179,11 @@ class BedSplash extends React.Component {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bed`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bedfile`,
             http:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=http`,
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=http`,
             s3:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bed?remoteClass=s3`
+              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=s3`
           },
         },
       });

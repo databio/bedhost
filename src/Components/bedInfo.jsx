@@ -32,70 +32,71 @@ export default function BedInfo(props) {
             padding: "10px",
           }}
         >
-          <Col> {console.log(props)}
-            {Object.entries(props.bed_info).map(([key, value], index) => {
-              const hide = [
-                "bigbed",
-                "file_name",
-                "yaml_file",
-                "bedbase_config",
-                "output_file_path",
-                "open_signal_matrix",
-                "pipeline_interfaces",
-                "pipeline_interfaces",
-                "URL",
-                "ensdb",
-                "fasta",
-                "format",
-                "ensDb_Gtf",
-                "fasta_file",
-                "sample_name"
-              ];
+          {typeof props.bed_info !== "undefined" ? (
+            <Col> {console.log(props)}
+              {Object.entries(props.bed_info).map(([key, value], index) => {
+                const hide = [
+                  "bigbed",
+                  "file_name",
+                  "yaml_file",
+                  "bedbase_config",
+                  "output_file_path",
+                  "open_signal_matrix",
+                  "pipeline_interfaces",
+                  "pipeline_interfaces",
+                  "URL",
+                  "ensdb",
+                  "fasta",
+                  "format",
+                  "ensDb_Gtf",
+                  "fasta_file",
+                  "sample_name"
+                ];
 
-              return !hide.includes(key) ? (
-                <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>
-                  <label
-                    style={{
-                      fontWeight: "bold",
-                      width: '208px',
-                      display: "block",
-                      textAlign: "right"
-                    }}
-                  >
-                    {key.charAt(0).toUpperCase() +
-                      key.replaceAll("_", " ").slice(1)}{":"}
-                  </label>
-                  <div style={{
-                    marginLeft: "5px"
-                  }}>
-                    {key === "genome" ? (
-                      <>
-                        <span>{props.bed_genome.alias}</span>
-                        {props.bed_genome.digest !== "" ? (
-                          <a
-                            href={
-                              `http://refgenomes.databio.org/v3/genomes/splash/${props.bed_genome.digest}`
-                            }
-                            className="home-link"
-                            style={{
-                              marginLeft: "10px",
-                              fontWeight: "bold",
-                            }}
-                          >
-                            [Refgenie]
-                          </a>
-                        ) : null
-                        }
-                      </>
-                    ) : (
-                      value
-                    )}
+                return !hide.includes(key) ? (
+                  <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>
+                    <label
+                      style={{
+                        fontWeight: "bold",
+                        width: '208px',
+                        display: "block",
+                        textAlign: "right"
+                      }}
+                    >
+                      {key.charAt(0).toUpperCase() +
+                        key.replaceAll("_", " ").slice(1)}{":"}
+                    </label>
+                    <div style={{
+                      marginLeft: "5px"
+                    }}>
+                      {key === "genome" ? (
+                        <>
+                          <span>{props.bed_genome.alias}</span>
+                          {props.bed_genome.digest !== "" ? (
+                            <a
+                              href={
+                                `http://refgenomes.databio.org/v3/genomes/splash/${props.bed_genome.digest}`
+                              }
+                              className="home-link"
+                              style={{
+                                marginLeft: "10px",
+                                fontWeight: "bold",
+                              }}
+                            >
+                              [Refgenie]
+                            </a>
+                          ) : null
+                          }
+                        </>
+                      ) : (
+                        value
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : null;
-            })}
-
-          </Col>
+                ) : null;
+              })}
+            </Col>
+          ) : null}
         </Card.Body>
       </Card>
 

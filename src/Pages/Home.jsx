@@ -47,7 +47,7 @@ class Home extends React.Component {
     this.setState({ bedSet: bscount.data });
 
     let bed = await api.get("/bed/example").then(({ data }) => data);
-    let bedurl = `/bedsplash/${bed}`
+    let bedurl = `/bedsplash/${bed.record_identifier}`
     this.setState({ sampleBed: bedurl });
 
     // let bedset = await api.get("/bedset/all/metadata?ids=md5sum&limit=1").then(({ data }) => data)
