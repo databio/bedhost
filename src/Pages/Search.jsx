@@ -6,11 +6,16 @@ import { StringSearch, AdvancedSearch } from "../Components";
 import "../style/search.css";
 
 export default function SearchPage(props) {
-    const [searchType, setSearchType] = React.useState("string");
+    // const [searchType, setSearchType] = React.useState("string");
 
     return (
         <>
             <div className="conten-body">
+                <Container style={{ width: "75%" }} fluid className="p-4">
+                    <StringSearch />
+                </Container>
+            </div>
+            {/* <div className="conten-body">
                 <Container style={{ width: "75%" }} fluid className="p-4">
                     {searchType === "string" ? (
                         <>
@@ -49,7 +54,7 @@ export default function SearchPage(props) {
                         </>
                     )}
                 </Container>
-            </div>
+            </div> */}
         </>
     );
 }

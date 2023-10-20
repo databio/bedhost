@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom"
 
 import ResultsBed from "./searchResult";
 import { Row, Col } from "react-bootstrap";
-import { Dropdown, DropdownButton } from "react-bootstrap";
+// import { Dropdown, DropdownButton } from "react-bootstrap";
 import axios from "axios";
 import bedhost_api_url from "../const/server";
 
@@ -17,16 +17,16 @@ export default function StringSearch() {
 
   const [showResults, setShowResults] = useState(false);
   const [searchTerms, setSearchTerms] = useState(query.get("terms"));
-  const [genomeList, setGenomeList] = useState([]);
-  const [genome, setGenome] = useState("hg38");
+  // const [genomeList, setGenomeList] = useState([]);
+  // const [genome, setGenome] = useState("hg38");
   const [searching, setSearching] = useState(false);
   const [temp, setTemp] = useState(query.get("terms"));
 
   let navigate = useNavigate();
 
-  useEffect(() => {
-    api.get("/bed/genomes").then(result => setGenomeList(result.data));
-  }, []);
+  // useEffect(() => {
+  //   api.get("/bed/genomes").then(result => setGenomeList(result.data));
+  // }, []);
 
   useEffect(() => {
     if (searchTerms) {
@@ -45,7 +45,7 @@ export default function StringSearch() {
   };
 
   const handleSelect = (e) => {
-    setGenome(e)
+    // setGenome(e)
     setShowResults(false)
   }
 
@@ -86,7 +86,7 @@ export default function StringSearch() {
             onKeyDown={handleSearchSubmit}
           />
         </Col>
-        <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
+        {/* <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
           <DropdownButton
             alignright="true"
             className="dropdown-btn"
@@ -103,7 +103,7 @@ export default function StringSearch() {
               );
             })}
           </DropdownButton>
-        </Col>
+        </Col> */}
         <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
           <button
             className="float-right btn btn-search"
@@ -121,7 +121,7 @@ export default function StringSearch() {
         showResults ? (
           <ResultsBed
             terms={searchTerms}
-            genome={genome}
+            // genome={genome}
             setSearchingFalse={handleSearching}
           />
         ) : null

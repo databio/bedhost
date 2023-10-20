@@ -36,30 +36,23 @@ export default class ResultsBed extends React.Component {
   }
 
   async getBedBySearchTerms() {
-    let terms = this.props.terms.split(/[\s,]+/);
-
-    var request = {
-      genome: this.props.genome,
-      terms: terms
-    };
-
-    let res = await api.post('/_private_api/distance/bedfiles/terms?ids=name&ids=md5sum&ids=other&ids=genome', request)
-      .then(({ data }) => data);
+    let res = await api.get(`/search/bed/${this.props.terms}`).then(({ data }) => data)
+    console.log("search res: ", res)
 
     this.setState({
       bedData: res,
       terms: this.props.terms
     });
 
-    if (res.data.length >= 50) {
+    if (res.length >= 50) {
       this.setState({
         pageSize: 50,
         pageSizeOptions: [50, 100, 150],
       });
     } else {
       this.setState({
-        pageSize: res.data.length,
-        pageSizeOptions: [res.data.length],
+        pageSize: res.length,
+        pageSizeOptions: [res.length],
       });
     }
 
@@ -71,7 +64,7 @@ export default class ResultsBed extends React.Component {
 
   getColumns() {
     let tableColumns = [];
-    let cols = ["name", "relevance", "data_source", "description"];
+    let cols = ["name", "scores", "BEDbaseDB"];
 
     for (var i = 0; i < cols.length; i++) {
       if (cols[i] === "name") {
@@ -79,61 +72,53 @@ export default class ResultsBed extends React.Component {
           title: cols[i],
           field: cols[i],
           cellStyle: {
-            width: 500,
-            maxWidth: 500,
-          },
-          headerStyle: {
-            width: 500,
-            maxWidth: 500,
-          },
-          render: (rowData) => (
-            <Link
-              className="home-link"
-              to={{
-                pathname: `/bedsplash/${rowData.md5sum}`,
-              }}
-            >
-              {rowData.name}
-            </Link>
-          ),
-        });
-      } else if (cols[i] === "description") {
-        tableColumns.push({
-          title: cols[i],
-          field: cols[i],
-          cellStyle: {
             width: 600,
-            minWidth: 600,
+            maxWidth: 600,
           },
           headerStyle: {
             width: 600,
-            minWidth: 600,
+            maxWidth: 600,
           },
         });
-      } else if (cols[i] === "data_source") {
-        tableColumns.push({
-          title: cols[i],
-          field: cols[i],
-          render: (rowData) =>
-            rowData.data_source === "GEO" ? (
-              <a
-                href={
-                  `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${rowData.GSE}`
-                }
-                className="home-link"
-              >
-                {rowData.data_source}
-              </a>
-            ) : rowData.data_source === "ENCODE" ? (
-              <a
-                href={`https://www.encodeproject.org/files/${rowData.file_acc}`}
-                className="home-link"
-              >
-                {rowData.data_source}
-              </a>
-            ) : null,
-        });
-      } else {
+      }
+      // else if (cols[i] === "description") {
+      //   tableColumns.push({
+      //     title: cols[i],
+      //     field: cols[i],
+      //     cellStyle: {
+      //       width: 600,
+      //       minWidth: 600,
+      //     },
+      //     headerStyle: {
+      //       width: 600,
+      //       minWidth: 600,
+      //     },
+      //   });
+      // } else if (cols[i] === "data_source") {
+      //   tableColumns.push({
+      //     title: cols[i],
+      //     field: cols[i],
+      //     render: (rowData) =>
+      //       rowData.data_source === "GEO" ? (
+      //         <a
+      //           href={
+      //             `https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${rowData.GSE}`
+      //           }
+      //           className="home-link"
+      //         >
+      //           {rowData.data_source}
+      //         </a>
+      //       ) : rowData.data_source === "ENCODE" ? (
+      //         <a
+      //           href={`https://www.encodeproject.org/files/${rowData.file_acc}`}
+      //           className="home-link"
+      //         >
+      //           {rowData.data_source}
+      //         </a>
+      //       ) : null,
+      //   });
+      // } 
+      else {
         tableColumns.push({
           title: cols[i],
           field: cols[i],
@@ -144,18 +129,32 @@ export default class ResultsBed extends React.Component {
   }
 
   getData() {
-    let data = this.state.bedData.data.map((bed) => {
-      let bf = {}
-      this.state.bedData.columns.forEach((key, i) => bf[key] = bed[i]);
+    let data = this.state.bedData.map((bed) => {
+
+      let BEDbaseDB = ""
+      let name = ""
+      let id = ""
+
+      if (bed.metadata) {
+        name = bed.metadata.name
+        BEDbaseDB = "available"
+        id = bed.metadata.record_identifier
+      } else if (typeof bed.metadata === "undefined") {
+        name = bed.payload.fileid
+        BEDbaseDB = "not available"
+        id = bed.id
+      }
+
       let row = {
-        name: bf.name,
-        md5sum: bf.md5sum,
-        relevance: this.getRelevance(bf.score),
+        name: this.addLink(id, name, BEDbaseDB),
+        md5sum: id,
+        scores: this.getRelevance(bed.score),
+        BEDbaseDB: BEDbaseDB
       };
-      row = Object.assign({}, row, bf.other);
+      // row = Object.assign({}, row, bed.other);
       return row;
     })
-
+    console.log("data:", data)
     return (data)
   }
 
@@ -193,8 +192,8 @@ export default class ResultsBed extends React.Component {
   }
 
   getRelevance(score) {
-    let color = this.perc2Color(1 - score);
-    score = ((1 - score) * 100).toFixed(2).toString() + "%";
+    let color = this.perc2Color(score);
+    score = ((score) * 100).toFixed(2).toString() + "%";
     return (
       <p>
         <FaMinus
@@ -204,6 +203,25 @@ export default class ResultsBed extends React.Component {
         {score}
       </p>
     );
+  }
+
+  addLink(id, name, bedbasedb) {
+    if (bedbasedb === "available") {
+      return (
+        <Link
+          className="home-link"
+          to={{
+            pathname: `/bedsplash/${id}`,
+          }}
+        >
+          {name}
+        </Link>
+      )
+    } else {
+      return (
+        <>{name}</>
+      )
+    }
   }
 
   addtoBedSet(data) {
@@ -217,7 +235,7 @@ export default class ResultsBed extends React.Component {
 
   render() {
     return this.props.md5sum === this.state.md5sum ||
-      this.props.query === this.state.query ||
+      // this.props.query === this.state.query ||
       this.props.term === this.state.term ||
       this.state.bedData ? (
       this.state.pageSize !== -1 ? (
