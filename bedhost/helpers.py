@@ -17,6 +17,7 @@ from .const import (
 )
 from .exceptions import BedHostException
 
+
 class BedHostConf(BedBaseConf):
     """
     An extended BedBaseConf object that adds some BedHost-specific functions
@@ -200,6 +201,7 @@ def attach_routers(app):
     _LOGGER.info("Mounting routers...")
     # importing routers here avoids circular imports
     from .routers import bed_api, bedset_api, search_api
+
     app.include_router(bed_api.router)
     app.include_router(bedset_api.router)
     app.include_router(search_api.search_router)
@@ -213,7 +215,7 @@ def configure(bbconf_file_path):
         bbc = BedHostConf(bbconf_file_path)
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
-    
+
     if not CFG_REMOTE_KEY in bbc.config:
         _LOGGER.debug(
             f"Using local files for serving: "

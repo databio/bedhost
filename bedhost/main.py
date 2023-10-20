@@ -31,7 +31,7 @@ origins = [
     "http://localhost:8000",
     "http://localhost:5173",
     "https://bedbase.org",
-    "*", # allow cross origin resource sharing, since this is a public API
+    "*",  # allow cross origin resource sharing, since this is a public API
 ]
 
 app.add_middleware(
@@ -42,12 +42,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.get("/")
 async def index():
     """
     Display the dummy index UI page
     """
     return FileResponse(os.path.join(STATIC_PATH, "index.html"))
+
 
 @app.get("/versions", response_model=Dict[str, str])
 async def get_version_info():
@@ -57,6 +59,7 @@ async def get_version_info():
     versions = ALL_VERSIONS
     versions.update({"openapi_version": get_openapi_version(app)})
     return versions
+
 
 def main():
     parser = build_parser()
@@ -84,7 +87,7 @@ if __name__ != "__main__":
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         # must be configured before attaching routers to avoid circular imports
         global bbc
-        bbc = configure(bbconf_file_path)  
+        bbc = configure(bbconf_file_path)
         attach_routers(app)
     else:
         raise EnvironmentError(

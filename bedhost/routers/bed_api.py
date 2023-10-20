@@ -1,11 +1,12 @@
 import subprocess
 import os
+
 try:
     from typing import Annotated, Dict, Optional, List
 except:
     from typing_extensions import Annotated
-    from typing import  Dict, Optional, List
-    
+    from typing import Dict, Optional, List
+
 import tempfile
 
 from fastapi import APIRouter, HTTPException, Query, Response, Path, Depends
@@ -65,10 +66,11 @@ async def get_bed_example():
 
 
 @router.get("/all")
-async def list_beds(limit: int=1000, offset: int=0):
-    """ List all bedfile ids, paged """
+async def list_beds(limit: int = 1000, offset: int = 0):
+    """List all bedfile ids, paged"""
     x = bbc.bed.get_records(limit=limit, offset=offset)
     return x
+
 
 @router.get("/{md5sum}/metadata", response_model=DBResponse)
 async def get_bedfile_metadata(
