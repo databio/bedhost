@@ -8,9 +8,16 @@ __pycache__
 .idea
 *.DS_Store*
 
+*.egg-info
+build
+
 # Ignore Jupyter notebook checkpoints
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
 
 docs_jupyter/bedbase_tutorial
 bedhost/static/bedhost-ui/
+
+
+# Models
+*.h5

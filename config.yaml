@@ -1,9 +1,0 @@
-path_config:
-  bedstat_pipeline_output_path: /Users/mstolarczyk/results_pipeline
-database:
-  host: localhost
-  bed_index: bedstat_bedfiles
-
-server:
-  host: 0.0.0.0
-  port: 8000
