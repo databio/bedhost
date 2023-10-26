@@ -61,6 +61,44 @@ async def get_version_info():
     return versions
 
 
+@app.get("/objects/{object_id}")
+async def get_object_metadata(object_id: str):
+    """
+    Returns metadata for a given object
+    """
+    return {
+        "id": object_id
+    }
+
+    return bbc.get_bed_drs_metadata(object_id)
+
+@app.get("/objects/{object_id}/access/{access_id}")
+async def get_object_bytes_url(object_id: str, access_id: str):
+    """
+    Returns a URL for a given object
+    """
+    return bbc.get_bed_url(object_id, access_id)
+
+@app.get("/service-info", summary="GA4GH service info", tags=["General endpoints"])
+async def service_info():
+    ret = {
+        "id": "org.bedbase.api",
+        "name": "BEDbase API",
+        "type": {
+            "group": "org.databio",
+            "artifact": "bedbase",
+            "version": ALL_VERSIONS["apiserver_version"],
+        },
+        "description": "An API providing genomic interval data and metadata",
+        "organization": {"name": "Databio Lab", "url": "https://databio.org"},
+        "contactUrl": "https://github.com/databio/bedbase/issues",
+        "documentationUrl": "https://bedbase.org",
+        "updatedAt": "2023-10-25T00:00:00Z",
+        "environment": "dev",
+        "version": ALL_VERSIONS["apiserver_version"]
+    }
+    return JSONResponse(content=ret)
+
 def main():
     parser = build_parser()
     args = parser.parse_args()
