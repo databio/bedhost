@@ -2,17 +2,24 @@ import os
 from enum import Enum
 from platform import python_version
 
-from bbconf._version import __version__ as bbconf_v
-from bbconf.const import *
+from bbconf import __version__ as bbconf_v
+from bbconf.const import (
+    CFG_PATH_KEY,
+    CFG_PATH_PIPELINE_OUTPUT_KEY,
+    CFG_REMOTE_KEY,
+    CFG_SERVER_HOST_KEY,
+    CFG_SERVER_KEY,
+    CFG_SERVER_PORT_KEY,
+)
 
-from bedhost._version import __version__ as server_v
+from ._version import __version__ as SERVER_VERSION
 
 PKG_NAME = "bedhost"
 LOG_FORMAT = "%(levelname)s in %(funcName)s: %(message)s"
 
 # for now bedstat version is hard coded
 ALL_VERSIONS = {
-    "apiserver_version": server_v,
+    "apiserver_version": SERVER_VERSION,
     "bbconf_version": bbconf_v,
     "python_version": python_version(),
 }
@@ -69,13 +76,12 @@ CUR_RESULT = "current_result"
 CUR_RULES = "current_rules"
 
 
-class FigFormat(str, Enum):
+class FIG_FORMAT(str, Enum):
     png = "png"
     pdf = "pdf"
 
 
-class TableName(str, Enum):
+class TABLE_NAME(str, Enum):
     bedfiles = "bedfiles"
     bedsets = "bedsets"
     bedset_bedfiles = "bedset_bedfiles"
-    # distance = "distance"

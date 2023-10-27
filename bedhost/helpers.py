@@ -1,96 +1,84 @@
-import enum
-from logging import getLogger
+import os
+
+from bbconf import BedBaseConf
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import FileResponse, RedirectResponse
+from typing import List, Union
 from urllib import parse
 
-from starlette.exceptions import HTTPException
-from starlette.responses import FileResponse, RedirectResponse
-from ubiquerg import VersionInHelpParser
-from yacman import get_first_env_var
+from . import _LOGGER
+from .const import (
+    CFG_PATH_KEY,
+    CFG_PATH_PIPELINE_OUTPUT_KEY,
+    CFG_REMOTE_KEY,
+    TYPES_MAPPING,
+    VALIDATIONS_MAPPING,
+    OPERATORS_MAPPING,
+)
+from .exceptions import BedHostException
 
-from ._version import __version__ as v
-from .const import *
 
-_LOGGER = getLogger(PKG_NAME)
-
-
-def build_parser():
+class BedHostConf(BedBaseConf):
     """
-    Building argument parser
-
-    :return argparse.ArgumentParser
-    """
-    env_var_val = (
-        get_first_env_var(CFG_ENV_VARS)[1]
-        if get_first_env_var(CFG_ENV_VARS) is not None
-        else "not set"
-    )
-    banner = "%(prog)s - REST API for the bedstat pipeline produced statistics"
-    additional_description = (
-        "For subcommand-specific options, type: '%(prog)s <subcommand> -h'"
-    )
-    additional_description += "\nhttps://github.com/databio/bedhost"
-
-    parser = VersionInHelpParser(
-        prog=PKG_NAME, description=banner, epilog=additional_description
-    )
-
-    parser.add_argument(
-        "-V", "--version", action="version", version="%(prog)s {v}".format(v=v)
-    )
-
-    msg_by_cmd = {"serve": "run the server"}
-
-    subparsers = parser.add_subparsers(dest="command")
-
-    def add_subparser(cmd, description):
-        return subparsers.add_parser(cmd, description=description, help=description)
-
-    sps = {}
-    # add arguments that are common for both subparsers
-    for cmd, desc in msg_by_cmd.items():
-        sps[cmd] = add_subparser(cmd, desc)
-        sps[cmd].add_argument(
-            "-c",
-            "--config",
-            required=False,
-            dest="config",
-            help="A path to the bedhost config file (YAML). If not provided, "
-            "the first available environment variable among: '{}' will be used if set."
-            " Currently: {}".format(", ".join(CFG_ENV_VARS), env_var_val),
-        )
-        sps[cmd].add_argument(
-            "-d",
-            "--dbg",
-            action="store_true",
-            dest="debug",
-            help="Set logger verbosity to debug",
-        )
-    return parser
-
-
-def is_data_remote(bbc):
-    """
-    Determine if server config defines a 'remotes' key, 'http is one of them and
-     additionally assert the correct structure -- 'prefix' key defined.
-    :param BedBaseConf bbc: server config object
-    :return bool: whether remote data source is configured
+    An extended BedBaseConf object that adds some BedHost-specific functions
     """
 
-    return (
-        True
-        if CFG_REMOTE_KEY in bbc.config
-        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
-        and all(
-            [
-                "prefix" in r and isinstance(r["prefix"], str)
-                for r in bbc.config[CFG_REMOTE_KEY].values()
-            ]
-        )
-        else False
-    )
+    def __init__(self, config_path: str = None):
+        super().__init__(config_path)
+
+    def serve_file(self, path: str, remote: bool = None):
+        """
+        Serve a local or remote file
+
+        :param str path: relative path to serve
+        :param bool remote: whether to redirect to a remote source or serve local
+        :exception FileNotFoundError: if file not found
+        """
+        remote = remote or self.is_remote
+        if remote:
+            _LOGGER.info(f"Redirecting to: {path}")
+            return RedirectResponse(path)
+        _LOGGER.info(f"Returning local: {path}")
+        if os.path.isfile(path):
+            return FileResponse(
+                path,
+                headers={
+                    "Content-Disposition": f"inline; filename={os.path.basename(path)}"
+                },
+            )
+        else:
+            msg = f"File not found on server: {path}"
+            _LOGGER.warning(msg)
+            raise FileNotFoundError(msg)
+
+    def bed_retrieve(self, digest: str, column: str) -> dict:
+        """
+        Retrieve a single column from the bed table
+
+        :param digest: bed file digest
+        :param column: column name to retrieve
+        :return: result
+        """
+        try:
+            return self.bed.retrieve(digest, column)
+        except KeyError:  # Probably should be something else
+            return {}
+
+    def bedset_retrieve(self, digest: str, column: str) -> dict:
+        """
+        Retrieve a single column from the bedset table
+
+        :param digest: bedset digest
+        :param column: column name to retrieve
+        :return: result
+        """
+        try:
+            return self.bedset.retrieve(digest, column)
+        except KeyError:
+            return {}
 
 
-def get_search_setup(schema):
+def get_search_setup(schema: dict):
     """
     Create a query setup for QueryBuilder to interface the DB.
 
@@ -119,19 +107,19 @@ def get_search_setup(schema):
     return setup_dicts
 
 
-def construct_search_data(hits, request):
+def construct_search_data(hits: list, request) -> List[List[str]]:
     """
     Construct a list of links to display as the search result
 
     :param Iterable[str] hits: ids to compose the list for
     :param starlette.requests.Request request: request for the context
-    :return Iterable[str]: results to display
+    :return Iterable[list]: results to display
     """
     template_data = []
     for h in hits:
-        bed_data_url_template = request.url_for(
-            "bedfile"
-        ) + "?md5sum={}&format=".format(h["md5sum"])
+        bed_data_url_template = (
+            request.url_for("bedfile") + f"?md5sum={h['md5sum']}&format="
+        )
         template_data.append(
             [h["name"]]
             + [bed_data_url_template + ext for ext in ["html", "bed", "json"]]
@@ -139,7 +127,7 @@ def construct_search_data(hits, request):
     return template_data
 
 
-def get_mounted_symlink_path(symlink):
+def get_mounted_symlink_path(symlink: str) -> str:
     """
     Get path to the symlinks target on a mounted filesystem volume.
     Accounts for both transformed and non-transformed symlink targets
@@ -165,7 +153,7 @@ def get_mounted_symlink_path(symlink):
     return os.path.join(mnt_point, rel_tgt)
 
 
-def get_all_bedset_urls_mapping(bbc, request):
+def get_all_bedset_urls_mapping(bbc: BedBaseConf, request):
     """
     Get a mapping of all bedset ids and corrsponding splaspages urls
 
@@ -173,7 +161,7 @@ def get_all_bedset_urls_mapping(bbc, request):
     :param starlette.requests.Request request: request context for url generation
     :return Mapping: a mapping of bedset ids and the urls to the corresponding splashpages
     """
-    hits = bbc.bedset.select(columns=["name", "md5sum"])
+    hits = bbc.bedset.backend.select(columns=["name", "md5sum"])
     if not hits:
         return
     # TODO: don't hardcode url path element name, use operationID?
@@ -209,175 +197,89 @@ def get_openapi_version(app):
         return "3.0.2"
 
 
-def assert_table_columns_match(bbc, table_name, columns):
-    """
-    Verify that the selected list of columns exists in the database and react approprietly
+def attach_routers(app):
+    _LOGGER.info("Mounting routers...")
+    # importing routers here avoids circular imports
+    from .routers import bed_api, bedset_api, search_api
 
-    :param str table_name: name of the table, either bedfiles or bedsets
-    :param str | list[str] columns: collection columns to check
-    :raises HTTPException: in case there is a columns mismatch
-    """
-    if isinstance(columns, str):
-        columns = [columns]
-    schema = serve_schema_for_table(bbc, table_name)
-    # schema = getattr(getattr(bbc, table_name2attr(table_name), None), "schema", None)
-    if schema is None:
-        msg = f"Could not determine columns for table: {table_name}"
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
-    diff = set(columns).difference(list(schema.keys()))
-    if diff:
-        msg = f"Columns not found in '{table_name}' table: {', '.join(diff)}"
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
+    app.include_router(bed_api.router)
+    app.include_router(bedset_api.router)
+    app.include_router(search_api.search_router)
+    return app
 
 
-def serve_schema_for_table(bbc, table_name):
-    """
-    Serve the schema for the selected table
+def configure(bbconf_file_path):
+    try:
+        # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
+        _LOGGER.info(f"Loading config: '{bbconf_file_path}'")
+        bbc = BedHostConf(bbconf_file_path)
+    except Exception as e:
+        raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
 
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :param str table_name: table name to get schema for
-    :return:
-    """
-
-    table_manager = getattr(bbc, table_name2attr(table_name), None)
-
-    return table_manager.schema
-
-
-def serve_columns_for_table(bbc, table_name, columns=None, digest=None, limit=None):
-    """
-    Serve data from selected columns for selected table
-
-    :param bbconf.BedBaseConf bbc: bedbase configuration object
-    :param str table_name: table name to query
-    :param list[str] columns: columns to return
-    :param str digest: entry digest to restrivt the results to
-    :return dict: servable DB search result, selected column names and data
-    """
-    if columns:
-        assert_table_columns_match(bbc=bbc, table_name=table_name, columns=columns)
-
-    table_manager = getattr(bbc, table_name2attr(table_name), None)
-    if table_manager is None:
-        msg = (
-            f"Failed to serve columns for '{table_name}' table, "
-            f"PipestatManager object not accessible."
+    if not CFG_REMOTE_KEY in bbc.config:
+        _LOGGER.debug(
+            f"Using local files for serving: "
+            f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
         )
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
-    res = table_manager.select(
-        filter_conditions=[("md5sum", "eq", digest)] if digest else None,
-        columns=columns,
-        limit=limit,
-    )
-    if res:
-        colnames = list(res[0].keys())
-        values = [list(x) for x in res]
-        _LOGGER.info(f"Serving data for columns: {colnames}")
-    else:
-        _LOGGER.warning("No records matched the query")
-        colnames = []
-        values = [[]]
-    return {"columns": colnames, "data": values}
-
-
-def table_name2attr(table_name):
-    """
-    Convert the table name to attribute that can be used to refer to the
-    table managers
-
-    :param str table_name: name to convert
-    :return str: name of the BedBaseConf attribute to use
-    """
-    # TODO: just switch to the actual bbconf attributes?
-    if table_name == "bedfiles":
-        return "bed"
-    elif table_name == "bedsets":
-        return "bedset"
-    return table_name
-
-
-def is_data_remote(bbc):
-    """
-    Determine if server config defines a 'remotes' key, 'http is one of them and
-     additionally assert the correct structure -- 'prefix' key defined.
-    :param BedBaseConf bbc: server config object
-    :return bool: whether remote data source is configured
-    """
-
-    return (
-        True
-        if CFG_REMOTE_KEY in bbc.config
-        and isinstance(bbc.config[CFG_REMOTE_KEY], dict)
-        and all(
-            [
-                "prefix" in r and isinstance(r["prefix"], str)
-                for r in bbc.config[CFG_REMOTE_KEY].values()
-            ]
+        app.mount(
+            bbc.get_bedstat_output_path(),
+            StaticFiles(directory=bbc.get_bedstat_output_path()),
+            name="bedfile",
         )
-        else False
-    )
-
-
-def serve_file(path, remote):
-    """
-    Serve a local or remote file
-
-    :param str path: relative path to serve
-    :param bool remote: whether to redirect to a remote source or serve local
-    """
-    if remote:
-        _LOGGER.info(f"Redirecting to: {path}")
-        return RedirectResponse(path)
-    _LOGGER.info(f"Returning local: {path}")
-    if os.path.isfile(path):
-        return FileResponse(
-            path,
-            headers={
-                "Content-Disposition": f"inline; filename={os.path.basename(path)}"
-            },
+        app.mount(
+            bbc.get_bedbuncher_output_path(),
+            StaticFiles(directory=bbc.get_bedbuncher_output_path()),
+            name="bedset",
         )
     else:
-        msg = f"File not found on server: {path}"
-        _LOGGER.warning(msg)
-        raise HTTPException(status_code=404, detail=msg)
+        _LOGGER.debug(
+            f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
+        )
+    return bbc
 
 
-def get_id_map(bbc, table_name, file_type):
-    """
-    Get a dict for avalible file/figure ids
+# def get_id_map(bbc, table_name, file_type):
+#     """
+#     Get a dict for avalible file/figure ids
+#
+#     :param str table_name: table name to query
+#     :param st file_type: "file" or "image"
+#     :return dict
+#     """
+#
+#     id_map = {}
+#
+#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
+#     # This is basically just doing this:
+#     # if table_name == BED_TABLE:
+#     #     schema = bbc.bed.schema
+#     # if table_name == BEDSET_TABLE:
+#     #     schema = bbc.bedset.schema
+#     # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
+#     for key, value in schema.sample_level_data.items():
+#         if value["type"] == file_type:
+#             id_map[value["label"]] = key
+#
+#     return id_map
 
-    :param str table_name: table name to query
-    :param st file_type: "file" or "image"
-    :return dict
-    """
 
-    id_map = {}
+# def get_enum_map(bbc, table_name, file_type):
+#     """
+#     Get a dict of file/figure labels
 
-    schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-    for key, value in schema.items():
-        if value["type"] == file_type:
-            id_map[value["label"]] = key
+#     :param str table_name: table name to query
+#     :param st file_type: "file" or "image"
+#     :return dict
+#     """
 
-    return id_map
+#     enum_map = {}
+#     _LOGGER.debug(f"Getting enum map for {file_type} in {table_name}")
 
+#     # TO FIX: I think we need a different way to get the schema
+#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
 
-def get_enum_map(bbc, table_name, file_type):
-    """
-    Get a dict of file/figure labels
+#     for key, value in schema.sample_level_data.items():
+#         if value["type"] == file_type:
+#             enum_map[value["label"]] = value["label"]
 
-    :param str table_name: table name to query
-    :param st file_type: "file" or "image"
-    :return dict
-    """
-
-    enum_map = {}
-
-    schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-    for key, value in schema.items():
-        if value["type"] == file_type:
-            enum_map[value["label"]] = value["label"]
-
-    return enum_map
+#     return enum_map

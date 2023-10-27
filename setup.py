@@ -18,9 +18,6 @@ with open("requirements/requirements-all.txt", "r") as reqs_file:
             continue
         DEPENDENCIES.append(line)
 
-# 2to3
-if sys.version_info >= (3,):
-    extra["use_2to3"] = True
 extra["install_requires"] = DEPENDENCIES
 
 
@@ -50,9 +47,10 @@ setup(
     classifiers=[
         "Development Status :: 4 - Beta",
         "License :: OSI Approved :: BSD License",
-        "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
     ],
     keywords="project, bioinformatics, sequencing, ngs, workflow, GUI, bed, server",
