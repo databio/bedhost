@@ -9,9 +9,10 @@ except:
 
 import tempfile
 
-from fastapi import APIRouter, HTTPException, Query, Response, Path, Depends
-from fastapi.responses import PlainTextResponse, StreamingResponse
+from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
+from fastapi.responses import PlainTextResponse
 from pipestat.exceptions import RecordNotFoundError
+from urllib.parse import urlparse
 
 from .. import _LOGGER
 from ..main import bbc
@@ -53,28 +54,38 @@ async def get_bed_schema():
     """
     Get bedfiles pipestat schema
     """
-    d = bbc.bed.schema.to_dict()
+    d = bbc.bed.schema.original_schema
     return d
 
 
 @router.get("/example")
 async def get_bed_example():
-    x = bbc.bed.get_records(limit=1)
-    return bbc.bed.retrieve(
-        record_identifier=x.get("records", [])[0],
-    )
+    return bbc.bed.select_records(limit=1)["records"][0]
 
 
-@router.get("/all")
-async def list_beds(limit: int = 1000, offset: int = 0):
-    """List all bedfile ids, paged"""
-    x = bbc.bed.get_records(limit=limit, offset=offset)
+@router.get("/list", summary="List all bedfiles, paged.")
+async def list_beds(limit: int = 1000, token: str = None):
+    """
+    To get the first page, leave token field empty. The response will include a
+    'next_page_token' field, which can be used to get the next page.
+    """
+    x = bbc.bed.select_records(columns=["name"], limit=limit, cursor=token)
     return x
 
 
-@router.get("/{md5sum}/metadata", response_model=DBResponse)
-async def get_bedfile_metadata(
-    md5sum: str = BedDigest,
+@router.get("/{record_id}/{result_id}/{access_id}")
+async def get_bed_object_uri(record_id: str, result_id: str, access_id: str):
+    try:
+        record_type = "bed"
+        path = bbc.get_object_uri(record_type, record_id, result_id, access_id)
+        return Response(path, media_type="text/plain")
+    except RecordNotFoundError as e:
+        raise HTTPException(status_code=404, detail="Record not found")
+
+
+@router.get("/{bed_id}/metadata", response_model=DBResponse)
+async def get_bed_metadata(
+    bed_id: str = BedDigest,
     attr_id: Optional[str] = Query(
         None, description="Column name to select from the table"
     ),
@@ -84,11 +95,11 @@ async def get_bedfile_metadata(
     """
     # TODO: should accept a list of columns
     try:
-        values = bbc.bed.retrieve(md5sum, attr_id)
+        values = bbc.bed.retrieve(bed_id, attr_id)
         if not isinstance(values, dict) or attr_id:
             values = {
                 attr_id: values,
-                "record_identifier": md5sum,
+                "record_identifier": bed_id,
             }
         if "id" in values:
             del values["id"]
@@ -102,27 +113,27 @@ async def get_bedfile_metadata(
 
 
 # UCSC tool expects a head respond. So we added head request
-@router.head("/{md5sum}/file/{file_id}", include_in_schema=False)
-@router.get("/{md5sum}/file/{file_id}")
-async def get_uri_of_bedfile(
-    md5sum: str,
+@router.head("/{bed_id}/file/{file_id}", include_in_schema=False)
+@router.get("/{bed_id}/file/{file_id}", include_in_schema=False)
+async def get_bytes_of_bedfile(
+    bed_id: str,
     file_id: str,
 ):
-    res = bbc.bed_retrieve(md5sum, file_id)
+    res = bbc.bed_retrieve(bed_id, file_id)
     path = bbc.get_prefixed_uri(res["path"])
     return bbc.serve_file(path)
 
 
-@router.get("/{md5sum}/file_path/{file_id}")
-async def get_file_path_for_bedfile(
-    md5sum: str,
+@router.get("/{bed_id}/file_path/{file_id}", include_in_schema=False)
+async def get_uri_for_bedfile(
+    bed_id: str,
     file_id: str,
     remote_class: RemoteClassEnum = Query(
         RemoteClassEnum("http"), description="Remote data provider class"
     ),
 ):
     try:
-        res = bbc.bed.retrieve(md5sum, file_id)
+        res = bbc.bed.retrieve(bed_id, file_id)
     except KeyError:
         raise HTTPException(status_code=404, detail="Record or attribute not found")
 
@@ -130,24 +141,24 @@ async def get_file_path_for_bedfile(
     return Response(path, media_type="text/plain")
 
 
-@router.get("/{md5sum}/img/{image_id}")
+@router.get("/{bed_id}/img/{image_id}", include_in_schema=False)
 async def get_image_for_bedfile(
-    md5sum: str,
+    bed_id: str,
     image_id: str,
     format: FIG_FORMAT = Query("pdf", description="Figure file format"),
 ):
     """
     Returns the specified image associated with the specified bed file.
     """
-    img = bbc.bed_retrieve(md5sum, image_id)
+    img = bbc.bed_retrieve(bed_id, image_id)
     identifier = img["path" if format == "pdf" else "thumbnail_path"]
     path = bbc.get_prefixed_uri(identifier)
     return bbc.serve_file(path)
 
 
-@router.get("/{md5sum}/img_path/{image_id}")
+@router.get("/{bed_id}/img_path/{image_id}", include_in_schema=False)
 async def get_image_path_for_bedfile(
-    md5sum: str,
+    bed_id: str,
     image_id: str,
     format: Annotated[
         Optional[FIG_FORMAT], Query(description="Figure file format")
@@ -159,15 +170,15 @@ async def get_image_path_for_bedfile(
     """
     Returns the bedfile plot with provided ID in provided format
     """
-    img = bbc.bed_retrieve(md5sum, image_id)
+    img = bbc.bed_retrieve(bed_id, image_id)
     identifier = img["path" if format == "pdf" else "thumbnail_path"]
     path = bbc.get_prefixed_uri(identifier, remote_class.value)
     return Response(path, media_type="text/plain")
 
 
-@router.get("/{md5sum}/regions/{chr_num}", response_class=PlainTextResponse)
+@router.get("/{bed_id}/regions/{chr_num}", response_class=PlainTextResponse)
 def get_regions_for_bedfile(
-    md5sum: str = BedDigest,
+    bed_id: str = BedDigest,
     chr_num: str = chromosome_number,
     start: Annotated[
         Optional[str], Query(description="query range: start coordinate")
@@ -179,7 +190,7 @@ def get_regions_for_bedfile(
     """
     Returns the queried regions with provided ID and optional query parameters
     """
-    hit = bbc.bed.retrieve(record_identifier=md5sum, result_identifier="bigbedfile")
+    hit = bbc.bed.retrieve(record_identifier=bed_id, result_identifier="bigbedfile")
     if isinstance(hit, dict):
         file = hit.get("bigbedfile")
     else:
@@ -253,7 +264,7 @@ async def get_regions_for_bedfile(
         values = []
         for bed in bed_files["data"]:
             name = bed[0]
-            md5sum = bed[1]
+            bed_id = bed[1]
             remote = True if CFG_REMOTE_KEY in bbc.config else False
             path = (
                 os.path.join(
@@ -290,7 +301,7 @@ async def get_regions_for_bedfile(
                 )
                 if int(ct_process.communicate()[0].rstrip("\n")) != 0:
                     values.append(
-                        [name, md5sum, int(ct_process.communicate()[0].rstrip("\n"))]
+                        [name, bed_id, int(ct_process.communicate()[0].rstrip("\n"))]
                     )
 
             except FileNotFoundError:
