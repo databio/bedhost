@@ -113,9 +113,8 @@ async def service_info():
     Returns information about this service, such as versions, name, etc.
     """
     all_versions = ALL_VERSIONS
-    service_version = all_versions["apiserver_version"]
+    service_version = all_versions["bedhost_version"]
     all_versions.update({"openapi_version": get_openapi_version(app)})
-    del all_versions["apiserver_version"]
     ret = {
         "id": "org.bedbase.api",
         "name": "BEDbase API",

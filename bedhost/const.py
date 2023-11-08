@@ -19,7 +19,7 @@ LOG_FORMAT = "%(levelname)s in %(funcName)s: %(message)s"
 
 # for now bedstat version is hard coded
 ALL_VERSIONS = {
-    "apiserver_version": SERVER_VERSION,
+    "bedhost_version": SERVER_VERSION,
     "bbconf_version": bbconf_v,
     "python_version": python_version(),
 }
