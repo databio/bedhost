@@ -4,7 +4,7 @@ import uvicorn
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, HTMLResponse
 from typing import Dict
 from urllib.parse import urlparse
 from fastapi import Response, HTTPException
@@ -14,7 +14,13 @@ from pipestat.exceptions import RecordNotFoundError, ColumnNotFoundError
 
 
 from . import _LOGGER
-from .helpers import FileResponse, configure, attach_routers, get_openapi_version
+from .helpers import (
+    FileResponse,
+    configure,
+    attach_routers,
+    get_openapi_version,
+    drs_response,
+)
 from .cli import build_parser
 from .const import (
     ALL_VERSIONS,
@@ -26,11 +32,36 @@ from .const import (
     SERVER_VERSION,
 )
 
+tags_metadata = [
+    {
+        "name": "home",
+        "description": "General landing page and service info",
+    },
+    {
+        "name": "objects",
+        "description": "Download BED files or BEDSET files via [GA4GH DRS standard](https://ga4gh.github.io/data-repository-service-schemas/). For details, see [BEDbase Developer Guide](/docs/guide).",
+
+    },
+    {
+        "name": "bed",
+        "description": "Endpoints for retrieving metadata for BED records",
+    },
+    {
+        "name": "bedset",
+        "description": "Endpoints for retrieving metadata for BEDSET records",
+    },
+    {
+        "name": "search",
+        "description": "Discovery-oriented endpoints for finding records of interest",
+    },
+]
+
 app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
     version=SERVER_VERSION,
     docs_url="/docs",
+    openapi_tags=tags_metadata,
 )
 
 origins = [
@@ -49,16 +80,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import markdown 
+from fastapi.templating import Jinja2Templates
+templates = Jinja2Templates(directory="bedhost/templates", autoescape=False)
 
-@app.get("/", summary="API intro page", tags=["General endpoints"])
-async def index():
+@app.get("/", summary="API intro page", tags=["home"])
+async def index(request: Request):
     """
     Display the index UI page
     """
-    return FileResponse(os.path.join(STATIC_PATH, "index.html"))
+    return render_markdown("index.md", request)
 
 
-@app.get("/service-info", summary="GA4GH service info", tags=["General endpoints"])
+@app.get("/docs/changelog", summary="Release notes", response_class=HTMLResponse, tags=["home"])
+async def changelog(request: Request):
+    return render_markdown("changelog.md", request)
+
+@app.get("/docs/guide", summary="Developer guide", response_class=HTMLResponse, tags=["home"])
+async def guide(request: Request):
+    return render_markdown("guide.md", request)
+
+def render_markdown(filename: str, request: Request):
+    with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
+        text = input_file.read()
+    content = markdown.markdown(text)
+    return templates.TemplateResponse("page.html", {"request": request, "content": content})
+
+
+@app.get("/service-info", summary="GA4GH service info", tags=["home"])
 async def service_info():
     """
     Returns information about this service, such as versions, name, etc.
@@ -86,14 +135,10 @@ async def service_info():
     }
     return JSONResponse(content=ret)
 
-
-DRS_ENDPOINTS_LABEL = "objects -- download files via DRS"
-
-
 @app.get(
     "/objects/{object_id}",
     summary="Get DRS object metadata",
-    tags=[DRS_ENDPOINTS_LABEL],
+    tags=["objects"],
 )
 async def get_drs_object_metadata(object_id: str, req: Request):
     """
@@ -108,8 +153,8 @@ async def get_drs_object_metadata(object_id: str, req: Request):
 
 @app.get(
     "/objects/{object_id}/access/{access_id}",
-    summary="Get URL where you can retrive files",
-    tags=[DRS_ENDPOINTS_LABEL],
+    summary="Get URL where you can retrieve files",
+    tags=["objects"],
 )
 async def get_object_bytes_url(object_id: str, access_id: str):
     """
@@ -127,7 +172,7 @@ async def get_object_bytes_url(object_id: str, access_id: str):
 @app.get(
     "/objects/{object_id}/access/{access_id}/bytes",
     summary="Download actual files",
-    tags=[DRS_ENDPOINTS_LABEL],
+    tags=["objects"],
 )
 async def get_object_bytes(object_id: str, access_id: str):
     """
@@ -144,7 +189,7 @@ async def get_object_bytes(object_id: str, access_id: str):
 @app.get(
     "/objects/{object_id}/access/{access_id}/thumbnail",
     summary="Download thumbnail",
-    tags=[DRS_ENDPOINTS_LABEL],
+    tags=["objects"],
 )
 async def get_object_thumbnail(object_id: str, access_id: str):
     """
@@ -168,7 +213,13 @@ def parse_bedbase_drs_object_id(object_id: str):
     """
     Parse bedbase object id into its components
     """
-    record_type, record_id, result_id = object_id.split(".")
+    try:
+        record_type, record_id, result_id = object_id.split(".")
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Object ID {object_id} is malformed. Should be of the form <record_type>.<record_id>.<result_id>",
+        )
     if record_type not in ["bed", "bedset"]:
         raise HTTPException(
             status_code=400, detail=f"Object type {record_type} is incorrect"
@@ -183,43 +234,29 @@ def parse_bedbase_drs_object_id(object_id: str):
 # General-purpose exception handlers (so we don't have to write try/catch blocks in every endpoint)
 
 @app.exception_handler(MissingThumbnailError)
-async def exception_handler_MissingThumbnailError(
-    request: Request, exc: MissingThumbnailError
-):
-    return JSONResponse(
-        status_code=404,
-        content={"msg": "No thumbnail for this object.", "status_code": 404},
-    )
+async def exc_handler_MissingThumbnailError(req: Request, exc: MissingThumbnailError):
+    return drs_response(404, "No thumbnail for this object.")
 
 
-@app.exception_handler(IncorrectAccessMethodError)
-async def exception_handler_IncorrectAccessMethodError(
-    request: Request, exc: IncorrectAccessMethodError
-):
-    return JSONResponse(
-        status_code=404,
-        content={"msg": "Requested access URL was not found.", "status_code": 404},
-    )
+@app.exception_handler(BadAccessMethodError)
+async def exc_handler_BadAccessMethodError(req: Request, exc: BadAccessMethodError):
+    return drs_response(404, "Requested access URL was not found.")
 
 
 @app.exception_handler(ColumnNotFoundError)
-async def exception_handler_ColumnNotFoundError(
-    request: Request, exc: ColumnNotFoundError
-):
-    return JSONResponse(
-        status_code=404,
-        content={"msg": "Malformed result identifier.", "status_code": 404},
-    )
+async def exc_handler_ColumnNotFoundError(req: Request, exc: ColumnNotFoundError):
+    _LOGGER.error(f"ColumnNotFoundError: {exc}")
+    return drs_response(404, "Malformed result identifier.")
 
 
 @app.exception_handler(RecordNotFoundError)
-async def exception_handler_RecordNotFoundError(
-    request: Request, exc: RecordNotFoundError
-):
-    return JSONResponse(
-        status_code=404,
-        content={"msg": "Record not found.", "status_code": 404},
-    )
+async def exc_handler_RecordNotFoundError(req: Request, exc: RecordNotFoundError):
+    return drs_response(404, "Record not found.")
+
+
+@app.exception_handler(MissingObjectError)
+async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
+    return drs_response(404, "Object not found.")
 
 
 def main():

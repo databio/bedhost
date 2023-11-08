@@ -27,7 +27,7 @@ TEMPLATES_DIRNAME = "templates"
 TEMPLATES_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), TEMPLATES_DIRNAME
 )
-STATIC_DIRNAME = "static"
+STATIC_DIRNAME = "../docs"
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_DIRNAME)
 
 UI_PATH = os.path.join(os.path.dirname(__file__), "static", "bedhost-ui")

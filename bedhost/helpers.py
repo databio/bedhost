@@ -2,7 +2,7 @@ import os
 
 from bbconf import BedBaseConf
 from fastapi.staticfiles import StaticFiles
-from starlette.responses import FileResponse, RedirectResponse
+from starlette.responses import FileResponse, RedirectResponse, JSONResponse
 from typing import List, Union
 from urllib import parse
 
@@ -236,3 +236,9 @@ def configure(bbconf_file_path, app):
             f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
         )
     return bbc
+
+
+def drs_response(status_code, msg):
+    """Helper function to make quick DRS responses"""
+    content = {"status_code": status_code, "msg": msg}
+    return JSONResponse(status_code=status_code, content=content)
