@@ -44,7 +44,7 @@ async def list_bedsets(limit: int = 1000, token: int = None):
     """
     Returns a paged list of all BEDset records
     """
-    return bbc.bed.select_records(columns=["name"], limit=limit, cursor=token)
+    return bbc.bedset.select_records(columns=["name"], limit=limit, cursor=token)
 
 
 @router.get("/{bedset_id}/metadata", response_model=Dict)
