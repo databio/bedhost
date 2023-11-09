@@ -2,7 +2,7 @@ import os
 
 from bbconf import BedBaseConf
 from fastapi.staticfiles import StaticFiles
-from starlette.responses import FileResponse, RedirectResponse
+from starlette.responses import FileResponse, RedirectResponse, JSONResponse
 from typing import List, Union
 from urllib import parse
 
@@ -34,7 +34,7 @@ class BedHostConf(BedBaseConf):
         :param bool remote: whether to redirect to a remote source or serve local
         :exception FileNotFoundError: if file not found
         """
-        remote = remote or self.is_remote
+        remote = remote or True
         if remote:
             _LOGGER.info(f"Redirecting to: {path}")
             return RedirectResponse(path)
@@ -208,7 +208,7 @@ def attach_routers(app):
     return app
 
 
-def configure(bbconf_file_path):
+def configure(bbconf_file_path, app):
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         _LOGGER.info(f"Loading config: '{bbconf_file_path}'")
@@ -238,48 +238,7 @@ def configure(bbconf_file_path):
     return bbc
 
 
-# def get_id_map(bbc, table_name, file_type):
-#     """
-#     Get a dict for avalible file/figure ids
-#
-#     :param str table_name: table name to query
-#     :param st file_type: "file" or "image"
-#     :return dict
-#     """
-#
-#     id_map = {}
-#
-#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-#     # This is basically just doing this:
-#     # if table_name == BED_TABLE:
-#     #     schema = bbc.bed.schema
-#     # if table_name == BEDSET_TABLE:
-#     #     schema = bbc.bedset.schema
-#     # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
-#     for key, value in schema.sample_level_data.items():
-#         if value["type"] == file_type:
-#             id_map[value["label"]] = key
-#
-#     return id_map
-
-
-# def get_enum_map(bbc, table_name, file_type):
-#     """
-#     Get a dict of file/figure labels
-
-#     :param str table_name: table name to query
-#     :param st file_type: "file" or "image"
-#     :return dict
-#     """
-
-#     enum_map = {}
-#     _LOGGER.debug(f"Getting enum map for {file_type} in {table_name}")
-
-#     # TO FIX: I think we need a different way to get the schema
-#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-
-#     for key, value in schema.sample_level_data.items():
-#         if value["type"] == file_type:
-#             enum_map[value["label"]] = value["label"]
-
-#     return enum_map
+def drs_response(status_code, msg):
+    """Helper function to make quick DRS responses"""
+    content = {"status_code": status_code, "msg": msg}
+    return JSONResponse(status_code=status_code, content=content)
