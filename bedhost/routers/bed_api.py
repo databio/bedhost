@@ -1,10 +1,10 @@
 import subprocess
 
 try:
-    from typing import Annotated, Dict, Optional, List
-except:
+    from typing import Annotated, Dict, Optional
+except ImportError:
     from typing_extensions import Annotated
-    from typing import Dict, Optional, List
+    from typing import Dict, Optional
 
 
 from fastapi import APIRouter, HTTPException, Query
@@ -57,13 +57,12 @@ async def get_example_bed_record():
 
 
 @router.get("/list", summary="Paged list of all BED records")
-async def list_beds(limit: int = 1000, token: str = None):
+async def list_beds(limit: int = 1000, token: int = None):
     """
     To get the first page, leave token field empty. The response will include a
     'next_page_token' field, which can be used to get the next page.
     """
-    x = bbc.bed.select_records(columns=["name"], limit=limit, cursor=token)
-    return x
+    return bbc.bed.select_records(columns=["name"], limit=limit, cursor=token)
 
 
 @router.get("/{bed_id}/metadata", summary="Get metadata for a single BED record")
@@ -90,10 +89,8 @@ async def get_bed_metadata(
         _LOGGER.info(f"Serving metadata for columns: {colnames}")
     except RecordNotFoundError:
         _LOGGER.warning("No records matched the query")
-        colnames = []
         values = [[]]
     return values
-    return {"columns": colnames, "data": values}
 
 
 @router.get(
@@ -116,7 +113,7 @@ def get_regions_for_bedfile(
     """
     res = bbc.bed.retrieve_one(bed_id, "bigbedfile")
     if isinstance(res, dict):
-        file = res.get("bigbedfile")
+        res.get("bigbedfile")
     else:
         raise HTTPException(
             status_code=404, detail="ERROR: bigBed file doesn't exists. Can't query."

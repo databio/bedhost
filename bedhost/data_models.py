@@ -1,30 +1,12 @@
-from typing import Dict, List, Tuple, Union
+from typing import Dict, List
 from fastapi import Path
 from pydantic import BaseModel
 from enum import Enum
 
 
-class DBResponse(BaseModel):
-    """
-    Database response data model
-    """
-
-    columns: List
-    data: Union[List[List], List[Dict], Tuple, Dict]
-
-
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
     {"http": "http"},
-)
-
-BedsetDigest = Path(
-    ...,
-    description="BED set digest",
-    regex=r"^\w+$",
-    max_length=32,
-    min_length=32,
-    # example=ex_bedset_digest,
 )
 
 
@@ -50,3 +32,9 @@ chromosome_number = Path(
     regex=r"^\S+$",
     example=ex_chr,
 )
+
+
+class BedsetResponse(BaseModel):
+    bedset_record_id: str
+    number_of_bedfiles: int
+    bedfile_metadata: List[Dict]

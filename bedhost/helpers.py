@@ -1,16 +1,12 @@
 import os
 
 from bbconf import BedBaseConf
-from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse, RedirectResponse, JSONResponse
 from typing import List
 from urllib import parse
 
 from . import _LOGGER
 from .const import (
-    CFG_PATH_KEY,
-    CFG_PATH_PIPELINE_OUTPUT_KEY,
-    CFG_REMOTE_KEY,
     TYPES_MAPPING,
     VALIDATIONS_MAPPING,
     OPERATORS_MAPPING,
@@ -208,7 +204,7 @@ def attach_routers(app):
     return app
 
 
-def configure(bbconf_file_path, app):
+def configure(bbconf_file_path: str) -> BedHostConf:
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         _LOGGER.info(f"Loading config: '{bbconf_file_path}'")

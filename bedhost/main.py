@@ -8,7 +8,16 @@ from fastapi.responses import JSONResponse, HTMLResponse
 from urllib.parse import urlparse
 from fastapi import HTTPException
 
-from bbconf.exceptions import MissingObjectError, MissingThumbnailError, BadAccessMethodError
+from bbconf.exceptions import (
+    MissingObjectError,
+    MissingThumbnailError,
+    BadAccessMethodError,
+)
+from bbconf.const import (
+    CFG_SERVER_HOST_KEY,
+    CFG_SERVER_KEY,
+    CFG_SERVER_PORT_KEY,
+)
 from pipestat.exceptions import RecordNotFoundError, ColumnNotFoundError
 
 import markdown
@@ -25,9 +34,6 @@ from .helpers import (
 from .cli import build_parser
 from .const import (
     ALL_VERSIONS,
-    CFG_SERVER_HOST_KEY,
-    CFG_SERVER_KEY,
-    CFG_SERVER_PORT_KEY,
     PKG_NAME,
     STATIC_PATH,
     SERVER_VERSION,
@@ -244,6 +250,7 @@ def parse_bedbase_drs_object_id(object_id: str):
 
 # General-purpose exception handlers (so we don't have to write try/catch blocks in every endpoint)
 
+
 @app.exception_handler(MissingThumbnailError)
 async def exc_handler_MissingThumbnailError(req: Request, exc: MissingThumbnailError):
     return drs_response(404, "No thumbnail for this object.")
@@ -300,7 +307,7 @@ if __name__ != "__main__":
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         global bbc
         bbc = configure(
-            bbconf_file_path, app
+            bbconf_file_path
         )  # configure before attaching routers to avoid circular imports
         attach_routers(app)
     else:

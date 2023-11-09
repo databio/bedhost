@@ -18,7 +18,7 @@ async def text_to_bed_search(query):
         try:
             # qdrant automatically adds hypens to the ids. remove them.
             result["metadata"] = bbc.bed.retrieve(result["id"].replace("-", ""))
-        except RecordNotFoundError as E:
+        except RecordNotFoundError:
             _LOGGER.info(
                 f"Couldn't find qdrant result in bedbase for id: {result['id']}"
             )

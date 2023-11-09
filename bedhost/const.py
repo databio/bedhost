@@ -3,14 +3,6 @@ from enum import Enum
 from platform import python_version
 
 from bbconf import __version__ as bbconf_v
-from bbconf.const import (
-    CFG_PATH_KEY,
-    CFG_PATH_PIPELINE_OUTPUT_KEY,
-    CFG_REMOTE_KEY,
-    CFG_SERVER_HOST_KEY,
-    CFG_SERVER_KEY,
-    CFG_SERVER_PORT_KEY,
-)
 
 from ._version import __version__ as SERVER_VERSION
 
