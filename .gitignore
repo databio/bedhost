@@ -21,3 +21,6 @@ bedhost/static/bedhost-ui/
 
 # Models
 *.h5
+
+# For building
+geniml
