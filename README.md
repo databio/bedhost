@@ -49,7 +49,7 @@ This will start the server, which will listen on [http://0.0.0.0:8000](http:/0.0
 ### Building container
 
 ```console
-docker build -t databio/bedhost -f dev.Dockerfile .
+docker build -t databio/bedhost:dev -f dev.Dockerfile .
 ```
 
 ### Running container for development
@@ -72,6 +72,5 @@ Here's how I run the container:
 ```
 docker run --rm --init -p 8000:8000 --name bedstat-rest-server \
   --network="host" \
-  -v /home/nsheff/code/bedstat/output/results_pipeline:/home/nsheff/code/bedstat/output/results_pipeline \
-  bedstat-rest-api-server uvicorn main:app --reload
+  databio/bedhost:dev uvicorn main:app --reload
 ```

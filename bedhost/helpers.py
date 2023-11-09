@@ -216,25 +216,26 @@ def configure(bbconf_file_path, app):
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
 
-    if not CFG_REMOTE_KEY in bbc.config:
-        _LOGGER.debug(
-            f"Using local files for serving: "
-            f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
-        )
-        app.mount(
-            bbc.get_bedstat_output_path(),
-            StaticFiles(directory=bbc.get_bedstat_output_path()),
-            name="bedfile",
-        )
-        app.mount(
-            bbc.get_bedbuncher_output_path(),
-            StaticFiles(directory=bbc.get_bedbuncher_output_path()),
-            name="bedset",
-        )
-    else:
-        _LOGGER.debug(
-            f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
-        )
+    # if not CFG_REMOTE_KEY in bbc.config:
+    #     _LOGGER.debug(
+    #         f"Using local files for serving: "
+    #         f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
+    #     )
+    #     app.mount(
+    #         bbc.get_bedstat_output_path(),
+    #         StaticFiles(directory=bbc.get_bedstat_output_path()),
+    #         name="bedfile",
+    #     )
+    #     app.mount(
+    #         bbc.get_bedbuncher_output_path(),
+    #         StaticFiles(directory=bbc.get_bedbuncher_output_path()),
+    #         name="bedset",
+    #     )
+    # else:
+    #     _LOGGER.debug(
+    #         f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
+    #     )
+
     return bbc
 
 
