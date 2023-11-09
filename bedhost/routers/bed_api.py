@@ -1,5 +1,4 @@
 import subprocess
-import os
 
 try:
     from typing import Annotated, Dict, Optional, List
@@ -7,24 +6,14 @@ except:
     from typing_extensions import Annotated
     from typing import Dict, Optional, List
 
-import tempfile
 
-from fastapi import APIRouter, HTTPException, Path, Query, Response, Request
+from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from pipestat.exceptions import RecordNotFoundError
-from urllib.parse import urlparse
 
 from .. import _LOGGER
 from ..main import bbc
-from ..const import (
-    CFG_PATH_PIPELINE_OUTPUT_KEY,
-    CFG_REMOTE_KEY,
-    CFG_PATH_KEY,
-    FIG_FORMAT,
-)
 from ..data_models import (
-    DBResponse,
-    RemoteClassEnum,
     BedDigest,
     chromosome_number,
 )
@@ -41,7 +30,9 @@ async def get_bed_genome_assemblies():
     return bbc.bed.select_distinct(columns=["genome"])
 
 
-@router.get("/count", summary="Number of BED records in the database", response_model=int)
+@router.get(
+    "/count", summary="Number of BED records in the database", response_model=int
+)
 async def count_bed_record():
     """
     Returns the number of bed records available in the database
@@ -58,7 +49,9 @@ async def get_bed_schema():
     return d
 
 
-@router.get("/example", summary="Get metadata for an example BED record", response_model=Dict)
+@router.get(
+    "/example", summary="Get metadata for an example BED record", response_model=Dict
+)
 async def get_example_bed_record():
     return bbc.bed.select_records(limit=1)["records"][0]
 
@@ -103,7 +96,11 @@ async def get_bed_metadata(
     return {"columns": colnames, "data": values}
 
 
-@router.get("/{bed_id}/regions/{chr_num}", summary="Get regions from a BED file that overlap a query region.", response_class=PlainTextResponse)
+@router.get(
+    "/{bed_id}/regions/{chr_num}",
+    summary="Get regions from a BED file that overlap a query region.",
+    response_class=PlainTextResponse,
+)
 def get_regions_for_bedfile(
     bed_id: str = BedDigest,
     chr_num: str = chromosome_number,

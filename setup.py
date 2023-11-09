@@ -63,7 +63,7 @@ setup(
         ],
     },
     include_package_data=True,
-    **extra
+    **extra,
 )
 
 print(msg)

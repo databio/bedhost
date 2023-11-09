@@ -5,17 +5,18 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
-from typing import Dict
 from urllib.parse import urlparse
-from fastapi import Response, HTTPException
+from fastapi import HTTPException
 
-from bbconf.exceptions import *
+from bbconf.exceptions import MissingObjectError, MissingThumbnailError, BadAccessMethodError
 from pipestat.exceptions import RecordNotFoundError, ColumnNotFoundError
+
+import markdown
+from fastapi.templating import Jinja2Templates
 
 
 from . import _LOGGER
 from .helpers import (
-    FileResponse,
     configure,
     attach_routers,
     get_openapi_version,
@@ -32,6 +33,7 @@ from .const import (
     SERVER_VERSION,
 )
 
+
 tags_metadata = [
     {
         "name": "home",
@@ -40,7 +42,6 @@ tags_metadata = [
     {
         "name": "objects",
         "description": "Download BED files or BEDSET files via [GA4GH DRS standard](https://ga4gh.github.io/data-repository-service-schemas/). For details, see [BEDbase Developer Guide](/docs/guide).",
-
     },
     {
         "name": "bed",
@@ -80,9 +81,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-import markdown 
-from fastapi.templating import Jinja2Templates
 templates = Jinja2Templates(directory="bedhost/templates", autoescape=False)
+
 
 @app.get("/", summary="API intro page", tags=["home"])
 async def index(request: Request):
@@ -92,19 +92,30 @@ async def index(request: Request):
     return render_markdown("index.md", request)
 
 
-@app.get("/docs/changelog", summary="Release notes", response_class=HTMLResponse, tags=["home"])
+@app.get(
+    "/docs/changelog",
+    summary="Release notes",
+    response_class=HTMLResponse,
+    tags=["home"],
+)
 async def changelog(request: Request):
     return render_markdown("changelog.md", request)
 
-@app.get("/docs/guide", summary="Developer guide", response_class=HTMLResponse, tags=["home"])
+
+@app.get(
+    "/docs/guide", summary="Developer guide", response_class=HTMLResponse, tags=["home"]
+)
 async def guide(request: Request):
     return render_markdown("guide.md", request)
+
 
 def render_markdown(filename: str, request: Request):
     with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
         text = input_file.read()
     content = markdown.markdown(text)
-    return templates.TemplateResponse("page.html", {"request": request, "content": content})
+    return templates.TemplateResponse(
+        "page.html", {"request": request, "content": content}
+    )
 
 
 @app.get("/service-info", summary="GA4GH service info", tags=["home"])
@@ -133,6 +144,7 @@ async def service_info():
         "component_versions": all_versions,
     }
     return JSONResponse(content=ret)
+
 
 @app.get(
     "/objects/{object_id}",
@@ -282,11 +294,14 @@ def main():
 if __name__ != "__main__":
     if os.environ.get("BEDBASE_CONFIG"):
         import logging
+
         _LOGGER.setLevel(logging.DEBUG)
         _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         global bbc
-        bbc = configure(bbconf_file_path, app) # configure before attaching routers to avoid circular imports
+        bbc = configure(
+            bbconf_file_path, app
+        )  # configure before attaching routers to avoid circular imports
         attach_routers(app)
     else:
         raise EnvironmentError(

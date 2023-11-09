@@ -3,7 +3,7 @@ import os
 from bbconf import BedBaseConf
 from fastapi.staticfiles import StaticFiles
 from starlette.responses import FileResponse, RedirectResponse, JSONResponse
-from typing import List, Union
+from typing import List
 from urllib import parse
 
 from . import _LOGGER

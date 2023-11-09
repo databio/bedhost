@@ -1,3 +1,4 @@
+
 class BedHostException(Exception):
     """Base error type for bedhost custom errors."""
 
