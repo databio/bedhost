@@ -10,6 +10,8 @@ RUN apt-get install -y wget
 RUN apt-get install -y libcurl4
 
 RUN pip install --upgrade pip
+RUN pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip
+RUN pip install https://github.com/databio/bbconf/archive/refs/heads/dev.zip
 RUN pip install -r requirements/requirements-all.txt
 RUN pip install -r requirements/requirements-dev.txt
 RUN git clone https://github.com/vishnubob/wait-for-it.git

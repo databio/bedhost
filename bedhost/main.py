@@ -281,10 +281,12 @@ def main():
 
 if __name__ != "__main__":
     if os.environ.get("BEDBASE_CONFIG"):
+        import logging
+        _LOGGER.setLevel(logging.DEBUG)
+        _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        # must be configured before attaching routers to avoid circular imports
         global bbc
-        bbc = configure(bbconf_file_path, app)
+        bbc = configure(bbconf_file_path) # configure before attaching routers to avoid circular imports
         attach_routers(app)
     else:
         raise EnvironmentError(

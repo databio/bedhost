@@ -1,4 +1,4 @@
-name: Build React UI and push container to Dockerhub
+name: Build and push master image to Dockerhub
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     inputs: null   
     
 jobs:
-  build-UI-and-deploy:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout bedhost
