@@ -33,67 +33,59 @@ class BedSplash extends React.Component {
   }
 
   async componentDidMount() {
-    let schema = await api.get("/bed/schema").then(({ data }) => data["samples"])
+    let schema = await api.get("/bed/schema").then(({ data }) => data["properties"]["samples"]["properties"])
     this.setState({ bedSchema: schema });
     // console.log("bed schema: ", schema)
-    await api.get(`/bed/${this.props.router.params.bed_md5sum}/file_path/bigbedfile?remote_class=http`)
-      .then((res) => {
-        if (res.status === 200) {
-          this.setState({ bigbed: true });
-        }
-      })
-      .catch((err) => {
-        this.setState({ bigbed: false });
-      });
+    let res = await api.get(`/bed/${this.props.router.params.bed_md5sum}/metadata`)
+      .then((res) => res.data);
+    // console.log("bed data: ", res)
 
-
-    // get bedsplash data via fastapi endpoints
-    let bed_cols = ""
-    let bedfig_cols = ""
-    let bedfile_cols = ""
-    let bedstats_cols = ""
-
-    bed_splash_cols.forEach((col, idx) => {
-      if (idx === 0) {
-        bed_cols = `ids=${col}`
-      } else {
-        bed_cols = `${bed_cols}&ids=${col}`
-      }
-      this.setState({ bedCols: bed_cols });
-
-      if (schema[bed_splash_cols[idx]].type === "image") {
-        if (bedfig_cols) {
-          bedfig_cols = `${bedfig_cols}&ids=${col}`
-        } else {
-          bedfig_cols = `ids=${col}`
-        }
-      } else if (schema[bed_splash_cols[idx]].type === "file") {
-        if (bedfile_cols) {
-          bedfile_cols = `${bedfile_cols}&ids=${col}`
-        } else {
-          bedfile_cols = `ids=${col}`
-        }
-      } else if (schema[bed_splash_cols[idx]].type === "number" || schema[bed_splash_cols[idx]].type === "integer") {
-        if (bedstats_cols) {
-          bedstats_cols = `${bedstats_cols}&ids=${col}`
-        } else {
-          bedstats_cols = `ids=${col}`
-        }
-      }
-
+    if (res.bigbedfile !== null) {
       this.setState({
-        bedFigCols: bedfig_cols,
-        bedFileCols: bedfile_cols,
-        bedStatsCols: bedstats_cols,
-      });
-    });
+        bigbed: true
+      })
+    }
 
-    const result = await api
-      .get(`/bed/${this.props.router.params.bed_md5sum}/metadata?${bed_cols}`)
-      .then(({ data }) => data);
+    // // get bedsplash data via fastapi endpoints
+    // let bed_cols = ""
+    // let bedfig_cols = ""
+    // let bedfile_cols = ""
+    // let bedstats_cols = ""
 
-    let res = result.data
-    // console.log("res:", res)
+    // bed_splash_cols.forEach((col, idx) => {
+    //   if (idx === 0) {
+    //     bed_cols = `ids=${col}`
+    //   } else {
+    //     bed_cols = `${bed_cols}&ids=${col}`
+    //   }
+    //   this.setState({ bedCols: bed_cols });
+
+    //   if (schema[bed_splash_cols[idx]].type === "image") {
+    //     if (bedfig_cols) {
+    //       bedfig_cols = `${bedfig_cols}&ids=${col}`
+    //     } else {
+    //       bedfig_cols = `ids=${col}`
+    //     }
+    //   } else if (schema[bed_splash_cols[idx]].type === "file") {
+    //     if (bedfile_cols) {
+    //       bedfile_cols = `${bedfile_cols}&ids=${col}`
+    //     } else {
+    //       bedfile_cols = `ids=${col}`
+    //     }
+    //   } else if (schema[bed_splash_cols[idx]].type === "number" || schema[bed_splash_cols[idx]].type === "integer") {
+    //     if (bedstats_cols) {
+    //       bedstats_cols = `${bedstats_cols}&ids=${col}`
+    //     } else {
+    //       bedstats_cols = `ids=${col}`
+    //     }
+    //   }
+
+    //   this.setState({
+    //     bedFigCols: bedfig_cols,
+    //     bedFileCols: bedfile_cols,
+    //     bedStatsCols: bedstats_cols,
+    //   });
+    // });
 
     let bedStats = []
     Object.entries(res).forEach(([key, value], index) => {
@@ -109,17 +101,15 @@ class BedSplash extends React.Component {
 
     let newbedFig = []
     Object.entries(schema).forEach(([key, value], index) => {
-      // console.log("fig:", value.type)
-      if (typeof value.pipestat_type !== "undefined" && value.pipestat_type === "image") {
-        // console.log("figconsol:", key)
+      if (typeof value.object_type !== "undefined" && value.object_type === "image") {
         newbedFig.push(
           {
             id: key,
             title: value.description,
             src_pdf:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${key}?format=pdf`,
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http/bytes`,
             src_png:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/img/${key}?format=png`,
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http/thumbnail`,
           }
         )
       }
@@ -127,7 +117,7 @@ class BedSplash extends React.Component {
 
     let newbedFiles = {}
     Object.entries(schema).forEach(([key, value], index) => {
-      if (typeof value.pipestat_type !== "undefined" && value.pipestat_type === "file") {
+      if (typeof value.object_type !== "undefined" && value.object_type === "file") {
         if (res[key]) {
           newbedFiles[key] = res[key].size;
         }
@@ -142,48 +132,51 @@ class BedSplash extends React.Component {
       bedFig: newbedFig,
       bedFiles: newbedFiles,
       trackPath:
-        `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome}&mappability=full&hgct_customText=http://data.bedbase.org/bigbed_files/${res.name}.bigBed`,
+        `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome}&mappability=full&hgct_customText=${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/http`,
     });
 
-    // console.log("fig list:", this.state.bedFig)
 
     if (this.state.bigbed) {
+      let bedurl = await api.get(`${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data)
+      let bigbedurl = await api.get(`${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/http`).then(({ data }) => data)
+
       this.setState({
         bedDownload: {
           BED_File: {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bedfile`,
+              bedurl,
             http:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=http`,
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/http`,
             s3:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=s3`
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/s3`
           },
           bigBED_File: {
             id: "bigbedfile",
             label: "bigBed file",
             url:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bigBed`,
+              bigbedurl,
             http:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remote_class=http`,
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/http`,
             s3:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bigBed?remote_class=s3`
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/s3`
           },
         },
       });
     } else {
+      let bedurl = await api.get(`${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data)
       this.setState({
         bedDownload: {
           BED_File: {
             id: "bedfile",
             label: "BED file",
             url:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file/bedfile`,
+              bedurl,
             http:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=http`,
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/http`,
             s3:
-              `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/file_path/bedfile?remote_class=s3`
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/s3`
           },
         },
       });

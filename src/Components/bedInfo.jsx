@@ -33,7 +33,7 @@ export default function BedInfo(props) {
           }}
         >
           {typeof props.bed_info !== "undefined" ? (
-            <Col> {console.log(props)}
+            <Col>
               {Object.entries(props.bed_info).map(([key, value], index) => {
                 const hide = [
                   "bigbed",
