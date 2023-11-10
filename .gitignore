@@ -24,3 +24,5 @@ bedhost/static/bedhost-ui/
 
 # For building
 geniml
+
+local_cache

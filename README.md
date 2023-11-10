@@ -14,7 +14,7 @@ Running with `uvicorn` provides auto-reload. To configure, this assumes you have
 
 ```console
 source ../bedbase.org/environment/production.env
-BEDBASE_CONFIG=../bedbase.org/config/bedbase.yaml uvicorn bedhost.main:app --reload
+BEDBASE_CONFIG=../bedbase.org/config/dev1.bedbase.yaml uvicorn bedhost.main:app --reload
 ```
 
 You can change the database you're connecting to by using a different config file:
