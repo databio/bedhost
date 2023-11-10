@@ -20,16 +20,16 @@ export default class VersionsSpan extends React.Component {
 
   async componentDidMount() {
     let data = await api
-      .get("/versions")
-      .then(({ data }) => data)
-      .catch(function (error) {
-        alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
-      });
+      .get("/service-info")
+      .then(({ data }) => data["component_versions"])
+    // .catch(function (error) {
+    //   alert(`${error}; is bedhost running at ${bedhost_api_url}?`);
+    // });
 
     this.setState({
       openapi_version: data["openapi_version"],
       python_version: data["python_version"],
-      apiserver_version: data["apiserver_version"],
+      apiserver_version: data["bedhost_version"],
       bbconf_version: data["bbconf_version"],
     });
   }
