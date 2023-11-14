@@ -140,7 +140,7 @@ export default class ResultsBed extends React.Component {
         BEDbaseDB = "available"
         id = bed.metadata.record_identifier
       } else if (typeof bed.metadata === "undefined") {
-        name = bed.payload.fileid
+        name = ""
         BEDbaseDB = "not available"
         id = bed.id
       }
@@ -164,16 +164,16 @@ export default class ResultsBed extends React.Component {
       [255, 215, 0],
       [0, 161, 5],
     ];
-    if (perc < 0.5) {
+    if (perc < 0) {
       var color1 = gradient[1];
       var color2 = gradient[0];
-      var upper = 0.5;
-      var lower = 0;
+      var upper = 0;
+      var lower = -1;
     } else {
       color1 = gradient[2];
       color2 = gradient[1];
       upper = 1;
-      lower = 0.5;
+      lower = 0;
     }
     var firstcolor_x = lower;
     var secondcolor_x = upper - firstcolor_x;
@@ -193,7 +193,7 @@ export default class ResultsBed extends React.Component {
 
   getRelevance(score) {
     let color = this.perc2Color(score);
-    score = ((score) * 100).toFixed(2).toString() + "%";
+    // score = ((score) * 100).toFixed(2).toString() + "%";
     return (
       <p>
         <FaMinus
