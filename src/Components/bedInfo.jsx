@@ -15,7 +15,7 @@ export default function BedInfo(props) {
       <Card style={{ marginBottom: '10px' }}>
         <Card.Header>
           Summary
-          <a href={
+          {/* <a href={
             `${bedhost_api_url}/bed/${params.bed_md5sum}/metadata?ids=other`
           }>
             <FaExternalLinkAlt
@@ -25,7 +25,7 @@ export default function BedInfo(props) {
               }}
               color="teal"
             />
-          </a>
+          </a> */}
         </Card.Header>
         <Card.Body
           style={{
@@ -112,7 +112,7 @@ export default function BedInfo(props) {
               color="black"
             />
           </Link>
-          <a href={
+          {/* <a href={
             `${bedhost_api_url}/bed/${params.bed_md5sum}/metadata?${props.bedStats_cols}`
           }>
             <FaExternalLinkAlt
@@ -123,7 +123,7 @@ export default function BedInfo(props) {
               }}
               color="teal"
             />
-          </a>
+          </a> */}
         </Card.Header>
         <Card.Body
           style={{

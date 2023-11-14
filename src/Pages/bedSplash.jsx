@@ -252,7 +252,7 @@ class BedSplash extends React.Component {
                 <Card>
                   <Card.Header>
                     Downloads
-                    <a href={
+                    {/* <a href={
                       `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
                     }>
                       <FaExternalLinkAlt
@@ -263,7 +263,7 @@ class BedSplash extends React.Component {
                         }}
                         color="teal"
                       />
-                    </a>
+                    </a> */}
                   </Card.Header>
                   <Card.Body>
                     <Col>
@@ -294,7 +294,7 @@ class BedSplash extends React.Component {
                 <Card style={{ minHeight: '735px' }}>
                   <Card.Header>
                     GenomicDistribution Plots
-                    <a href={
+                    {/* <a href={
                       `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
                     }>
                       <FaExternalLinkAlt
@@ -305,7 +305,7 @@ class BedSplash extends React.Component {
                         }}
                         color="teal"
                       />
-                    </a>
+                    </a> */}
                   </Card.Header>
                   <Card.Body >
                     <Col >
