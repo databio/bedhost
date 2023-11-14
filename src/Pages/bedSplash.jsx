@@ -2,7 +2,6 @@ import React from "react";
 import { withRouter } from '../Components/withRouter';
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { ImgGrid, BedInfo } from "../Components"
-import { bed_splash_cols } from "../fastapi/bedQueries";
 import { FaExternalLinkAlt } from "react-icons/fa"
 import bedhost_api_url from "../const/server";
 import axios from "axios";
@@ -11,6 +10,16 @@ import "../style/splash.css";
 const api = axios.create({
   baseURL: bedhost_api_url,
 });
+
+function moveToTheEnd(arr) {
+  arr.map((elem, index) => {
+    if (elem.label.includes("percentage")) {
+      arr.splice(index, 1);
+      arr.push(elem);
+    }
+  })
+  return arr;
+}
 
 class BedSplash extends React.Component {
   constructor(props) {
@@ -46,48 +55,10 @@ class BedSplash extends React.Component {
       })
     }
 
-    // // get bedsplash data via fastapi endpoints
-    // let bed_cols = ""
-    // let bedfig_cols = ""
-    // let bedfile_cols = ""
-    // let bedstats_cols = ""
-
-    // bed_splash_cols.forEach((col, idx) => {
-    //   if (idx === 0) {
-    //     bed_cols = `ids=${col}`
-    //   } else {
-    //     bed_cols = `${bed_cols}&ids=${col}`
-    //   }
-    //   this.setState({ bedCols: bed_cols });
-
-    //   if (schema[bed_splash_cols[idx]].type === "image") {
-    //     if (bedfig_cols) {
-    //       bedfig_cols = `${bedfig_cols}&ids=${col}`
-    //     } else {
-    //       bedfig_cols = `ids=${col}`
-    //     }
-    //   } else if (schema[bed_splash_cols[idx]].type === "file") {
-    //     if (bedfile_cols) {
-    //       bedfile_cols = `${bedfile_cols}&ids=${col}`
-    //     } else {
-    //       bedfile_cols = `ids=${col}`
-    //     }
-    //   } else if (schema[bed_splash_cols[idx]].type === "number" || schema[bed_splash_cols[idx]].type === "integer") {
-    //     if (bedstats_cols) {
-    //       bedstats_cols = `${bedstats_cols}&ids=${col}`
-    //     } else {
-    //       bedstats_cols = `ids=${col}`
-    //     }
-    //   }
-
-    //   this.setState({
-    //     bedFigCols: bedfig_cols,
-    //     bedFileCols: bedfile_cols,
-    //     bedStatsCols: bedstats_cols,
-    //   });
-    // });
-
-    let bedStats = []
+    let bedStats = [{
+      label: schema["regions_no"].description,
+      data: res["regions_no"]
+    }]
     Object.entries(res).forEach(([key, value], index) => {
       if (typeof schema[key] !== "undefined" && schema[key].type === "number") {
         bedStats.push(
@@ -98,6 +69,8 @@ class BedSplash extends React.Component {
         )
       }
     });
+
+    bedStats = moveToTheEnd(bedStats)
 
     let newbedFig = []
     Object.entries(schema).forEach(([key, value], index) => {
@@ -135,6 +108,7 @@ class BedSplash extends React.Component {
         `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome}&mappability=full&hgct_customText=${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/http`,
     });
 
+    console.log("bed data: ", this.state.bedStats)
 
     if (this.state.bigbed) {
       let bedurl = await api.get(`${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data)
@@ -252,18 +226,6 @@ class BedSplash extends React.Component {
                 <Card>
                   <Card.Header>
                     Downloads
-                    {/* <a href={
-                      `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFileCols}`
-                    }>
-                      <FaExternalLinkAlt
-                        style={{
-                          marginBottom: "3px",
-                          marginLeft: "10px",
-                          fontSize: "15px",
-                        }}
-                        color="teal"
-                      />
-                    </a> */}
                   </Card.Header>
                   <Card.Body>
                     <Col>
@@ -294,18 +256,6 @@ class BedSplash extends React.Component {
                 <Card style={{ minHeight: '735px' }}>
                   <Card.Header>
                     GenomicDistribution Plots
-                    {/* <a href={
-                      `${bedhost_api_url}/bed/${this.props.router.params.bed_md5sum}/metadata?${this.state.bedFigCols}`
-                    }>
-                      <FaExternalLinkAlt
-                        style={{
-                          marginBottom: "3px",
-                          marginLeft: "10px",
-                          fontSize: "15px",
-                        }}
-                        color="teal"
-                      />
-                    </a> */}
                   </Card.Header>
                   <Card.Body >
                     <Col >

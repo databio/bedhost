@@ -3,8 +3,6 @@ import { useParams } from 'react-router-dom';
 import { HashLink as Link } from "react-router-hash-link";
 import { Col, Card } from 'react-bootstrap';
 import { BsQuestionCircle } from "react-icons/bs";
-import { FaExternalLinkAlt } from "react-icons/fa";
-import bedhost_api_url from "../const/server";
 
 
 export default function BedInfo(props) {
@@ -15,17 +13,6 @@ export default function BedInfo(props) {
       <Card style={{ marginBottom: '10px' }}>
         <Card.Header>
           Summary
-          {/* <a href={
-            `${bedhost_api_url}/bed/${params.bed_md5sum}/metadata?ids=other`
-          }>
-            <FaExternalLinkAlt
-              style={{
-                marginBottom: "3px",
-                marginLeft: "10px",
-              }}
-              color="teal"
-            />
-          </a> */}
         </Card.Header>
         <Card.Body
           style={{
@@ -112,18 +99,6 @@ export default function BedInfo(props) {
               color="black"
             />
           </Link>
-          {/* <a href={
-            `${bedhost_api_url}/bed/${params.bed_md5sum}/metadata?${props.bedStats_cols}`
-          }>
-            <FaExternalLinkAlt
-              style={{
-                marginBottom: "3px",
-                marginLeft: "10px",
-                fontSize: "15px",
-              }}
-              color="teal"
-            />
-          </a> */}
         </Card.Header>
         <Card.Body
           style={{
@@ -132,7 +107,7 @@ export default function BedInfo(props) {
         >
           <Col>
             {props.bed_stats.map((value, index) => {
-              return value.data !== null ? (
+              return value.data !== null && !value.label.includes("frequency") ? (
                 <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>
                   <label
                     style={{
