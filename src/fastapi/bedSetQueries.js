@@ -33,3 +33,17 @@ export const bedset_bedfiles_cols = [
   "fiveutr_frequency",
   "fiveutr_percentage"
 ]
+
+export const bedset_stats_cols = [
+  "gc_content", 
+  "median_tss_dist",
+  "mean_region_width"
+]
+
+export const bedset_distribution_cols = [
+  "exon", 
+  "fiveutr",
+  "intergenic",
+  "intron",
+  "threeutr"
+]

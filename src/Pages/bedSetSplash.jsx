@@ -7,7 +7,12 @@ import { BsQuestionCircle } from "react-icons/bs";
 import { BedSetTable, BedSetPlots, BarChart } from "../Components";
 import bedhost_api_url from "../const/server";
 import axios from "axios";
-import { bedset_splash_cols, bedset_bedfiles_cols } from "../fastapi/bedSetQueries";
+import {
+  bedset_splash_cols,
+  bedset_bedfiles_cols,
+  bedset_stats_cols,
+  bedset_distribution_cols
+} from "../fastapi/bedSetQueries";
 import "../style/splash.css";
 
 const api = axios.create({
@@ -38,73 +43,72 @@ class BedSetSplash extends React.Component {
     // get table schema via fastAPI
     const bed_schema = await api
       .get("/bed/schema")
-      .then(({ data }) => data);
+      .then(({ data }) => data["properties"]["samples"]["properties"]);
+    console.log("bed schema: ", bed_schema)
     const bedset_schema = await api
       .get("/bedset/schema")
+      .then(({ data }) => data["properties"]["samples"]["properties"]);
+    console.log("bed_set schema: ", bedset_schema)
+
+    // // get bedsplash data via fastapi endpoints
+    // let bedset_cols = ""
+    // bedset_splash_cols.forEach((col, idx) => {
+    //   if (idx === 0) {
+    //     bedset_cols = `ids=${col}`
+    //   } else {
+    //     bedset_cols = `${bedset_cols}&ids=${col}`
+    //   }
+    // });
+
+    const res = await api
+      .get(`/bedset/${this.props.router.params.bedset_md5sum}/metadata`)
       .then(({ data }) => data);
-
-    // get bedsplash data via fastapi endpoints
-    let bedset_cols = ""
-    bedset_splash_cols.forEach((col, idx) => {
-      if (idx === 0) {
-        bedset_cols = `ids=${col}`
-      } else {
-        bedset_cols = `${bedset_cols}&ids=${col}`
-      }
-    });
-
-    const result = await api
-      .get(`/bedset/${this.props.router.params.bedset_md5sum}/metadata?${bedset_cols}`)
-      .then(({ data }) => data);
-
-    let res = {}
-    result.columns.forEach((key, i) => res[key] = result.data[0][i]);
+    console.log("bedset data: ", res)
 
     const avg = res.bedset_means;
     const sd = res.bedset_standard_deviation;
 
     let bedSetFile = []
-    Object.entries(res).forEach(([key, value], index) => {
-      if (bedset_schema[key] &&
-        bedset_schema[key].type === "file" &&
-        key !== "bedset_igd_database_path") {
-        bedSetFile.push({
-          id: key,
-          label: bedset_schema[key].label.replaceAll("_", " "),
-          size: res[key].size,
-          url:
-            `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/file/${bedset_schema[key].label}`,
-          http:
-            `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/file_path/${bedset_schema[key].label}?remoteClass=http`,
-          s3:
-            `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/file_path/${bedset_schema[key].label}?remoteClass=s3`
-        })
-      }
-    });
+    // Object.entries(res).forEach(([key, value], index) => {
+    //   if (typeof bedset_schema[key].object_type !== "undefined" &&
+    //     bedset_schema[key].object_type === "file" &&
+    //     key !== "bedset_igd_database_path") {
+    //     bedSetFile.push({
+    //       id: key,
+    //       label: bedset_schema[key].label.replaceAll("_", " "),
+    //       size: res[key].size,
+    //       url:
+    //         this.getFileUrl(bedset_schema[key].label),
+    //       http:
+    //         `${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${bedset_schema[key].label}/access/http`,
+    //       s3:
+    //         `${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${bedset_schema[key].label}/access/s3`
+    //     })
+    //   }
+    // });
 
     let bedSetFig = []
-    Object.entries(res).forEach(([key, value], index) => {
-      if (bedset_schema[key] &&
-        bedset_schema[key].type === "image") {
+    Object.entries(bedset_schema).forEach(([key, value], index) => {
+      if (typeof value.object_type !== "undefined" && value.object_type === "image") {
         bedSetFig.push({
           id: key,
           src_pdf:
-            `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/img/${bedset_schema[key].label}?format=pdf`,
+            `${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${key}/access/http/bytes`,
           src_png:
-            `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/img/${bedset_schema[key].label}?format=png`,
+            `${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${key}/access/http/thumbnail`,
         })
       }
     });
 
 
-    let bed_cols = ""
-    bedset_bedfiles_cols.forEach((col, idx) => {
-      if (idx === 0) {
-        bed_cols = `ids=${col}`
-      } else {
-        bed_cols = `${bed_cols}&ids=${col}`
-      }
-    });
+    // let bed_cols = ""
+    // bedset_bedfiles_cols.forEach((col, idx) => {
+    //   if (idx === 0) {
+    //     bed_cols = `ids=${col}`
+    //   } else {
+    //     bed_cols = `${bed_cols}&ids=${col}`
+    //   }
+    // });
 
     let bedsetfig_cols = ""
     let bedsetfile_cols = ""
@@ -129,16 +133,31 @@ class BedSetSplash extends React.Component {
       });
     });
 
-    const result_bed = await api
-      .get(`/bedset/${this.props.router.params.bedset_md5sum}/bedfiles?${bed_cols}`)
-      .then(({ data }) => data);
+    const res_bed = await api
+      .get(`/bedset/${this.props.router.params.bedset_md5sum}/bedfiles`)
+      .then(({ data }) => data.bedfile_metadata);
+    console.log("bedset data: ", res_bed)
 
-    let res_bed = []
-    result_bed.data.forEach((bed, i) => {
-      let data = {}
-      result_bed.columns.forEach((key, i) => data[key] = bed[i])
-      res_bed.push(data)
-    });
+    let bedSetStat = []
+    bedset_stats_cols.forEach((col, idx) => {
+      if (avg[col] !== null) {
+        bedSetStat.push({
+          label: bed_schema[col].description,
+          data: [avg[col].toFixed(3), sd[col].toFixed(3)]
+        })
+      } else {
+        bedSetStat.push({
+          label: bed_schema[col].description,
+          data: []
+        });
+      }
+    })
+
+    let avgRegionD = {}
+    bedset_distribution_cols.forEach((col, idx) => {
+      let key = col + "_percentage"
+      avgRegionD[col] = [avg[key].toFixed(3), sd[key].toFixed(3)]
+    })
 
     this.setState({
       bedSetName: res.name,
@@ -150,52 +169,21 @@ class BedSetSplash extends React.Component {
       bedSchema: bed_schema,
       hubFilePath:
         `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome.alias}&hubUrl=${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/track_hub`,
-      bedSetStat: [
-        {
-          label: bed_schema["gc_content"].description,
-          data: [avg.gc_content.toFixed(3), sd.gc_content.toFixed(3)],
-        },
-        {
-          label: bed_schema["median_tss_dist"].description,
-          data: [
-            avg.median_tss_dist.toFixed(3),
-            sd.median_tss_dist.toFixed(3),
-          ],
-        },
-        {
-          label: bed_schema["mean_region_width"].description,
-          data: [
-            avg.mean_region_width.toFixed(3),
-            sd.mean_region_width.toFixed(3),
-          ],
-        },
-      ],
-      avgRegionD: {
-        exon: [avg.exon_percentage.toFixed(3), sd.exon_percentage.toFixed(3)],
-        fiveutr: [
-          avg.fiveutr_percentage.toFixed(3),
-          sd.fiveutr_percentage.toFixed(3),
-        ],
-        intergenic: [
-          avg.intergenic_percentage.toFixed(3),
-          sd.intergenic_percentage.toFixed(3),
-        ],
-        intron: [
-          avg.intron_percentage.toFixed(3),
-          sd.intron_percentage.toFixed(3),
-        ],
-        threeutr: [
-          avg.threeutr_percentage.toFixed(3),
-          sd.threeutr_percentage.toFixed(3),
-        ],
-      },
+      bedSetStat: bedSetStat,
+      avgRegionD: avgRegionD,
     });
+    console.log("this.stats:", this.state)
   }
 
   async componentDidUpdate(prevProps, prevState) {
     if (prevProps.router.params.bedset_md5sum !== this.props.router.params.bedset_md5sum) {
       window.location.reload(true);
     }
+  }
+
+  async getFileUrl(file) {
+    let url = await api.get(`${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${file}/access/http`).then(({ data }) => data)
+    return url
   }
 
   render() {
@@ -224,7 +212,7 @@ class BedSetSplash extends React.Component {
                     />
                   </a>
                 </h3>
-                <span> md5sum: {this.props.router.params.bedset_md5sum} </span>
+                <span> ID: {this.props.router.params.bedset_md5sum} </span>
               </Col>
               <Col md="auto">
                 <a href={this.state.hubFilePath}>
@@ -323,18 +311,6 @@ class BedSetSplash extends React.Component {
                         color="black"
                       />
                     </Link>
-                    <a href={
-                      `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/metadata?ids=bedset_standard_deviation&ids=bedset_means`
-                    }>
-                      <FaExternalLinkAlt
-                        style={{
-                          marginBottom: "3px",
-                          marginLeft: "10px",
-                          fontSize: "15px",
-                        }}
-                        color="teal"
-                      />
-                    </a>
                   </Card.Header>
                   <Card.Body
                     style={{
@@ -342,8 +318,9 @@ class BedSetSplash extends React.Component {
                     }}
                   >
                     <Col component={'span'}>
+                      {console.log(this.state.bedSetStat)}
                       {this.state.bedSetStat.map((value, index) => {
-                        return value.data !== null ? (
+                        return value.data.length !== 0 ? (
                           <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>
                             <label
                               style={{
@@ -372,21 +349,9 @@ class BedSetSplash extends React.Component {
                     </Col>
                   </Card.Body>
                 </Card>
-                <Card>
+                {/* <Card>
                   <Card.Header>
                     Downloads
-                    <a href={
-                      `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/metadata?${this.state.bedSetFileCols}`
-                    }>
-                      <FaExternalLinkAlt
-                        style={{
-                          marginBottom: "3px",
-                          marginLeft: "10px",
-                          fontSize: "15px",
-                        }}
-                        color="teal"
-                      />
-                    </a>
                   </Card.Header>
                   <Card.Body
                     style={{
@@ -416,24 +381,12 @@ class BedSetSplash extends React.Component {
                       })}
                     </Col>
                   </Card.Body>
-                </Card>
+                </Card> */}
               </Col>
               <Col sm={7} md={7}>
                 <Card style={{ minHeight: '445px' }}>
                   <Card.Header>
                     BED Set Plots
-                    <a href={
-                      `${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/metadata?${this.state.bedSetFigCols}`
-                    }>
-                      <FaExternalLinkAlt
-                        style={{
-                          marginBottom: "3px",
-                          marginLeft: "10px",
-                          fontSize: "15px",
-                        }}
-                        color="teal"
-                      />
-                    </a>
                   </Card.Header>
                   <Card.Body
                     style={{

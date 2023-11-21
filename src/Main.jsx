@@ -132,8 +132,8 @@ class Main extends React.Component {
                         <Route exact path="/about" element={<About />} />
                         <Route exact path="/createBedSet" element={<CreateBedSet />} />
                         <Route path="/search" element={<Search />} />
-                        <Route path="/bedsetsplash/:bedset_md5sum" element={<BedSetSplash />} />
-                        <Route path="/bedsplash/:bed_md5sum" element={<BedSplash />} />
+                        <Route path="/bedset/:bedset_md5sum" element={<BedSetSplash />} />
+                        <Route path="/bed/:bed_md5sum" element={<BedSplash />} />
                     </Routes>
                 </main>
                 <VersionsSpan />

@@ -211,7 +211,7 @@ export default class ResultsBed extends React.Component {
         <Link
           className="home-link"
           to={{
-            pathname: `/bedsplash/${id}`,
+            pathname: `/bed/${id}`,
           }}
         >
           {name}

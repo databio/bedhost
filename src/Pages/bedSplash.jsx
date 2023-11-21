@@ -188,7 +188,7 @@ class BedSplash extends React.Component {
                     />
                   </a>
                 </h3>
-                <span> md5sum: {this.props.router.params.bed_md5sum} </span>
+                <span> ID: {this.props.router.params.bed_md5sum} </span>
               </Col>
               <Col md="auto">
                 {this.state.bigbed ? (

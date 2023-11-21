@@ -128,7 +128,7 @@ export default class ResultsBed extends React.Component {
           },
           render: rowData =>
             <Link className="home-link" to={{
-              pathname: `/bedsplash/${rowData.md5sum}`
+              pathname: `/bed/${rowData.md5sum}`
             }}>{rowData.name}
             </Link>
         })

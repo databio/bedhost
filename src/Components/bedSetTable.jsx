@@ -43,11 +43,12 @@ export default class BedSetTable extends React.Component {
         i["median_tss_dist"] = "n/a"
       }
     });
+    // console.log(editable)
 
     let bedSetFig = []
 
     Object.entries(this.props.schema).forEach(([key, value], index) => {
-      if (value.type === "image") {
+      if (value.object_type === "image") {
         bedSetFig.push({
           id: key,
           title: value.label,
@@ -56,11 +57,16 @@ export default class BedSetTable extends React.Component {
       }
     });
 
+    let table_cols = this.getColumns(cols)
+    // console.log(table_cols)
+
     this.setState({
       columns: cols,
-      tableColumns: this.getColumns(cols),
+      tableColumns: table_cols,
       bedSetData: editable,
       bedFigs: bedSetFig,
+    }, () => {
+      // console.log(this.state);
     });
 
     if (bed_count >= 10) {
@@ -74,6 +80,7 @@ export default class BedSetTable extends React.Component {
         pageSizeOptions: [bed_count],
       });
     }
+    // console.log(this.state)
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -85,10 +92,11 @@ export default class BedSetTable extends React.Component {
   }
 
   getColumns(cols) {
+    // console.log(cols)
     let tableColumns = [];
 
     for (var i = 0; i < cols.length; i++) {
-      if (i === 0) {
+      if (cols[i] === "name") {
         tableColumns.push({
           title: cols[i],
           field: cols[i],
@@ -104,7 +112,7 @@ export default class BedSetTable extends React.Component {
             <Link
               className="splash-link"
               to={{
-                pathname: `/bedsplash/${rowData.md5sum}`,
+                pathname: `/bed/${rowData.record_identifier}`,
               }}
             >
               {rowData.name}
@@ -144,6 +152,7 @@ export default class BedSetTable extends React.Component {
         }
       }
     }
+    // console.log(tableColumns)
     return tableColumns;
   }
 

@@ -93,7 +93,7 @@ export default class ResultsBedSet extends React.Component {
           title: cols[i],
           field: cols[i],
           render: rowData => <Link className="home-link" to={{
-            pathname: `/bedsetsplash/${rowData.md5sum}`
+            pathname: `/bedset/${rowData.md5sum}`
           }}>{rowData.name}
           </Link>
         })
