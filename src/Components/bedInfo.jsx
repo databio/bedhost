@@ -19,7 +19,7 @@ export default function BedInfo(props) {
             padding: "10px",
           }}
         >
-          {typeof props.bed_info !== "undefined" ? (
+          {typeof props.bed_info !== "undefined" && props.bed_info !== null ? (
             <Col>
               {Object.entries(props.bed_info).map(([key, value], index) => {
                 const hide = [
