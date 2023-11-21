@@ -225,9 +225,9 @@ export default class ResultsBed extends React.Component {
   }
 
   addtoBedSet(data) {
-    alert(`You added ${data.name} to your BED set.`)
+    alert(`You added ${data.name.props.children} to your BED set.`)
     this.setState({
-      myBedSet: [...this.state.myBedSet, { "name": data.name, "md5sum": data.md5sum }]
+      myBedSet: [...this.state.myBedSet, { "name": data.name.props.children, "md5sum": data.md5sum }]
     }, () => {
       localStorage.setItem('myBedSet', JSON.stringify(this.state.myBedSet))
     })
@@ -263,7 +263,7 @@ export default class ResultsBed extends React.Component {
               pageSizeOptions: this.state.pageSizeOptions,
               search: false,
               toolbar: false,
-              idSynonym: 'md5sum',
+              idSynonym: 'record_indentifier',
             }}
             components={{
               Container: (props) => <Paper {...props} elevation={0} />,
