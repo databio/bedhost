@@ -13,7 +13,7 @@ export const bedset_splash_cols = [
 
 export const bedset_bedfiles_cols = [
   "name",
-  "md5sum",
+  "record_identifier",
   "regions_no",
   "gc_content",
   "mean_region_width",

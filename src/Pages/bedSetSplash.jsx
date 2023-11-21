@@ -28,12 +28,11 @@ class BedSetSplash extends React.Component {
       genome: {},
       bedSetStat: [],
       avgRegionD: {},
-      bedSetDownload: [],
-      bedSetFileCols: "",
+      // bedSetDownload: [],
+      // bedSetFileCols: "",
       bedSetFig: false,
-      bedSetFigCols: "",
+      // bedSetFigCols: "",
       hubFilePath: "",
-      description: "",
       bedSetTableData: {},
       bedSchema: {}
     };
@@ -65,10 +64,45 @@ class BedSetSplash extends React.Component {
       .then(({ data }) => data);
     console.log("bedset data: ", res)
 
+    this.setState({
+      bedSetName: res.name,
+      genome: res.genome,
+      bedSchema: bed_schema,
+      hubFilePath:
+        `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome.alias}&hubUrl=${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/track_hub`,
+    });
+
     const avg = res.bedset_means;
     const sd = res.bedset_standard_deviation;
 
-    let bedSetFile = []
+    let bedSetStat = []
+    bedset_stats_cols.forEach((col, idx) => {
+      if (avg[col] !== null) {
+        bedSetStat.push({
+          label: bed_schema[col].description,
+          data: [avg[col].toFixed(3), sd[col].toFixed(3)]
+        })
+      } else {
+        bedSetStat.push({
+          label: bed_schema[col].description,
+          data: []
+        });
+      }
+    })
+    this.setState({
+      bedSetStat: bedSetStat,
+    })
+
+    let avgRegionD = {}
+    bedset_distribution_cols.forEach((col, idx) => {
+      let key = col + "_percentage"
+      avgRegionD[col] = [avg[key].toFixed(3), sd[key].toFixed(3)]
+    })
+    this.setState({
+      avgRegionD: avgRegionD,
+    })
+
+    // let bedSetFile = []
     // Object.entries(res).forEach(([key, value], index) => {
     //   if (typeof bedset_schema[key].object_type !== "undefined" &&
     //     bedset_schema[key].object_type === "file" &&
@@ -100,6 +134,10 @@ class BedSetSplash extends React.Component {
       }
     });
 
+    this.setState({
+      bedSetFig: bedSetFig,
+    });
+
 
     // let bed_cols = ""
     // bedset_bedfiles_cols.forEach((col, idx) => {
@@ -110,68 +148,39 @@ class BedSetSplash extends React.Component {
     //   }
     // });
 
-    let bedsetfig_cols = ""
-    let bedsetfile_cols = ""
-    Object.entries(bedset_schema).forEach(([key, value], index) => {
-      if (value.type === "image") {
-        if (bedsetfig_cols) {
-          bedsetfig_cols = `${bedsetfig_cols}&ids=${key}`
-        } else {
-          bedsetfig_cols = `ids=${key}`
-        }
-      } else if (value.type === "file") {
-        if (bedsetfile_cols) {
-          bedsetfile_cols = `${bedsetfile_cols}&ids=${key}`
-        } else {
-          bedsetfile_cols = `ids=${key}`
-        }
-      }
+    // let bedsetfig_cols = ""
+    // let bedsetfile_cols = ""
+    // Object.entries(bedset_schema).forEach(([key, value], index) => {
+    //   if (value.object_type === "image") {
+    //     if (bedsetfig_cols) {
+    //       bedsetfig_cols = `${bedsetfig_cols}&ids=${key}`
+    //     } else {
+    //       bedsetfig_cols = `ids=${key}`
+    //     }
+    //   } else if (value.object_type === "file") {
+    //     if (bedsetfile_cols) {
+    //       bedsetfile_cols = `${bedsetfile_cols}&ids=${key}`
+    //     } else {
+    //       bedsetfile_cols = `ids=${key}`
+    //     }
+    //   }
 
-      this.setState({
-        bedSetFigCols: bedsetfig_cols,
-        bedSetFileCols: bedsetfile_cols,
-      });
-    });
+    //   this.setState({
+    //     bedSetFigCols: bedsetfig_cols,
+    //     bedSetFileCols: bedsetfile_cols,
+    //   });
+    // });
 
     const res_bed = await api
-      .get(`/bedset/${this.props.router.params.bedset_md5sum}/bedfiles`)
+      .get(`/bedset/${this.props.router.params.bedset_md5sum}/bedfiles?metadata=true`)
       .then(({ data }) => data.bedfile_metadata);
     console.log("bedset data: ", res_bed)
 
-    let bedSetStat = []
-    bedset_stats_cols.forEach((col, idx) => {
-      if (avg[col] !== null) {
-        bedSetStat.push({
-          label: bed_schema[col].description,
-          data: [avg[col].toFixed(3), sd[col].toFixed(3)]
-        })
-      } else {
-        bedSetStat.push({
-          label: bed_schema[col].description,
-          data: []
-        });
-      }
-    })
-
-    let avgRegionD = {}
-    bedset_distribution_cols.forEach((col, idx) => {
-      let key = col + "_percentage"
-      avgRegionD[col] = [avg[key].toFixed(3), sd[key].toFixed(3)]
-    })
-
     this.setState({
-      bedSetName: res.name,
-      genome: res.genome,
-      bedSetDownload: bedSetFile,
-      bedSetFig: bedSetFig,
       bedsCount: res_bed.length,
       bedSetTableData: res_bed,
-      bedSchema: bed_schema,
-      hubFilePath:
-        `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome.alias}&hubUrl=${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/track_hub`,
-      bedSetStat: bedSetStat,
-      avgRegionD: avgRegionD,
     });
+
     console.log("this.stats:", this.state)
   }
 
@@ -181,10 +190,10 @@ class BedSetSplash extends React.Component {
     }
   }
 
-  async getFileUrl(file) {
-    let url = await api.get(`${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${file}/access/http`).then(({ data }) => data)
-    return url
-  }
+  // async getFileUrl(file) {
+  //   let url = await api.get(`${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${file}/access/http`).then(({ data }) => data)
+  //   return url
+  // }
 
   render() {
     return (
@@ -318,7 +327,6 @@ class BedSetSplash extends React.Component {
                     }}
                   >
                     <Col component={'span'}>
-                      {console.log(this.state.bedSetStat)}
                       {this.state.bedSetStat.map((value, index) => {
                         return value.data.length !== 0 ? (
                           <div key={index} style={{ display: 'flex', flexDirection: 'row' }}>

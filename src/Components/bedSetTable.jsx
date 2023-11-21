@@ -11,7 +11,21 @@ import { Paper, TablePagination } from "@mui/material";
 import Modal from "react-bootstrap/Modal";
 import { tableIcons } from "./tableIcons";
 import ShowFig from "./showFig";
+import {
+  bedset_bedfiles_cols,
+} from "../fastapi/bedSetQueries";
 import "../style/splash.css";
+
+
+function filterData(dict, keys) {
+  return Object.keys(dict).reduce((result, key) => {
+    if (keys.includes(key)) {
+      result[key] = dict[key];
+    }
+    return result;
+  }, {});
+}
+
 
 export default class BedSetTable extends React.Component {
   constructor(props) {
@@ -35,15 +49,22 @@ export default class BedSetTable extends React.Component {
     // get bedsplash data via fastapi endpoints
     const bed_count = this.props.bedSetTableData.length;
 
-    let cols = Object.keys(this.props.bedSetTableData[0]);
+    let cols = bedset_bedfiles_cols;
 
-    const editable = this.props.bedSetTableData.map((o) => ({ ...o }));
+    let editable = this.props.bedSetTableData.map((o) => ({ ...o }));
+
     editable.forEach((i) => {
       if (i["median_tss_dist"] === 0) {
         i["median_tss_dist"] = "n/a"
       }
+      Object.entries(i).forEach(([key, value], index) => {
+        if (!bedset_bedfiles_cols.includes(key)) {
+          console.log(i)
+          delete i[key]
+        }
+      });
     });
-    // console.log(editable)
+    console.log(editable)
 
     let bedSetFig = []
 
@@ -100,7 +121,7 @@ export default class BedSetTable extends React.Component {
         tableColumns.push({
           title: cols[i],
           field: cols[i],
-          width: 200,
+          width: 350,
           cellStyle: {
           },
           headerStyle: {
@@ -137,6 +158,13 @@ export default class BedSetTable extends React.Component {
             width: 150,
           });
         } else if (cols[i].includes(this.state.hideCol)) {
+          tableColumns.push({
+            title: cols[i],
+            field: cols[i],
+            hidden: true,
+            width: 0,
+          });
+        } else if (cols[i] === "record_identifier") {
           tableColumns.push({
             title: cols[i],
             field: cols[i],
