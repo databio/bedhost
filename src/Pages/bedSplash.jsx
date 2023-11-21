@@ -74,15 +74,15 @@ class BedSplash extends React.Component {
 
     let newbedFig = []
     Object.entries(schema).forEach(([key, value], index) => {
-      if (typeof value.object_type !== "undefined" && value.object_type === "image") {
+      if (typeof value.object_type !== "undefined" && value.object_type === "image") {  
         newbedFig.push(
           {
             id: key,
             title: value.description,
             src_pdf:
-              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http/bytes`,
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http`,
             src_png:
-              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http/thumbnail`,
+              `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http`,
           }
         )
       }
@@ -108,7 +108,7 @@ class BedSplash extends React.Component {
         `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome}&mappability=full&hgct_customText=${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/http`,
     });
 
-    console.log("bed data: ", this.state.bedStats)
+    console.log("bed data: ", this.state)
 
     if (this.state.bigbed) {
       let bedurl = await api.get(`${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data)

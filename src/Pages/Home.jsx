@@ -11,6 +11,7 @@ import {
 import axios from "axios";
 import bedhost_api_url from "../const/server";
 import "../style/home.css";
+import "../style/search.css";
 
 const api = axios.create({
   baseURL: bedhost_api_url,
@@ -132,7 +133,7 @@ class Home extends React.Component {
                 </Col>
                 <Col md="auto" style={{ paddingLeft: "0px", paddingRight: "0px" }}>
                   <button
-                    className="float-right btn btn-search"
+                    className="float-right btn-search"
                     style={{
                       width: "100px",
                       height: "48px",
