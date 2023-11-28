@@ -37,7 +37,7 @@ export default class ResultsBed extends React.Component {
 
   async getBedBySearchTerms() {
     let res = await api.get(`/search/bed/${this.props.terms}`).then(({ data }) => data)
-    console.log("search res: ", res)
+    // console.log("search res: ", res)
 
     this.setState({
       bedData: res,
@@ -154,7 +154,6 @@ export default class ResultsBed extends React.Component {
       // row = Object.assign({}, row, bed.other);
       return row;
     })
-    console.log("data:", data)
     return (data)
   }
 

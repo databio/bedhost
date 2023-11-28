@@ -18,12 +18,10 @@ export default function ModalImage(props) {
     const getUrls = async () => {
       try {
         const pdfurl = await api.get(props.image.src_pdf).then(({ data }) => data)
-        console.log(pdfurl)
         const pngurl = pdfurl.replace(".pdf", ".png");
 
         setPdf(pdfurl)
         setPng(pngurl)
-        console.log(png, pdf)
       } catch (error) {
         console.log("error:", error)
         setPdf(`/fignotavl.svg`)

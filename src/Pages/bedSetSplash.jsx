@@ -43,11 +43,11 @@ class BedSetSplash extends React.Component {
     const bed_schema = await api
       .get("/bed/schema")
       .then(({ data }) => data["properties"]["samples"]["properties"]);
-    console.log("bed schema: ", bed_schema)
+    // console.log("bed schema: ", bed_schema)
     const bedset_schema = await api
       .get("/bedset/schema")
       .then(({ data }) => data["properties"]["samples"]["properties"]);
-    console.log("bed_set schema: ", bedset_schema)
+    // console.log("bed_set schema: ", bedset_schema)
 
     // // get bedsplash data via fastapi endpoints
     // let bedset_cols = ""
@@ -62,7 +62,7 @@ class BedSetSplash extends React.Component {
     const res = await api
       .get(`/bedset/${this.props.router.params.bedset_md5sum}/metadata`)
       .then(({ data }) => data);
-    console.log("bedset data: ", res)
+    // console.log("bedset data: ", res)
 
     this.setState({
       bedSetName: res.name,
@@ -174,14 +174,12 @@ class BedSetSplash extends React.Component {
     const res_bed = await api
       .get(`/bedset/${this.props.router.params.bedset_md5sum}/bedfiles?metadata=true`)
       .then(({ data }) => data.bedfile_metadata);
-    console.log("bedset data: ", res_bed)
+    // console.log("bedset data: ", res_bed)
 
     this.setState({
       bedsCount: res_bed.length,
       bedSetTableData: res_bed,
     });
-
-    console.log("this.stats:", this.state)
   }
 
   async componentDidUpdate(prevProps, prevState) {

@@ -41,7 +41,7 @@ export default class BedSetTable extends React.Component {
       selectedBedName: [],
       pageSize: -1,
       pageSizeOptions: [],
-      hideCol: "percentage",
+      hideCol: "frequency",
     };
   }
 
@@ -59,12 +59,10 @@ export default class BedSetTable extends React.Component {
       }
       Object.entries(i).forEach(([key, value], index) => {
         if (!bedset_bedfiles_cols.includes(key)) {
-          console.log(i)
           delete i[key]
         }
       });
     });
-    console.log(editable)
 
     let bedSetFig = []
 
@@ -300,8 +298,8 @@ export default class BedSetTable extends React.Component {
                           marginLeft: "10px"
                         }}
                         name='stats type'
-                        value={this.state.hideCol}
                         onChange={this.handleStatsType.bind(this)}
+                        value={this.state.hideCol}
                       >
                         <ToggleButton
                           component="div"

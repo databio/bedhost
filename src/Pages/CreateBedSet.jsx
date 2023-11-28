@@ -28,7 +28,6 @@ export default class CreateBedSet extends React.Component {
       this.getBedIdx()
       this.getFileUrl()
     }
-    console.log(this.state.url)
 
   }
 
@@ -67,8 +66,6 @@ export default class CreateBedSet extends React.Component {
 
 
   async getFileUrl() {
-    console.log(this.state.myBedSet);
-
     try {
       const urls = {};
       const promises = this.state.myBedSet.map(async (bed) => {
@@ -78,8 +75,6 @@ export default class CreateBedSet extends React.Component {
 
       // Wait for all promises to resolve
       await Promise.all(promises);
-
-      console.log(urls);
 
       this.setState({
         url: urls,

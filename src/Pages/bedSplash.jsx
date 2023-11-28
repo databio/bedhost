@@ -108,8 +108,6 @@ class BedSplash extends React.Component {
         `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome}&mappability=full&hgct_customText=${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/http`,
     });
 
-    console.log("bed data: ", this.state)
-
     if (this.state.bigbed) {
       let bedurl = await api.get(`${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data)
       let bigbedurl = await api.get(`${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.bigbedfile/access/http`).then(({ data }) => data)

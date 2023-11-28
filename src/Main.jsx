@@ -82,7 +82,7 @@ class Main extends React.Component {
                                 </h5>
                             </Nav.Link>
 
-                            <Nav.Link href="createBedSet">
+                            <Nav.Link href="/createBedSet">
                                 <h5>
                                     <BsFillInboxesFill
                                         size={20}
@@ -110,7 +110,7 @@ class Main extends React.Component {
                                 </h5>
                             </Nav.Link>
 
-                            <Nav.Link href="About">
+                            <Nav.Link href="/About">
                                 <h5>
                                     <BsFillInfoCircleFill
                                         size={20}
