@@ -1,6 +1,6 @@
 # bedhost-ui
 
-This directory contains the source files for bedhost user interface built with React.
+This repository contains the source files for bedhost user interface built with React.
 
 ## Development
 
