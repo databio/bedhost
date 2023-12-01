@@ -1,31 +1,34 @@
 # bedhost-ui
 
-This repository contains the source files for bedhost user interface built with React.
+This repository contains the source files for bedhost user interface written in React and built with Vite.
 
 ## Development
 
-_Make sure bedhost FastAPI server is running at port 8000_
-
-Install node modules defined in `package.json`
+1. Make sure bedhost FastAPI server is running at port 8000
+2. Install node module dependencies defined in `package.json`
 
 ```
 npm install
 ```
 
-Start Node server in the development mode on port 3000 by running the start react-script (defined in `package.json`).
+3. Start development server on port 3000 by running the start react script (defined in `package.json`).
 
 ```
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser. Changes made in `./src` will cause server updates
+4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-## Prepare production package
+You can then develop the app by editing the source in the `/src` subfolder. Changes made in `./src` be reflected in real time.
 
-Build the app for production to the `./build` folder
+## Production
 
-```
-npm run build
-```
+### Build production package
 
-The contents of the `./build` directory can be copied over to `bedhost/bedhost/static/bedhost-ui`
+To test the building process, you can build the app for production to the `./build` folder using `npm run build`.
+If you wanted, you could take the contents of the `./build` directory push these to a web host; in the past, we would copy these to `bedhost/bedhost/static/bedhost-ui` to deploy with the server.
+However, we are using an automated deployment with cloudflare (see below).
+
+### Deployment
+
+The actual deployment happens via a webhook to cloudflare. Pushes to the repository trigger cloudflare to re-build and re-deploy the static site using Cloudflare Pages.
