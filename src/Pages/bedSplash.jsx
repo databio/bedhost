@@ -58,7 +58,7 @@ class BedSplash extends React.Component {
           code: error.response.status
         })
       });
-    // console.log("bed data: ", res)
+    console.log("bed data: ", res)
     if (this.state.code === 200) {
       if (res.bigbedfile !== null) {
         this.setState({
@@ -108,10 +108,17 @@ class BedSplash extends React.Component {
         }
       });
 
+      let bedMeta = {
+        created_time: res.pipestat_created_time,
+        last_modified: res.pipestat_modified_time
+      }
+
+      bedMeta = { ...res.other, ...bedMeta };
+
       this.setState({
         bedName: res.name,
         bedGenome: res.genome,
-        bedMeta: res.other,
+        bedMeta: bedMeta,
         bedStats: bedStats,
         bedFig: newbedFig,
         bedFiles: newbedFiles,

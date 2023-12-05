@@ -25,6 +25,8 @@ class BedSetSplash extends React.Component {
     this.state = {
       bedSetName: "",
       bedsCount: "",
+      creatTime: "",
+      modifiedTime: "",
       genome: {},
       bedSetStat: [],
       avgRegionD: {},
@@ -69,15 +71,17 @@ class BedSetSplash extends React.Component {
         return data;
       })
       .catch(error => {
-          this.setState({
-            code: error.response.status
-          })
+        this.setState({
+          code: error.response.status
+        })
       });
-    // console.log("bedset data: ", res)
+    console.log("bedset data: ", res)
     if (this.state.code === 200) {
       this.setState({
         bedSetName: res.name,
         genome: res.genome,
+        creatTime: res.pipestat_created_time,
+        modifiedTime: res.pipestat_modified_time,
         bedSchema: bed_schema,
         hubFilePath:
           `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome.alias}&hubUrl=${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/track_hub`,
@@ -268,6 +272,7 @@ class BedSetSplash extends React.Component {
                     <Card.Body
                       style={{
                         padding: "10px",
+                        minHeight: "125px"
                       }}
                     >
                       <Col>
@@ -280,7 +285,24 @@ class BedSetSplash extends React.Component {
                               textAlign: "right"
                             }}
                           >
-                            genome:
+                            Total BED:
+                          </label>
+                          <div style={{
+                            marginLeft: "10px"
+                          }}>
+                            {this.state.bedsCount}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'row' }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              width: '208px',
+                              display: "block",
+                              textAlign: "right"
+                            }}
+                          >
+                            Genome:
                           </label>
                           <div style={{
                             marginLeft: "10px"
@@ -312,12 +334,28 @@ class BedSetSplash extends React.Component {
                               textAlign: "right"
                             }}
                           >
-                            total BED:
+                            Created time:
                           </label>
                           <div style={{
                             marginLeft: "10px"
                           }}>
-                            {this.state.bedsCount}
+                            {this.state.creatTime}
+                          </div>
+                        </div> <div style={{ display: 'flex', flexDirection: 'row' }}>
+                          <label
+                            style={{
+                              fontWeight: "bold",
+                              width: '208px',
+                              display: "block",
+                              textAlign: "right"
+                            }}
+                          >
+                            Last modified:
+                          </label>
+                          <div style={{
+                            marginLeft: "10px"
+                          }}>
+                            {this.state.modifiedTime}
                           </div>
                         </div>
                       </Col>
@@ -340,6 +378,7 @@ class BedSetSplash extends React.Component {
                     <Card.Body
                       style={{
                         padding: "10px",
+                        minHeight: "125px"
                       }}
                     >
                       <Col component={'span'}>
@@ -408,7 +447,7 @@ class BedSetSplash extends React.Component {
                 </Card> */}
                 </Col>
                 <Col sm={7} md={7}>
-                  <Card style={{ minHeight: '445px' }}>
+                  <Card style={{ height: '345px' }}>
                     <Card.Header>
                       BED Set Plots
                     </Card.Header>

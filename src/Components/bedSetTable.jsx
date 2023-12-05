@@ -234,6 +234,7 @@ export default class BedSetTable extends React.Component {
 
   handleStatsType(selectedValue) {
     this.setState({ hideCol: selectedValue });
+    console.log(this.state.hideCol)
   }
 
   render() {
@@ -302,6 +303,7 @@ export default class BedSetTable extends React.Component {
                         value={this.state.hideCol}
                       >
                         <ToggleButton
+                          id="precentage"
                           component="div"
                           className="btn-xs"
                           type='radio'
@@ -311,6 +313,7 @@ export default class BedSetTable extends React.Component {
                           Percentage
                         </ToggleButton>
                         <ToggleButton
+                          id="frequency"
                           component="div"
                           className="btn-xs"
                           type='radio'
