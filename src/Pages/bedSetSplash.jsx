@@ -80,8 +80,8 @@ class BedSetSplash extends React.Component {
       this.setState({
         bedSetName: res.name,
         genome: res.genome,
-        creatTime: res.pipestat_created_time,
-        modifiedTime: res.pipestat_modified_time,
+        creatTime: res.pipestat_created_time.replace(/(.*?:.*?):.*/, '$1'),
+        modifiedTime: res.pipestat_modified_time.replace(/(.*?:.*?):.*/, '$1'),
         bedSchema: bed_schema,
         hubFilePath:
           `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${res.genome.alias}&hubUrl=${bedhost_api_url}/bedset/${this.props.router.params.bedset_md5sum}/track_hub`,

@@ -9,7 +9,7 @@ export default function noRecord(props) {
         <div className="conten-body">
             <Container style={{ width: "75%" }} fluid className="p-4">
                 {
-                    type === "bed" ? (<h1 style={{ color: "#e76f51" }} >BED file "{md5sum}" does not exsit. </h1>
+                    type === "bed" ? (<h1 style={{ color: "#e76f51" }} >BED file "{md5sum}" does not exist. </h1>
                     ) : (
                         <h1 style={{ color: "#e76f51" }} >BED set "{md5sum}" does not exsit. </h1>
                     )

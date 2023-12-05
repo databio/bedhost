@@ -97,13 +97,9 @@ class Home extends React.Component {
                     Welcome to BEDbase
                   </h1>
                 </Col>
-                {this.state.bedSet !== -1 ? (
-                  <>
-                    <p style={{ marginBottom: "3px" }}>
-                      Hosting {this.state.bed} BED files and  {this.state.bedSet} BED sets.
+                    <p>
+                    {this.state.bedSet !== -1 ? (`Hosting ${this.state.bed} BED files and  ${this.state.bedSet} BED sets.`):('\u00a0\n')}
                     </p>
-                  </>
-                ) : null}
               </Row>
 
               <Row

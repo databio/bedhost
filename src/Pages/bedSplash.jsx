@@ -109,8 +109,8 @@ class BedSplash extends React.Component {
       });
 
       let bedMeta = {
-        created_time: res.pipestat_created_time,
-        last_modified: res.pipestat_modified_time
+        created_time: res.pipestat_created_time.replace(/(.*?:.*?):.*/, '$1'),
+        last_modified: res.pipestat_modified_time.replace(/(.*?:.*?):.*/, '$1')
       }
 
       bedMeta = { ...res.other, ...bedMeta };
