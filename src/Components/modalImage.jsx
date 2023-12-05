@@ -13,24 +13,29 @@ export default function ModalImage(props) {
   const [pdf, setPdf] = React.useState(props.image.src_pdf);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+  const onError = () => {
+    setPdf(`/fignotavl.svg`)
+    setPng(`/fignotavl_png.svg`)
+  };
 
-  React.useEffect(() => {
-    const getUrls = async () => {
-      try {
-        const pdfurl = await api.get(props.image.src_pdf).then(({ data }) => data)
-        const pngurl = pdfurl.replace(".pdf", ".png");
+  // React.useEffect(() => {
+  //   const getUrls = async () => {
+  //     try {
+  //       const pdfapi = props.image.src_pdf.replace("/bytes", "");
+  //       const pdfurl = await api.get(pdfapi).then(({ data }) => data)
+  //       const pngurl = pdfurl.replace(".pdf", ".png");
 
-        setPdf(pdfurl)
-        setPng(pngurl)
-      } catch (error) {
-        console.log("error:", error)
-        setPdf(`/fignotavl.svg`)
-        setPng(`/fignotavl_png.svg`)
-      }
-    };
+  //       // setPdf(pdfurl)
+  //       setPng(pngurl)
+  //     } catch (error) {
+  //       console.log("error:", error)
+  //       setPdf(`/fignotavl.svg`)
+  //       setPng(`/fignotavl_png.svg`)
+  //     }
+  //   };
 
-    getUrls();
-  }, []);
+  //   getUrls();
+  // }, []);
 
   return (
     <>
@@ -39,6 +44,7 @@ export default function ModalImage(props) {
         className={(props.page === "bed") ? "splash-img-bed" : "splash-img-bedset"}
         src={png}
         alt={props.image.id}
+        onError={onError}
       />
       <Modal
         centered

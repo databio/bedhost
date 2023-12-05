@@ -91,9 +91,9 @@ class BedSplash extends React.Component {
               id: key,
               title: value.description,
               src_pdf:
-                `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http`,
+                `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http/bytes`,
               src_png:
-                `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http`,
+                `${bedhost_api_url}/objects/bed.${this.props.router.params.bed_md5sum}.${key}/access/http/thumbnail`,
             }
           )
         }
