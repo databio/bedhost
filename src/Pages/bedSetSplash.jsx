@@ -144,7 +144,8 @@ class BedSetSplash extends React.Component {
             src_pdf:
               `${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${key}/access/http/bytes`,
             src_png:
-              `${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${key}/access/http/thumbnail`,
+              // `${bedhost_api_url}/objects/bedset.${this.props.router.params.bedset_md5sum}.${key}/access/http/thumbnail`,
+              `/fignotavl_png.svg`
           })
         }
       });
