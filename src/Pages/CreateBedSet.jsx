@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import MaterialTable from "@material-table/core";
 import { Paper, TablePagination } from "@mui/material";
 import { Container, Row, Col } from "react-bootstrap";
@@ -130,7 +131,17 @@ export default class CreateBedSet extends React.Component {
                     field: 'name',
                     cellStyle: {
                       width: 1300,
-                    }
+                    },
+                    render: (rowData) => (
+                      <Link
+                        className="splash-link"
+                        to={{
+                          pathname: `/bed/${rowData.md5sum}`,
+                        }}
+                      >
+                        {rowData.name}
+                      </Link>
+                    ),
                   },
                   { title: 'md5sum', field: 'md5sum', hidden: true, }
                 ]}
@@ -143,12 +154,12 @@ export default class CreateBedSet extends React.Component {
                     >
                       <BsDownload className="my-icon" />
                     </a>,
-                    tooltip: 'Save User',
+                    tooltip: 'download',
                     onClick: (event, rowData) => this.getFileUrl(rowData)
                   }),
                   {
                     icon: () => <BsTrash className="my-icon" />,
-                    tooltip: 'Delete BED file',
+                    tooltip: 'delete',
                     onClick: (event, rowData) =>
                       new Promise((resolve, reject) => {
                         setTimeout(() => {
