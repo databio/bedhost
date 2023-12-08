@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { withRouter } from '../Components/withRouter';
 import {
   Container,
@@ -18,6 +18,7 @@ const api = axios.create({
 });
 
 function Home() {
+  const navigate = useNavigate();
   const [bed, setBed] = useState(-1);
   const [bedSet, setBedSet] = useState(-1);
   const [sampleBed, setSampleBed] = useState("");
@@ -56,7 +57,7 @@ function Home() {
     if (e.key === 'Enter') {
       if (searchTerms) {
         e.preventDefault();
-        props.router.navigate(`/search?terms=${searchTerms}`);
+        navigate(`/search?terms=${searchTerms}`);
       } else {
         alert("Please enter some search text!");
       }
@@ -65,7 +66,7 @@ function Home() {
 
   const handleSearchSubmit = () => {
     if (searchTerms) {
-      props.router.navigate(`/search?terms=${searchTerms}`);
+      navigate(`/search?terms=${searchTerms}`);
     } else {
       alert("Please enter some search text!");
     }
