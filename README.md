@@ -1,20 +1,20 @@
 # bedhost
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-
-This is a REST API for the bedstat pipeline produced statistics.
+`bedhost` is a Python FastAPI module for the API that powers BEDbase
 It needs a path to the *bedbase configuration file*, which can be provided either via `-c`/`--config` argument or read from `$BEDBASE` environment variable. 
+
 ## Running for development
 
 Running with `uvicorn` provides auto-reload. To configure, this assumes you have previously set up `databio/secrets`. 
 
 1. Source `.env` file to populate the environment variables referenced in the configuration file.
-2. Start `bedhost` using `uvicorn` and passing the configuration file via the `BEDBASE_CONFIG` env var.
+2. Start `bedhost` using `uvicorn` and pass the configuration file via the `BEDBASE_CONFIG` env var.
 
 
 ```console
 source ../bedbase.org/environment/production.env
-BEDBASE_CONFIG=../bedbase.org/config/dev1.bedbase.yaml uvicorn bedhost.main:app --reload
+BEDBASE_CONFIG=../bedbase.org/config/api.bedbase.org.yaml uvicorn bedhost.main:app --reload
 ```
 
 You can change the database you're connecting to by using a different config file:
