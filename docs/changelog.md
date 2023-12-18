@@ -2,10 +2,10 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format. 
 
-## [0.2.0] -- 2023-10-17
+## [0.2.0] -- 2023-12-18
 - remove all graphql
 - remove local static hosting of UI
-- update to new pipestat-based bbconf (pending)
+- update to new pipestat-based bbconf
 - major refactor of API that introduces backwards-incompatible changes
 
 ## [0.1.3] -- 2023-09-01

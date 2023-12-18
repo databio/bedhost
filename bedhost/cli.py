@@ -2,6 +2,7 @@ from . import PKG_NAME
 from ._version import __version__
 from ubiquerg import VersionInHelpParser
 from yacman import select_config
+from bbconf.const import CFG_ENV_VARS
 
 
 def build_parser():

@@ -1,7 +1,4 @@
 #! /usr/bin/env python
-
-import sys
-
 from setuptools import setup
 
 PACKAGE = "bedhost"
@@ -55,7 +52,7 @@ setup(
     ],
     keywords="project, bioinformatics, sequencing, ngs, workflow, GUI, bed, server",
     url="",
-    author="Michal Stolarczyk, Ognen Duzlevski, Bingjie Xue, Nathan Sheffield",
+    author="Oleksandr Khoroshevskyi, Michal Stolarczyk, Ognen Duzlevski, Bingjie Xue, Nathan Sheffield",
     license="BSD2",
     entry_points={
         "console_scripts": [
@@ -63,7 +60,7 @@ setup(
         ],
     },
     include_package_data=True,
-    **extra
+    **extra,
 )
 
 print(msg)

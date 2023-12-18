@@ -3,14 +3,6 @@ from enum import Enum
 from platform import python_version
 
 from bbconf import __version__ as bbconf_v
-from bbconf.const import (
-    CFG_PATH_KEY,
-    CFG_PATH_PIPELINE_OUTPUT_KEY,
-    CFG_REMOTE_KEY,
-    CFG_SERVER_HOST_KEY,
-    CFG_SERVER_KEY,
-    CFG_SERVER_PORT_KEY,
-)
 
 from ._version import __version__ as SERVER_VERSION
 
@@ -19,7 +11,7 @@ LOG_FORMAT = "%(levelname)s in %(funcName)s: %(message)s"
 
 # for now bedstat version is hard coded
 ALL_VERSIONS = {
-    "apiserver_version": SERVER_VERSION,
+    "bedhost_version": SERVER_VERSION,
     "bbconf_version": bbconf_v,
     "python_version": python_version(),
 }
@@ -27,7 +19,7 @@ TEMPLATES_DIRNAME = "templates"
 TEMPLATES_PATH = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), TEMPLATES_DIRNAME
 )
-STATIC_DIRNAME = "static"
+STATIC_DIRNAME = "../docs"
 STATIC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), STATIC_DIRNAME)
 
 UI_PATH = os.path.join(os.path.dirname(__file__), "static", "bedhost-ui")

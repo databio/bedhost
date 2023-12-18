@@ -1,16 +1,12 @@
 import os
 
 from bbconf import BedBaseConf
-from fastapi.staticfiles import StaticFiles
-from starlette.responses import FileResponse, RedirectResponse
-from typing import List, Union
+from starlette.responses import FileResponse, RedirectResponse, JSONResponse
+from typing import List
 from urllib import parse
 
 from . import _LOGGER
 from .const import (
-    CFG_PATH_KEY,
-    CFG_PATH_PIPELINE_OUTPUT_KEY,
-    CFG_REMOTE_KEY,
     TYPES_MAPPING,
     VALIDATIONS_MAPPING,
     OPERATORS_MAPPING,
@@ -34,7 +30,7 @@ class BedHostConf(BedBaseConf):
         :param bool remote: whether to redirect to a remote source or serve local
         :exception FileNotFoundError: if file not found
         """
-        remote = remote or self.is_remote
+        remote = remote or True
         if remote:
             _LOGGER.info(f"Redirecting to: {path}")
             return RedirectResponse(path)
@@ -208,7 +204,7 @@ def attach_routers(app):
     return app
 
 
-def configure(bbconf_file_path):
+def configure(bbconf_file_path: str) -> BedHostConf:
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         _LOGGER.info(f"Loading config: '{bbconf_file_path}'")
@@ -216,70 +212,30 @@ def configure(bbconf_file_path):
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
 
-    if not CFG_REMOTE_KEY in bbc.config:
-        _LOGGER.debug(
-            f"Using local files for serving: "
-            f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
-        )
-        app.mount(
-            bbc.get_bedstat_output_path(),
-            StaticFiles(directory=bbc.get_bedstat_output_path()),
-            name="bedfile",
-        )
-        app.mount(
-            bbc.get_bedbuncher_output_path(),
-            StaticFiles(directory=bbc.get_bedbuncher_output_path()),
-            name="bedset",
-        )
-    else:
-        _LOGGER.debug(
-            f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
-        )
+    # if not CFG_REMOTE_KEY in bbc.config:
+    #     _LOGGER.debug(
+    #         f"Using local files for serving: "
+    #         f"{bbc.config[CFG_PATH_KEY][CFG_PATH_PIPELINE_OUTPUT_KEY]}"
+    #     )
+    #     app.mount(
+    #         bbc.get_bedstat_output_path(),
+    #         StaticFiles(directory=bbc.get_bedstat_output_path()),
+    #         name="bedfile",
+    #     )
+    #     app.mount(
+    #         bbc.get_bedbuncher_output_path(),
+    #         StaticFiles(directory=bbc.get_bedbuncher_output_path()),
+    #         name="bedset",
+    #     )
+    # else:
+    #     _LOGGER.debug(
+    #         f"Using remote files for serving. Prefix: {bbc.config[CFG_REMOTE_KEY]['http']['prefix']}"
+    #     )
+
     return bbc
 
 
-# def get_id_map(bbc, table_name, file_type):
-#     """
-#     Get a dict for avalible file/figure ids
-#
-#     :param str table_name: table name to query
-#     :param st file_type: "file" or "image"
-#     :return dict
-#     """
-#
-#     id_map = {}
-#
-#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-#     # This is basically just doing this:
-#     # if table_name == BED_TABLE:
-#     #     schema = bbc.bed.schema
-#     # if table_name == BEDSET_TABLE:
-#     #     schema = bbc.bedset.schema
-#     # TODO: Eliminate the need for bedhost to be aware of table names; this should be abstracted away by bbconf/pipestat
-#     for key, value in schema.sample_level_data.items():
-#         if value["type"] == file_type:
-#             id_map[value["label"]] = key
-#
-#     return id_map
-
-
-# def get_enum_map(bbc, table_name, file_type):
-#     """
-#     Get a dict of file/figure labels
-
-#     :param str table_name: table name to query
-#     :param st file_type: "file" or "image"
-#     :return dict
-#     """
-
-#     enum_map = {}
-#     _LOGGER.debug(f"Getting enum map for {file_type} in {table_name}")
-
-#     # TO FIX: I think we need a different way to get the schema
-#     schema = serve_schema_for_table(bbc=bbc, table_name=table_name)
-
-#     for key, value in schema.sample_level_data.items():
-#         if value["type"] == file_type:
-#             enum_map[value["label"]] = value["label"]
-
-#     return enum_map
+def drs_response(status_code, msg):
+    """Helper function to make quick DRS responses"""
+    content = {"status_code": status_code, "msg": msg}
+    return JSONResponse(status_code=status_code, content=content)

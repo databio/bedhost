@@ -1,4 +1,4 @@
-name: Build dev React UI and push container to Dockerhub with dev tag
+name: Build and push dev image to Dockerhub
 
 on:
   push:
@@ -7,35 +7,11 @@ on:
     inputs: null   
     
 jobs:
-  dev-build-UI-and-deploy:
+  dev-build-and-push:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout bedhost
       uses: actions/checkout@v2
-
-    - name: Checkout bedhost-ui@dev
-      uses: actions/checkout@v2
-      with:
-        repository: databio/bedhost-ui
-        ref: dev
-        path: bedhost-ui
-
-    - name: Setup Node.js 12.18.4
-      uses: actions/setup-node@v1
-      with:
-        node-version: 12.18.4
-    - name: Build production package
-      run: |
-        cd bedhost-ui 
-        npm install
-        npm run build
-        cd ..
-
-    - name: Copy to bedhost package
-      run: |
-        mkdir -p bedhost/static/bedhost-ui
-        rm -rf bedhost/static/bedhost-ui/*
-        cp -r bedhost-ui/build/* bedhost/static/bedhost-ui/
 
     - name: Push to DockerHub
       uses: docker/build-push-action@v1
