@@ -31,4 +31,4 @@ COPY geniml /geniml
 RUN pip install --upgrade /geniml
 
 RUN pip install --upgrade "tokenizers>=0.14,<0.15"  # to be removed after https://github.com/databio/bbconf/issues/35
-
+# RUN pip install --upgrade "biocframe==0.4.1"  # https://github.com/BiocPy/GenomicRanges/issues/41
