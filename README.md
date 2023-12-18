@@ -48,9 +48,14 @@ This will start the server, which will listen on [http://0.0.0.0:8000](http:/0.0
 
 ### Building container
 
+- Primary container: `docker build -t databio/bedhost -f .Dockerfile .`
+- Test container: `docker build -t databio/bedhost:dev -f test.Dockerfile .`
+
 ```console
 docker build -t databio/bedhost:dev -f dev.Dockerfile .
 ```
+
+
 
 ### Running container for development
 
