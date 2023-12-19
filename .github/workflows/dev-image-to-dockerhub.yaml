@@ -1,8 +1,6 @@
 name: Build and push dev image to Dockerhub
 
 on:
-  push:
-    branches: [dev]
   workflow_dispatch:
     inputs: null   
     

@@ -42,3 +42,10 @@ Existing images can be found [at dockerhub](https://hub.docker.com/r/databio/bed
 ### Running container for development
 
 Configuration settings and deployment instructions are in the `bedbase.org` repository.
+
+
+## Deploying updates automatically
+
+The `bedhost/databio` image is built by a github action. It will build and push the `latest` image whenever a release is made. It will also tag that release with a tag for the release name.
+
+For the dev tag, you must deploy this through manual dispatch
