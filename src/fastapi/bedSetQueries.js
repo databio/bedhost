@@ -13,7 +13,7 @@ export const bedset_splash_cols = [
 
 export const bedset_bedfiles_cols = [
   "name",
-  "md5sum",
+  "record_identifier",
   "regions_no",
   "gc_content",
   "mean_region_width",
@@ -32,4 +32,18 @@ export const bedset_bedfiles_cols = [
   "threeutr_percentage",
   "fiveutr_frequency",
   "fiveutr_percentage"
+]
+
+export const bedset_stats_cols = [
+  "gc_content", 
+  "median_tss_dist",
+  "mean_region_width"
+]
+
+export const bedset_distribution_cols = [
+  "exon", 
+  "fiveutr",
+  "intergenic",
+  "intron",
+  "threeutr"
 ]

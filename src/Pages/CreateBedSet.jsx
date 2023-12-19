@@ -1,16 +1,17 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import MaterialTable from "@material-table/core";
-import { Paper, TablePagination } from "@material-ui/core";
+import { Paper, TablePagination } from "@mui/material";
 import { Container, Row, Col } from "react-bootstrap";
 import { BsTrash, BsDownload } from "react-icons/bs";
 import { tableIcons, DownloadBedSetDialog } from "../Components";
 import bedhost_api_url from "../const/server";
 import "../style/splash.css";
-// import axios from "axios";
+import axios from "axios";
 
-// const api = axios.create({
-//   baseURL: bedhost_api_url,
-// });
+const api = axios.create({
+  baseURL: bedhost_api_url,
+});
 
 export default class CreateBedSet extends React.Component {
   constructor() {
@@ -18,13 +19,15 @@ export default class CreateBedSet extends React.Component {
     this.state = {
       myBedSetName: "",
       myBedSet: JSON.parse(localStorage.getItem('myBedSet')),
-      myBedSetIdx: ""
+      myBedSetIdx: "",
+      url: {}
     };
   }
 
   async componentDidMount() {
     if (this.state.myBedSet) {
       this.getBedIdx()
+      this.getFileUrl()
     }
 
   }
@@ -32,7 +35,7 @@ export default class CreateBedSet extends React.Component {
   async createBedSet() {
     // hide before process myBEDSet function is complete 
     // let md = await api.post(
-    //   `/api/bedset/create/${this.state.myBedSetName}/${this.state.myBedSetIdx}`).then(({ data }) => data)
+    //   `/bedset/create/${this.state.myBedSetName}/${this.state.myBedSetIdx}`).then(({ data }) => data)
 
     // alert("Your BED set has been submitted for processing!")
 
@@ -60,6 +63,27 @@ export default class CreateBedSet extends React.Component {
       myBedSetIdx: id_list
     })
     this.forceUpdate();
+  }
+
+
+  async getFileUrl() {
+    try {
+      const urls = {};
+      const promises = this.state.myBedSet.map(async (bed) => {
+        const url = await api.get(`${bedhost_api_url}/objects/bed.${bed.md5sum}.bedfile/access/http`).then(({ data }) => data);
+        urls[bed.md5sum] = url;
+      });
+
+      // Wait for all promises to resolve
+      await Promise.all(promises);
+
+      this.setState({
+        url: urls,
+      });
+    } catch (error) {
+      // Handle errors, e.g., log the error or throw an exception
+      console.error('Error fetching URLs:', error);
+    }
   }
 
   render() {
@@ -107,7 +131,17 @@ export default class CreateBedSet extends React.Component {
                     field: 'name',
                     cellStyle: {
                       width: 1300,
-                    }
+                    },
+                    render: (rowData) => (
+                      <Link
+                        className="splash-link"
+                        to={{
+                          pathname: `/bed/${rowData.md5sum}`,
+                        }}
+                      >
+                        {rowData.name}
+                      </Link>
+                    ),
                   },
                   { title: 'md5sum', field: 'md5sum', hidden: true, }
                 ]}
@@ -116,16 +150,16 @@ export default class CreateBedSet extends React.Component {
                   rowData => ({
                     icon: () => <a
                       href={
-                        `${bedhost_api_url}/api/bed/${rowData.md5sum}/file/bed`}
+                        this.state.url[rowData.md5sum]}
                     >
                       <BsDownload className="my-icon" />
                     </a>,
-                    tooltip: 'Save User',
-                    onClick: (event, rowData) => alert(`Download ${rowData.name}`)
+                    tooltip: 'download',
+                    onClick: (event, rowData) => this.getFileUrl(rowData)
                   }),
                   {
                     icon: () => <BsTrash className="my-icon" />,
-                    tooltip: 'Delete BED file',
+                    tooltip: 'delete',
                     onClick: (event, rowData) =>
                       new Promise((resolve, reject) => {
                         setTimeout(() => {
@@ -159,7 +193,7 @@ export default class CreateBedSet extends React.Component {
                   Container: (props) => <Paper {...props} elevation={0} />,
                   Pagination: (props) => (
                     <Row className="justify-content-end">
-                      <TablePagination
+                      <TablePagination component="div"
                         {...props}
                       />
                     </Row>

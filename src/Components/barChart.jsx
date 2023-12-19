@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   BarChart,
   Bar,
@@ -9,74 +9,71 @@ import {
   ErrorBar,
 } from "recharts";
 
-export default class BedSetBarChart extends React.Component {
-  // static jsfiddleUrl = 'https://jsfiddle.net/alidingling/30763kr7/';
+export default function BedSetBarChart(props) {
+  const [data, setData] = useState([]);
 
-  constructor(props) {
-    super();
-    this.state = {
-      data: [],
+  useEffect(() => {
+    const fetchData = async () => {
+      let dataValue = Object.entries(await props.stats).map(
+        ([key, value], index) => {
+          return {
+            name: key,
+            value: Number((value[0] * 100).toFixed(2)),
+            std: [
+              Number((value[0] * 100).toFixed(2)) -
+              Number((value[1] * 100).toFixed(2)),
+              Number((value[0] * 100).toFixed(2)) +
+              Number((value[1] * 100).toFixed(2)),
+            ],
+          };
+        }
+      );
+      setData(dataValue);
     };
-  }
 
-  async componentDidMount() {
-    let data_value = Object.entries(await this.props.stats).map(
-      ([key, value], index) => {
-        return {
-          name: key,
-          value: Number((value[0] * 100).toFixed(2)),
-          std: [
-            Number((value[0] * 100).toFixed(2)) -
-            Number((value[1] * 100).toFixed(2)),
-            Number((value[0] * 100).toFixed(2)) +
-            Number((value[1] * 100).toFixed(2)),
-          ],
-        };
-      }
-    );
-    // console.log("BED set stats: ", data_value);
-    this.setState({ data: data_value });
-  }
+    fetchData();
+  }, [props.stats]);
 
-  render() {
-    return (
-      <div >
-        <span style={{ marginLeft: "20px" }}>
-          Mean Regional Distribution of the BED Set
-        </span>
-        <BarChart
-          width={380}
-          height={320}
-          data={this.state.data}
-          margin={{
-            top: 10,
-            right: 30,
-            left: 20,
-            bottom: 5,
+  return (
+    <div>
+      {console.log("BED set stats: ", data)}
+      <span style={{ marginLeft: "20px" }}>
+        Mean Regional Distribution of the BED Set
+      </span>
+      <BarChart
+        width={380}
+        height={250}
+        data={data}
+        margin={{
+          top: 10,
+          right: 30,
+          left: 20,
+          bottom: 35,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="name" interval={0} angle="-45" textAnchor="end" />
+        <YAxis
+          label={{
+            value: "Frequency (%)",
+            angle: -90,
+            position: "insideLeft",
+            dy: 50,
           }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis
-            label={{
-              value: "Frequency (%)",
-              angle: -90,
-              position: "insideLeft",
-              offset: 10,
-            }}
+        />
+        <Tooltip />
+        <Bar dataKey="value" fill="teal">
+          <ErrorBar
+            dataKey="std"
+            width={2}
+            strokeWidth={1}
+            stroke="black"
+            direction="y"
           />
-          <Tooltip />
-          <Bar dataKey="value" fill="teal">
-            <ErrorBar
-              dataKey="std"
-              width={2}
-              strokeWidth={1}
-              stroke="black"
-              direction="y"
-            />
-          </Bar>
-        </BarChart>
-      </div>
-    );
-  }
+        </Bar>
+      </BarChart>
+    </div>
+  );
 }
+
+
