@@ -101,7 +101,8 @@ const BedSetSplash = ({ router }) => {
               src_pdf:
                 `${bedhost_api_url}/objects/bedset.${router.params.bedset_md5sum}.${key}/access/http/bytes`,
               src_png:
-                `/fignotavl_png.svg`
+                `${bedhost_api_url}/objects/bedset.${router.params.bedset_md5sum}.${key}/access/http/thumbnail`,
+              // `/fignotavl_png.svg`
             })
           }
         });
