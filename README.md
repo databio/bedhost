@@ -1,8 +1,24 @@
-# bedhost
+<h1 align="center">bedhost</h1>
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Github badge](https://img.shields.io/badge/source-github-354a75?logo=github)](https://github.com/databio/bedhost)
+
 
 `bedhost` is a Python FastAPI module for the API that powers BEDbase
 It needs a path to the *bedbase configuration file*, which can be provided either via `-c`/`--config` argument or read from `$BEDBASE_CONFIG` environment variable. 
+
+---
+
+**Deployed public instance**: <a href="https://bedbase.org/" target="_blank">https://bedbase.org/</a>
+
+**Documentation**: <a href="https://docs.bedbase.org/" target="_blank">https://docs.bedbase.org/bedhost</a>
+
+**API**: <a href="https://api.bedbase.org/" target="_blank">https://api.bedbase.org/</a>
+
+**Source Code**: <a href="https://github.com/databio/bedhost/" target="_blank">https://github.com/databio/bedhost/</a>
+
+---
+
 
 ## Running for development
 
@@ -29,6 +45,7 @@ Now, you can access the service at [http://127.0.0.1:8000](http://127.0.0.1:8000
 - 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/metadata
 - 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/metadata?attr_ids=md5sum&attr_ids=genome
 
+----
 ## Running the server in Docker
 
 ### Building image
@@ -43,6 +60,7 @@ Existing images can be found [at dockerhub](https://hub.docker.com/r/databio/bed
 
 Configuration settings and deployment instructions are in the `bedbase.org` repository.
 
+---
 
 ## Deploying updates automatically
 

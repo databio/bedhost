@@ -1,4 +1,4 @@
-bbconf>=0.4.0
+bbconf>=0.4.1
 fastapi>=0.103.0
 geniml>=0.1.0
 logmuse>=0.2.7
@@ -7,4 +7,3 @@ requests
 setuptools
 uvicorn
 yacman>=0.9.2
-markdown

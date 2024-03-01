@@ -32,41 +32,6 @@ VALIDATIONS_MAPPING = {
     "number": {"min": 0, "step": 0.01},
     "string": None,
 }
-NUMERIC_OPERATORS = [
-    "equal",
-    "not_equal",
-    "greater",
-    "greater_or_equal",
-    "between",
-    "less",
-    "less_or_equal",
-    "is_null",
-    "is_not_null",
-]
-TEXT_OPERATORS = ["equal", "not_equal", "in", "not_in", "is_null", "is_not_null"]
-OPERATORS_MAPPING = {
-    "string": TEXT_OPERATORS,
-    "number": NUMERIC_OPERATORS,
-    "integer": NUMERIC_OPERATORS,
-}
-INIT_POSTGRES_CONDITION = "gc_content>0.5"
-INIT_QUERYBUILDER = {
-    "condition": "AND",
-    "rules": [
-        {
-            "id": "gc_content",
-            "field": "gc_content",
-            "type": "double",
-            "input": "number",
-            "operator": "greater",
-            "value": 0.5,
-        }
-    ],
-    "valid": True,
-}
-CUR_RESULT = "current_result"
-CUR_RULES = "current_rules"
-
 
 class FIG_FORMAT(str, Enum):
     png = "png"
