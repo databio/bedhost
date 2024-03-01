@@ -33,6 +33,7 @@ VALIDATIONS_MAPPING = {
     "string": None,
 }
 
+
 class FIG_FORMAT(str, Enum):
     png = "png"
     pdf = "pdf"

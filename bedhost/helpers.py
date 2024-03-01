@@ -67,6 +67,7 @@ class BedHostConf(BedBaseConf):
         except KeyError:
             return {}
 
+
 # TODO: remove this function if everything works
 # def get_search_setup(schema: dict):
 #     """
