@@ -19,7 +19,6 @@ It needs a path to the *bedbase configuration file*, which can be provided eithe
 
 ---
 
-
 ## Running for development
 
 Running with `uvicorn` provides auto-reload. To configure, this assumes you have previously set up `databio/secrets`. 
