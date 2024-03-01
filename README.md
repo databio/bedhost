@@ -1,8 +1,24 @@
-# bedhost
+<h1 align="center">bedhost</h1>
+
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Github badge](https://img.shields.io/badge/source-github-354a75?logo=github)](https://github.com/databio/bedhost)
+
 
 `bedhost` is a Python FastAPI module for the API that powers BEDbase
-It needs a path to the *bedbase configuration file*, which can be provided either via `-c`/`--config` argument or read from `$BEDBASE` environment variable. 
+It needs a path to the *bedbase configuration file*, which can be provided either via `-c`/`--config` argument or read from `$BEDBASE_CONFIG` environment variable. 
+
+---
+
+**Deployed public instance**: <a href="https://bedbase.org/" target="_blank">https://bedbase.org/</a>
+
+**Documentation**: <a href="https://docs.bedbase.org/" target="_blank">https://docs.bedbase.org/bedhost</a>
+
+**API**: <a href="https://api.bedbase.org/" target="_blank">https://api.bedbase.org/</a>
+
+**Source Code**: <a href="https://github.com/databio/bedhost/" target="_blank">https://github.com/databio/bedhost/</a>
+
+---
+
 
 ## Running for development
 
@@ -29,53 +45,25 @@ Now, you can access the service at [http://127.0.0.1:8000](http://127.0.0.1:8000
 - 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/metadata
 - 127.0.0.1:8000/bed/78c0e4753d04b238fc07e4ebe5a02984/metadata?attr_ids=md5sum&attr_ids=genome
 
-
-## Running for production
-
-You can also start the `bedhost` server like so:
-
-```
-bedhost serve -c /path/to/cfg.yaml
-```
-
-This will start the server, which will listen on [http://0.0.0.0:8000](http:/0.0.0.0:8000)
-
----
-
+----
 ## Running the server in Docker
 
-(These instructions may be a bit outdated)
+### Building image
 
-### Building container
+- Primary image: `docker build -t databio/bedhost -f .Dockerfile .`
+- Dev image `docker build -t databio/bedhost:dev -f dev.Dockerfile .`
+- Test image: `docker build -t databio/bedhost:dev -f test.Dockerfile .`
 
-- Primary container: `docker build -t databio/bedhost -f .Dockerfile .`
-- Test container: `docker build -t databio/bedhost:dev -f test.Dockerfile .`
-
-```console
-docker build -t databio/bedhost:dev -f dev.Dockerfile .
-```
-
-
+Existing images can be found [at dockerhub](https://hub.docker.com/r/databio/bedhost).
 
 ### Running container for development
 
-The container will need to have access to two different directories:
+Configuration settings and deployment instructions are in the `bedbase.org` repository.
 
-1. Output of bedboss pipeline
-2. Original location of raw .BED files used to produce bedboss output
+---
 
-For example, if LOLA Core DB was used as input to the bedstat pipeline and results were stored in `<some path>/bedstat/output/results_pipeline`:
+## Deploying updates automatically
 
-```
-docker run --rm -p 8000:8000 -e HOST=0.0.0.0 -e PORT=8000 --name bedstat-rest-server -v /ext/qumulo/LOLAweb/databases/LOLACore:/ext/qumulo/LOLAweb/databases/LOLACore -v /development/bedstat/output/results_pipeline:/development/bedstat/output/results_pipeline bedstat-rest-api-server
-```
+The `bedhost/databio` image is built by a github action. It will build and push the `latest` image whenever a release is made. It will also tag that release with a tag for the release name.
 
-Add a -d to the above command to run the docker container in the background (production).
-
-Here's how I run the container:
-
-```
-docker run --rm --init -p 8000:8000 --name bedstat-rest-server \
-  --network="host" \
-  databio/bedhost:dev uvicorn main:app --reload
-```
+For the dev tag, you must deploy this through manual dispatch
