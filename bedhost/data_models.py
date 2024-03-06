@@ -41,7 +41,25 @@ class BedsetResponse(BaseModel):
     bedfile_metadata: List[Dict]
 
 
-class MetadataResponse(BaseModel):
+class BedMetadataResponse(BaseModel):
     record_identifier: str
     metadata: yaml_to_pydantic("BedFile", bbc.bed._schema_path)
+    raw: Union[Dict[str, Any], None] = None
+
+
+class RecordsIdReturn(BaseModel):
+    record_identifier: str = None
+    name: Union[str, None] = (None,)
+
+
+class ListBedFilesResponse(BaseModel):
+    total_size: int
+    page_size: int
+    next_page_token: int
+    records: List[RecordsIdReturn]
+
+
+class BedSetMetadataResponse(BaseModel):
+    record_identifier: str
+    metadata: yaml_to_pydantic("BedSet", bbc.bedset._schema_path)
     raw: Union[Dict[str, Any], None] = None

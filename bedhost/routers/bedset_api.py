@@ -1,13 +1,13 @@
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Union, Any
 from fastapi import APIRouter, Query, Request, Response
 
-from ..data_models import BedsetResponse
+from ..data_models import BedsetResponse, BedSetMetadataResponse, ListBedFilesResponse
 from ..main import bbc
 
 router = APIRouter(prefix="/bedset", tags=["bedset"])
 
 
-@router.get("/genomes")
+@router.get("/genomes", response_model=List[Union[Dict]])
 async def get_bedset_genome_assemblies():
     """
     Returns available genome assemblies in the database
@@ -24,7 +24,7 @@ async def get_bedset_count():
     return int(bbc.bedset.record_count)
 
 
-@router.get("/schema", response_model=Dict)
+@router.get("/schema", response_model=Dict[str, Any])
 async def get_bedset_schema():
     """
     Get bedsets pipestat schema
@@ -33,13 +33,22 @@ async def get_bedset_schema():
 
 
 @router.get(
-    "/example", summary="Get metadata for an example BEDset record", response_model=Dict
+    "/example",
+    summary="Get metadata for an example BEDset record",
+    response_model=BedSetMetadataResponse,
 )
 async def get_example_bedset_record():
-    return bbc.bedset.select_records(limit=1)["records"][0]
+    result = bbc.bedset.select_records(limit=1)["records"][0]
+    return BedSetMetadataResponse(
+        record_identifier=result["record_identifier"], metadata=result, raw=None
+    )
 
 
-@router.get("/list", summary="Paged list of all BEDset records")
+@router.get(
+    "/list",
+    summary="Paged list of all BEDset records",
+    response_model=ListBedFilesResponse,
+)
 async def list_bedsets(limit: int = 1000, token: int = None):
     """
     Returns a paged list of all BEDset records
@@ -47,7 +56,7 @@ async def list_bedsets(limit: int = 1000, token: int = None):
     return bbc.bedset.select_records(columns=["name"], limit=limit, cursor=token)
 
 
-@router.get("/{bedset_id}/metadata", response_model=Dict)
+@router.get("/{bedset_id}/metadata", response_model=BedSetMetadataResponse)
 async def get_bedset_metadata(
     bedset_id: str,
     ids: Optional[List[str]] = Query(
@@ -57,7 +66,10 @@ async def get_bedset_metadata(
     """
     Returns metadata from selected columns for selected bedset
     """
-    return bbc.bedset.retrieve_one(bedset_id, ids)
+    result = bbc.bedset.retrieve_one(bedset_id, result_identifier=ids)
+    return BedSetMetadataResponse(
+        record_identifier=bedset_id, metadata=result, raw=None
+    )
 
 
 @router.get("/{bedset_id}/bedfiles", response_model=BedsetResponse)
