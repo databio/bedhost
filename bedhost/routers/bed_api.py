@@ -5,17 +5,20 @@ try:
 except ImportError:
     from typing_extensions import Annotated
     from typing import Dict, Optional
-
+import pprint
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import PlainTextResponse
 from pipestat.exceptions import RecordNotFoundError
+from pephubclient import PEPHubClient
+
 
 from .. import _LOGGER
 from ..main import bbc
 from ..data_models import (
     BedDigest,
     chromosome_number,
+    MetadataResponse,
 )
 
 
@@ -65,12 +68,17 @@ async def list_beds(limit: int = 1000, token: int = None):
     return bbc.bed.select_records(columns=["name"], limit=limit, cursor=token)
 
 
-@router.get("/{bed_id}/metadata", summary="Get metadata for a single BED record")
+@router.get(
+    "/{bed_id}/metadata",
+    summary="Get metadata for a single BED record",
+    response_model=MetadataResponse,
+)
 async def get_bed_metadata(
     bed_id: str = BedDigest,
     attr_id: Optional[str] = Query(
         None, description="Column name to select from the table"
     ),
+    raw: Optional[bool] = Query(False, description="Add raw metadata from pephub"),
 ):
     """
     Returns metadata from selected columns for selected BED record
@@ -90,7 +98,19 @@ async def get_bed_metadata(
     except RecordNotFoundError:
         _LOGGER.warning("No records matched the query")
         values = [[]]
-    return values
+
+    if raw:
+        try:
+            raw_data = PEPHubClient().sample.get(
+                namespace="databio", name="allbeds", tag="bedbase", sample_name=bed_id
+            )
+        except Exception as e:
+            _LOGGER.warning(f"Failed to get raw metadata: {e}")
+            raw_data = None
+    else:
+        raw_data = None
+
+    return MetadataResponse(record_identifier=bed_id, metadata=values, raw=raw_data)
 
 
 @router.get(
