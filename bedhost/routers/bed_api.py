@@ -19,6 +19,7 @@ from ..data_models import (
     chromosome_number,
     BedMetadataResponse,
     ListBedFilesResponse,
+    BedFile,
 )
 
 

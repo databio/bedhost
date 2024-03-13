@@ -41,9 +41,12 @@ class BedsetResponse(BaseModel):
     bedfile_metadata: List[Dict]
 
 
+BedFile = yaml_to_pydantic("BedFile", bbc.bed._schema_path)
+
+
 class BedMetadataResponse(BaseModel):
     record_identifier: str
-    metadata: yaml_to_pydantic("BedFile", bbc.bed._schema_path)
+    metadata: BedFile
     raw: Union[Dict[str, Any], None] = None
 
 

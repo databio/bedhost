@@ -1,4 +1,4 @@
-from pydantic import create_model, Field
+from pydantic import create_model, Field, ConfigDict
 import logging
 from typing import Union, Tuple, Dict, Any, List
 from pathlib import Path
@@ -6,6 +6,8 @@ import os
 from ubiquerg import expandpath
 from oyaml import safe_load
 
+
+# TODO: This should be moved to pipestat or bedhost
 
 _LOGGER = logging.getLogger("bedhost")
 
@@ -92,5 +94,6 @@ def yaml_to_pydantic(name: str, data: Union[str, dict]):
 
     data = replace_JSON_refs(data, data)
     fields_list = get_fields_list(data)
-
-    return create_model(name, **fields_list)
+    # TODO: this is a temporary fix to allow extra fields
+    config = ConfigDict(extra="allow")
+    return create_model(name, __config__=config, **fields_list)
