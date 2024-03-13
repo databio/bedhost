@@ -1,8 +1,9 @@
-from typing import Dict, List
+from typing import Dict, List, Union, Any
 from fastapi import Path
 from pydantic import BaseModel
 from enum import Enum
-
+from .model_parser import yaml_to_pydantic
+from .main import bbc
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -38,3 +39,30 @@ class BedsetResponse(BaseModel):
     bedset_record_id: str
     number_of_bedfiles: int
     bedfile_metadata: List[Dict]
+
+
+BedFile = yaml_to_pydantic("BedFile", bbc.bed._schema_path)
+
+
+class BedMetadataResponse(BaseModel):
+    record_identifier: str
+    metadata: BedFile
+    raw: Union[Dict[str, Any], None] = None
+
+
+class RecordsIdReturn(BaseModel):
+    record_identifier: str = None
+    name: Union[str, None] = (None,)
+
+
+class ListBedFilesResponse(BaseModel):
+    total_size: int
+    page_size: int
+    next_page_token: int
+    records: List[RecordsIdReturn]
+
+
+class BedSetMetadataResponse(BaseModel):
+    record_identifier: str
+    metadata: yaml_to_pydantic("BedSet", bbc.bedset._schema_path)
+    raw: Union[Dict[str, Any], None] = None
