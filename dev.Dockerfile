@@ -1,5 +1,10 @@
-FROM tiangolo/uvicorn-gunicorn-fastapi:python3.11-slim
-LABEL authors="Nathan Sheffield"
+FROM python:3.10-slim
+LABEL authors="Oleksandr Khoroshevskyi, Nathan Sheffield"
+
+RUN apt-get update
+RUN apt-get install -y gcc
+RUN apt-get install -y libpq-dev
+RUN apt-get install -y --no-install-recommends git
 
 # RUN apt-get update -y && \
 #     apt-get install -y libpq-dev && \  # for postgres backend
@@ -8,16 +13,18 @@ LABEL authors="Nathan Sheffield"
 #     apt-get install -y libcurl4 && \
 # cpp compiler required for hsnwlib
 
-RUN pip install --upgrade pip
+EXPOSE 80
+EXPOSE 6333
+
+WORKDIR /app
+COPY . /app
+
+RUN python -m pip install --upgrade pip
+
 # Install CPU-only pytorch, eliminating huge nvidia dependencies
 RUN pip install torch==2.1.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip
-#RUN pip install https://github.com/databio/bbconf/archive/refs/heads/dev.zip
 
-#RUN pip install sqlmodel  # to be removed after https://github.com/pepkit/pipestat/issues/117
-#RUN pip install psycopg  # to be removed after https://github.com/pepkit/pipestat/issues/117
-#RUN pip install "pydantic>=1.10.7,<2.0.0"  # to be removed after https://github.com/pepkit/pipestat/issues/117
+RUN pip install -r requirements/requirements-all.txt --no-cache-dir
 
-COPY . /app
-RUN pip install -r requirements/requirements-all.txt
-RUN pip install .
+CMD ["uvicorn", "bedhost.main:app", "--host", "0.0.0.0", "--port", "80"]
