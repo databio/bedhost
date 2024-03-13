@@ -43,6 +43,7 @@ class BedsetResponse(BaseModel):
 
 BedFile = yaml_to_pydantic("BedFile", bbc.bed._schema_path)
 
+
 class BedMetadataResponse(BaseModel):
     record_identifier: str
     metadata: BedFile
