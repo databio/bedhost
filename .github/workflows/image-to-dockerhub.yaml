@@ -25,7 +25,4 @@ jobs:
         context: .
         file: ./Dockerfile
         push: true
-        tags: 
-        - databio/bedhost:latest
-        - databio/bedhost:${{github.ref_name}}
-
+        tags: databio/bedhost:latest, databio/bedhost:${{github.ref_name}}
