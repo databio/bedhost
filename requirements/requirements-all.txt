@@ -1,6 +1,6 @@
-bbconf>=0.4.1
+bbconf>=0.4.2
 fastapi>=0.103.0
-geniml>=0.1.0
+geniml>=0.2.0
 logmuse>=0.2.7
 markdown
 requests
