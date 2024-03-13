@@ -17,9 +17,9 @@ RUN pip install --upgrade pip
 RUN pip install torch==2.1.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip
 
-RUN pip install sqlmodel  # to be removed after https://github.com/pepkit/pipestat/issues/117 
-RUN pip install psycopg2-binary  # to be removed after https://github.com/pepkit/pipestat/issues/117 
-RUN pip install "pydantic>=1.10.7,<2.0.0"  # to be removed after https://github.com/pepkit/pipestat/issues/117 
+#RUN pip install sqlmodel  # to be removed after https://github.com/pepkit/pipestat/issues/117
+#RUN pip install psycopg2-binary  # to be removed after https://github.com/pepkit/pipestat/issues/117
+#RUN pip install "pydantic>=1.10.7,<2.0.0"  # to be removed after https://github.com/pepkit/pipestat/issues/117
 
 
 COPY . /app
