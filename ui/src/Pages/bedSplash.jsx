@@ -41,103 +41,120 @@ const BedSplash = ({ router }) => {
         const schema = await api.get("/bed/schema").then(({ data }) => data["properties"]["samples"]["properties"]);
         setBedSchema(schema);
 
-        const res = await api.get(`/bed/${router.params.bed_md5sum}/metadata`);
-        setCode(200);
+      const data = await api
+        .get(`/bed/${router.params.bed_md5sum}/metadata`)
+        .then(response => {
+          setCode(200);
+          return response.data.metadata; // return the whole response object
+        })
+        .catch(error => {
+          setCode(error.response.status)
+        });
 
-        if (code === 200) {
-          const { data } = res;
+        if (data.bigbedfile !== null) {
+          setBigBed(true);
+        }
 
-          if (data.bigbedfile !== null) {
-            setBigBed(true);
+        const bedStats = [
+          { label: schema["regions_no"].description, data: data["regions_no"] }
+        ];
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (typeof schema[key] !== "undefined" && schema[key].type === "number") {
+            bedStats.push({ label: schema[key].description, data: data[key] });
           }
+        });
 
-          const bedStats = [
-            { label: schema["regions_no"].description, data: data["regions_no"] }
-          ];
+        setBedStats(moveToTheEnd(bedStats));
 
-          Object.entries(data).forEach(([key, value]) => {
-            if (typeof schema[key] !== "undefined" && schema[key].type === "number") {
-              bedStats.push({ label: schema[key].description, data: data[key] });
+        console.log(bedStats);
+
+        const newBedFig = [];
+        // debugger;
+        Object.entries(schema).forEach(([key, value]) => {
+          if (typeof value.object_type !== "undefined" && value.object_type === "image") {
+            console.log(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.${key}/access/http/bytes`)
+            newBedFig.push({
+              id: key,
+              title: value.description,
+              src_pdf: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.${key}/access/http/bytes`,
+              src_png: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.${key}/access/http/thumbnail`
+              // src_png: `/fignotavl_png.svg`
+            });
+          }
+        });
+
+        console.log(newBedFig);
+
+        const newBedFiles = {};
+        Object.entries(schema).forEach(([key, value]) => {
+          if (typeof value.object_type !== "undefined" && value.object_type === "file") {
+            if (data[key]) {
+              newBedFiles[key] = data[key].size;
             }
-          });
+          }
+        });
+        const dateStringToDateTime = (dateString) => {
+          const date = new Date(dateString);
+          return date.toLocaleString('default', { month: 'long', year: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second:'numeric'});
+        };
 
-          setBedStats(moveToTheEnd(bedStats));
+        const bedMeta = {
+          created_time: dateStringToDateTime(data.pipestat_created_time),
+          last_modified: dateStringToDateTime(data.pipestat_modified_time),
+          bed_type: data?.bed_type || "N/A",
+          bed_format: data?.bed_format || "N/A",
+        };
 
-          const newBedFig = [];
-          Object.entries(schema).forEach(([key, value]) => {
-            if (typeof value.object_type !== "undefined" && value.object_type === "image") {
-              newBedFig.push({
-                id: key,
-                title: value.description,
-                src_pdf: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.${key}/access/http/bytes`,
-                src_png: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.${key}/access/http/thumbnail`
-                // src_png: `/fignotavl_png.svg`
-              });
-            }
-          });
+        setBedMeta({ ...bedMeta });
 
-          const newBedFiles = {};
-          Object.entries(schema).forEach(([key, value]) => {
-            if (typeof value.object_type !== "undefined" && value.object_type === "file") {
-              if (data[key]) {
-                newBedFiles[key] = data[key].size;
-              }
-            }
-          });
+        setBedName(data.name);
+        setBedGenome(data.genome);
+        setBedStats(bedStats);
+        setBedFig(newBedFig);
+        setBedFiles(newBedFiles);
 
-          const bedMeta = {
-            created_time: data.pipestat_created_time.replace(/(.*?:.*?):.*/, '$1'),
-            last_modified: data.pipestat_modified_time.replace(/(.*?:.*?):.*/, '$1')
+        setTrackPath(
+          `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${data.genome}&mappability=full&hgct_customText=${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/http`
+        );
+
+        const bedDownload = {};
+
+        if (bigbed) {
+          const bedUrl = await api.get(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data);
+          const bigBedUrl = await api.get(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/http`).then(({ data }) => data);
+
+          bedDownload.BED_File = {
+            id: "bedfile",
+            label: "BED file",
+            url: bedUrl,
+            http: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`,
+            s3: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/s3`
           };
 
-          setBedMeta({ ...data.other, ...bedMeta });
+          bedDownload.bigBED_File = {
+            id: "bigbedfile",
+            label: "bigBed file",
+            url: bigBedUrl,
+            http: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/http`,
+            s3: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/s3`
+          };
+        } else {
+          const bedUrl = await api.get(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data);
 
-          setBedName(data.name);
-          setBedGenome(data.genome);
-          setBedStats(bedStats);
-          setBedFig(newBedFig);
-          setBedFiles(newBedFiles);
-
-          setTrackPath(
-            `http://genome.ucsc.edu/cgi-bin/hgTracks?db=${data.genome}&mappability=full&hgct_customText=${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/http`
-          );
-
-          const bedDownload = {};
-
-          if (bigbed) {
-            const bedUrl = await api.get(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data);
-            const bigBedUrl = await api.get(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/http`).then(({ data }) => data);
-
-            bedDownload.BED_File = {
-              id: "bedfile",
-              label: "BED file",
-              url: bedUrl,
-              http: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`,
-              s3: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/s3`
-            };
-
-            bedDownload.bigBED_File = {
-              id: "bigbedfile",
-              label: "bigBed file",
-              url: bigBedUrl,
-              http: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/http`,
-              s3: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bigbedfile/access/s3`
-            };
-          } else {
-            const bedUrl = await api.get(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`).then(({ data }) => data);
-
-            bedDownload.BED_File = {
-              id: "bedfile",
-              label: "BED file",
-              url: bedUrl,
-              http: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`,
-              s3: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/s3`
-            };
-          }
-
-          setBedDownload(bedDownload);
+          console.log(`${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`);
+          bedDownload.BED_File = {
+            id: "bedfile",
+            label: "BED file",
+            url: bedUrl,
+            http: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/http`,
+            s3: `${bedhost_api_url}/objects/bed.${router.params.bed_md5sum}.bedfile/access/s3`
+          };
         }
+
+        setBedDownload(bedDownload);
       } catch (error) {
+        console.log(error)
         setCode(error.response ? error.response.status : -1);
       }
     };
