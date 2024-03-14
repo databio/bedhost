@@ -11,7 +11,6 @@ from fastapi.responses import PlainTextResponse
 from pipestat.exceptions import RecordNotFoundError
 from pephubclient import PEPHubClient
 
-
 from .. import _LOGGER
 from ..main import bbc
 from ..data_models import (
@@ -19,7 +18,6 @@ from ..data_models import (
     chromosome_number,
     BedMetadataResponse,
     ListBedFilesResponse,
-    BedFile,
 )
 
 
