@@ -3,7 +3,6 @@ from fastapi import APIRouter
 from pipestat.exceptions import RecordNotFoundError
 
 from .. import _LOGGER
-from ..main import bbc
 
 search_router = APIRouter(prefix="/search", tags=["search"])
 

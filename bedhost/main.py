@@ -13,11 +13,6 @@ from bbconf.exceptions import (
     MissingThumbnailError,
     BadAccessMethodError,
 )
-from bbconf.const import (
-    CFG_SERVER_HOST_KEY,
-    CFG_SERVER_KEY,
-    CFG_SERVER_PORT_KEY,
-)
 from pipestat.exceptions import RecordNotFoundError, ColumnNotFoundError
 
 import markdown
@@ -30,6 +25,7 @@ from .helpers import (
     attach_routers,
     get_openapi_version,
     drs_response,
+    serve_file
 )
 from .cli import build_parser
 from .const import (
@@ -38,6 +34,7 @@ from .const import (
     STATIC_PATH,
     SERVER_VERSION,
 )
+
 
 
 tags_metadata = [
@@ -163,7 +160,7 @@ async def get_drs_object_metadata(object_id: str, req: Request):
     """
     ids = parse_bedbase_drs_object_id(object_id)
     base_uri = urlparse(str(req.url)).netloc
-    return bbc.get_drs_metadata(
+    return bbagent.objects.get_drs_metadata(
         ids["record_type"], ids["record_id"], ids["result_id"], base_uri
     )
 
@@ -178,7 +175,7 @@ async def get_object_bytes_url(object_id: str, access_id: str):
     Returns a URL that can be used to fetch the bytes of a DrsObject.
     """
     ids = parse_bedbase_drs_object_id(object_id)
-    return bbc.get_object_uri(
+    return bbagent.objects.get_object_uri(
         ids["record_type"], ids["record_id"], ids["result_id"], access_id
     )
 
@@ -196,8 +193,8 @@ async def get_object_bytes(object_id: str, access_id: str):
     Returns the bytes of a DrsObject.
     """
     ids = parse_bedbase_drs_object_id(object_id)
-    return bbc.serve_file(
-        bbc.get_object_uri(
+    return serve_file(
+        bbagent.objects.get_object_uri(
             ids["record_type"], ids["record_id"], ids["result_id"], access_id
         )
     )
@@ -213,8 +210,8 @@ async def get_object_thumbnail(object_id: str, access_id: str):
     Returns the bytes of a thumbnail of a DrsObject
     """
     ids = parse_bedbase_drs_object_id(object_id)
-    return bbc.serve_file(
-        bbc.get_thumbnail_uri(
+    return serve_file(
+        bbagent.objects.get_thumbnail_uri(
             ids["record_type"], ids["record_id"], ids["result_id"], access_id
         )
     )
@@ -288,13 +285,14 @@ def main():
     if args.command == "serve":
         _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = args.config or os.environ.get("BEDBASE_CONFIG") or None
-        global bbc
-        bbc = configure(bbconf_file_path, app)
+
+        global bbagent
+        bbagent = configure(bbconf_file_path)
         attach_routers(app)
         uvicorn.run(
             app,
-            host=bbc.config[CFG_SERVER_KEY][CFG_SERVER_HOST_KEY],
-            port=bbc.config[CFG_SERVER_KEY][CFG_SERVER_PORT_KEY],
+            host=bbagent.config.config.server.host,
+            port=bbagent.config.config.server.port,
         )
 
 
@@ -305,8 +303,8 @@ if __name__ != "__main__":
         _LOGGER.setLevel(logging.DEBUG)
         _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        global bbc
-        bbc = configure(
+        global bbagent
+        bbagent = configure(
             bbconf_file_path
         )  # configure before attaching routers to avoid circular imports
         attach_routers(app)
