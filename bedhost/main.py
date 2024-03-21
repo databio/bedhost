@@ -21,7 +21,6 @@ from . import _LOGGER
 from .helpers import (
     configure,
     attach_routers,
-    get_openapi_version,
     drs_response,
 )
 from .cli import build_parser
@@ -115,34 +114,6 @@ def render_markdown(filename: str, request: Request):
     return templates.TemplateResponse(
         "page.html", {"request": request, "content": content}
     )
-
-
-@app.get("/service-info", summary="GA4GH service info", tags=["home"])
-async def service_info():
-    """
-    Returns information about this service, such as versions, name, etc.
-    """
-    all_versions = ALL_VERSIONS
-    service_version = all_versions["bedhost_version"]
-    all_versions.update({"openapi_version": get_openapi_version(app)})
-    ret = {
-        "id": "org.bedbase.api",
-        "name": "BEDbase API",
-        "type": {
-            "group": "org.databio",
-            "artifact": "bedbase",
-            "version": service_version,
-        },
-        "description": "An API providing genomic interval data and metadata",
-        "organization": {"name": "Databio Lab", "url": "https://databio.org"},
-        "contactUrl": "https://github.com/databio/bedbase/issues",
-        "documentationUrl": "https://bedbase.org",
-        "updatedAt": "2023-10-25T00:00:00Z",
-        "environment": "dev",
-        "version": service_version,
-        "component_versions": all_versions,
-    }
-    return JSONResponse(content=ret)
 
 
 @app.exception_handler(MissingThumbnailError)

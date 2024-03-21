@@ -30,3 +30,36 @@ CROM_NUMBERS = Path(
     regex=r"^\S+$",
     example=ex_chr,
 )
+
+
+
+class Type(BaseModel):
+    group: str
+    artifact: str
+    version: str
+
+
+class Organization(BaseModel):
+    name: str
+    url: str
+
+
+class ComponentVersions(BaseModel):
+    bedhost_version: str
+    bbconf_version: str
+    python_version: str
+    openapi_version: str
+
+
+class ServiceInfoResponse(BaseModel):
+    id: str
+    name: str
+    type: Type
+    description: str
+    organization: Organization
+    contactUrl: str
+    documentationUrl: str
+    updatedAt: str
+    environment: str
+    version: str
+    component_versions: ComponentVersions
