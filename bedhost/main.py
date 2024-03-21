@@ -5,18 +5,16 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, HTMLResponse
-from urllib.parse import urlparse
-from fastapi import HTTPException
 
+import markdown
+from fastapi.templating import Jinja2Templates
 from bbconf.exceptions import (
     MissingObjectError,
     MissingThumbnailError,
     BadAccessMethodError,
+    BEDFileNotFoundError,
+    BedSetNotFoundError,
 )
-from pipestat.exceptions import RecordNotFoundError, ColumnNotFoundError
-
-import markdown
-from fastapi.templating import Jinja2Templates
 
 
 from . import _LOGGER
@@ -25,7 +23,6 @@ from .helpers import (
     attach_routers,
     get_openapi_version,
     drs_response,
-    serve_file,
 )
 from .cli import build_parser
 from .const import (
@@ -148,128 +145,23 @@ async def service_info():
     return JSONResponse(content=ret)
 
 
-@app.get(
-    "/objects/{object_id}",
-    summary="Get DRS object metadata",
-    tags=["objects"],
-)
-async def get_drs_object_metadata(object_id: str, req: Request):
-    """
-    Returns metadata about a DrsObject.
-    """
-    ids = parse_bedbase_drs_object_id(object_id)
-    base_uri = urlparse(str(req.url)).netloc
-    return bbagent.objects.get_drs_metadata(
-        ids["record_type"], ids["record_id"], ids["result_id"], base_uri
-    )
-
-
-@app.get(
-    "/objects/{object_id}/access/{access_id}",
-    summary="Get URL where you can retrieve files",
-    tags=["objects"],
-)
-async def get_object_bytes_url(object_id: str, access_id: str):
-    """
-    Returns a URL that can be used to fetch the bytes of a DrsObject.
-    """
-    ids = parse_bedbase_drs_object_id(object_id)
-    return bbagent.objects.get_object_uri(
-        ids["record_type"], ids["record_id"], ids["result_id"], access_id
-    )
-
-
-@app.head(
-    "/objects/{object_id}/access/{access_id}/bytes", include_in_schema=False
-)  # Required by UCSC track hubs
-@app.get(
-    "/objects/{object_id}/access/{access_id}/bytes",
-    summary="Download actual files",
-    tags=["objects"],
-)
-async def get_object_bytes(object_id: str, access_id: str):
-    """
-    Returns the bytes of a DrsObject.
-    """
-    ids = parse_bedbase_drs_object_id(object_id)
-    return serve_file(
-        bbagent.objects.get_object_uri(
-            ids["record_type"], ids["record_id"], ids["result_id"], access_id
-        )
-    )
-
-
-@app.get(
-    "/objects/{object_id}/access/{access_id}/thumbnail",
-    summary="Download thumbnail",
-    tags=["objects"],
-)
-async def get_object_thumbnail(object_id: str, access_id: str):
-    """
-    Returns the bytes of a thumbnail of a DrsObject
-    """
-    ids = parse_bedbase_drs_object_id(object_id)
-    return serve_file(
-        bbagent.objects.get_thumbnail_uri(
-            ids["record_type"], ids["record_id"], ids["result_id"], access_id
-        )
-    )
-
-
-# DRS-compatible API.
-# Requires using `object_id` which has the form: `<record_type>.<record_id>.<object_class>`
-# for example: `bed.326d5d77c7decf067bd4c7b42340c9a8.bedfile`
-# or: `bed.421d2128e183424fcc6a74269bae7934.bedfile`
-# bed.326d5d77c7decf067bd4c7b42340c9a8.bedfile
-# bed.326d5d77c7decf067bd4c7b42340c9a8.bigbed
-def parse_bedbase_drs_object_id(object_id: str):
-    """
-    Parse bedbase object id into its components
-    """
-    try:
-        record_type, record_id, result_id = object_id.split(".")
-    except ValueError:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Object ID {object_id} is malformed. Should be of the form <record_type>.<record_id>.<result_id>",
-        )
-    if record_type not in ["bed", "bedset"]:
-        raise HTTPException(
-            status_code=400, detail=f"Object type {record_type} is incorrect"
-        )
-    return {
-        "record_type": record_type,
-        "record_id": record_id,
-        "result_id": result_id,
-    }
-
-
-# General-purpose exception handlers (so we don't have to write try/catch blocks in every endpoint)
-
-
 @app.exception_handler(MissingThumbnailError)
 async def exc_handler_MissingThumbnailError(req: Request, exc: MissingThumbnailError):
     return drs_response(404, "No thumbnail for this object.")
 
 
-@app.exception_handler(BadAccessMethodError)
-async def exc_handler_BadAccessMethodError(req: Request, exc: BadAccessMethodError):
-    return drs_response(404, "Requested access URL was not found.")
+@app.exception_handler(BEDFileNotFoundError)
+async def exc_handler_BEDFileNotFoundError(req: Request, exc: BEDFileNotFoundError):
+    return drs_response(404, "BED file not found.")
 
 
-@app.exception_handler(ColumnNotFoundError)
-async def exc_handler_ColumnNotFoundError(req: Request, exc: ColumnNotFoundError):
-    _LOGGER.error(f"ColumnNotFoundError: {exc}")
-    return drs_response(404, "Malformed result identifier.")
-
-
-@app.exception_handler(RecordNotFoundError)
-async def exc_handler_RecordNotFoundError(req: Request, exc: RecordNotFoundError):
-    return drs_response(404, "Record not found.")
+@app.exception_handler(BedSetNotFoundError)
+async def exc_handler_BedSetNotFoundError(req: Request, exc: BedSetNotFoundError):
+    return drs_response(404, "Bedset not found.")
 
 
 @app.exception_handler(MissingObjectError)
-async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
+async def exc_handler_BedSetNotFoundError(req: Request, exc: MissingObjectError):
     return drs_response(404, "Object not found.")
 
 
