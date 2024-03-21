@@ -43,6 +43,6 @@ def build_parser():
             required=False,
             dest="config",
             help="A path to the bedhost config file (YAML). If not provided, "
-            f"the first available environment variable among: {', '.join(CFG_ENV_VARS)} will be used if set."
+            f"the first available environment variable among: {', '.join(CFG_ENV_VARS)} will be used if set.",
         )
     return parser

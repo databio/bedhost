@@ -16,19 +16,35 @@ from ..data_models import (
     BedDigest,
     CROM_NUMBERS,
 )
-from bbconf.models.bed_models import (BedListResult,
-                                      BedMetadata,
-BedFiles,
-BedStats,
-BedPlots,
-BedClassification,
-BedListSearchResult,
-BedPEPHub
-                                      )
+from bbconf.models.bed_models import (
+    BedListResult,
+    BedMetadata,
+    BedFiles,
+    BedStats,
+    BedPlots,
+    BedClassification,
+    BedPEPHub,
+    BedListSearchResult,
+)
 from bbconf.exceptions import BEDFileNotFoundError
 
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
+
+
+@router.post(
+    "/search",
+    summary="Search for a BedFile",
+    tags=["search"],
+    response_model=BedListSearchResult,
+)
+async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
+    _LOGGER.info(f"Searching for: {query}")
+    results = bbagent.bed.text_to_bed_search(query, limit=limit, offset=offset)
+
+    if results:
+        return results
+    raise HTTPException(status_code=404, detail="No records found")
 
 
 @router.get(
@@ -63,7 +79,9 @@ async def list_beds(limit: int = 1000, offset: int = 0) -> BedListResult:
 )
 async def get_bed_metadata(
     bed_id: str = BedDigest,
-    full: Optional[bool] = Query(False, description="Return full record with stats, plots, files and metadata"),
+    full: Optional[bool] = Query(
+        False, description="Return full record with stats, plots, files and metadata"
+    ),
 ):
     """
     Returns metadata from selected columns for selected BED record
@@ -71,7 +89,9 @@ async def get_bed_metadata(
     try:
         return bbagent.bed.get(bed_id, full=full)
     except BEDFileNotFoundError as _:
-        raise HTTPException(status_code=404,)
+        raise HTTPException(
+            status_code=404,
+        )
 
 
 @router.get(
@@ -85,7 +105,10 @@ async def get_bed_plots(
     try:
         return bbagent.bed.get_plots(bed_id)
     except BEDFileNotFoundError as _:
-        raise HTTPException(status_code=404,)
+        raise HTTPException(
+            status_code=404,
+        )
+
 
 @router.get(
     "/{bed_id}/metadata/files",
@@ -98,7 +121,9 @@ async def get_bed_files(
     try:
         return bbagent.bed.get_files(bed_id)
     except BEDFileNotFoundError as _:
-        raise HTTPException(status_code=404, )
+        raise HTTPException(
+            status_code=404,
+        )
 
 
 @router.get(
@@ -112,7 +137,9 @@ async def get_bed_stats(
     try:
         return bbagent.bed.get_stats(bed_id)
     except BEDFileNotFoundError as _:
-        raise HTTPException(status_code=404, )
+        raise HTTPException(
+            status_code=404,
+        )
 
 
 @router.get(
@@ -126,7 +153,9 @@ async def get_bed_classification(
     try:
         return bbagent.bed.get_classification(bed_id)
     except BEDFileNotFoundError as _:
-        raise HTTPException(status_code=404, )
+        raise HTTPException(
+            status_code=404,
+        )
 
 
 @router.get(
@@ -140,7 +169,9 @@ async def get_bed_pephub(
     try:
         return bbagent.bed.get_raw_metadata(bed_id)
     except BEDFileNotFoundError as _:
-        raise HTTPException(status_code=404, )
+        raise HTTPException(
+            status_code=404,
+        )
 
 
 @router.get(

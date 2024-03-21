@@ -1,9 +1,6 @@
-from typing import Dict, List, Union, Any
 from fastapi import Path
 from pydantic import BaseModel
 from enum import Enum
-from .model_parser import yaml_to_pydantic
-# from .main import bbc
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -33,4 +30,3 @@ CROM_NUMBERS = Path(
     regex=r"^\S+$",
     example=ex_chr,
 )
-

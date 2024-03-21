@@ -25,7 +25,7 @@ from .helpers import (
     attach_routers,
     get_openapi_version,
     drs_response,
-    serve_file
+    serve_file,
 )
 from .cli import build_parser
 from .const import (
@@ -34,7 +34,6 @@ from .const import (
     STATIC_PATH,
     SERVER_VERSION,
 )
-
 
 
 tags_metadata = [

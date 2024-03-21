@@ -1,4 +1,4 @@
-bbconf>=0.4.2
+bbconf @ git+https://github.com/databio/bbconf.git@thinking#egg=bbconf
 fastapi>=0.103.0
 geniml>=0.2.0
 logmuse>=0.2.7
