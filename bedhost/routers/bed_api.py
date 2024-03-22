@@ -69,7 +69,7 @@ async def list_beds(limit: int = 1000, offset: int = 0) -> BedListResult:
     To get the first page, leave token field empty. The response will include a
     'next_page_token' field, which can be used to get the next page.
     """
-    return bbagent.bed.get_ids_list(limit=1, offset=0)
+    return bbagent.bed.get_ids_list(limit=limit, offset=offset)
 
 
 @router.get(
