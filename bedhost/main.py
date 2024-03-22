@@ -38,6 +38,10 @@ tags_metadata = [
         "description": "General landing page and service info",
     },
     {
+        "name": "base",
+        "description": "Basic endpoints for the service and statistics.",
+    },
+    {
         "name": "objects",
         "description": "Download BED files or BEDSET files via [GA4GH DRS standard](https://ga4gh.github.io/data-repository-service-schemas/). For details, see [BEDbase Developer Guide](/docs/guide).",
     },

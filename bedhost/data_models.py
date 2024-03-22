@@ -32,7 +32,6 @@ CROM_NUMBERS = Path(
 )
 
 
-
 class Type(BaseModel):
     group: str
     artifact: str
