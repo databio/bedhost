@@ -1,0 +1,178 @@
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+
+$primary: #008080;
+$secondary: #fdba74;
+
+// merge with existing $theme-colors map
+$theme-colors: map-merge(
+  $theme-colors,
+  (
+    'primary': $primary,
+    'secondary': $secondary,
+  )
+);
+
+// override btn-outline-primary hover bg-color
+.btn-outline-primary {
+  &:hover {
+    color: $primary !important;
+    background-color: #00808024 !important;
+    border-color: $primary;
+  }
+}
+
+// set changes
+@import 'bootstrap';
+
+a {
+  color: $primary;
+}
+
+@media (min-width: 768px) {
+  .h80 {
+    height: 80vh;
+  }
+}
+
+.stat-card-height {
+  height: 9rem;
+}
+
+.genomic-feature-bar-height {
+  height: 16rem;
+}
+
+.promoter-bar-height {
+  height: 16rem;
+}
+
+.min-h-screen {
+  min-height: 100vh;
+}
+
+/*  This is for the nav bar */
+.hidden {
+  display: none;
+}
+
+.block {
+  display: block;
+}
+
+.large-flex {
+  @media (min-width: 1024px) {
+    display: flex;
+  }
+}
+
+.large-hidden {
+  @media (min-width: 1024px) {
+    display: none;
+  }
+}
+
+.list-none {
+  list-style: none;
+}
+
+// some tailwind styles I like
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+// Tailwind styles I like and that are extremely useful
+.text-xs {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1rem; /* 16px */
+}
+
+.text-sm {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.25rem; /* 20px */
+}
+
+.text-base {
+  font-size: 1rem; /* 16px */
+  line-height: 1.5rem; /* 24px */
+}
+
+.text-lg {
+  font-size: 1.125rem; /* 18px */
+  line-height: 1.75rem; /* 28px */
+}
+
+.text-xl {
+  font-size: 1.25rem; /* 20px */
+  line-height: 1.75rem; /* 28px */
+}
+
+.text-2xl {
+  font-size: 1.5rem; /* 24px */
+  line-height: 2rem; /* 32px */
+}
+
+.text-3xl {
+  font-size: 1.875rem; /* 30px */
+  line-height: 2.25rem; /* 36px */
+}
+
+.text-4xl {
+  font-size: 2.25rem; /* 36px */
+  line-height: 2.5rem; /* 40px */
+}
+
+.text-5xl {
+  font-size: 3rem; /* 48px */
+  line-height: 1;
+}
+
+.text-6xl {
+  font-size: 3.75rem; /* 60px */
+  line-height: 1;
+}
+
+.text-7xl {
+  font-size: 4.5rem; /* 72px */
+  line-height: 1;
+}
+
+.text-8xl {
+  font-size: 6rem; /* 96px */
+  line-height: 1;
+}
+
+.text-9xl {
+  font-size: 8rem; /* 128px */
+  line-height: 1;
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}

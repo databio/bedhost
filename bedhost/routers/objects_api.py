@@ -16,7 +16,7 @@ router = APIRouter(prefix="/v1/objects", tags=["objects"])
 
 
 @router.get(
-    "/objects/{object_id}",
+    "/{object_id}",
     summary="Get DRS object metadata",
 )
 async def get_drs_object_metadata(object_id: str, req: Request):
@@ -31,7 +31,7 @@ async def get_drs_object_metadata(object_id: str, req: Request):
 
 
 @router.get(
-    "/objects/{object_id}/access/{access_id}",
+    "/{object_id}/access/{access_id}",
     summary="Get URL where you can retrieve files",
 )
 async def get_object_bytes_url(object_id: str, access_id: str):
@@ -45,10 +45,10 @@ async def get_object_bytes_url(object_id: str, access_id: str):
 
 
 @router.head(
-    "/objects/{object_id}/access/{access_id}/bytes", include_in_schema=False
+    "/{object_id}/access/{access_id}/bytes", include_in_schema=False
 )  # Required by UCSC track hubs
 @router.get(
-    "/objects/{object_id}/access/{access_id}/bytes",
+    "/{object_id}/access/{access_id}/bytes",
     summary="Download actual files",
 )
 async def get_object_bytes(object_id: str, access_id: str):
@@ -64,7 +64,7 @@ async def get_object_bytes(object_id: str, access_id: str):
 
 
 @router.get(
-    "/objects/{object_id}/access/{access_id}/thumbnail",
+    "/{object_id}/access/{access_id}/thumbnail",
     summary="Download thumbnail",
 )
 async def get_object_thumbnail(object_id: str, access_id: str):
