@@ -102,7 +102,7 @@ export const Home = () => {
           </div>
           <InPaths />
           <div className="d-flex flex column h-100 align-items-center">
-            <div className="p-2 border border-dark rounded rounded border-2 landing-main-logo-shadow">
+            <div className="p-2 border border-primary rounded rounded border-2 landing-main-logo-shadow">
               <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="125px" className="landing-animation-logo" />
             </div>
           </div>
@@ -174,21 +174,6 @@ export const Home = () => {
                     ))}
                   </Tab.Content>
                 </Tab.Container>
-                {/* <Markdown rehypePlugins={[rehypeHighlight]}>{BEDBASE_PYTHON_CODE}</Markdown>
-                <div className="position-absolute top-0 end-0 me-2">
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(BEDBASE_PYTHON_CODE);
-                      setCopied(true);
-                      setTimeout(() => {
-                        setCopied(false);
-                      }, 2000);
-                    }}
-                    className="btn btn-outline-primary btn-sm mt-2"
-                  >
-                    {copied ? 'Copied!' : 'Copy'}
-                  </button>
-                </div> */}
               </div>
             </Col>
           </Row>
