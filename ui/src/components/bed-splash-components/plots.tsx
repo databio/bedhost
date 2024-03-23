@@ -1,8 +1,7 @@
-import { Card, Col, Image, Row } from 'react-bootstrap';
+import { Image } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
 import { makeThumbnailImageLink } from '../../utils';
-import { Fragment, useState } from 'react';
-import { FigureModal } from '../modals/figure-modal';
+import { Fragment } from 'react';
 
 type BedMetadata = components['schemas']['BedMetadata'];
 
@@ -15,8 +14,6 @@ type PlotProps = {
   alt: string;
   title: string;
 };
-
-type PlotKey = keyof BedMetadata['plots'];
 
 const Plot = (props: PlotProps) => {
   const { src, alt, title } = props;
@@ -40,7 +37,8 @@ export const Plots = (props: PlotsProps) => {
       <div className="d-flex align-items-center justify-content-between flex-row flex-wrap gap-2">
         {metadata.plots &&
           Object.keys(metadata.plots).map((plot) => {
-            const plotData = metadata.plots[plot];
+            // @ts-expect-error - we know this is a valid key
+            const plotData = metadata?.plots[plot];
             if (metadata.plots && plotData !== undefined && plotData !== null) {
               console.log(makeThumbnailImageLink(metadata.id, plot));
               return (

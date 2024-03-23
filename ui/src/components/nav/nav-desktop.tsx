@@ -5,7 +5,7 @@ export const NavDesktop = () => {
   return (
     <ul className="mb-2 ms-auto d-flex flex-row align-items-center gap-2 list-none mx-5">
       <li className="text-body mx-2 my-0 nav-item h5 pt-1">
-        <a className="nav-link" href="https://github.com/pepkit/pephub" target="_blank">
+        <a className="nav-link" href="https://github.com/databio/bedhost" target="_blank">
           <i className="me-1 bi bi-github text-base"></i>
           GitHub
         </a>

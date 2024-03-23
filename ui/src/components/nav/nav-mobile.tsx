@@ -7,7 +7,7 @@ export const MobileNav = () => {
         <i className="bi bi-list fs-4" />
       </Dropdown.Toggle>
       <Dropdown.Menu>
-        <Dropdown.Item href="https://github.com/pepkit/pephub">
+        <Dropdown.Item href="https://github.com/databio/bedhost">
           <i className="bi bi-github me-2" />
           GitHub
         </Dropdown.Item>

@@ -1,6 +1,6 @@
 import { Fragment } from 'react/jsx-runtime';
-import { useBedCart } from '../../contexts/bedcart-context';
-import { Layout } from '../layout';
+import { useBedCart } from '../contexts/bedcart-context';
+import { Layout } from '../components/layout';
 
 export const BedCart = () => {
   const { cart, removeBedFromCart } = useBedCart();

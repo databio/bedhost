@@ -1,17 +1,17 @@
 import { useParams } from 'react-router-dom';
-import { useBedMetadata } from '../../queries/useBedMetadata';
-import { Layout } from '../layout';
+import { useBedMetadata } from '../queries/useBedMetadata';
+import { Layout } from '../components/layout';
 import { Col, Row } from 'react-bootstrap';
-import { BedSplashHeader } from '../bed-splash-components/bed-splash-header';
-import { CardSkeleton } from '../skeletons/card-skeleton';
-import { ErrorPage } from '../common/error-page';
+import { BedSplashHeader } from '../components/bed-splash-components/header';
+import { CardSkeleton } from '../components/skeletons/card-skeleton';
+import { ErrorPage } from '../components/common/error-page';
 import { Fragment } from 'react/jsx-runtime';
-import { NoRegionsCard } from '../bed-splash-components/no-regions-card';
-import { MedianTssDistCard } from '../bed-splash-components/median-tss-dist-card';
-import { MeanRegionWidthCard } from '../bed-splash-components/mean-region-width-card';
-import { GenomicFeatureBar } from '../bed-splash-components/charts/genomic-feature-bar';
-import { PromoterAnalysisBar } from '../bed-splash-components/charts/promoter-analysis';
-import { Plots } from '../bed-splash-components/plots';
+import { NoRegionsCard } from '../components/bed-splash-components/cards/no-regions-card';
+import { MedianTssDistCard } from '../components/bed-splash-components/cards/median-tss-dist-card';
+import { MeanRegionWidthCard } from '../components/bed-splash-components/cards/mean-region-width-card';
+import { GenomicFeatureBar } from '../components/bed-splash-components/charts/genomic-feature-bar';
+import { PromoterAnalysisBar } from '../components/bed-splash-components/charts/promoter-analysis';
+import { Plots } from '../components/bed-splash-components/plots';
 
 export const BedSplash = () => {
   const params = useParams();

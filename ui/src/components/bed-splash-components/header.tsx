@@ -29,7 +29,7 @@ export const BedSplashHeader = (props: Props) => {
     <div className="border-bottom py-2">
       <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
         <div className="d-flex flex-column align-items-start">
-          <h2>
+          <h4 className="fw-bold">
             <i className="bi bi-file-earmark-text me-2" />
             {metadata?.name || 'No name available'}
             <button
@@ -44,7 +44,7 @@ export const BedSplashHeader = (props: Props) => {
             >
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
-          </h2>
+          </h4>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -137,7 +137,7 @@ export const BedSplashHeader = (props: Props) => {
         </div>
       </div>
       <div className="d-flex flex-row align-items-end justify-content-between">
-        <div className="d-flex flex-row gap-1">
+        <div className="d-flex flex-row gap-1 text-lg">
           <div className="d-flex flex-row">
             <p className="mb-0">
               <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata?.genome_digest}`} target="_blank">

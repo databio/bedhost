@@ -6,17 +6,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BedCartProvider } from './contexts/bedcart-context.tsx';
 import { Toaster } from 'react-hot-toast';
-import { Home } from './components/pages/home.tsx';
+import { Home } from './pages/home.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 
 // css stuff
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './custom.scss';
-import { BedSplash } from './components/pages/bed-splash.tsx';
-import { BedsetSplash } from './components/pages/bedset-splash.tsx';
-import { BedCart } from './components/pages/bed-cart.tsx';
-import { SearchPage } from './components/pages/search.tsx';
+import { BedSplash } from './pages/bed-splash.tsx';
+import { BedsetSplash } from './pages/bedset-splash.tsx';
+import { BedCart } from './pages/bed-cart.tsx';
+import { SearchPage } from './pages/search.tsx';
 
 // create the query client
 const queryClient = new QueryClient();

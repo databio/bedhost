@@ -1,11 +1,11 @@
 import { Col, Row } from 'react-bootstrap';
-import { Layout } from '../layout';
-import { SearchBar } from '../search/search-bar';
+import { Layout } from '../components/layout';
+import { SearchBar } from '../components/search/search-bar';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useSearch } from '../../queries/useSearch';
-import { ErrorPage } from '../common/error-page';
-import { SearchResultsTable } from '../search/search-results-table';
+import { useSearch } from '../queries/useSearch';
+import { ErrorPage } from '../components/common/error-page';
+import { SearchResultsTable } from '../components/search/search-results-table';
 
 export const SearchPage = () => {
   const [searchParams] = useSearchParams();

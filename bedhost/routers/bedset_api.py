@@ -55,6 +55,7 @@ async def get_bedset_metadata(
     """
     Returns metadata from selected columns for selected bedset
     """
+    #TODO: fix error with not found
     try:
         return bbagent.bedset.get(bedset_id)
     except BedSetNotFoundError as _:
