@@ -29,6 +29,20 @@ a {
   color: $primary;
 }
 
+.nav-link {
+  color: $primary;
+}
+
+.nav-link {
+  .active {
+    background-color: $primary !important;
+  }
+}
+
+.active {
+  background-color: $primary !important;
+}
+
 @media (min-width: 768px) {
   .h80 {
     height: 80vh;
@@ -46,7 +60,7 @@ a {
 }
 
 .stat-card-height {
-  height: 9rem;
+  min-height: 9rem;
 }
 
 .genomic-feature-bar-height {

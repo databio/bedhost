@@ -18,10 +18,14 @@ export const BedsetSplashHeader = (props: Props) => {
           <p className="mb-0">{metadata?.description || 'No description available'}</p>
         </div>
       </div>
-      <div className="d-flex flex-row align-items-end justify-content-start">
+      <div className="d-flex flex-row align-items-end justify-content-start gap-1">
         <div className="badge bg-primary text-wrap me-2">
           <i className="bi bi-hash me-1" />
           {metadata.md5sum}
+        </div>
+        <div className="badge bg-primary text-wrap me-2">
+          <i className="bi bi-file-earmark-text me-1" />
+          {metadata.bed_ids?.length} BED files
         </div>
       </div>
     </div>
