@@ -48,7 +48,7 @@ export const PromoterAnalysisBar = (props: Props) => {
               tickRotation: 0,
               legend: 'Promoter type',
               legendPosition: 'middle',
-              legendOffset: 32,
+              legendOffset: 40,
             }}
             axisLeft={{
               tickSize: 5,
@@ -56,7 +56,7 @@ export const PromoterAnalysisBar = (props: Props) => {
               tickRotation: 0,
               legend: 'Frequency (%)',
               legendPosition: 'middle',
-              legendOffset: -40,
+              legendOffset: -50,
             }}
             markers={[
               {

@@ -26,7 +26,15 @@ export const FigureModal = (props: Props) => {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <button className="btn btn-outline-primary">
+        <button
+          className="btn btn-outline-primary"
+          onClick={() => {
+            const link = document.createElement('a');
+            link.href = src;
+            link.download = alt;
+            link.click();
+          }}
+        >
           <i className="bi bi-download me2"></i> Download
         </button>
         <button className="btn btn-primary" onClick={() => setShow(false)}>

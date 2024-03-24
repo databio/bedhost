@@ -4,7 +4,9 @@ export const BEDBASE_PYTHON_CODE_MD = `
 \`\`\`python
 import requests
 
-res = requests.get('http://localhost:8000/api/bed/example')
+res = requests.get(
+  'http://localhost:8000/api/bed/example'
+)
 
 print(res.json())
 \`\`\`
@@ -12,7 +14,9 @@ print(res.json())
 export const BEDBASE_PYTHON_CODE_RAW = `
 import requests
 
-res = requests.get('http://localhost:8000/api/bed/example')
+res = requests.get(
+  'http://localhost:8000/api/bed/example'
+)
 
 print(res.json())
 `;

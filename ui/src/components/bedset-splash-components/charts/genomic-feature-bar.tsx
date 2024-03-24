@@ -79,7 +79,7 @@ export const GenomicFeatureBar = (props: Props) => {
               tickRotation: 0,
               legend: 'Feature',
               legendPosition: 'middle',
-              legendOffset: 32,
+              legendOffset: 40,
             }}
             axisLeft={{
               tickSize: 5,
@@ -87,11 +87,9 @@ export const GenomicFeatureBar = (props: Props) => {
               tickRotation: 0,
               legend: 'Frequency (%)',
               legendPosition: 'middle',
-              legendOffset: -40,
+              legendOffset: -50,
             }}
             enableGridY={false}
-            labelSkipWidth={12}
-            labelSkipHeight={12}
             labelTextColor={{ from: 'color', modifiers: [['darker', 3]] }}
           />
         </div>

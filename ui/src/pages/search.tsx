@@ -22,13 +22,14 @@ export const SearchPage = () => {
     q: searchTerm,
     limit: limit,
     offset: offset,
+    autoRun: false,
   });
 
   useEffect(() => {
     if (searchParams.get('q')) {
       refetch();
     }
-  }, [refetch, searchParams]);
+  }, []);
 
   if (error) {
     return <ErrorPage title="Bedbase | Search" error={error} />;
@@ -52,8 +53,30 @@ export const SearchPage = () => {
           ) : (
             <div className="my-2">
               {data ? (
-                <div className="p-2 border border-secondary rounded shadow-sm">
+                <div className="p-2 border rounded shadow-sm">
                   <SearchResultsTable results={data || []} />{' '}
+                  <div className="d-flex flex-row align-items-center justify-content-center gap-1">
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => {
+                        setOffset(offset - limit);
+                        refetch();
+                      }}
+                      disabled={offset === 0}
+                    >
+                      Previous
+                    </button>
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      onClick={() => {
+                        setOffset(offset + limit);
+                        refetch();
+                      }}
+                      disabled={data.count < limit}
+                    >
+                      Next
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div>Search for bedfiles</div>

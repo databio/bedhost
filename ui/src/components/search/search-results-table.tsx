@@ -1,5 +1,7 @@
 import { ProgressBar } from 'react-bootstrap';
-import { SearchResponse } from '../../queries/useSearch';
+import { components } from '../../../bedbase-types';
+
+type SearchResponse = components['schemas']['BedListSearchResult'];
 
 type Props = {
   results: SearchResponse;
@@ -17,9 +19,9 @@ export const SearchResultsTable = (props: Props) => {
         </tr>
       </thead>
       <tbody>
-        {results.map((result) => (
+        {results.results?.map((result) => (
           <tr key={result.id}>
-            <td>{result.metadata.name}</td>
+            <td>{result?.metadata?.name || 'No name'}</td>
             <td>
               <ProgressBar now={result.score * 100} label={`${result.score * 100}%`} variant="primary" />
             </td>

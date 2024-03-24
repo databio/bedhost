@@ -139,7 +139,7 @@ export const Home = () => {
               </p>
             </Col>
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div className="border border-2 border-dark p-2 rounded w-100 h-100 position-relative">
+              <div className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
                 <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
                   <div className="d-flex flex-row align-items-center text-sm">
                     <Nav variant="pills" className="flex-row">
@@ -152,10 +152,12 @@ export const Home = () => {
                       ))}
                     </Nav>
                   </div>
-                  <Tab.Content className="w-100">
+                  <Tab.Content className="w-100 h-100">
                     {CODE_SNIPPETS.map((snippet) => (
                       <Tab.Pane key={snippet.language} eventKey={snippet.language}>
-                        <Markdown rehypePlugins={[rehypeHighlight]}>{snippet.code}</Markdown>
+                        <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
+                          {snippet.code}
+                        </Markdown>
                         <div className="position-absolute top-0 end-0 me-2">
                           <button
                             onClick={() => {
