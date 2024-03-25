@@ -6,7 +6,7 @@ except ImportError:
     from typing_extensions import Annotated
     from typing import Dict, Optional, List, Any
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
 
@@ -33,7 +33,7 @@ router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
 
 @router.post(
-    "/search",
+    "/search/text",
     summary="Search for a BedFile",
     tags=["search"],
     response_model=BedListSearchResult,
@@ -231,3 +231,17 @@ def get_regions_for_bedfile(
         raise HTTPException(
             status_code=500, detail="ERROR: bigBedToBed is not installed."
         )
+
+
+@router.post(
+    "/search/bed",
+    summary="Search for similar bed files",
+    tags=["search"],
+    response_model=BedListSearchResult,
+)
+async def text_to_bed_search(
+    file: UploadFile = File(None), limit: int = 10, offset: int = 0
+):
+    _LOGGER.info(f"Searching for bedfiles...")
+
+    raise HTTPException(status_code=501, detail="Not implemented yet")
