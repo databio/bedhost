@@ -32,11 +32,11 @@ export const SearchPage = () => {
   }, []);
 
   if (error) {
-    return <ErrorPage title="Bedbase | Search" error={error} />;
+    return <ErrorPage title="BEDbase | Search" error={error} />;
   }
 
   return (
-    <Layout title="Bedbase | Search" footer fullHeight>
+    <Layout title="BEDbase | Search" footer fullHeight>
       <div className="my-2">
         <Row>
           <Col sm={12} md={12}>
@@ -47,7 +47,7 @@ export const SearchPage = () => {
         <div>
           {isSearching ? (
             <div className="mt-5 pt-5 d-flex flex-column align-items-center">
-              <img src="/bedbase_icon.svg" alt="loading" width="60px" className="animate-bounce" />
+              <img src="/BEDbase_icon.svg" alt="loading" width="60px" className="animate-bounce" />
               <p className="fst-italic text-sm text-center">Searching...</p>
             </div>
           ) : (

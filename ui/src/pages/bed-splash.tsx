@@ -29,7 +29,7 @@ export const BedSplash = () => {
 
   if (isLoading) {
     return (
-      <Layout title={`Bedbase | ${bedId}`} footer>
+      <Layout title={`BEDbase | ${bedId}`} footer>
         <div className="my-2">
           <Row>
             <Col sm={12} md={12}>
@@ -58,10 +58,10 @@ export const BedSplash = () => {
       </Layout>
     );
   } else if (error) {
-    return <ErrorPage title={`Bedbase | ${bedId}`} error={error} />;
+    return <ErrorPage title={`BEDbase | ${bedId}`} error={error} />;
   } else {
     return (
-      <Layout title={`Bedbase | ${bedId}`} footer fullHeight>
+      <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
         <div className="my-2">
           <Row className="mb-2">
             <Col sm={12} md={12}>

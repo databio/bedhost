@@ -31,3 +31,33 @@ export const bytesToSize = (bytes: number) => {
   const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))));
   return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
 };
+
+export const generateCurlScriptForCartDownloadMd = (md5List: string[]) => {
+  const wgetCommands = md5List.map((md5, index) => {
+    const downloadLink = makeHttpDownloadLink(md5);
+    return `wget -O \\
+      "file${index + 1}.bed" \\
+      "${downloadLink}"`;
+  });
+
+  const script = `
+  \`\`\`sh
+  #!/bin/bash\n\n${wgetCommands.join('\n')}\n\ntar -czf beds.tar.gz *.bed
+  \`\`\`
+  `;
+
+  return script;
+};
+
+export const generateCurlScriptForCartDownloadRaw = (md5List: string[]) => {
+  const wgetCommands = md5List.map((md5, index) => {
+    const downloadLink = makeHttpDownloadLink(md5);
+    return `wget -O \\
+      "file${index + 1}.bed" \\
+      "${downloadLink}"`;
+  });
+
+  const script = `#!/bin/bash\n\n${wgetCommands.join('\n')}\n\ntar -czf beds.tar.gz *.bed`;
+
+  return script;
+};

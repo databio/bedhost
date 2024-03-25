@@ -20,6 +20,10 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
     setCart([...cart, bed]);
   };
   const removeBedFromCart = (bed: string) => {
+    if (bed === 'all') {
+      setCart([]);
+      return;
+    }
     setCart(cart.filter((item) => item !== bed));
   };
 
