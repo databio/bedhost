@@ -22,7 +22,13 @@ import { BedCart } from './pages/bed-cart.tsx';
 import { SearchPage } from './pages/search.tsx';
 
 // create the query client
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
 
 // create the router
 const router = createBrowserRouter([

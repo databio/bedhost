@@ -1,6 +1,6 @@
 bbconf @ git+https://github.com/databio/bbconf.git@thinking#egg=bbconf
 fastapi>=0.103.0
-geniml>=0.2.1
+geniml @ git+https://github.com/databio/geniml_dev.git@dev#egg=geniml
 logmuse>=0.2.7
 markdown
 requests

@@ -12,6 +12,7 @@ import { MeanRegionWidthCard } from '../components/bed-splash-components/cards/m
 import { GenomicFeatureBar } from '../components/bed-splash-components/charts/genomic-feature-bar';
 import { PromoterAnalysisBar } from '../components/bed-splash-components/charts/promoter-analysis';
 import { Plots } from '../components/bed-splash-components/plots';
+import { AxiosError } from 'axios';
 
 export const BedSplash = () => {
   const params = useParams();
@@ -58,7 +59,46 @@ export const BedSplash = () => {
       </Layout>
     );
   } else if (error) {
-    return <ErrorPage title={`BEDbase | ${bedId}`} error={error} />;
+    if ((error as AxiosError)?.response?.status === 404) {
+      return (
+        <Layout title={`BEDbase | ${bedId}`}>
+          <div
+            className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
+            style={{ height: '50vh' }}
+          >
+            <h1 className="fw-bold text-center mb-3">Oh no!</h1>
+            <div className="d-flex flex-row align-items-center w-100 justify-content-center">
+              <h2 className="text-2xl text-center">
+                We could not find BED with record identifier: <br />
+                <span className="fw-bold">{bedId}</span>
+              </h2>
+            </div>
+            <div className="w-50">
+              <p className="fst-italic text-center mt-3">
+                Are you sure you have the correct record identifier? If you believe this is an error, please open an
+                issue: <a href="https://github.com/databio/bedhost/issues">on GitHub</a>
+              </p>
+            </div>
+            <div className="d-flex flex-row align-items-center justify-content-center">
+              <a href="/">
+                <button className="btn btn-primary">
+                  <i className="bi bi-house me-1"></i>
+                  Home
+                </button>
+              </a>
+              <a href="https://github.com/databio/bedhost/issues">
+                <button className="btn btn-primary ms-2">
+                  <i className="bi bi-exclamation-triangle me-1"></i>
+                  Report issue
+                </button>
+              </a>
+            </div>
+          </div>
+        </Layout>
+      );
+    } else {
+      return <ErrorPage title={`BEDbase | ${bedId}`} error={error} />;
+    }
   } else {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
