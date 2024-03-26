@@ -21,7 +21,7 @@ export const useSearch = (query: SearchQuery) => {
   return useQuery({
     queryKey: ['search', q, limit, offset],
     queryFn: async () => {
-      const { data } = await api.post<SearchResponse>(`/bed/search?query=${q}&limit=${limit}&offset=${offset}`);
+      const { data } = await api.post<SearchResponse>(`/bed/search/text?query=${q}&limit=${limit}&offset=${offset}`);
       return data;
     },
     enabled: enabled,
