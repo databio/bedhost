@@ -1,6 +1,8 @@
 import { motion } from 'framer-motion';
 import { PRIMARY_COLOR } from '../const';
 
+const STROKE_WIDTH = 2;
+
 export const InPaths = () => {
   return (
     <motion.svg
@@ -20,7 +22,7 @@ export const InPaths = () => {
         fill="none"
         vectorEffect="non-scaling-stroke"
         d="m 0,145 h 100 v 75 h 250%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke="#000"
         animate={{
@@ -39,7 +41,7 @@ export const InPaths = () => {
         fill="none"
         vectorEffect="non-scaling-stroke"
         d="m 0,200 h 75 v 35 h 250%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke="#000"
         animate={{
@@ -61,7 +63,7 @@ export const InPaths = () => {
         y1="50%"
         x2="100%"
         y2="50%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
         }}
@@ -78,7 +80,7 @@ export const InPaths = () => {
         fill="none"
         vectorEffect="non-scaling-stroke"
         d="m 0,315 h 75 v -35 h 250%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke="#000"
         animate={{
@@ -97,7 +99,7 @@ export const InPaths = () => {
         fill="none"
         vectorEffect="non-scaling-stroke"
         d="m 0,370 h 100 v -75 h 250%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke="#000"
         animate={{
@@ -135,7 +137,7 @@ export const OutPaths = () => {
         fill="none"
         vectorEffect="non-scaling-stroke"
         d="m 0,220 h 75 v -115 h 250%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke={PRIMARY_COLOR}
         animate={{
@@ -157,7 +159,7 @@ export const OutPaths = () => {
         y1="50%"
         x2="100%"
         y2="50%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
         }}
@@ -174,7 +176,7 @@ export const OutPaths = () => {
         fill="none"
         vectorEffect="non-scaling-stroke"
         d="m 0,295 h 75 v 125 h 550%"
-        strokeWidth="3"
+        strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke={PRIMARY_COLOR}
         animate={{
