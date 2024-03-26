@@ -64,12 +64,22 @@ async def get_example_bed_record():
     summary="Paged list of all BED records",
     response_model=BedListResult,
 )
-async def list_beds(limit: int = 1000, offset: int = 0) -> BedListResult:
+async def list_beds(
+    limit: int = 1000,
+    offset: int = 0,
+    genome: str = Query(
+        default=None, description="filter by genome of the bed file. e.g. 'hg38'"
+    ),
+    bed_type: str = Query(
+        default=None, description="filter by bed type. e.g. 'bed6+4'"
+    ),
+) -> BedListResult:
     """
-    To get the first page, leave token field empty. The response will include a
-    'next_page_token' field, which can be used to get the next page.
+    Returns a list of all BED records.
     """
-    return bbagent.bed.get_ids_list(limit=limit, offset=offset)
+    return bbagent.bed.get_ids_list(
+        limit=limit, offset=offset, genome=genome, bed_type=bed_type
+    )
 
 
 @router.get(
