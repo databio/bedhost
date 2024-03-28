@@ -5,7 +5,6 @@ except ImportError:
     from typing import Dict, Optional, List, Any
 
 from fastapi import APIRouter
-from fastapi.responses import JSONResponse
 
 from bbconf.models.base_models import StatsReturn
 
