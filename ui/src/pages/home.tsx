@@ -57,6 +57,14 @@ export const Home = () => {
             placeholder="Start searching for BED files"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (searchTerm.length === 0) {
+                  return;
+                }
+                navigate(`/search?q=${searchTerm}`);
+              }
+            }}
           />
           <button
             className="btn btn-primary btn-lg"
@@ -78,7 +86,10 @@ export const Home = () => {
           <a href="/bedset/testinoo">example BED set</a>
         </div>
         <div className="flex-row w-100 landing-animation-container hidden large-flex">
-          <div className="d-flex flex-column w-25 align-items-center justify-content-center gap-3 px-2">
+          <div
+            className="d-flex flex-column align-items-center justify-content-center gap-3 px-2"
+            style={{ width: '23%' }}
+          >
             <FileBadge>
               <span className="fw-bold text-sm">Wiggle files</span>
               <Image src="/wig.svg" alt="Wiggle file icon" height="30px" className="ms-2" />
