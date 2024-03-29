@@ -25,7 +25,7 @@ export const Home = () => {
   return (
     <Layout footer title="BEDbase" fullHeight>
       <div className="d-flex flex-column w-100 align-items-center p-2">
-        <div className="my-5"></div>
+        <div className="my-3"></div>
         <div className="d-flex flex-row align-items-center mt-5 gap-2 mb-2">
           <a href="https://github.com/databio/bedhost">
             <span className="badge bg-primary text-sm bg-opacity-10 text-primary border border-primary">
@@ -99,7 +99,7 @@ export const Home = () => {
               <Image src="/bdg.svg" alt="BDG file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <span className="fw-bold text-sm">Wig Files</span>
+              <span className="fw-bold text-sm">Wig files</span>
               <Image src="/bigbed.svg" alt="BigBed file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
