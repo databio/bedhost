@@ -10,8 +10,10 @@ import { SearchResultsTable } from '../components/search/search-results-table';
 export const SearchPage = () => {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [limit, setLimit] = useState(10);
+  // const [limit, setLimit] = useState(10);
   const [offset, setOffset] = useState(0);
+
+  const limit = 25;
 
   const {
     isFetching: isSearching,
@@ -20,7 +22,7 @@ export const SearchPage = () => {
     refetch,
   } = useSearch({
     q: searchTerm,
-    limit: limit,
+    limit: limit, // TODO: make this a variable
     offset: offset,
     autoRun: false,
   });
