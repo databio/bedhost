@@ -83,7 +83,7 @@ export const Home = () => {
         </div>
         <div className="d-flex flex-row align-items-center justify-content-center gap-2 my-3">
           Or, explore an <a href="/bed/bbad85f21962bb8d972444f7f9a3a932">example BED file</a> or a{' '}
-          <a href="/bedset/testinoo">example BED set</a>
+          <a href="/bedset/gse218680">example BED set</a>
         </div>
         <div className="flex-row w-100 landing-animation-container hidden large-flex">
           <div
