@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { PRIMARY_COLOR } from '../const';
 
 const STROKE_WIDTH = 2;
+const STROKE_SPEAD = 8;
 
 export const InPaths = () => {
   return (
@@ -31,7 +32,7 @@ export const InPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 1.5,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
@@ -50,7 +51,7 @@ export const InPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 1.5,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
@@ -69,7 +70,7 @@ export const InPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 3,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
@@ -89,7 +90,7 @@ export const InPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 1.5,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
@@ -108,7 +109,7 @@ export const InPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 1.5,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
@@ -146,7 +147,7 @@ export const OutPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 1.5,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
@@ -165,7 +166,7 @@ export const OutPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 3,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
@@ -185,7 +186,7 @@ export const OutPaths = () => {
         }}
         strokeDasharray="6,6"
         transition={{
-          duration: 1.5,
+          duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',

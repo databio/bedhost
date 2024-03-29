@@ -91,15 +91,15 @@ export const Home = () => {
             style={{ width: '23%' }}
           >
             <FileBadge>
-              <span className="fw-bold text-sm">Wiggle files</span>
+              <span className="fw-bold text-sm">Bed files</span>
               <Image src="/wig.svg" alt="Wiggle file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <span className="fw-bold text-sm">BDG files</span>
+              <span className="fw-bold text-sm">BigBed files</span>
               <Image src="/bdg.svg" alt="BDG file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <span className="fw-bold text-sm">BigBed Files</span>
+              <span className="fw-bold text-sm">Wig Files</span>
               <Image src="/bigbed.svg" alt="BigBed file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
@@ -107,7 +107,7 @@ export const Home = () => {
               <Image src="/big_wig.svg" alt="BigWig file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <span className="fw-bold text-sm">BED files</span>
+              <span className="fw-bold text-sm">BedGraph files</span>
               <Image src="/bed.svg" alt="BED file icon" height="30px" className="ms-2" />
             </FileBadge>
           </div>
@@ -194,9 +194,7 @@ export const Home = () => {
             <Col sm={6} md={6} className="">
               <h2 className="fw-bold">Search for BED files</h2>
               <p>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Vero, necessitatibus. Maiores totam unde
-                officia, non, fugiat voluptatibus illum commodi voluptates ea vero nisi tempore excepturi modi error
-                adipisci labore veniam.
+                Bedbase provides three search endpoints:
               </p>
             </Col>
             <Col sm={6} md={6} className=""></Col>
