@@ -104,13 +104,6 @@ async def changelog(request: Request):
     return render_markdown("changelog.md", request)
 
 
-@app.get(
-    "/docs/guide", summary="Developer guide", response_class=HTMLResponse, tags=["home"]
-)
-async def guide(request: Request):
-    return render_markdown("guide.md", request)
-
-
 def render_markdown(filename: str, request: Request):
     with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
         text = input_file.read()
