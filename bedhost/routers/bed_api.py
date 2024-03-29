@@ -14,7 +14,6 @@ from ..main import bbagent
 from ..data_models import (
     BedDigest,
     CROM_NUMBERS,
-
 )
 from bbconf.models.bed_models import (
     BedListResult,

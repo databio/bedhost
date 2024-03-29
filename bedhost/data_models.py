@@ -62,4 +62,3 @@ class ServiceInfoResponse(BaseModel):
     environment: str
     version: str
     component_versions: ComponentVersions
-
