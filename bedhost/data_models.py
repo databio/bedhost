@@ -1,10 +1,6 @@
-from typing import Dict, List, Union, Any
 from fastapi import Path
 from pydantic import BaseModel
 from enum import Enum
-from bbconf.models import BedFileTableModel, BedSetTableModel
-
-from .main import bbc
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -28,7 +24,7 @@ BedDigest = Path(
     # example=ex_bed_digest,
 )
 
-chromosome_number = Path(
+CROM_NUMBERS = Path(
     ...,
     description="Chromosome number",
     regex=r"^\S+$",
@@ -36,31 +32,33 @@ chromosome_number = Path(
 )
 
 
-class BedsetResponse(BaseModel):
-    bedset_record_id: str
-    number_of_bedfiles: int
-    bedfile_metadata: List[Dict]
+class Type(BaseModel):
+    group: str
+    artifact: str
+    version: str
 
 
-class BedMetadataResponse(BaseModel):
-    record_identifier: str
-    metadata: BedFileTableModel
-    raw: Union[Dict[str, Any], None] = None
+class Organization(BaseModel):
+    name: str
+    url: str
 
 
-class RecordsIdReturn(BaseModel):
-    record_identifier: str = None
-    name: Union[str, None] = (None,)
+class ComponentVersions(BaseModel):
+    bedhost_version: str
+    bbconf_version: str
+    python_version: str
+    openapi_version: str
 
 
-class ListBedFilesResponse(BaseModel):
-    total_size: int
-    page_size: int
-    next_page_token: int
-    records: List[RecordsIdReturn]
-
-
-class BedSetMetadataResponse(BaseModel):
-    record_identifier: str
-    metadata: BedSetTableModel
-    raw: Union[Dict[str, Any], None] = None
+class ServiceInfoResponse(BaseModel):
+    id: str
+    name: str
+    type: Type
+    description: str
+    organization: Organization
+    contactUrl: str
+    documentationUrl: str
+    updatedAt: str
+    environment: str
+    version: str
+    component_versions: ComponentVersions

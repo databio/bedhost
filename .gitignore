@@ -26,3 +26,5 @@ bedhost/static/bedhost-ui/
 geniml
 
 local_cache
+
+environment/
