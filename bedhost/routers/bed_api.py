@@ -19,7 +19,7 @@ from bbconf.models.bed_models import (
     BedListResult,
     BedMetadata,
     BedFiles,
-    BedStats,
+    BedStatsModel,
     BedPlots,
     BedClassification,
     BedPEPHub,
@@ -146,7 +146,7 @@ async def get_bed_files(
 @router.get(
     "/{bed_id}/metadata/stats",
     summary="Get metadata for a single BED record",
-    response_model=BedStats,
+    response_model=BedStatsModel,
 )
 async def get_bed_stats(
     bed_id: str = BedDigest,
