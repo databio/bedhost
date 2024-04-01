@@ -9,12 +9,12 @@ except ImportError:
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
-from .. import _LOGGER
-from ..main import bbagent
-from ..data_models import (
-    BedDigest,
-    CROM_NUMBERS,
-)
+from geniml.io import RegionSet
+
+import tempfile
+import os
+import shutil
+
 from bbconf.models.bed_models import (
     BedListResult,
     BedMetadata,
@@ -26,6 +26,14 @@ from bbconf.models.bed_models import (
     BedListSearchResult,
 )
 from bbconf.exceptions import BEDFileNotFoundError
+
+
+from .. import _LOGGER
+from ..main import bbagent
+from ..data_models import (
+    BedDigest,
+    CROM_NUMBERS,
+)
 
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
@@ -252,5 +260,16 @@ async def text_to_bed_search(
     file: UploadFile = File(None), limit: int = 10, offset: int = 0
 ):
     _LOGGER.info(f"Searching for bedfiles...")
+
+    if file is not None:
+        with tempfile.TemporaryDirectory() as dirpath:
+            file_path = os.path.join(dirpath, file.filename)
+
+            with open(file_path, "wb") as bed_file:
+                shutil.copyfileobj(file.file, bed_file)
+
+            region_set = RegionSet(file_path)
+
+            # TODO: do something with that
 
     raise HTTPException(status_code=501, detail="Not implemented yet")
