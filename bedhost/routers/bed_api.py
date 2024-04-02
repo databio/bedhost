@@ -27,39 +27,27 @@ from bbconf.models.bed_models import (
 )
 from bbconf.exceptions import BEDFileNotFoundError
 
-
 from .. import _LOGGER
 from ..main import bbagent
 from ..data_models import (
     BedDigest,
     CROM_NUMBERS,
 )
+from ..const import EXAMPLE_BED
 
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
 
-@router.post(
-    "/search/text",
-    summary="Search for a BedFile",
-    tags=["search"],
-    response_model=BedListSearchResult,
-)
-async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
-    _LOGGER.info(f"Searching for: {query}")
-    results = bbagent.bed.text_to_bed_search(query, limit=limit, offset=offset)
-
-    if results:
-        return results
-    raise HTTPException(status_code=404, detail="No records found")
-
-
 @router.get(
     "/example",
-    summary="Get metadata for an example BED record",
+    summary="Get example BED record metadata",
     response_model=BedMetadata,
 )
 async def get_example_bed_record():
+    """
+    Get metadata for an example BED record.
+    """
     result = bbagent.bed.get_ids_list(limit=1, offset=0, full=True).results
     if result:
         return result[0]
@@ -82,7 +70,7 @@ async def list_beds(
     ),
 ) -> BedListResult:
     """
-    Returns a list of all BED records.
+    Returns list of BED files in the database with optional filters.
     """
     return bbagent.bed.get_ids_list(
         limit=limit, offset=offset, genome=genome, bed_type=bed_type
@@ -93,6 +81,7 @@ async def list_beds(
     "/{bed_id}/metadata",
     summary="Get metadata for a single BED record",
     response_model=BedMetadata,
+    description=f"Example\n " f"bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_metadata(
     bed_id: str = BedDigest,
@@ -101,7 +90,7 @@ async def get_bed_metadata(
     ),
 ):
     """
-    Returns metadata from selected columns for selected BED record
+    Returns metadata for a single BED record. if full=True, returns full record with stats, plots, files and metadata.
     """
     try:
         return bbagent.bed.get(bed_id, full=full)
@@ -113,8 +102,9 @@ async def get_bed_metadata(
 
 @router.get(
     "/{bed_id}/metadata/plots",
-    summary="Get metadata for a single BED record",
+    summary="Get plots for a single BED record",
     response_model=BedPlots,
+    description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_plots(
     bed_id: str = BedDigest,
@@ -145,8 +135,9 @@ async def get_bed_files(
 
 @router.get(
     "/{bed_id}/metadata/stats",
-    summary="Get metadata for a single BED record",
+    summary="Get stats for a single BED record",
     response_model=BedStatsModel,
+    description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_stats(
     bed_id: str = BedDigest,
@@ -161,8 +152,9 @@ async def get_bed_stats(
 
 @router.get(
     "/{bed_id}/metadata/classification",
-    summary="Get metadata for a single BED record",
+    summary="Get classification of single BED file",
     response_model=BedClassification,
+    description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_classification(
     bed_id: str = BedDigest,
@@ -177,8 +169,11 @@ async def get_bed_classification(
 
 @router.get(
     "/{bed_id}/metadata/raw",
-    summary="Get metadata for a single BED record",
+    summary="Get raw metadata for a single BED record",
     response_model=BedPEPHub,
+    description=f"Returns raw metadata for a single BED record. "
+    f"This metadata is stored in PEPHub. And is not verified."
+    f"Example\n bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_pephub(
     bed_id: str = BedDigest,
@@ -248,6 +243,25 @@ def get_regions_for_bedfile(
         raise HTTPException(
             status_code=500, detail="ERROR: bigBedToBed is not installed."
         )
+
+
+@router.post(
+    "/search/text",
+    summary="Search for a BedFile",
+    tags=["search"],
+    response_model=BedListSearchResult,
+)
+async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
+    """
+    Search for a BedFile by a text query.
+    Example: query="cancer"
+    """
+    _LOGGER.info(f"Searching for: {query}")
+    results = bbagent.bed.text_to_bed_search(query, limit=limit, offset=offset)
+
+    if results:
+        return results
+    raise HTTPException(status_code=404, detail="No records found")
 
 
 @router.post(

@@ -11,7 +11,8 @@ from bbconf.models.bedset_models import (
 from bbconf.exceptions import BedSetNotFoundError
 
 from ..main import bbagent
-from ..const import PKG_NAME
+from ..const import PKG_NAME, EXAMPLE_BEDSET
+
 
 router = APIRouter(prefix="/v1/bedset", tags=["bedset"])
 
@@ -38,19 +39,21 @@ async def get_example_bedset_record():
 )
 async def list_bedsets(query: str = None, limit: int = 1000, offset: int = 0):
     """
-    Returns a paged list of all BEDset records
+    Returns a list of BEDset records in the database with optional filters and search.
     """
     return bbagent.bedset.get_ids_list(query=query, limit=limit, offset=offset)
 
 
-@router.get("/{bedset_id}/metadata", response_model=BedSetMetadata)
+@router.get(
+    "/{bedset_id}/metadata",
+    response_model=BedSetMetadata,
+    summary="Get all metadata for a single BEDset record",
+    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+)
 async def get_bedset_metadata(
     bedset_id: str,
     full: bool = True,
 ):
-    """
-    Returns metadata from selected columns for selected bedset
-    """
     # TODO: fix error with not found
     try:
         return bbagent.bedset.get(bedset_id, full=full)
@@ -58,7 +61,12 @@ async def get_bedset_metadata(
         raise HTTPException(status_code=404, detail="No records found")
 
 
-@router.get("/{bedset_id}/metadata/plots", response_model=BedSetPlots)
+@router.get(
+    "/{bedset_id}/metadata/plots",
+    response_model=BedSetPlots,
+    summary="Get plots for single bedset record",
+    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+)
 async def get_bedset_metadata(
     bedset_id: str,
 ):
@@ -71,20 +79,26 @@ async def get_bedset_metadata(
         raise HTTPException(status_code=404, detail="No records found")
 
 
-@router.get("/{bedset_id}/metadata/stats", response_model=BedSetStats)
+@router.get(
+    "/{bedset_id}/metadata/stats",
+    response_model=BedSetStats,
+    summary="Get stats for a single BEDSET record",
+    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+)
 async def get_bedset_metadata(
     bedset_id: str,
 ):
-    """
-    Returns metadata from selected columns for selected bedset
-    """
     try:
         return bbagent.bedset.get_statistics(bedset_id)
     except BedSetNotFoundError as _:
         raise HTTPException(status_code=404, detail="No records found")
 
 
-@router.get("/{bedset_id}/bedfiles", response_model=BedSetBedFiles)
+@router.get(
+    "/{bedset_id}/bedfiles",
+    response_model=BedSetBedFiles,
+    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+)
 async def get_bedfiles_in_bedset(
     bedset_id: str,
     limit: int = 100,
