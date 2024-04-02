@@ -5,6 +5,7 @@ except ImportError:
     from typing import Dict, Optional, List, Any
 
 from fastapi import APIRouter, HTTPException, Request
+from bbconf.models.drs_models import DRSModel
 
 from ..main import bbagent
 from ..helpers import (
@@ -18,6 +19,7 @@ router = APIRouter(prefix="/v1/objects", tags=["objects"])
 @router.get(
     "/{object_id}",
     summary="Get DRS object metadata",
+    response_model=DRSModel,
 )
 async def get_drs_object_metadata(object_id: str, req: Request):
     """
@@ -33,6 +35,7 @@ async def get_drs_object_metadata(object_id: str, req: Request):
 @router.get(
     "/{object_id}/access/{access_id}",
     summary="Get URL where you can retrieve files",
+    response_model=str,
 )
 async def get_object_bytes_url(object_id: str, access_id: str):
     """
@@ -49,7 +52,8 @@ async def get_object_bytes_url(object_id: str, access_id: str):
 )  # Required by UCSC track hubs
 @router.get(
     "/{object_id}/access/{access_id}/bytes",
-    summary="Download actual files",
+    summary="Download actual file",
+    response_model=bytes,
 )
 async def get_object_bytes(object_id: str, access_id: str):
     """
@@ -65,7 +69,8 @@ async def get_object_bytes(object_id: str, access_id: str):
 
 @router.get(
     "/{object_id}/access/{access_id}/thumbnail",
-    summary="Download thumbnail",
+    summary="Download thumbnail file",
+    response_model=bytes,
 )
 async def get_object_thumbnail(object_id: str, access_id: str):
     """
