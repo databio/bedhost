@@ -121,6 +121,7 @@ async def get_bed_plots(
     "/{bed_id}/metadata/files",
     summary="Get metadata for a single BED record",
     response_model=BedFiles,
+    description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_files(
     bed_id: str = BedDigest,
