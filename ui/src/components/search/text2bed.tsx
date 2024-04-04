@@ -28,7 +28,9 @@ export const Text2Bed = () => {
   });
 
   useEffect(() => {
-    onSearch();
+    if (searchTerm) {
+      onSearch();
+    }
   }, [limit, offset, onSearch]);
 
   if (error) {
