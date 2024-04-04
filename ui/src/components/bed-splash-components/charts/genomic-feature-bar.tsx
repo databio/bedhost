@@ -153,9 +153,9 @@ export const GenomicFeatureBar = (props: Props) => {
               tickSize: 5,
               tickPadding: 5,
               tickRotation: 0,
-              legend: 'Frequency (%)',
+              legend: displayAsPercentage ? 'Frequency (%)' : 'Frequency',
               legendPosition: 'middle',
-              legendOffset: -40,
+              legendOffset: displayAsPercentage ? -40 : -48,
             }}
             enableGridY={false}
             labelSkipWidth={12}
