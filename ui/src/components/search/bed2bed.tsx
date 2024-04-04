@@ -21,8 +21,8 @@ export const Bed2Bed = () => {
         }}
         className={
           isDragActive
-            ? 'rounded border p-5 shadow-sm border-dashed b2b-drop-zone transition-all border-primary'
-            : 'rounded border p-5 shadow-sm border-dashed b2b-drop-zone transition-all'
+            ? 'rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all border-primary'
+            : 'rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all'
         }
       >
         {file ? (
@@ -49,6 +49,24 @@ export const Bed2Bed = () => {
         )}
       </div>
       <input {...getInputProps()} ref={inputRef} className="d-none" type="file" id="file" accept=".bed,.bed.gz" />
+
+      {file && (
+        <div className="d-flex flex-row align-items-center justify-content-center my-2">
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={() => {
+              if (file) {
+                console.log(file);
+              }
+            }}
+          >
+            <span className="d-flex align-items-center">
+              <i className="bi bi-search me-1"></i>
+              Search
+            </span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };
