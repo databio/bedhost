@@ -37,6 +37,9 @@ a {
   .active {
     background-color: $primary !important;
   }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .active {

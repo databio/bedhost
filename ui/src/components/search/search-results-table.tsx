@@ -1,5 +1,6 @@
 import { ProgressBar } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
+import { roundToTwoDecimals } from '../../utils';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
@@ -23,7 +24,12 @@ export const SearchResultsTable = (props: Props) => {
           <tr key={result.id}>
             <td>{result?.metadata?.name || 'No name'}</td>
             <td>
-              <ProgressBar now={result.score * 100} label={`${result.score * 100}%`} variant="primary" />
+              <ProgressBar
+                min={5}
+                now={result.score * 100}
+                label={`${roundToTwoDecimals(result.score * 100)}%`}
+                variant="primary"
+              />
             </td>
             <td>{result.id}</td>
           </tr>
