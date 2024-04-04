@@ -29,7 +29,7 @@ export const BedSplashHeader = (props: Props) => {
     <div className="border-bottom py-2">
       <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
         <div className="d-flex flex-column align-items-start">
-          <h4 className="fw-bold">
+          <h4 className="fw-bold mb-0">
             <i className="bi bi-file-earmark-text me-2" />
             {metadata?.name || 'No name available'}
             <button
@@ -45,6 +45,10 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
+          <div>
+            <span className="fw-bold me-1">Source:</span>
+            {metadata.raw_metadata?.library_source || 'No source available'}
+          </div>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>

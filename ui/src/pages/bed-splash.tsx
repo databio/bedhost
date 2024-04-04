@@ -11,6 +11,7 @@ import { MeanRegionWidthCard } from '../components/bed-splash-components/cards/m
 import { GenomicFeatureBar } from '../components/bed-splash-components/charts/genomic-feature-bar';
 import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
+import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
 
 export const BedSplash = () => {
   const params = useParams();
@@ -113,6 +114,7 @@ export const BedSplash = () => {
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
+                <GCContentCard metadata={metadata} />
               </Col>
             )}
             <Col sm={12} md={8} className="d-flex flex-column gap-2 px-1">
