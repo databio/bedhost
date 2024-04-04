@@ -5,12 +5,10 @@ import { Col, Row } from 'react-bootstrap';
 import { BedSplashHeader } from '../components/bed-splash-components/header';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { ErrorPage } from '../components/common/error-page';
-import { Fragment } from 'react/jsx-runtime';
 import { NoRegionsCard } from '../components/bed-splash-components/cards/no-regions-card';
 import { MedianTssDistCard } from '../components/bed-splash-components/cards/median-tss-dist-card';
 import { MeanRegionWidthCard } from '../components/bed-splash-components/cards/mean-region-width-card';
 import { GenomicFeatureBar } from '../components/bed-splash-components/charts/genomic-feature-bar';
-import { PromoterAnalysisBar } from '../components/bed-splash-components/charts/promoter-analysis';
 import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
 
@@ -109,27 +107,17 @@ export const BedSplash = () => {
             </Col>
           </Row>
           <h2 className="fw-bold">Statistics</h2>
-          <Row className="">
+          <Row>
             {metadata && (
-              <Fragment>
-                <Col sm={12} md={4} className="h-100 align-items-stretch p-1">
-                  <NoRegionsCard metadata={metadata} />
-                </Col>
-                <Col sm={12} md={4} className="h-100 align-items-stretch p-1">
-                  <MedianTssDistCard metadata={metadata} />
-                </Col>
-                <Col sm={12} md={4} className="h-100 align-items-stretch p-1">
-                  <MeanRegionWidthCard metadata={metadata} />
-                </Col>
-              </Fragment>
+              <Col sm={12} md={4} className="d-flex flex-column gap-2 px-1 justify-content-between">
+                <NoRegionsCard metadata={metadata} />
+                <MedianTssDistCard metadata={metadata} />
+                <MeanRegionWidthCard metadata={metadata} />
+              </Col>
             )}
-          </Row>
-          <Row className="h-100 mb-2">
-            <Col sm={12} md={6} className="h-100 p-1">
+            <Col sm={12} md={8} className="d-flex flex-column gap-2 px-1">
               <GenomicFeatureBar metadata={metadata!} />
-            </Col>
-            <Col sm={12} md={6} className="h-100 p-1">
-              <PromoterAnalysisBar metadata={metadata!} />
+              {/* <PromoterAnalysisBar metadata={metadata!} /> */}
             </Col>
           </Row>
           <h2 className="fw-bold">Plots</h2>
