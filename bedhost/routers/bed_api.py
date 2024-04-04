@@ -285,6 +285,7 @@ async def text_to_bed_search(
 
             region_set = RegionSet(file_path)
 
-            # TODO: do something with that
-
-    raise HTTPException(status_code=501, detail="Not implemented yet")
+            results = bbagent.bed.bed_to_bed_search(
+                region_set, limit=limit, offset=offset
+            )
+    return results
