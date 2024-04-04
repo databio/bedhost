@@ -1,4 +1,4 @@
-bbconf @ git+https://github.com/databio/bbconf.git@new_search#egg=bbconf
+bbconf @ git+https://github.com/databio/bbconf.git@devh#egg=bbconf
 fastapi>=0.103.0
 logmuse>=0.2.7
 markdown
