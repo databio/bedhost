@@ -4,13 +4,13 @@ import { components } from '../../bedbase-types';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 type SearchQuery = {
-  q: string;
+  q: File | null;
   limit?: number;
   offset?: number;
   autoRun?: boolean;
 };
 
-export const useSearch = (query: SearchQuery) => {
+export const useBed2BedSearch = (query: SearchQuery) => {
   const { api } = useBedbaseApi();
   const { q, limit, offset, autoRun } = query;
   let enabled = false;
@@ -21,7 +21,21 @@ export const useSearch = (query: SearchQuery) => {
   return useQuery({
     queryKey: ['search', q, limit, offset],
     queryFn: async () => {
-      const { data } = await api.post<SearchResponse>(`/bed/search/text?query=${q}&limit=${limit}&offset=${offset}`);
+      if (!q) {
+        return {
+          count: 0,
+          results: [],
+        };
+      }
+      const formData = new FormData();
+      formData.append('limit', limit?.toString() || '10');
+      formData.append('offset', offset?.toString() || '0');
+      formData.append('file', q);
+      const { data } = await api.post<SearchResponse>(`/bed/search/bed`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
       return data;
     },
     enabled: enabled,

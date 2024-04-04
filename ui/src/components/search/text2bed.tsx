@@ -1,61 +1,59 @@
-import { components } from '../../../bedbase-types';
 import { Col, Row } from 'react-bootstrap';
 import { SearchBar } from './search-bar';
 import { SearchResultsTable } from './search-results-table';
+import { SearchingJumper } from './searching-jumper';
+import { useSearchParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useText2BedSearch } from '../../queries/useText2BedSearch';
+import { ErrorPage } from '../common/error-page';
+import { TableToolbar } from './table-toolbar';
+import { PaginationBar } from './pagination-bar';
 
-type Props = {
-  isSearching: boolean;
-  searchTerm: string;
-  offset: number;
-  limit: number;
-  refetch: () => void;
-  setOffset: (value: number) => void;
-  setSearchTerm: (value: string) => void;
-  data: components['schemas']['BedListSearchResult'] | undefined;
-};
+export const Text2Bed = () => {
+  const [searchParams] = useSearchParams();
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
 
-export const Text2Bed = (props: Props) => {
-  const { isSearching, searchTerm, offset, limit, setSearchTerm, setOffset, refetch, data } = props;
+  const {
+    isFetching: isSearching,
+    data: results,
+    error,
+    refetch: onSearch,
+  } = useText2BedSearch({
+    q: searchTerm,
+    limit: limit, // TODO: make this a variable
+    offset: offset,
+    autoRun: false,
+  });
+
+  useEffect(() => {
+    onSearch();
+  }, [limit, offset, onSearch]);
+
+  if (error) {
+    if (error) {
+      return <ErrorPage title="BEDbase | Search" error={error} />;
+    }
+  }
+
   return (
     <div className="my-2">
       <Row>
         <Col sm={12} md={12}>
-          <SearchBar value={searchTerm} onChange={setSearchTerm} onSearch={() => refetch()} />
+          <SearchBar value={searchTerm} onChange={setSearchTerm} onSearch={() => onSearch()} />
         </Col>
       </Row>
       <div>
         {isSearching ? (
-          <div className="mt-5 pt-5 d-flex flex-column align-items-center">
-            <img src="/bedbase_icon.svg" alt="loading" width="60px" className="animate-bounce" />
-            <p className="fst-italic text-sm text-center">Searching...</p>
-          </div>
+          <SearchingJumper />
         ) : (
           <div className="my-2">
-            {data ? (
+            {results ? (
               <div className="p-2 border rounded shadow-sm">
-                <SearchResultsTable results={data || []} />{' '}
-                <div className="d-flex flex-row align-items-center justify-content-center gap-1">
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={() => {
-                      setOffset(offset - limit);
-                      refetch();
-                    }}
-                    disabled={offset === 0}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    className="btn btn-sm btn-outline-primary"
-                    onClick={() => {
-                      setOffset(offset + limit);
-                      refetch();
-                    }}
-                    disabled={data.count < limit}
-                  >
-                    Next
-                  </button>
-                </div>
+                <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
+                <SearchResultsTable results={results || []} />{' '}
+                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
               </div>
             ) : (
               <div className="d-flex flex-column align-items-center justify-content-center mt-5 fst-italic">

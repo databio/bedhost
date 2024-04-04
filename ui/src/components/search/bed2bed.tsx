@@ -1,8 +1,16 @@
-import { useState, useRef, useCallback, Fragment } from 'react';
+import { useRef, useCallback, Fragment, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { SearchResultsTable } from './search-results-table';
+import { SearchingJumper } from './searching-jumper';
+import { useBed2BedSearch } from '../../queries/useBed2BedSearch';
+import { PaginationBar } from './pagination-bar';
+import { TableToolbar } from './table-toolbar';
 
 export const Bed2Bed = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [limit, setLimit] = useState(10);
+  const [offset, setOffset] = useState(0);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setFile(acceptedFiles[0]);
@@ -10,8 +18,27 @@ export const Bed2Bed = () => {
 
   const { isDragActive, getRootProps, getInputProps } = useDropzone({ onDrop });
 
+  const {
+    isFetching: isSearching,
+    data: results,
+    refetch: onSearch,
+  } = useBed2BedSearch({
+    q: file,
+    limit: limit,
+    offset: offset,
+    autoRun: false,
+  });
+
+  useEffect(() => {
+    if (file) {
+      setTimeout(() => {
+        onSearch();
+      }, 50);
+    }
+  }, [file, offset, limit, onSearch]);
+
   return (
-    <div>
+    <div className="d-flex flex-column align-items-center">
       <div
         {...getRootProps()}
         onClick={() => {
@@ -21,8 +48,8 @@ export const Bed2Bed = () => {
         }}
         className={
           isDragActive
-            ? 'rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all border-primary'
-            : 'rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all'
+            ? 'w-100 rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all border-primary'
+            : 'w-100 rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all'
         }
       >
         {file ? (
@@ -49,24 +76,22 @@ export const Bed2Bed = () => {
         )}
       </div>
       <input {...getInputProps()} ref={inputRef} className="d-none" type="file" id="file" accept=".bed,.bed.gz" />
-
-      {file && (
-        <div className="d-flex flex-row align-items-center justify-content-center my-2">
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={() => {
-              if (file) {
-                console.log(file);
-              }
-            }}
-          >
-            <span className="d-flex align-items-center">
-              <i className="bi bi-search me-1"></i>
-              Search
-            </span>
-          </button>
-        </div>
-      )}
+      <div className="w-100 my-2">
+        {isSearching ? (
+          <SearchingJumper />
+        ) : (
+          <div className="my-2">
+            {results ? (
+              <div className="p-2 border rounded shadow-sm">
+                <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
+                {/* @ts-expect-error: I know this works I can't figure out why the error */}
+                <SearchResultsTable results={results || []} />{' '}
+                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
