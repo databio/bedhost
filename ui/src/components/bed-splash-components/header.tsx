@@ -45,10 +45,6 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-          <div>
-            <span className="fw-bold me-1">Source:</span>
-            {metadata.raw_metadata?.library_source || 'No source available'}
-          </div>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -165,6 +161,14 @@ export const BedSplashHeader = (props: Props) => {
               <div className="badge bg-primary">
                 <i className="bi bi-folder-fill me-1" />
                 {metadata?.bed_type || 'No bed type available'}
+              </div>
+            </p>
+          </div>
+          <div className="d-flex flex-row">
+            <p className="mb-0">
+              <div className="badge bg-primary">
+                <i className="bi bi-folder-fill me-1" />
+                {metadata.raw_metadata?.global_sample_id || 'No source available'}
               </div>
             </p>
           </div>
