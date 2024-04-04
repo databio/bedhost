@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 import { SearchSelector } from '../components/search/search-selector';
 import { Text2Bed } from '../components/search/text2bed';
 import { Bed2Bed } from '../components/search/bed2bed';
+import { Text2BedSet } from '../components/search/text2bedset';
 
 type SearchView = 't2b' | 'b2b' | 't2bs';
 
@@ -26,7 +27,7 @@ export const SearchPage = () => {
       ) : searchView === 'b2b' ? (
         <Bed2Bed />
       ) : searchView === 't2bs' ? (
-        <div>Render t2bs interface</div>
+        <Text2BedSet />
       ) : (
         <div>Unknown searchView selected.</div>
       )}

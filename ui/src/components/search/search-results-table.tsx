@@ -20,7 +20,9 @@ export const SearchResultsTable = (props: Props) => {
           <th scope="col">Name</th>
           <th scope="col">Score</th>
           <th scope="col">BEDbase ID</th>
-          <th scope="col">Actions</th>
+          <th scope="col" style={{ minWidth: '140px' }}>
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -37,9 +39,14 @@ export const SearchResultsTable = (props: Props) => {
             </td>
             <td>{result?.metadata?.id}</td>
             <td>
+              <a className="me-1" href={`/bed/${result.metadata?.id}`}>
+                <button className="btn btn-sm btn-outline-primary">
+                  <i className="bi bi-eye"></i>
+                </button>
+              </a>
               {cart.includes(result?.metadata?.id || '') ? (
                 <button
-                  className="btn btn-sm btn-outline-danger me-1"
+                  className="btn btn-sm btn-outline-danger"
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
@@ -48,11 +55,12 @@ export const SearchResultsTable = (props: Props) => {
                     removeBedFromCart(result.metadata?.id);
                   }}
                 >
-                  Remove from cart
+                  Remove
+                  <i className="bi bi-cart-dash ms-1"></i>
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary me-1"
+                  className="btn btn-sm btn-outline-primary"
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
@@ -61,14 +69,10 @@ export const SearchResultsTable = (props: Props) => {
                     addBedToCart(result.metadata?.id || '');
                   }}
                 >
-                  Add to cart
+                  Add
+                  <i className="bi bi-cart-plus ms-1"></i>
                 </button>
               )}
-              <a href={`/bed/${result.metadata?.id}`}>
-                <button className="btn btn-sm btn-outline-primary">
-                  <i className="bi bi-eye"></i>
-                </button>
-              </a>
             </td>
           </tr>
         ))}
