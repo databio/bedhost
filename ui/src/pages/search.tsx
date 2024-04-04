@@ -7,6 +7,7 @@ import { ErrorPage } from '../components/common/error-page';
 
 import { SearchSelector } from '../components/search/search-selector';
 import { Text2Bed } from '../components/search/text2bed';
+import { Bed2Bed } from '../components/search/bed2bed';
 
 type SearchView = 't2b' | 'b2b' | 't2bs';
 
@@ -62,7 +63,7 @@ export const SearchPage = () => {
           data={searchResults}
         />
       ) : searchView === 'b2b' ? (
-        <div>Render b2b interface</div>
+        <Bed2Bed />
       ) : searchView === 't2bs' ? (
         <div>Render t2bs interface</div>
       ) : (

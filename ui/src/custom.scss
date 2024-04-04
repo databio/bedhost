@@ -52,6 +52,23 @@ a {
   }
 }
 
+.border-dashed {
+  border-style: dashed !important;
+}
+
+.b2b-drop-zone {
+  &:hover {
+    background-color: $light !important;
+  }
+}
+
+// tailwind transition class
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
 .landing-animation-container {
   height: 32rem;
 }
