@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useBedCart } from '../../contexts/bedcart-context';
+import { DownloadBedSetModal } from '../modals/download-bedset-modal';
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
 type Props = {
@@ -12,6 +13,7 @@ export const BedsetSplashHeader = (props: Props) => {
 
   const { cart, addMultipleBedsToCart, removeMultipleBedsFromCart } = useBedCart();
   const [addedToCart, setAddedToCart] = useState(false);
+  const [showDownloadModal, setShowDownloadModal] = useState(false);
 
   return (
     <div className="border-bottom py-2">
@@ -59,6 +61,10 @@ export const BedsetSplashHeader = (props: Props) => {
               </button>
             )
           }
+          <button onClick={() => setShowDownloadModal(true)} className="btn btn-outline-primary btn-sm">
+            <i className="bi bi-download me-1" />
+            Download BEDset
+          </button>
         </div>
       </div>
       <div className="d-flex flex-row align-items-end justify-content-start gap-1">
@@ -71,6 +77,7 @@ export const BedsetSplashHeader = (props: Props) => {
           {metadata.bed_ids?.length} BED files
         </div>
       </div>
+      <DownloadBedSetModal id={metadata.id} show={showDownloadModal} setShow={setShowDownloadModal} />
     </div>
   );
 };
