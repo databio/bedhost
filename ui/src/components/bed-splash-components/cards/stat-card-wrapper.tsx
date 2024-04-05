@@ -1,11 +1,18 @@
+import { useState } from 'react';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+
 type Props = {
   title: string;
   stat: string;
-  learnMoreHref: string;
+  tooltip?: string;
 };
 
 export const StatCard = (props: Props) => {
-  const { title, stat, learnMoreHref } = props;
+  const { title, stat, tooltip } = props;
+
+  const [showTooltip, setShowTooltip] = useState(false);
+  const renderTooltip = () => <Tooltip id={`tooltip-${title}`}>{tooltip || 'No tooltip available'}</Tooltip>;
+
   return (
     <div className="border rounded p-2 shadow-sm stat-card-height">
       <div className="d-flex flex-column align-items-center justify-content-between h-100">
@@ -14,9 +21,9 @@ export const StatCard = (props: Props) => {
           <h2 className="text-center text-primary fw-bolder w-100 mb-0 text-2xl">{stat}</h2>
         </div>
         <div className="text-end">
-          <a href={learnMoreHref} className="text-center mb-0 text-sm text-primary">
-            Learn more
-          </a>
+          <OverlayTrigger placement="left" overlay={renderTooltip()} delay={{ show: 250, hide: 400 }}>
+            <i className="text-sm bi bi-info-circle text-primary"></i>
+          </OverlayTrigger>
         </div>
       </div>
     </div>

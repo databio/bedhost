@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ResponsiveBar } from '@nivo/bar';
 import { components } from '../../../../bedbase-types';
 import { PRIMARY_COLOR } from '../../../const';
-import { roundToTwoDecimals } from '../../../utils';
+import { formatNumberWithCommas, roundToTwoDecimals } from '../../../utils';
 
 type BedMetadata = components['schemas']['BedMetadata'];
 type Props = {
@@ -51,31 +51,31 @@ export const GenomicFeatureBar = (props: Props) => {
     data = [
       {
         feature: "3' UTR",
-        value: metadata.stats?.threeutr_percentage || 0,
+        value: metadata.stats?.threeutr_frequency || 0,
       },
       {
         feature: "5' UTR",
-        value: metadata.stats?.fiveutr_percentage || 0,
+        value: metadata.stats?.fiveutr_frequency || 0,
       },
       {
         feature: 'Exon',
-        value: metadata.stats?.exon_percentage || 0,
+        value: metadata.stats?.exon_frequency || 0,
       },
       {
         feature: 'Intron',
-        value: metadata.stats?.intron_percentage || 0,
+        value: metadata.stats?.intron_frequency || 0,
       },
       {
         feature: 'Intergenic',
-        value: metadata.stats?.intergenic_percentage || 0,
+        value: metadata.stats?.intergenic_frequency || 0,
       },
       {
         feature: 'Promoter proc',
-        value: metadata.stats?.promoterprox_percentage || 0,
+        value: metadata.stats?.promoterprox_frequency || 0,
       },
       {
         feature: 'Promoter core',
-        value: metadata.stats?.promotercore_percentage || 0,
+        value: metadata.stats?.promotercore_frequency || 0,
       },
     ];
   }
@@ -161,10 +161,8 @@ export const GenomicFeatureBar = (props: Props) => {
             labelSkipWidth={12}
             labelSkipHeight={12}
             labelTextColor={{ from: 'color', modifiers: [['darker', 3]] }}
+            valueFormat={(value) => (displayAsPercentage ? `${value}%` : formatNumberWithCommas(value))}
           />
-        </div>
-        <div className="text-end">
-          <p className="text-center mb-0 text-sm text-primary">Learn more</p>
         </div>
       </div>
     </div>
