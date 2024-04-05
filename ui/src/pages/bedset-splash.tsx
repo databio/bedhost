@@ -5,11 +5,11 @@ import { useBedsetMetadata } from '../queries/useBedsetMetadata';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { ErrorPage } from '../components/common/error-page';
 import { BedsetSplashHeader } from '../components/bedset-splash-components/header';
-import { Fragment } from 'react/jsx-runtime';
 import { MeanRegionWidthCard } from '../components/bedset-splash-components/cards/median-region-width';
 import { MedianTssDistCard } from '../components/bedset-splash-components/cards/median-tss-distance';
 import { GenomicFeatureBar } from '../components/bedset-splash-components/charts/genomic-feature-bar';
-import { PromoterAnalysisBar } from '../components/bedset-splash-components/charts/promoter-analysis';
+import { Plots } from '../components/bedset-splash-components/plots';
+import { GCContentCard } from '../components/bedset-splash-components/cards/gc-content-card';
 
 export const BedsetSplash = () => {
   const params = useParams();
@@ -66,26 +66,21 @@ export const BedsetSplash = () => {
             </Col>
           </Row>
           <h2 className="fw-bold">Statistics</h2>
-          <Row className="">
-            {metadata && (
-              <Fragment>
-                <Col sm={12} md={6} className="h-100 align-items-stretch p-1">
-                  <MeanRegionWidthCard metadata={metadata} />
-                </Col>
-                <Col sm={12} md={6} className="h-100 align-items-stretch p-1">
-                  <MedianTssDistCard metadata={metadata} />
-                </Col>
-              </Fragment>
-            )}
-          </Row>
-          <Row className="h-100 mb-2">
-            <Col sm={12} md={6} className="h-100 p-1">
-              <GenomicFeatureBar metadata={metadata!} />
-            </Col>
-            <Col sm={12} md={6} className="h-100 p-1">
-              <PromoterAnalysisBar metadata={metadata!} />
-            </Col>
-          </Row>
+          {metadata && (
+            <Row>
+              <Col sm={12} md={4} className="d-flex flex-column gap-2 px-1 justify-content-between">
+                <MeanRegionWidthCard metadata={metadata} />
+                <MedianTssDistCard metadata={metadata} />
+                <GCContentCard metadata={metadata} />
+              </Col>
+              <Col sm={12} md={8} className="h-100 align-items-stretch">
+                <GenomicFeatureBar metadata={metadata!} />
+              </Col>
+            </Row>
+          )}
+
+          <h2 className="fw-bold">Plots</h2>
+          <Plots metadata={metadata!} />
         </div>
       </Layout>
     );

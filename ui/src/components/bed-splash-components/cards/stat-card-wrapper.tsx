@@ -12,7 +12,7 @@ export const StatCard = (props: Props) => {
   const renderTooltip = () => <Tooltip id={`tooltip-${title}`}>{tooltip || 'No tooltip available'}</Tooltip>;
 
   return (
-    <div className="border rounded p-2 shadow-sm stat-card-height">
+    <div className="border rounded p-2 shadow-sm bed-splash-stat-card-height">
       <div className="d-flex flex-column align-items-center justify-content-between h-100">
         <h4 className="fw-bold text-base">{title}</h4>
         <div className="d-flex w-100 text-center">

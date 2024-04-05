@@ -103,7 +103,7 @@ export const GenomicFeatureBar = (props: Props) => {
             </div>
           </div>
         </div>
-        <div className="d-flex justify-content-center w-100 genomic-feature-bar-height">
+        <div className="d-flex justify-content-center w-100 bed-splash-genomic-feature-bar-height">
           <ResponsiveBar
             data={data}
             borderWidth={1}

@@ -11,7 +11,7 @@ export const MeanRegionWidthCard = (props: Props) => {
   const { metadata } = props;
 
   return (
-    <StatCard title="Mean region width" learnMoreHref="#">
+    <StatCard title="Mean region width" tooltip="The average width of the regions in the bed file.">
       <div className="text-primary w-100">
         <h2 className="fw-bolder text-center w-100 text-3xl mb-0">
           {formatNumberWithCommas(Math.round(metadata.statistics?.mean?.mean_region_width || 0))} bp

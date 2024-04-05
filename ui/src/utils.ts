@@ -1,3 +1,5 @@
+type ObjectType = 'bed' | 'bedset';
+
 export const makeHttpDownloadLink = (md5: string) => {
   const API_BASE = import.meta.env.VITE_API_BASE || '';
   return `${API_BASE}/objects/bed.${md5}.bedfile/access/http`;
@@ -16,9 +18,9 @@ export const roundToTwoDecimals = (n: number) => {
   return Math.round(n * 100) / 100;
 };
 
-export const makeThumbnailImageLink = (md5: string, plotName: string) => {
+export const makeThumbnailImageLink = (md5: string, plotName: string, type: ObjectType) => {
   const API_BASE = import.meta.env.VITE_API_BASE || '';
-  return `${API_BASE}/objects/bed.${md5}.${plotName}/access/http/thumbnail`;
+  return `${API_BASE}/objects/${type}.${md5}.${plotName}/access/http/thumbnail`;
 };
 
 export const formatDateTime = (date: string) => {
@@ -60,6 +62,25 @@ export const generateCurlScriptForCartDownloadRaw = (md5List: string[]) => {
   const script = `#!/bin/bash\n\n${wgetCommands.join('\n')}\n\ntar -czf beds.tar.gz *.bed`;
 
   return script;
+};
+
+export const generateDownloadBedSetScriptMd = (id: string) => {
+  const script = `
+  \`\`\`python
+  import geniml.bbclient
+  
+  bbclient.load_bedset('${id}')
+  \`\`\`
+  `;
+  return script;
+};
+
+export const generateDownloadBedSetScriptRaw = (id: string) => {
+  return `
+  from geniml.bbclient import bbclient
+  
+  bbclient.load_bedset('${id}')
+    `;
 };
 
 export const chunkArray = <T>(arr: T[], chunkSize: number) => {

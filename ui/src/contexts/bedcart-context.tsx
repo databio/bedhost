@@ -11,11 +11,22 @@ const BedCartContext = createContext<{
   setCart: Dispatch<SetStateAction<string[]>>;
   addBedToCart: (bed: string) => void;
   removeBedFromCart: (bed: string) => void;
+  addMultipleBedsToCart: (beds: string[]) => void;
+  removeMultipleBedsFromCart: (beds: string[]) => void;
   // @ts-expect-error - its fine to start with undefined
 }>(undefined);
 
 export const BedCartProvider = ({ children }: ProviderProps) => {
   const [cart, setCart] = useLocalStorage<string[]>('bed-cart', []);
+
+  const addMultipleBedsToCart = (beds: string[]) => {
+    const alreadyInCart = beds.filter((bed) => cart.includes(bed));
+    if (alreadyInCart.length > 0) {
+      toast.error(`BED IDs ${alreadyInCart.join(', ')} are already in the cart!`);
+      return;
+    }
+    setCart([...cart, ...beds]);
+  };
 
   const addBedToCart = (bed: string) => {
     if (cart.includes(bed)) {
@@ -24,6 +35,11 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
     }
     setCart([...cart, bed]);
   };
+
+  const removeMultipleBedsFromCart = (beds: string[]) => {
+    setCart(cart.filter((item) => !beds.includes(item)));
+  };
+
   const removeBedFromCart = (bed: string) => {
     if (bed === 'all') {
       setCart([]);
@@ -38,7 +54,9 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
         cart,
         setCart,
         addBedToCart,
+        addMultipleBedsToCart,
         removeBedFromCart,
+        removeMultipleBedsFromCart,
       }}
     >
       {children}

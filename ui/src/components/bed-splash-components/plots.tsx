@@ -76,7 +76,7 @@ export const Plots = (props: PlotsProps) => {
                   <Col key={plotName} sm={12} md={4} className="px-1">
                     <Plot
                       key={plotName}
-                      src={plotExists ? makeThumbnailImageLink(metadata.id, plotName) : '/fignotavl_png.svg'}
+                      src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
                       alt={alt || 'No description available'}
                       title={title || 'No title available'}
                     />

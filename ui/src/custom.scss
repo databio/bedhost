@@ -89,16 +89,20 @@ a {
   box-shadow: 0px 0px 122px 0px $primary;
 }
 
-.stat-card-height {
+.bed-splash-stat-card-height {
   min-height: 7rem;
 }
 
-.genomic-feature-bar-height {
+.bed-splash-genomic-feature-bar-height {
   height: 27rem;
 }
 
-.promoter-bar-height {
-  height: 16rem;
+.bedset-splash-stat-card-height {
+  min-height: 7rem;
+}
+
+.bedset-splash-genomic-feature-bar-height {
+  height: 24rem;
 }
 
 .min-h-screen {
