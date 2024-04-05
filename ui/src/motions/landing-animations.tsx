@@ -137,7 +137,7 @@ export const OutPaths = () => {
       <motion.path
         fill="none"
         vectorEffect="non-scaling-stroke"
-        d="m 0,220 h 75 v -115 h 250%"
+        d="m 0,220 h 150 v -115 h 250%"
         strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke={PRIMARY_COLOR}
@@ -176,7 +176,7 @@ export const OutPaths = () => {
       <motion.path
         fill="none"
         vectorEffect="non-scaling-stroke"
-        d="m 0,295 h 75 v 125 h 550%"
+        d="m 0,295 h 150 v 125 h 550%"
         strokeWidth={STROKE_WIDTH}
         id="path1"
         stroke={PRIMARY_COLOR}
