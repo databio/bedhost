@@ -8,6 +8,8 @@ type Props = {
   metadata: BedSetMetadata;
 };
 
+const API_BASE = import.meta.env.VITE_API_BASE || '/';
+
 export const BedsetSplashHeader = (props: Props) => {
   const { metadata } = props;
 
@@ -26,10 +28,12 @@ export const BedsetSplashHeader = (props: Props) => {
           <p className="mb-0">{metadata?.description || 'No description available'}</p>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
-          <button className="btn btn-outline-primary btn-sm">
-            <i className="bi bi-info-circle me-1" />
-            API
-          </button>
+          <a href={`${API_BASE}/bedset/${metadata.id}/metadata?full=true`}>
+            <button className="btn btn-outline-primary btn-sm">
+              <i className="bi bi-info-circle me-1" />
+              API
+            </button>
+          </a>
           {
             // cart includes all bed ids?
             metadata.bed_ids?.every((bedId) => cart.includes(bedId)) && !addedToCart ? (
