@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 type Props = {
@@ -10,7 +9,6 @@ type Props = {
 export const StatCard = (props: Props) => {
   const { title, stat, tooltip } = props;
 
-  const [showTooltip, setShowTooltip] = useState(false);
   const renderTooltip = () => <Tooltip id={`tooltip-${title}`}>{tooltip || 'No tooltip available'}</Tooltip>;
 
   return (

@@ -16,10 +16,6 @@ export interface paths {
     /** Release notes */
     get: operations["changelog_docs_changelog_get"];
   };
-  "/docs/guide": {
-    /** Developer guide */
-    get: operations["guide_docs_guide_get"];
-  };
   "/v1/stats": {
     /**
      * Get summary statistics for the DRS object store
@@ -34,46 +30,66 @@ export interface paths {
      */
     get: operations["service_info_v1_service_info_get"];
   };
-  "/v1/bed/search/text": {
-    /** Search for a BedFile */
-    post: operations["text_to_bed_search_v1_bed_search_text_post"];
-  };
   "/v1/bed/example": {
-    /** Get metadata for an example BED record */
+    /**
+     * Get example BED record metadata
+     * @description Get metadata for an example BED record.
+     */
     get: operations["get_example_bed_record_v1_bed_example_get"];
   };
   "/v1/bed/list": {
     /**
      * Paged list of all BED records
-     * @description Returns a list of all BED records.
+     * @description Returns list of BED files in the database with optional filters.
      */
     get: operations["list_beds_v1_bed_list_get"];
   };
   "/v1/bed/{bed_id}/metadata": {
     /**
      * Get metadata for a single BED record
-     * @description Returns metadata from selected columns for selected BED record
+     * @description Example
+     *  bed_id: bbad85f21962bb8d972444f7f9a3a932
      */
     get: operations["get_bed_metadata_v1_bed__bed_id__metadata_get"];
   };
   "/v1/bed/{bed_id}/metadata/plots": {
-    /** Get metadata for a single BED record */
+    /**
+     * Get plots for a single BED record
+     * @description Example
+     *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
     get: operations["get_bed_plots_v1_bed__bed_id__metadata_plots_get"];
   };
   "/v1/bed/{bed_id}/metadata/files": {
-    /** Get metadata for a single BED record */
+    /**
+     * Get metadata for a single BED record
+     * @description Example
+     *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
     get: operations["get_bed_files_v1_bed__bed_id__metadata_files_get"];
   };
   "/v1/bed/{bed_id}/metadata/stats": {
-    /** Get metadata for a single BED record */
+    /**
+     * Get stats for a single BED record
+     * @description Example
+     *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
     get: operations["get_bed_stats_v1_bed__bed_id__metadata_stats_get"];
   };
   "/v1/bed/{bed_id}/metadata/classification": {
-    /** Get metadata for a single BED record */
+    /**
+     * Get classification of single BED file
+     * @description Example
+     *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
     get: operations["get_bed_classification_v1_bed__bed_id__metadata_classification_get"];
   };
   "/v1/bed/{bed_id}/metadata/raw": {
-    /** Get metadata for a single BED record */
+    /**
+     * Get raw metadata for a single BED record
+     * @description Returns raw metadata for a single BED record. This metadata is stored in PEPHub. And is not verified.Example
+     *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
     get: operations["get_bed_pephub_v1_bed__bed_id__metadata_raw_get"];
   };
   "/v1/bed/{bed_id}/regions/{chr_num}": {
@@ -83,13 +99,17 @@ export interface paths {
      */
     get: operations["get_regions_for_bedfile_v1_bed__bed_id__regions__chr_num__get"];
   };
+  "/v1/bed/search/text": {
+    /**
+     * Search for a BedFile
+     * @description Search for a BedFile by a text query.
+     * Example: query="cancer"
+     */
+    post: operations["text_to_bed_search_v1_bed_search_text_post"];
+  };
   "/v1/bed/search/bed": {
     /** Search for similar bed files */
     post: operations["text_to_bed_search_v1_bed_search_bed_post"];
-  };
-  "/v1/bedset/search": {
-    /** Search for a BedFile */
-    post: operations["bedset_search_v1_bedset_search_post"];
   };
   "/v1/bedset/example": {
     /** Get metadata for an example BEDset record */
@@ -98,19 +118,40 @@ export interface paths {
   "/v1/bedset/list": {
     /**
      * Paged list of all BEDset records
-     * @description Returns a paged list of all BEDset records
+     * @description Returns a list of BEDset records in the database with optional filters and search.
      */
     get: operations["list_bedsets_v1_bedset_list_get"];
   };
   "/v1/bedset/{bedset_id}/metadata": {
     /**
-     * Get Bedset Metadata
-     * @description Returns metadata from selected columns for selected bedset
+     * Get all metadata for a single BEDset record
+     * @description Example
+     *  bed_id: gse218680
      */
     get: operations["get_bedset_metadata_v1_bedset__bedset_id__metadata_get"];
   };
+  "/v1/bedset/{bedset_id}/metadata/plots": {
+    /**
+     * Get plots for single bedset record
+     * @description Example
+     *  bed_id: gse218680
+     */
+    get: operations["get_bedset_metadata_v1_bedset__bedset_id__metadata_plots_get"];
+  };
+  "/v1/bedset/{bedset_id}/metadata/stats": {
+    /**
+     * Get stats for a single BEDSET record
+     * @description Example
+     *  bed_id: gse218680
+     */
+    get: operations["get_bedset_metadata_v1_bedset__bedset_id__metadata_stats_get"];
+  };
   "/v1/bedset/{bedset_id}/bedfiles": {
-    /** Get Bedfiles In Bedset */
+    /**
+     * Get Bedfiles In Bedset
+     * @description Example
+     *  bed_id: gse218680
+     */
     get: operations["get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get"];
   };
   "/v1/objects/{object_id}": {
@@ -129,14 +170,14 @@ export interface paths {
   };
   "/v1/objects/{object_id}/access/{access_id}/bytes": {
     /**
-     * Download actual files
+     * Download actual file
      * @description Returns the bytes of a DrsObject.
      */
     get: operations["get_object_bytes_v1_objects__object_id__access__access_id__bytes_get"];
   };
   "/v1/objects/{object_id}/access/{access_id}/thumbnail": {
     /**
-     * Download thumbnail
+     * Download thumbnail file
      * @description Returns the bytes of a thumbnail of a DrsObject
      */
     get: operations["get_object_thumbnail_v1_objects__object_id__access__access_id__thumbnail_get"];
@@ -147,10 +188,27 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
+    /** AccessMethod */
+    AccessMethod: {
+      /** Type */
+      type: string;
+      access_url?: components["schemas"]["AccessURL"] | null;
+      /** Access Id */
+      access_id?: string | null;
+      /** Region */
+      region?: string | null;
+    };
+    /** AccessURL */
+    AccessURL: {
+      /** Url */
+      url: string;
+      /** Headers */
+      headers?: Record<string, never> | null;
+    };
     /** BedClassification */
     BedClassification: {
       /** Name */
-      name: string;
+      name?: string | null;
       /** Genome Alias */
       genome_alias?: string;
       /** Genome Digest */
@@ -165,8 +223,8 @@ export interface components {
     };
     /** BedFiles */
     BedFiles: {
-      bedfile?: components["schemas"]["FileModel"] | null;
-      bigbedfile?: components["schemas"]["FileModel"] | null;
+      bed_file?: components["schemas"]["FileModel"] | null;
+      bigbed_file?: components["schemas"]["FileModel"] | null;
     };
     /** BedListResult */
     BedListResult: {
@@ -192,10 +250,24 @@ export interface components {
     };
     /** BedMetadata */
     BedMetadata: {
+      /**
+       * Name
+       * @default
+       */
+      name?: string | null;
+      /** Genome Alias */
+      genome_alias?: string;
+      /** Genome Digest */
+      genome_digest?: string | null;
+      /**
+       * Bed Type
+       * @default bed3
+       */
+      bed_type?: string;
+      /** Bed Format */
+      bed_format?: string;
       /** Id */
       id: string;
-      /** Name */
-      name: string;
       /** Description */
       description?: string | null;
       /**
@@ -205,26 +277,10 @@ export interface components {
       submission_date?: string;
       /** Last Update Date */
       last_update_date?: string | null;
-      stats?: components["schemas"]["BedStats"] | null;
+      stats?: components["schemas"]["BedStatsModel"] | null;
       plots?: components["schemas"]["BedPlots"] | null;
       files?: components["schemas"]["BedFiles"] | null;
       raw_metadata?: components["schemas"]["BedPEPHub"] | null;
-      /** Genome Alias */
-      genome_alias?: string;
-      /** Genome Digest */
-      genome_digest?: string;
-      /**
-       * Bed Type
-       * @default bed3
-       */
-      bed_type?: string;
-      /** Bed Format */
-      bed_format?: string;
-      /**
-       * Full Response
-       * @default false
-       */
-      full_response?: boolean;
     };
     /** BedPEPHub */
     BedPEPHub: {
@@ -358,21 +414,24 @@ export interface components {
       name: string;
       /** Md5Sum */
       md5sum: string;
-      statistics?: components["schemas"]["BedSetStats"];
-      /** Plots */
-      plots?: components["schemas"]["FileModel"][];
+      statistics?: components["schemas"]["BedSetStats"] | null;
+      plots?: components["schemas"]["BedSetPlots"] | null;
       /** Description */
       description?: string;
       /** Bed Ids */
       bed_ids?: string[];
     };
+    /** BedSetPlots */
+    BedSetPlots: {
+      region_commonality?: components["schemas"]["FileModel"];
+    };
     /** BedSetStats */
     BedSetStats: {
-      mean?: components["schemas"]["BedStats"];
-      sd?: components["schemas"]["BedStats"];
+      mean?: components["schemas"]["BedStatsModel"];
+      sd?: components["schemas"]["BedStatsModel"];
     };
-    /** BedStats */
-    BedStats: {
+    /** BedStatsModel */
+    BedStatsModel: {
       /** Regions No */
       regions_no?: number | null;
       /** Gc Content */
@@ -429,6 +488,27 @@ export interface components {
       /** Openapi Version */
       openapi_version: string;
     };
+    /** DRSModel */
+    DRSModel: {
+      /** Id */
+      id: string;
+      /** Name */
+      name?: string | null;
+      /** Self Uri */
+      self_uri: string;
+      /** Size */
+      size?: number | null;
+      /** Created Time */
+      created_time?: string | null;
+      /** Updated Time */
+      updated_time?: string | null;
+      /** Checksums */
+      checksums: string;
+      /** Access Methods */
+      access_methods: components["schemas"]["AccessMethod"][];
+      /** Description */
+      description?: string | null;
+    };
     /** FileModel */
     FileModel: {
       /** Name */
@@ -443,8 +523,10 @@ export interface components {
       description?: string | null;
       /** Size */
       size?: number | null;
-      /** Size2 */
-      size2?: string | null;
+      /** Object Id */
+      object_id?: string | null;
+      /** Access Methods */
+      access_methods?: components["schemas"]["AccessMethod"][];
     };
     /** HTTPValidationError */
     HTTPValidationError: {
@@ -565,17 +647,6 @@ export interface operations {
       };
     };
   };
-  /** Developer guide */
-  guide_docs_guide_get: {
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "text/html": string;
-        };
-      };
-    };
-  };
   /**
    * Get summary statistics for the DRS object store
    * @description Returns statistics
@@ -604,31 +675,10 @@ export interface operations {
       };
     };
   };
-  /** Search for a BedFile */
-  text_to_bed_search_v1_bed_search_text_post: {
-    parameters: {
-      query: {
-        query: unknown;
-        limit?: number;
-        offset?: number;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["BedListSearchResult"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /** Get metadata for an example BED record */
+  /**
+   * Get example BED record metadata
+   * @description Get metadata for an example BED record.
+   */
   get_example_bed_record_v1_bed_example_get: {
     responses: {
       /** @description Successful Response */
@@ -641,7 +691,7 @@ export interface operations {
   };
   /**
    * Paged list of all BED records
-   * @description Returns a list of all BED records.
+   * @description Returns list of BED files in the database with optional filters.
    */
   list_beds_v1_bed_list_get: {
     parameters: {
@@ -671,7 +721,8 @@ export interface operations {
   };
   /**
    * Get metadata for a single BED record
-   * @description Returns metadata from selected columns for selected BED record
+   * @description Example
+   *  bed_id: bbad85f21962bb8d972444f7f9a3a932
    */
   get_bed_metadata_v1_bed__bed_id__metadata_get: {
     parameters: {
@@ -699,7 +750,11 @@ export interface operations {
       };
     };
   };
-  /** Get metadata for a single BED record */
+  /**
+   * Get plots for a single BED record
+   * @description Example
+   *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+   */
   get_bed_plots_v1_bed__bed_id__metadata_plots_get: {
     parameters: {
       path: {
@@ -722,7 +777,11 @@ export interface operations {
       };
     };
   };
-  /** Get metadata for a single BED record */
+  /**
+   * Get metadata for a single BED record
+   * @description Example
+   *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+   */
   get_bed_files_v1_bed__bed_id__metadata_files_get: {
     parameters: {
       path: {
@@ -745,7 +804,11 @@ export interface operations {
       };
     };
   };
-  /** Get metadata for a single BED record */
+  /**
+   * Get stats for a single BED record
+   * @description Example
+   *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+   */
   get_bed_stats_v1_bed__bed_id__metadata_stats_get: {
     parameters: {
       path: {
@@ -757,7 +820,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["BedStats"];
+          "application/json": components["schemas"]["BedStatsModel"];
         };
       };
       /** @description Validation Error */
@@ -768,7 +831,11 @@ export interface operations {
       };
     };
   };
-  /** Get metadata for a single BED record */
+  /**
+   * Get classification of single BED file
+   * @description Example
+   *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+   */
   get_bed_classification_v1_bed__bed_id__metadata_classification_get: {
     parameters: {
       path: {
@@ -791,7 +858,11 @@ export interface operations {
       };
     };
   };
-  /** Get metadata for a single BED record */
+  /**
+   * Get raw metadata for a single BED record
+   * @description Returns raw metadata for a single BED record. This metadata is stored in PEPHub. And is not verified.Example
+   *  bed_id: bbad85f21962bb8d972444f7f9a3a932
+   */
   get_bed_pephub_v1_bed__bed_id__metadata_raw_get: {
     parameters: {
       path: {
@@ -851,6 +922,34 @@ export interface operations {
       };
     };
   };
+  /**
+   * Search for a BedFile
+   * @description Search for a BedFile by a text query.
+   * Example: query="cancer"
+   */
+  text_to_bed_search_v1_bed_search_text_post: {
+    parameters: {
+      query: {
+        query: unknown;
+        limit?: number;
+        offset?: number;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BedListSearchResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
   /** Search for similar bed files */
   text_to_bed_search_v1_bed_search_bed_post: {
     parameters: {
@@ -879,30 +978,6 @@ export interface operations {
       };
     };
   };
-  /** Search for a BedFile */
-  bedset_search_v1_bedset_search_post: {
-    parameters: {
-      query: {
-        query: unknown;
-        limit?: number;
-        offset?: number;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["BedSetListResult"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
   /** Get metadata for an example BEDset record */
   get_example_bedset_record_v1_bedset_example_get: {
     responses: {
@@ -916,11 +991,12 @@ export interface operations {
   };
   /**
    * Paged list of all BEDset records
-   * @description Returns a paged list of all BEDset records
+   * @description Returns a list of BEDset records in the database with optional filters and search.
    */
   list_bedsets_v1_bedset_list_get: {
     parameters: {
       query?: {
+        query?: string;
         limit?: number;
         offset?: number;
       };
@@ -941,11 +1017,15 @@ export interface operations {
     };
   };
   /**
-   * Get Bedset Metadata
-   * @description Returns metadata from selected columns for selected bedset
+   * Get all metadata for a single BEDset record
+   * @description Example
+   *  bed_id: gse218680
    */
   get_bedset_metadata_v1_bedset__bedset_id__metadata_get: {
     parameters: {
+      query?: {
+        full?: boolean;
+      };
       path: {
         bedset_id: string;
       };
@@ -965,7 +1045,63 @@ export interface operations {
       };
     };
   };
-  /** Get Bedfiles In Bedset */
+  /**
+   * Get plots for single bedset record
+   * @description Example
+   *  bed_id: gse218680
+   */
+  get_bedset_metadata_v1_bedset__bedset_id__metadata_plots_get: {
+    parameters: {
+      path: {
+        bedset_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BedSetPlots"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get stats for a single BEDSET record
+   * @description Example
+   *  bed_id: gse218680
+   */
+  get_bedset_metadata_v1_bedset__bedset_id__metadata_stats_get: {
+    parameters: {
+      path: {
+        bedset_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BedSetStats"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get Bedfiles In Bedset
+   * @description Example
+   *  bed_id: gse218680
+   */
   get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get: {
     parameters: {
       query?: {
@@ -1006,7 +1142,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": components["schemas"]["DRSModel"];
         };
       };
       /** @description Validation Error */
@@ -1032,7 +1168,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1044,7 +1180,7 @@ export interface operations {
     };
   };
   /**
-   * Download actual files
+   * Download actual file
    * @description Returns the bytes of a DrsObject.
    */
   get_object_bytes_v1_objects__object_id__access__access_id__bytes_get: {
@@ -1058,7 +1194,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
@@ -1070,7 +1206,7 @@ export interface operations {
     };
   };
   /**
-   * Download thumbnail
+   * Download thumbnail file
    * @description Returns the bytes of a thumbnail of a DrsObject
    */
   get_object_thumbnail_v1_objects__object_id__access__access_id__thumbnail_get: {
@@ -1084,7 +1220,7 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": unknown;
+          "application/json": string;
         };
       };
       /** @description Validation Error */
