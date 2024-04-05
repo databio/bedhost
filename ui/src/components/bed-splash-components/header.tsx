@@ -31,11 +31,11 @@ export const BedSplashHeader = (props: Props) => {
         <div className="d-flex flex-column align-items-start">
           <h4 className="fw-bold mb-0">
             <i className="bi bi-file-earmark-text me-2" />
-            {metadata?.name || 'No name available'}
+            {metadata?.id || 'No name available'}
             <button
               className="btn btn-link text-primary mb-2"
               onClick={() => {
-                copyToClipboard(record_identifier || '');
+                copyToClipboard(metadata.id || '');
                 setCopiedId(true);
                 setTimeout(() => {
                   setCopiedId(false);
@@ -45,6 +45,7 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
+          <p>{metadata.name}</p>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -107,17 +108,35 @@ export const BedSplashHeader = (props: Props) => {
                   {metadata.files?.bed_file && (
                     <Fragment>
                       <Dropdown.Header>BED file</Dropdown.Header>
-                      {(metadata.files?.bed_file?.access_methods || []).map((method) => (
-                        <Dropdown.Item className="text-primary">
-                          <span className="fw-bold">{method.type}</span> |{' '}
-                          <a href={method.access_url?.url} download>
-                            link
-                          </a>
-                        </Dropdown.Item>
-                      ))}
+                      {(metadata.files?.bed_file?.access_methods || []).map((method) => {
+                        if (method.type === 'local' || method.type === 's3') {
+                          return null;
+                        }
+                        return (
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                            {method.access_id ? 'Download' : 'No download link available'} (
+                            <span className="fw-bold">{method.type}</span>)
+                          </Dropdown.Item>
+                        );
+                      })}
                     </Fragment>
                   )}
-                  <Dropdown.Header>S3</Dropdown.Header>
+                  {metadata.files?.bigbed_file && (
+                    <Fragment>
+                      <Dropdown.Header>BigBED file</Dropdown.Header>
+                      {(metadata.files?.bigbed_file?.access_methods || []).map((method) => {
+                        if (method.type === 'local' || method.type === 's3') {
+                          return null;
+                        }
+                        return (
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                            {method.access_id ? 'Download' : 'No download link available'} (
+                            <span className="fw-bold">{method.type}</span>)
+                          </Dropdown.Item>
+                        );
+                      })}
+                    </Fragment>
+                  )}
                 </Dropdown.Menu>
               )
             }

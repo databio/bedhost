@@ -13,7 +13,7 @@ export const MedianTssDistCard = (props: Props) => {
     <StatCard
       title="Median TSS Distance"
       stat={`${formatNumberWithCommas(metadata.stats?.median_tss_dist || 0)} bp`}
-      learnMoreHref="#"
+      tooltip="The median distance of the regions to the nearest transcription start site."
     />
   );
 };

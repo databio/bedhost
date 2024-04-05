@@ -1,5 +1,6 @@
 import { useLocalStorage } from '@uidotdev/usehooks';
 import React, { Dispatch, SetStateAction, createContext, useContext } from 'react';
+import toast from 'react-hot-toast';
 
 type ProviderProps = {
   children: React.ReactNode;
@@ -17,6 +18,10 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
   const [cart, setCart] = useLocalStorage<string[]>('bed-cart', []);
 
   const addBedToCart = (bed: string) => {
+    if (cart.includes(bed)) {
+      toast.error(`BED ID ${bed} is already in the cart!`);
+      return;
+    }
     setCart([...cart, bed]);
   };
   const removeBedFromCart = (bed: string) => {

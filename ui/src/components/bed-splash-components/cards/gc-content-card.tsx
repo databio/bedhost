@@ -14,7 +14,7 @@ export const GCContentCard = (props: Props) => {
     <StatCard
       title="GC Content"
       stat={`${metadata.stats?.gc_content ? formatNumberWithCommas(metadata.stats?.gc_content) : 'N/A'}`}
-      learnMoreHref="#"
+      tooltip="The percentage of guanine and cytosine nucleotides in the sequence."
     />
   );
 };
