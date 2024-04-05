@@ -92,23 +92,49 @@ export const Home = () => {
             style={{ width: '23%' }}
           >
             <FileBadge>
-              <a href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1" className="fw-bold text-sm text-decoration-none">Bed files</a>
+              <a
+                href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1"
+                className="fw-bold text-sm text-decoration-none"
+              >
+                Bed files
+              </a>
               <Image src="/bed.svg" alt="BED file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <a href="https://genome.ucsc.edu/goldenPath/help/bigBed.html" className="fw-bold text-sm text-decoration-none"> BigBed files</a>
+              <a
+                href="https://genome.ucsc.edu/goldenPath/help/bigBed.html"
+                className="fw-bold text-sm text-decoration-none"
+              >
+                {' '}
+                BigBed files
+              </a>
               <Image src="/bigbed.svg" alt="BigBed file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <a href="https://genome.ucsc.edu/goldenPath/help/wiggle.html" className="fw-bold text-sm text-decoration-none">Wig files</a>
+              <a
+                href="https://genome.ucsc.edu/goldenPath/help/wiggle.html"
+                className="fw-bold text-sm text-decoration-none"
+              >
+                Wig files
+              </a>
               <Image src="/wig.svg" alt="Wiggle file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <a href="https://genome.ucsc.edu/goldenPath/help/bigWig.html" className="fw-bold text-sm text-decoration-none">BigWig files</a>
+              <a
+                href="https://genome.ucsc.edu/goldenPath/help/bigWig.html"
+                className="fw-bold text-sm text-decoration-none"
+              >
+                BigWig files
+              </a>
               <Image src="/big_wig.svg" alt="BigWig file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
-              <a href="https://genome.ucsc.edu/goldenPath/help/bedgraph.html" className="fw-bold text-sm text-decoration-none">BedGraph files</a>
+              <a
+                href="https://genome.ucsc.edu/goldenPath/help/bedgraph.html"
+                className="fw-bold text-sm text-decoration-none"
+              >
+                BedGraph files
+              </a>
               <Image src="/bdg.svg" alt="BDG file icon" height="30px" className="ms-2" />
             </FileBadge>
           </div>
@@ -141,10 +167,10 @@ export const Home = () => {
           </div>
         </div>
         <div className="my-2 w-100">
-          <Row className="w-100 align-items-center mb-4">
+          <Row className="w-100 align-items-center mb-5">
             <Col sm={6} md={6}>
               <h2 className="fw-bold">Web server and API</h2>
-              <p>
+              <p className="text-balance pe-4">
                 The BEDbase web server and API are designed to provide a user-friendly interface for exploring and
                 working with genomic region data. The web server allows users to search for BED files and BED sets, view
                 detailed information about specific files, and create collections of files.
@@ -191,29 +217,42 @@ export const Home = () => {
               </div>
             </Col>
           </Row>
-          <Row className="w-100 mb-4">
-            <Col sm={6} md={6} className="">
+          <Row className="w-100 mb-5">
+            <Col sm={6} md={6}>
               <h2 className="fw-bold">Search for BED files</h2>
-              <p>
-                BEDbase offers three search endpoints for discovering BED files and BEDsets,
-                distinguishing itself from other platforms by utilizing Elasticsearch to index and search through bed file regions.
-                This approach enhances search accuracy and efficiency compared to platforms relying
-                on unstructured user-provided metadata, which can be ambiguous and less reliable.
-                User can search for BED files by providing a query string, or a BED file.
+              <p className="text-balance pe-4">
+                BEDbase offers three search endpoints for discovering BED files and BEDsets, distinguishing itself from
+                other platforms by utilizing Elasticsearch to index and search through bed file regions. This approach
+                enhances search accuracy and efficiency compared to platforms relying on unstructured user-provided
+                metadata, which can be ambiguous and less reliable. User can search for BED files by providing a query
+                string, or a BED file.
               </p>
             </Col>
-            <Col sm={6} md={6} className=""></Col>
+            <Col sm={6} md={6}>
+              <div className="d-flex flex-row align-items-center width-100 justify-content-center h-100 gap-1">
+                <div className="p-2 rounded border w-100 shadow-sm d-block float-left">
+                  <h4 className="typewriter">Kidney cancer in mice</h4>
+                </div>
+                <button className="btn btn-primary btn-lg">
+                  <i className="bi bi-search"></i>
+                </button>
+              </div>
+            </Col>
           </Row>
-
+          {/* <div className="my-5"></div> */}
           <Row className="w-100 align-items-center">
-            <Col sm={6} md={6} className="">
+            <Col sm={6} md={6}>
               <h2 className="fw-bold">BEDbase client </h2>
-              <p>
+              <p className="text-balance pe-4">
                 BEDbase provides a Python an R client for interacting with the BEDbase API. The client allows users to
                 download, cache, and analyze BED files and BED sets programmatically, without the need to interact with
-                the native API. <br/> BBclient is available on PyPI in geniml package with other useful tools for genomic data
-                analysis.
-                <br/>Geniml package: <a href="https://pypi.org/project/geniml/" class="bi bi-box-fill"> PyPI geniml</a>
+                the native API. BBclient is available on PyPI in geniml package with other useful tools for genomic data
+                analysis. Geniml package:{' '}
+                <a href="https://pypi.org/project/geniml/" className="bi bi-box-fill">
+                  {' '}
+                  PyPI geniml
+                </a>
+                .
               </p>
             </Col>
 
