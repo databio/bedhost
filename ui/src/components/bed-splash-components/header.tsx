@@ -23,7 +23,7 @@ export const BedSplashHeader = (props: Props) => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
 
-  const noFilesToDownload = metadata.files?.bed_file === undefined && metadata.files?.bigbed_file === undefined;
+  const noFilesToDownload = !metadata.files?.bed_file && !metadata.files?.bigbed_file;
 
   return (
     <div className="border-bottom py-2">
