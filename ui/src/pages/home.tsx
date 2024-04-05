@@ -7,6 +7,8 @@ import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import { CODE_SNIPPETS } from '../const';
 import { BBCONF_SNIPPETS } from '../const';
+import { useExampleBed } from '../queries/useExampleBed';
+import { useExampleBedSet } from '../queries/useExampleBedSet';
 
 type FileBadgeProps = {
   children?: React.ReactNode;
@@ -23,6 +25,9 @@ export const Home = () => {
   const [copied, setCopied] = useState(false);
 
   const navigate = useNavigate();
+
+  const { data: exampleBedMetadata } = useExampleBed();
+  const { data: exampleBedSetMetadata } = useExampleBedSet();
 
   return (
     <Layout footer title="BEDbase" fullHeight>
@@ -84,8 +89,8 @@ export const Home = () => {
           </button>
         </div>
         <div className="d-flex flex-row align-items-center justify-content-center gap-2 my-3">
-          Or, explore an <a href="/bed/bbad85f21962bb8d972444f7f9a3a932">example BED file</a> or a{' '}
-          <a href="/bedset/gse218680">example BED set</a>
+          Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a> or a{' '}
+          <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BED set</a>
         </div>
         <div className="flex-row w-100 landing-animation-container hidden large-flex">
           <div
