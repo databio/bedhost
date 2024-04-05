@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { bytesToSize, formatDateTime, makeHttpDownloadLink, makeS3DownloadLink } from '../../utils';
+import { bytesToSize, formatDateTime } from '../../utils';
 import { Dropdown } from 'react-bootstrap';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -45,7 +45,10 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-          <p>{metadata.name}</p>
+          <p className="fw-bold">
+            {metadata.name} {'  |  '}
+            {metadata.raw_metadata?.global_sample_id || 'No source available'}
+          </p>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -107,15 +110,14 @@ export const BedSplashHeader = (props: Props) => {
                 <Dropdown.Menu>
                   {metadata.files?.bed_file && (
                     <Fragment>
-                      <Dropdown.Header>BED file</Dropdown.Header>
                       {(metadata.files?.bed_file?.access_methods || []).map((method) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
                           <Dropdown.Item className="text-primary" href={method.access_url?.url}>
-                            {method.access_id ? 'Download' : 'No download link available'} (
-                            <span className="fw-bold">{method.type}</span>)
+                            {method.access_id ? 'BED file' : 'No download link available'} (
+                            <span className="fw-bold">{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
                           </Dropdown.Item>
                         );
                       })}
@@ -123,15 +125,14 @@ export const BedSplashHeader = (props: Props) => {
                   )}
                   {metadata.files?.bigbed_file && (
                     <Fragment>
-                      <Dropdown.Header>BigBED file</Dropdown.Header>
                       {(metadata.files?.bigbed_file?.access_methods || []).map((method) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
                           <Dropdown.Item className="text-primary" href={method.access_url?.url}>
-                            {method.access_id ? 'Download' : 'No download link available'} (
-                            <span className="fw-bold">{method.type}</span>)
+                            {method.access_id ? 'BigBED file' : 'No download link available'} (
+                            <span className="fw-bold">{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
                           </Dropdown.Item>
                         );
                       })}
@@ -168,14 +169,6 @@ export const BedSplashHeader = (props: Props) => {
               <div className="badge bg-primary">
                 <i className="bi bi-folder-fill me-1" />
                 {metadata?.bed_type || 'No bed type available'}
-              </div>
-            </p>
-          </div>
-          <div className="d-flex flex-row">
-            <p className="mb-0">
-              <div className="badge bg-primary">
-                <i className="bi bi-folder-fill me-1" />
-                {metadata.raw_metadata?.global_sample_id || 'No source available'}
               </div>
             </p>
           </div>
