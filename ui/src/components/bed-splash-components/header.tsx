@@ -45,7 +45,7 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-          <p className="fw-bold">
+          <p className="text-muted">
             {metadata.name} {'  |  '}
             {metadata.raw_metadata?.global_sample_id || 'No source available'}
           </p>
