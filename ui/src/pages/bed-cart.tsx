@@ -55,31 +55,33 @@ export const BedCart = () => {
             </button>
           </div>
         </div>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {cart.map((item) => (
-              <tr key={item}>
-                <td>{item}</td>
-                <td>
-                  <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart(item)}>
-                    <i className="bi bi-trash"></i>
-                  </button>
-                  <a href={`/bed/${item}`} target="_blank">
-                    <button className="btn btn-sm btn-outline-primary ms-2">
-                      <i className="bi bi-eye"></i>
-                    </button>
-                  </a>
-                </td>
+        <div className="border rounded shadow-md p-2">
+          <table className="table">
+            <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {cart.map((item) => (
+                <tr key={item}>
+                  <td>{item}</td>
+                  <td>
+                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart(item)}>
+                      <i className="bi bi-trash"></i>
+                    </button>
+                    <a href={`/bed/${item}`} target="_blank">
+                      <button className="btn btn-sm btn-outline-primary ms-2">
+                        <i className="bi bi-eye"></i>
+                      </button>
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
       <DownloadCartModal show={showDownloadModal} setShow={setShowDownloadModal} />
     </Layout>
