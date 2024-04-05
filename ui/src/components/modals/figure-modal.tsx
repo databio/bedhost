@@ -5,16 +5,16 @@ type Props = {
   src: string;
   alt: string;
   show: boolean;
-  setShow: (show: boolean) => void;
+  onHide: () => void;
 };
 
 export const FigureModal = (props: Props) => {
-  const { title, src, alt, show, setShow } = props;
+  const { title, src, alt, show, onHide } = props;
   return (
     <Modal
       animation={false}
       show={show}
-      onHide={() => setShow(false)}
+      onHide={() => onHide()}
       size="lg"
       aria-labelledby="contained-modal-title-vcenter"
       centered
@@ -37,7 +37,7 @@ export const FigureModal = (props: Props) => {
         >
           <i className="bi bi-download me2"></i> Download
         </button>
-        <button className="btn btn-primary" onClick={() => setShow(false)}>
+        <button onClick={() => onHide()} className="btn btn-primary">
           Close
         </button>
       </Modal.Footer>

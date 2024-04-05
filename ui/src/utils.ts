@@ -61,3 +61,11 @@ export const generateCurlScriptForCartDownloadRaw = (md5List: string[]) => {
 
   return script;
 };
+
+export const chunkArray = <T>(arr: T[], chunkSize: number) => {
+  const chunks = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+    chunks.push(arr.slice(i, i + chunkSize));
+  }
+  return chunks;
+};

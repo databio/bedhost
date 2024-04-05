@@ -62,6 +62,12 @@ a {
   }
 }
 
+.hover-border-primary {
+  &:hover {
+    border-color: $primary !important;
+  }
+}
+
 // tailwind transition class
 .transition-all {
   transition-property: all;
