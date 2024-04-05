@@ -213,6 +213,7 @@ export const Home = () => {
                 download, cache, and analyze BED files and BED sets programmatically, without the need to interact with
                 the native API. <br/> BBclient is available on PyPI in geniml package with other useful tools for genomic data
                 analysis.
+                <br/>Geniml package: <a href="https://pypi.org/project/geniml/" class="bi bi-box-fill"> PyPI geniml</a>
               </p>
             </Col>
 
