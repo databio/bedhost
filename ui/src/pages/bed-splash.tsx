@@ -123,7 +123,9 @@ export const BedSplash = () => {
             </Col>
           </Row>
           <h2 className="fw-bold">Plots</h2>
-          <Plots metadata={metadata!} />
+          <Row className="mb-2">
+            <Plots metadata={metadata!} />
+          </Row>
         </div>
       </Layout>
     );

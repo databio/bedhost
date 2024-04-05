@@ -10,6 +10,7 @@ import { MedianTssDistCard } from '../components/bedset-splash-components/cards/
 import { GenomicFeatureBar } from '../components/bedset-splash-components/charts/genomic-feature-bar';
 import { Plots } from '../components/bedset-splash-components/plots';
 import { GCContentCard } from '../components/bedset-splash-components/cards/gc-content-card';
+import { BedsTable } from '../components/bedset-splash-components/beds-table';
 
 export const BedsetSplash = () => {
   const params = useParams();
@@ -66,21 +67,34 @@ export const BedsetSplash = () => {
             </Col>
           </Row>
           <h2 className="fw-bold">Statistics</h2>
-          {metadata && (
-            <Row>
-              <Col sm={12} md={4} className="d-flex flex-column gap-2 px-1 justify-content-between">
-                <MeanRegionWidthCard metadata={metadata} />
-                <MedianTssDistCard metadata={metadata} />
-                <GCContentCard metadata={metadata} />
-              </Col>
-              <Col sm={12} md={8} className="h-100 align-items-stretch">
-                <GenomicFeatureBar metadata={metadata!} />
-              </Col>
-            </Row>
-          )}
-
+          <Row className="mb-2">
+            {metadata && (
+              <Row>
+                <Col sm={12} md={4} className="d-flex flex-column gap-2 px-1 justify-content-between">
+                  <MeanRegionWidthCard metadata={metadata} />
+                  <MedianTssDistCard metadata={metadata} />
+                  <GCContentCard metadata={metadata} />
+                </Col>
+                <Col sm={12} md={8} className="h-100 align-items-stretch">
+                  <GenomicFeatureBar metadata={metadata!} />
+                </Col>
+              </Row>
+            )}
+          </Row>
           <h2 className="fw-bold">Plots</h2>
-          <Plots metadata={metadata!} />
+          <Row className="mb-2">
+            <Plots metadata={metadata!} />
+          </Row>
+          <h2 className="fw-bold">BED files in this BED set</h2>
+          <Row className="mb-2">
+            <BedsTable
+              beds={
+                metadata?.bed_ids?.map((id) => ({
+                  id: id,
+                })) || []
+              }
+            />
+          </Row>
         </div>
       </Layout>
     );
