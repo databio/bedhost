@@ -19,6 +19,7 @@ const FileBadge = (props: FileBadgeProps) => {
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchTermSmall, setSearchTermSmall] = useState('Kidney cancer in humans');
   const [copied, setCopied] = useState(false);
 
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ export const Home = () => {
               if (searchTerm.length === 0) {
                 return;
               }
-              navigate(`/search?q=${searchTerm}`);
+              navigate(`/search?q=${searchTerm}&view=t2b`);
             }}
           >
             <span className="d-flex align-items-center">
@@ -230,10 +231,28 @@ export const Home = () => {
             </Col>
             <Col sm={6} md={6}>
               <div className="d-flex flex-row align-items-center width-100 justify-content-center h-100 gap-1">
-                <div className="p-2 rounded border w-100 shadow-sm d-block float-left">
-                  <h4 className="typewriter">Kidney cancer in mice</h4>
-                </div>
-                <button className="btn btn-primary btn-lg">
+                <input
+                  value={searchTermSmall}
+                  onChange={(e) => setSearchTermSmall(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      if (searchTermSmall.length === 0) {
+                        return;
+                      }
+                      navigate(`/search?q=${searchTermSmall}`);
+                    }
+                  }}
+                  className="p-2 rounded border w-100 shadow-sm"
+                />
+                <button
+                  onClick={() => {
+                    if (searchTermSmall.length === 0) {
+                      return;
+                    }
+                    navigate(`/search?q=${searchTermSmall}&view=t2b`);
+                  }}
+                  className="btn btn-primary btn-lg"
+                >
                   <i className="bi bi-search"></i>
                 </button>
               </div>
