@@ -4,20 +4,32 @@ This repository contains the source files for bedhost user interface written in 
 
 ## Development
 
-1. Make sure bedhost FastAPI server is running at port 8000
-2. Install node module dependencies defined in `package.json`
+1. Configure the environment variables by creating a `.env` file in the root directory of the project. The `.env` file should contain the following variables:
+
+```
+VITE_API_BASE=...
+```
+
+2. Generate types for the API response models by running the following command:
+
+```
+npm run generate-types
+```
+
+3. Install node module dependencies defined in `package.json`
 
 ```
 npm install
 ```
 
-3. Start development server on port 3000 by running the start react script (defined in `package.json`).
+4. Make sure `bedhost` FastAPI server is running at the specified location in the `.env` file.
+5. Start development server on port 5173 by running the start react script (defined in `package.json`).
 
 ```
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+5. Open [http://localhost:5173](http://localhost:5173/) to view it in the browser.
 
 You can then develop the app by editing the source in the `/src` subfolder. Changes made in `./src` be reflected in real time.
 

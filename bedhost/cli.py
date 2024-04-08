@@ -1,8 +1,6 @@
 from . import PKG_NAME
 from ._version import __version__
 from ubiquerg import VersionInHelpParser
-from yacman import select_config
-from bbconf.const import CFG_ENV_VARS
 
 
 def build_parser():
@@ -12,7 +10,7 @@ def build_parser():
     :return argparse.ArgumentParser
     """
 
-    env_var_val = select_config(config_env_vars=CFG_ENV_VARS)
+    # env_var_val = select_config(config_env_vars=CFG_ENV_VARS)
 
     banner = "%(prog)s - REST API for the bedstat pipeline produced statistics"
     additional_description = (
@@ -45,7 +43,6 @@ def build_parser():
             required=False,
             dest="config",
             help="A path to the bedhost config file (YAML). If not provided, "
-            f"the first available environment variable among: {', '.join(CFG_ENV_VARS)} will be used if set."
-            f" Currently: {env_var_val}",
+            f"the first available environment variable among: {', '.join(CFG_ENV_VARS)} will be used if set.",
         )
     return parser
