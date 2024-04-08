@@ -1,8 +1,4 @@
-import { ProgressBar } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
-import { roundToTwoDecimals } from '../../utils';
-import { useBedCart } from '../../contexts/bedcart-context';
-import toast from 'react-hot-toast';
 
 type SearchResponse = components['schemas']['BedSetListResult'];
 
@@ -12,7 +8,6 @@ type Props = {
 
 export const SearchBedSetResultTable = (props: Props) => {
   const { results } = props;
-  const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   return (
     <table className="table">
       <thead>

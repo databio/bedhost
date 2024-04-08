@@ -1,6 +1,5 @@
 import { Col, Row } from 'react-bootstrap';
 import { SearchBar } from './search-bar';
-import { SearchResultsTable } from './search-results-table';
 import { SearchingJumper } from './searching-jumper';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
@@ -8,7 +7,7 @@ import { useText2BedSetSearch } from '../../queries/useText2BedSetSearch';
 import { ErrorPage } from '../common/error-page';
 import { TableToolbar } from './table-toolbar';
 import { PaginationBar } from './pagination-bar';
-import {SearchBedSetResultTable} from "./search-bedset-table.tsx";
+import { SearchBedSetResultTable } from "./search-bedset-table.tsx";
 
 export const Text2BedSet = () => {
   const [searchParams] = useSearchParams();
