@@ -25,6 +25,17 @@ export const SearchBar = (props: Props) => {
         className="form-control shadow-sm"
         type="text"
         placeholder="Search..."
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            if (value === '') {
+              toast.error('Please enter a search term', {
+                position: 'top-center',
+              });
+              return;
+            }
+            onSearch();
+          }
+        }}
       />
       <button
         className="btn btn-primary ms-1"

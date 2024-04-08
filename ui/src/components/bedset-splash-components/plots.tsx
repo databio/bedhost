@@ -5,7 +5,7 @@ import { chunkArray, makeThumbnailImageLink } from '../../utils';
 import { Fragment } from 'react';
 import { FigureModal } from '../modals/figure-modal';
 
-type BedMetadata = components['schemas']['BedMetadata'];
+type BedMetadata = components['schemas']['BedSetMetadata'];
 
 type PlotsProps = {
   metadata: BedMetadata;
@@ -76,7 +76,7 @@ export const Plots = (props: PlotsProps) => {
                   <Col key={plotName} sm={12} md={4} className="px-1">
                     <Plot
                       key={plotName}
-                      src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
+                      src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bedset') : '/fignotavl_png.svg'}
                       alt={alt || 'No description available'}
                       title={title || 'No title available'}
                     />

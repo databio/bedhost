@@ -7,13 +7,14 @@ type Props = {
   metadata: BedMetadata;
 };
 
-export const NoRegionsCard = (props: Props) => {
+export const GCContentCard = (props: Props) => {
   const { metadata } = props;
+
   return (
     <StatCard
-      title="Number of regions"
-      stat={`${formatNumberWithCommas(metadata.stats?.regions_no || 0)}`}
-      tooltip="The number of regions in the bed file."
+      title="GC Content"
+      stat={`${metadata.stats?.gc_content ? formatNumberWithCommas(metadata.stats?.gc_content) : 'N/A'}`}
+      tooltip="The percentage of guanine and cytosine nucleotides in the sequence."
     />
   );
 };

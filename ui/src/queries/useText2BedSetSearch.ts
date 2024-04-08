@@ -10,7 +10,7 @@ type SearchQuery = {
   autoRun?: boolean;
 };
 
-export const useSearch = (query: SearchQuery) => {
+export const useText2BedSetSearch = (query: SearchQuery) => {
   const { api } = useBedbaseApi();
   const { q, limit, offset, autoRun } = query;
   let enabled = false;
@@ -21,7 +21,7 @@ export const useSearch = (query: SearchQuery) => {
   return useQuery({
     queryKey: ['search', q, limit, offset],
     queryFn: async () => {
-      const { data } = await api.post<SearchResponse>(`/bed/search/text?query=${q}&limit=${limit}&offset=${offset}`);
+      const { data } = await api.get<SearchResponse>(`/bedset/list?query=${q}&limit=${limit}&offset=${offset}`);
       return data;
     },
     enabled: enabled,

@@ -16,6 +16,11 @@ export const NavDesktop = () => {
         </a>
       </li>
       <li className="text-body mx-2 my-0 nav-item h5 pt-1">
+        <a className="nav-link" href="/search">
+          <i className="bi bi-search me-1 text-base"></i>Search
+        </a>
+      </li>
+      <li className="text-body mx-2 my-0 nav-item h5 pt-1">
         <a className="nav-link position-relative" href="/cart">
           <i className="bi bi-cart-fill"></i>
           {cart.length > 0 && (

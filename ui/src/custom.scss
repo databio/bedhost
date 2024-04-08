@@ -37,6 +37,9 @@ a {
   .active {
     background-color: $primary !important;
   }
+  &:hover {
+    color: $primary;
+  }
 }
 
 .active {
@@ -47,6 +50,29 @@ a {
   .h80 {
     height: 80vh;
   }
+}
+
+.border-dashed {
+  border-style: dashed !important;
+}
+
+.b2b-drop-zone {
+  &:hover {
+    background-color: $light !important;
+  }
+}
+
+.hover-border-primary {
+  &:hover {
+    border-color: $primary !important;
+  }
+}
+
+// tailwind transition class
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
 
 .landing-animation-container {
@@ -63,16 +89,20 @@ a {
   box-shadow: 0px 0px 122px 0px $primary;
 }
 
-.stat-card-height {
-  min-height: 9rem;
+.bed-splash-stat-card-height {
+  min-height: 7rem;
 }
 
-.genomic-feature-bar-height {
-  height: 16rem;
+.bed-splash-genomic-feature-bar-height {
+  height: 27rem;
 }
 
-.promoter-bar-height {
-  height: 16rem;
+.bedset-splash-stat-card-height {
+  min-height: 7rem;
+}
+
+.bedset-splash-genomic-feature-bar-height {
+  height: 24rem;
 }
 
 .min-h-screen {
@@ -104,7 +134,42 @@ a {
   list-style: none;
 }
 
+// typewriter effect
+.typewriter {
+  overflow: hidden; /* Ensures the content is not revealed until the animation */
+  border-right: 0.15em solid $primary; /* The typwriter cursor */
+  white-space: nowrap; /* Keeps the content on a single line */
+  margin: 0 auto; /* Gives that scrolling effect as the typing happens */
+  letter-spacing: 0.15em; /* Adjust as needed */
+  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+}
+
+/* The typing effect */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: $primary;
+  }
+}
+
 // some tailwind styles I like
+.text-balance {
+  text-wrap: balance !important;
+}
+
 .cursor-pointer {
   cursor: pointer;
 }

@@ -1,9 +1,9 @@
 import { useBedCart } from '../../contexts/bedcart-context';
 import toast from 'react-hot-toast';
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { bytesToSize, formatDateTime, makeHttpDownloadLink, makeS3DownloadLink } from '../../utils';
+import { bytesToSize, formatDateTime } from '../../utils';
 import { Dropdown } from 'react-bootstrap';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -23,19 +23,19 @@ export const BedSplashHeader = (props: Props) => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
 
-  const noFilesToDownload = metadata.files?.bedfile === undefined && metadata.files?.bedfile === undefined;
+  const noFilesToDownload = !metadata.files?.bed_file && !metadata.files?.bigbed_file;
 
   return (
     <div className="border-bottom py-2">
       <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
         <div className="d-flex flex-column align-items-start">
-          <h4 className="fw-bold">
+          <h4 className="fw-bold mb-0">
             <i className="bi bi-file-earmark-text me-2" />
-            {metadata?.name || 'No name available'}
+            {metadata?.id || 'No name available'}
             <button
               className="btn btn-link text-primary mb-2"
               onClick={() => {
-                copyToClipboard(record_identifier || '');
+                copyToClipboard(metadata.id || '');
                 setCopiedId(true);
                 setTimeout(() => {
                   setCopiedId(false);
@@ -45,6 +45,10 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
+          <p className="text-muted">
+            {metadata.name} {'  |  '}
+            {metadata.raw_metadata?.global_sample_id || 'No source available'}
+          </p>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -71,6 +75,7 @@ export const BedSplashHeader = (props: Props) => {
             </button>
           ) : (
             <button
+              disabled={addedToCart}
               className="btn btn-primary btn-sm"
               onClick={() => {
                 if (record_identifier == undefined) {
@@ -83,7 +88,7 @@ export const BedSplashHeader = (props: Props) => {
                 setAddedToCart(true);
                 setTimeout(() => {
                   setAddedToCart(false);
-                }, 1000);
+                }, 500);
               }}
             >
               <i className="bi bi-cart-fill me-1" />
@@ -103,33 +108,36 @@ export const BedSplashHeader = (props: Props) => {
                 </Dropdown.Menu>
               ) : (
                 <Dropdown.Menu>
-                  <Dropdown.Header>HTTP</Dropdown.Header>
-                  {metadata.files?.bedfile ? (
-                    <Dropdown.Item href={makeHttpDownloadLink(metadata.id)}>
-                      <i className="bi bi-file-earmark-arrow-down me-1" />
-                      BEDfile {bytesToSize(metadata.files.bedfile.size || 0)}
-                    </Dropdown.Item>
-                  ) : null}
-                  {metadata.files?.bigbedfile ? (
-                    <Dropdown.Item href={makeHttpDownloadLink(metadata?.files.bigbedfile.path)}>
-                      <i className="bi bi-file-earmark-arrow-down me-1" />
-                      BigBedFile {bytesToSize(metadata.files.bigbedfile.size || 0)}
-                    </Dropdown.Item>
-                  ) : null}
-                  <Dropdown.Divider />
-                  <Dropdown.Header>S3</Dropdown.Header>
-                  {metadata.files?.bedfile ? (
-                    <Dropdown.Item href={makeS3DownloadLink(metadata.id)}>
-                      <i className="bi bi-file-earmark-arrow-down me-1" />
-                      BEDfile {bytesToSize(metadata.files.bedfile.size || 0)}
-                    </Dropdown.Item>
-                  ) : null}
-                  {metadata.files?.bigbedfile ? (
-                    <Dropdown.Item href={makeS3DownloadLink(metadata?.files.bigbedfile.path)}>
-                      <i className="bi bi-file-earmark-arrow-down me-1" />
-                      BigBedFile {bytesToSize(metadata.files.bigbedfile.size || 0)}
-                    </Dropdown.Item>
-                  ) : null}
+                  {metadata.files?.bed_file && (
+                    <Fragment>
+                      {(metadata.files?.bed_file?.access_methods || []).map((method) => {
+                        if (method.type === 'local' || method.type === 's3') {
+                          return null;
+                        }
+                        return (
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                            {method.access_id ? 'BED file' : 'No download link available'} (
+                            <span className="fw-bold">{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
+                          </Dropdown.Item>
+                        );
+                      })}
+                    </Fragment>
+                  )}
+                  {metadata.files?.bigbed_file && (
+                    <Fragment>
+                      {(metadata.files?.bigbed_file?.access_methods || []).map((method) => {
+                        if (method.type === 'local' || method.type === 's3') {
+                          return null;
+                        }
+                        return (
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                            {method.access_id ? 'BigBED file' : 'No download link available'} (
+                            <span className="fw-bold">{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
+                          </Dropdown.Item>
+                        );
+                      })}
+                    </Fragment>
+                  )}
                 </Dropdown.Menu>
               )
             }
