@@ -3,7 +3,6 @@ import { Layout } from '../components/layout';
 import { Col, Row } from 'react-bootstrap';
 import { useBedsetMetadata } from '../queries/useBedsetMetadata';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
-import { ErrorPage } from '../components/common/error-page';
 import { BedsetSplashHeader } from '../components/bedset-splash-components/header';
 import { MeanRegionWidthCard } from '../components/bedset-splash-components/cards/median-region-width';
 import { MedianTssDistCard } from '../components/bedset-splash-components/cards/median-tss-distance';
