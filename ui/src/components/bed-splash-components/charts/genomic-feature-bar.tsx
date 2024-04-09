@@ -132,7 +132,6 @@ export const GenomicFeatureBar = (props: Props) => {
               ],
             }}
           />
-          ;
         </div>
       </div>
     </div>
