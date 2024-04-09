@@ -11,9 +11,6 @@
     "generate-types": "npx openapi-typescript http://127.0.0.1:8000/openapi.json -o bedbase-types.d.ts"
   },
   "dependencies": {
-    "@nivo/bar": "^0.85.1",
-    "@nivo/core": "^0.85.1",
-    "@nivo/pie": "^0.85.1",
     "@tanstack/react-query": "^5.28.0",
     "@tanstack/react-query-devtools": "^5.28.0",
     "@tanstack/react-table": "^8.15.3",
