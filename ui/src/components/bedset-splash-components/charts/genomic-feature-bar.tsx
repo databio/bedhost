@@ -217,7 +217,6 @@ export const GenomicFeatureBar = (props: Props) => {
                 {
                   label: displayAsPercentage ? 'Percentage' : 'Frequency',
                   data: data.map((d) => {
-                    console.log(d);
                     return {
                       // x: d.feature,
                       y: d.value,
