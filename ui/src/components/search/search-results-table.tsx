@@ -33,7 +33,7 @@ export const SearchResultsTable = (props: Props) => {
               <ProgressBar
                 min={5}
                 now={result.score * 100}
-                label={`${roundToTwoDecimals(result.score * 100)}%`}
+                label={`${roundToTwoDecimals(result.score * 100)}`}
                 variant="primary"
               />
             </td>

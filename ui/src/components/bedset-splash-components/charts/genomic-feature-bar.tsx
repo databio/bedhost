@@ -132,54 +132,54 @@ export const GenomicFeatureBar = (props: Props) => {
       {
         feature: "3' UTR",
         value: metadata.statistics?.mean?.threeutr_frequency || 0,
-        yMin: metadata.statistics?.mean?.threeutr_frequency || 0 - (metadata.statistics?.sd?.threeutr_frequency || 0),
-        yMax: metadata.statistics?.mean?.threeutr_frequency || 0 + (metadata.statistics?.sd?.threeutr_frequency || 0),
+        yMin: (metadata.statistics?.mean?.threeutr_frequency || 0) - (metadata.statistics?.sd?.threeutr_frequency || 0),
+        yMax: (metadata.statistics?.mean?.threeutr_frequency || 0) + (metadata.statistics?.sd?.threeutr_frequency || 0),
       },
       {
         feature: "5' UTR",
         value: metadata.statistics?.mean?.fiveutr_frequency || 0,
-        yMin: metadata.statistics?.mean?.fiveutr_frequency || 0 - (metadata.statistics?.sd?.fiveutr_frequency || 0),
-        yMax: metadata.statistics?.mean?.fiveutr_frequency || 0 + (metadata.statistics?.sd?.fiveutr_frequency || 0),
+        yMin: (metadata.statistics?.mean?.fiveutr_frequency || 0) - (metadata.statistics?.sd?.fiveutr_frequency || 0),
+        yMax: (metadata.statistics?.mean?.fiveutr_frequency || 0) + (metadata.statistics?.sd?.fiveutr_frequency || 0),
       },
       {
         feature: 'Exon',
         value: metadata.statistics?.mean?.exon_frequency || 0,
-        yMin: metadata.statistics?.mean?.exon_frequency || 0 - (metadata.statistics?.sd?.exon_frequency || 0),
-        yMax: metadata.statistics?.mean?.exon_frequency || 0 + (metadata.statistics?.sd?.exon_frequency || 0),
+        yMin: (metadata.statistics?.mean?.exon_frequency || 0) - (metadata.statistics?.sd?.exon_frequency || 0),
+        yMax: (metadata.statistics?.mean?.exon_frequency || 0) + (metadata.statistics?.sd?.exon_frequency || 0),
       },
       {
         feature: 'Intron',
         value: metadata.statistics?.mean?.intron_frequency || 0,
-        yMin: metadata.statistics?.mean?.intron_frequency || 0 - (metadata.statistics?.sd?.intron_frequency || 0),
-        yMax: metadata.statistics?.mean?.intron_frequency || 0 + (metadata.statistics?.sd?.intron_frequency || 0),
+        yMin: (metadata.statistics?.mean?.intron_frequency || 0) - (metadata.statistics?.sd?.intron_frequency || 0),
+        yMax: (metadata.statistics?.mean?.intron_frequency || 0) + (metadata.statistics?.sd?.intron_frequency || 0),
       },
       {
         feature: 'Intergenic',
         value: metadata.statistics?.mean?.intergenic_frequency || 0,
         yMin:
-          metadata.statistics?.mean?.intergenic_frequency || 0 - (metadata.statistics?.sd?.intergenic_frequency || 0),
+          (metadata.statistics?.mean?.intergenic_frequency || 0) - (metadata.statistics?.sd?.intergenic_frequency || 0),
         yMax:
-          metadata.statistics?.mean?.intergenic_frequency || 0 + (metadata.statistics?.sd?.intergenic_frequency || 0),
+          (metadata.statistics?.mean?.intergenic_frequency || 0) + (metadata.statistics?.sd?.intergenic_frequency || 0),
       },
       {
         feature: 'Promoter proc',
         value: metadata.statistics?.mean?.promoterprox_frequency || 0,
         yMin:
-          metadata.statistics?.mean?.promoterprox_frequency ||
-          0 - (metadata.statistics?.sd?.promoterprox_frequency || 0),
+          (metadata.statistics?.mean?.promoterprox_frequency || 0) -
+          (metadata.statistics?.sd?.promoterprox_frequency || 0),
         yMax:
-          metadata.statistics?.mean?.promoterprox_frequency ||
-          0 + (metadata.statistics?.sd?.promoterprox_frequency || 0),
+          (metadata.statistics?.mean?.promoterprox_frequency || 0) +
+          (metadata.statistics?.sd?.promoterprox_frequency || 0),
       },
       {
         feature: 'Promoter core',
         value: metadata.statistics?.mean?.promotercore_frequency || 0,
         yMin:
-          metadata.statistics?.mean?.promotercore_frequency ||
-          0 - (metadata.statistics?.sd?.promotercore_frequency || 0),
+          (metadata.statistics?.mean?.promotercore_frequency || 0) -
+          (metadata.statistics?.sd?.promotercore_frequency || 0),
         yMax:
-          metadata.statistics?.mean?.promotercore_frequency ||
-          0 + (metadata.statistics?.sd?.promotercore_frequency || 0),
+          (metadata.statistics?.mean?.promotercore_frequency || 0) +
+          (metadata.statistics?.sd?.promotercore_frequency || 0),
       },
     ];
   }
@@ -217,6 +217,7 @@ export const GenomicFeatureBar = (props: Props) => {
                 {
                   label: displayAsPercentage ? 'Percentage' : 'Frequency',
                   data: data.map((d) => {
+                    console.log(d);
                     return {
                       // x: d.feature,
                       y: d.value,
