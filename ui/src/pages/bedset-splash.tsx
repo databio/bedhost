@@ -130,7 +130,18 @@ export const BedsetSplash = () => {
           </Row>
           <h2 className="fw-bold">BED files in this BED set</h2>
           <Row className="mb-2">
-            {isLoadingBedfiles ? <CardSkeleton height="100px" /> : bedfiles && <BedsTable beds={bedfiles.results} />}
+            {isLoadingBedfiles ? (
+              <div className="mt-2 mb-5">
+                <CardSkeleton height="100px" />
+                {Array.from({ length: 10 }).map((_, index) => (
+                  <div key={index} className="mb-2">
+                    <CardSkeleton height="15px" />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              bedfiles && <BedsTable beds={bedfiles.results} />
+            )}
           </Row>
         </div>
       </Layout>

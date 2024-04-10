@@ -30,7 +30,11 @@ export const BedsTable = (props: Props) => {
       header: 'Name',
     }),
     columnHelper.accessor('description', {
-      cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
+      cell: (info) => (
+        <span className="max-cell-width text-truncate d-inline-block">
+          {info.getValue() || <span className="fst-italic">No description</span>}
+        </span>
+      ),
       footer: (info) => info.column.id,
       header: 'Description',
     }),
@@ -76,7 +80,7 @@ export const BedsTable = (props: Props) => {
   });
 
   return (
-    <div className="rounded border shadow-sm">
+    <div className="rounded border shadow-sm my-2">
       <table className="table">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
