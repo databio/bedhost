@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useBedbaseApi } from '../contexts/api-context';
 import { components } from '../../bedbase-types';
 
-type SearchResponse = components['schemas']['BedListSearchResult'];
+type SearchResponse = components['schemas']['BedSetListResult'];
 type SearchQuery = {
   q: string;
   limit?: number;
