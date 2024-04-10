@@ -1,11 +1,9 @@
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { useState } from 'react';
-import { BedMetadataModal } from '../modals/bed-metadata-modal';
 import { useBedCart } from '../../contexts/bedcart-context';
+import { components } from '../../../bedbase-types';
 
-type Bed = {
-  id: string;
-};
+type Bed = components['schemas']['BedSetBedFiles']['results'][number];
 
 type Props = {
   beds: Bed[];
@@ -16,31 +14,35 @@ const columnHelper = createColumnHelper<Bed>();
 export const BedsTable = (props: Props) => {
   const { beds } = props;
 
-  const [metadataModal, setMetadataModal] = useState(false);
-  const [selectedBed, setSelectedBed] = useState<Bed | null>(null);
   const [addedToCart, setAddedToCart] = useState(false);
   const [justAddedToCart, setJustAddedToCart] = useState<string | null>(null);
   const { addBedToCart, removeBedFromCart, cart } = useBedCart();
 
   const columns = [
+    columnHelper.accessor('bed_format', {
+      cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
+      footer: (info) => info.column.id,
+      header: 'Format',
+    }),
+    columnHelper.accessor('name', {
+      cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
+      footer: (info) => info.column.id,
+      header: 'Name',
+    }),
+    columnHelper.accessor('description', {
+      cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
+      footer: (info) => info.column.id,
+      header: 'Description',
+    }),
     columnHelper.accessor('id', {
       cell: (info) => <a href={`/bed/${info.getValue()}`}>{info.getValue()}</a>,
       footer: (info) => info.column.id,
       header: 'Record Identifier',
     }),
+
     columnHelper.accessor('id', {
       cell: (info) => (
         <div className="d-flex flex-row w-100 gap-1 flex-end">
-          <button
-            onClick={() => {
-              setSelectedBed(beds.find((bed) => bed.id === info.getValue()) || null);
-              setMetadataModal(true);
-            }}
-            className="btn btn-sm btn-primary"
-          >
-            <i className="bi bi-info-circle me-1"></i>
-            View
-          </button>
           {!cart.includes(info.getValue()) || (addedToCart && justAddedToCart === info.getValue()) ? (
             <button
               onClick={() => {
@@ -96,7 +98,7 @@ export const BedsTable = (props: Props) => {
             </tr>
           ))}
         </tbody>
-        <tfoot>
+        {/* <tfoot>
           {table.getFooterGroups().map((footerGroup) => (
             <tr key={footerGroup.id}>
               {footerGroup.headers.map((header) => (
@@ -106,10 +108,9 @@ export const BedsTable = (props: Props) => {
               ))}
             </tr>
           ))}
-        </tfoot>
+        </tfoot> */}
       </table>
       <div className="h-4" />
-      {selectedBed && <BedMetadataModal bed={selectedBed} show={metadataModal} setShow={setMetadataModal} />}
     </div>
   );
 };

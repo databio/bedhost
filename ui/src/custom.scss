@@ -68,6 +68,10 @@ a {
   }
 }
 
+.max-cell-width {
+  width: 20rem !important;
+}
+
 // tailwind transition class
 .transition-all {
   transition-property: all;

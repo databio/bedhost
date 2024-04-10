@@ -10,14 +10,15 @@ import { GenomicFeatureBar } from '../components/bedset-splash-components/charts
 import { Plots } from '../components/bedset-splash-components/plots';
 import { GCContentCard } from '../components/bedset-splash-components/cards/gc-content-card';
 import { BedsTable } from '../components/bedset-splash-components/beds-table';
-import {AxiosError} from "axios";
+import { AxiosError } from 'axios';
+import { useBedsetBedfiles } from '../queries/useBedSetBedfiles';
 
 export const BedsetSplash = () => {
   const params = useParams();
   const bedsetId = params.id;
 
   const {
-    isLoading,
+    isFetching: isLoadingMetadata,
     data: metadata,
     error,
   } = useBedsetMetadata({
@@ -25,7 +26,12 @@ export const BedsetSplash = () => {
     autoRun: true,
   });
 
-  if (isLoading) {
+  const { isFetching: isLoadingBedfiles, data: bedfiles } = useBedsetBedfiles({
+    id: bedsetId,
+    autoRun: true,
+  });
+
+  if (isLoadingMetadata) {
     return (
       <Layout title={`BEDbase | ${bedsetId}`} footer>
         <div className="my-2">
@@ -58,40 +64,40 @@ export const BedsetSplash = () => {
   } else if (error) {
     if ((error as AxiosError)?.response?.status === 404) {
       return (
-          <Layout title={`BEDbase | ${bedsetId}`}>
-            <div
-                className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
-                style={{height: '50vh'}}
-            >
-              <h1 className="fw-bold text-center mb-3">Oh no!</h1>
-              <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-                <h2 className="text-2xl text-center">
-                  We could not find BEDset with record identifier: <br/>
-                  <span className="fw-bold">{bedsetId}</span>
-                </h2>
-              </div>
-              <div className="w-50">
-                <p className="fst-italic text-center mt-3">
-                  Are you sure you have the correct record identifier? If you believe this is an error, please open an
-                  issue: <a href="https://github.com/databio/bedhost/issues">on GitHub</a>
-                </p>
-              </div>
-              <div className="d-flex flex-row align-items-center justify-content-center">
-                <a href="/">
-                  <button className="btn btn-primary">
-                    <i className="bi bi-house me-1"></i>
-                    Home
-                  </button>
-                </a>
-                <a href="https://github.com/databio/bedhost/issues">
-                  <button className="btn btn-primary ms-2">
-                    <i className="bi bi-exclamation-triangle me-1"></i>
-                    Report issue
-                  </button>
-                </a>
-              </div>
+        <Layout title={`BEDbase | ${bedsetId}`}>
+          <div
+            className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
+            style={{ height: '50vh' }}
+          >
+            <h1 className="fw-bold text-center mb-3">Oh no!</h1>
+            <div className="d-flex flex-row align-items-center w-100 justify-content-center">
+              <h2 className="text-2xl text-center">
+                We could not find BEDset with record identifier: <br />
+                <span className="fw-bold">{bedsetId}</span>
+              </h2>
             </div>
-          </Layout>
+            <div className="w-50">
+              <p className="fst-italic text-center mt-3">
+                Are you sure you have the correct record identifier? If you believe this is an error, please open an
+                issue: <a href="https://github.com/databio/bedhost/issues">on GitHub</a>
+              </p>
+            </div>
+            <div className="d-flex flex-row align-items-center justify-content-center">
+              <a href="/">
+                <button className="btn btn-primary">
+                  <i className="bi bi-house me-1"></i>
+                  Home
+                </button>
+              </a>
+              <a href="https://github.com/databio/bedhost/issues">
+                <button className="btn btn-primary ms-2">
+                  <i className="bi bi-exclamation-triangle me-1"></i>
+                  Report issue
+                </button>
+              </a>
+            </div>
+          </div>
+        </Layout>
       );
     }
   } else {
@@ -124,13 +130,7 @@ export const BedsetSplash = () => {
           </Row>
           <h2 className="fw-bold">BED files in this BED set</h2>
           <Row className="mb-2">
-            <BedsTable
-              beds={
-                metadata?.bed_ids?.map((id) => ({
-                  id: id,
-                })) || []
-              }
-            />
+            {isLoadingBedfiles ? <CardSkeleton height="100px" /> : bedfiles && <BedsTable beds={bedfiles.results} />}
           </Row>
         </div>
       </Layout>
