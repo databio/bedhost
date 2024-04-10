@@ -1,12 +1,25 @@
 import { useState } from 'react';
-import { ResponsiveBar } from '@nivo/bar';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
 import { components } from '../../../../bedbase-types';
 import { PRIMARY_COLOR } from '../../../const';
-import { formatNumberWithCommas, roundToTwoDecimals } from '../../../utils';
+import { roundToTwoDecimals } from '../../../utils';
 
 type BedMetadata = components['schemas']['BedMetadata'];
 type Props = {
   metadata: BedMetadata;
+};
+
+const chartOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
 };
 
 export const GenomicFeatureBar = (props: Props) => {
@@ -104,64 +117,20 @@ export const GenomicFeatureBar = (props: Props) => {
           </div>
         </div>
         <div className="d-flex justify-content-center w-100 bed-splash-genomic-feature-bar-height">
-          <ResponsiveBar
-            data={data}
-            borderWidth={1}
-            keys={['value']}
-            indexBy="feature"
-            margin={{ top: 50, right: 10, bottom: 50, left: 60 }}
-            layout="vertical"
-            colors={[PRIMARY_COLOR]}
-            theme={{
-              text: {
-                color: 'black',
-                fontFamily: 'Arial',
-                fontSize: 14,
-              },
+          <Bar
+            options={chartOptions}
+            data={{
+              labels: data.map((d) => d.feature),
+              datasets: [
+                {
+                  label: displayAsPercentage ? 'Percentage' : 'Frequency',
+                  data: data.map((d) => d.value),
+                  backgroundColor: PRIMARY_COLOR,
+                  borderColor: PRIMARY_COLOR,
+                  borderWidth: 1,
+                },
+              ],
             }}
-            borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
-            markers={[
-              {
-                axis: 'y',
-                value: 0,
-                lineStyle: { stroke: 'black', strokeWidth: 2 },
-                legend: '',
-                legendOrientation: 'vertical',
-                legendPosition: 'top',
-              },
-
-              {
-                axis: 'x',
-                value: 0,
-                lineStyle: { stroke: 'black', strokeWidth: 2 },
-                legend: '',
-                legendOrientation: 'vertical',
-                legendPosition: 'top',
-              },
-            ]}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: 'Feature',
-              legendPosition: 'middle',
-              legendOffset: 42,
-            }}
-            axisLeft={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: displayAsPercentage ? 'Frequency (%)' : 'Frequency',
-              legendPosition: 'middle',
-              legendOffset: displayAsPercentage ? -40 : -48,
-            }}
-            enableGridY={false}
-            labelSkipWidth={12}
-            labelSkipHeight={12}
-            labelTextColor={{ from: 'color', modifiers: [['darker', 3]] }}
-            valueFormat={(value) => (displayAsPercentage ? `${value}%` : formatNumberWithCommas(value))}
           />
         </div>
       </div>

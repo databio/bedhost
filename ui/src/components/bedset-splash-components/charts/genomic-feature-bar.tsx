@@ -1,12 +1,35 @@
-import { ResponsiveBar } from '@nivo/bar';
 import { components } from '../../../../bedbase-types';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Chart } from 'react-chartjs-2';
+import { BarWithErrorBar, BarWithErrorBarsController, PointWithErrorBar } from 'chartjs-chart-error-bars';
 import { PRIMARY_COLOR } from '../../../const';
-import { formatNumberWithCommas, roundToTwoDecimals } from '../../../utils';
+import { roundToTwoDecimals } from '../../../utils';
 import { useState } from 'react';
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+  BarWithErrorBarsController,
+  BarWithErrorBar,
+  PointWithErrorBar,
+);
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
 type Props = {
   metadata: BedSetMetadata;
+};
+
+const chartOptions = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'top' as const,
+    },
+  },
 };
 
 export const GenomicFeatureBar = (props: Props) => {
@@ -20,30 +43,88 @@ export const GenomicFeatureBar = (props: Props) => {
       {
         feature: "3' UTR",
         value: roundToTwoDecimals((metadata.statistics?.mean?.threeutr_percentage || 0) * 100),
+        // mean - sd
+        yMin: roundToTwoDecimals(
+          (metadata.statistics?.mean?.threeutr_percentage || 0) * 100 -
+            (metadata.statistics?.sd?.threeutr_percentage || 0) * 100,
+        ),
+        // mean + sd
+        yMax: roundToTwoDecimals(
+          (metadata.statistics?.mean?.threeutr_percentage || 0) * 100 +
+            (metadata.statistics?.sd?.threeutr_percentage || 0) * 100,
+        ),
       },
       {
         feature: "5' UTR",
         value: roundToTwoDecimals((metadata.statistics?.mean?.fiveutr_percentage || 0) * 100),
+        yMin: roundToTwoDecimals(
+          (metadata.statistics?.mean?.fiveutr_percentage || 0) * 100 -
+            (metadata.statistics?.sd?.fiveutr_percentage || 0) * 100,
+        ),
+        yMax: roundToTwoDecimals(
+          (metadata.statistics?.mean?.fiveutr_percentage || 0) * 100 +
+            (metadata.statistics?.sd?.fiveutr_percentage || 0) * 100,
+        ),
       },
       {
         feature: 'Exon',
         value: roundToTwoDecimals((metadata.statistics?.mean?.exon_percentage || 0) * 100),
+        yMin: roundToTwoDecimals(
+          (metadata.statistics?.mean?.exon_percentage || 0) * 100 -
+            (metadata.statistics?.sd?.exon_percentage || 0) * 100,
+        ),
+        yMax: roundToTwoDecimals(
+          (metadata.statistics?.mean?.exon_percentage || 0) * 100 +
+            (metadata.statistics?.sd?.exon_percentage || 0) * 100,
+        ),
       },
       {
         feature: 'Intron',
         value: roundToTwoDecimals((metadata.statistics?.mean?.intron_percentage || 0) * 100),
+        yMin: roundToTwoDecimals(
+          (metadata.statistics?.mean?.intron_percentage || 0) * 100 -
+            (metadata.statistics?.sd?.intron_percentage || 0) * 100,
+        ),
+        yMax: roundToTwoDecimals(
+          (metadata.statistics?.mean?.intron_percentage || 0) * 100 +
+            (metadata.statistics?.sd?.intron_percentage || 0) * 100,
+        ),
       },
       {
         feature: 'Intergenic',
         value: roundToTwoDecimals((metadata.statistics?.mean?.intergenic_percentage || 0) * 100),
+        yMin: roundToTwoDecimals(
+          (metadata.statistics?.mean?.intergenic_percentage || 0) * 100 -
+            (metadata.statistics?.sd?.intergenic_percentage || 0) * 100,
+        ),
+        yMax: roundToTwoDecimals(
+          (metadata.statistics?.mean?.intergenic_percentage || 0) * 100 +
+            (metadata.statistics?.sd?.intergenic_percentage || 0) * 100,
+        ),
       },
       {
         feature: 'Promoter proc',
         value: roundToTwoDecimals((metadata.statistics?.mean?.promoterprox_percentage || 0) * 100),
+        yMin: roundToTwoDecimals(
+          (metadata.statistics?.mean?.promoterprox_percentage || 0) * 100 -
+            (metadata.statistics?.sd?.promoterprox_percentage || 0) * 100,
+        ),
+        yMax: roundToTwoDecimals(
+          (metadata.statistics?.mean?.promoterprox_percentage || 0) * 100 +
+            (metadata.statistics?.sd?.promoterprox_percentage || 0) * 100,
+        ),
       },
       {
         feature: 'Promoter core',
         value: roundToTwoDecimals((metadata.statistics?.mean?.promotercore_percentage || 0) * 100),
+        yMin: roundToTwoDecimals(
+          (metadata.statistics?.mean?.promotercore_percentage || 0) * 100 -
+            (metadata.statistics?.sd?.promotercore_percentage || 0) * 100,
+        ),
+        yMax: roundToTwoDecimals(
+          (metadata.statistics?.mean?.promotercore_percentage || 0) * 100 +
+            (metadata.statistics?.sd?.promotercore_percentage || 0) * 100,
+        ),
       },
     ];
   } else {
@@ -51,30 +132,54 @@ export const GenomicFeatureBar = (props: Props) => {
       {
         feature: "3' UTR",
         value: metadata.statistics?.mean?.threeutr_frequency || 0,
+        yMin: (metadata.statistics?.mean?.threeutr_frequency || 0) - (metadata.statistics?.sd?.threeutr_frequency || 0),
+        yMax: (metadata.statistics?.mean?.threeutr_frequency || 0) + (metadata.statistics?.sd?.threeutr_frequency || 0),
       },
       {
         feature: "5' UTR",
         value: metadata.statistics?.mean?.fiveutr_frequency || 0,
+        yMin: (metadata.statistics?.mean?.fiveutr_frequency || 0) - (metadata.statistics?.sd?.fiveutr_frequency || 0),
+        yMax: (metadata.statistics?.mean?.fiveutr_frequency || 0) + (metadata.statistics?.sd?.fiveutr_frequency || 0),
       },
       {
         feature: 'Exon',
         value: metadata.statistics?.mean?.exon_frequency || 0,
+        yMin: (metadata.statistics?.mean?.exon_frequency || 0) - (metadata.statistics?.sd?.exon_frequency || 0),
+        yMax: (metadata.statistics?.mean?.exon_frequency || 0) + (metadata.statistics?.sd?.exon_frequency || 0),
       },
       {
         feature: 'Intron',
         value: metadata.statistics?.mean?.intron_frequency || 0,
+        yMin: (metadata.statistics?.mean?.intron_frequency || 0) - (metadata.statistics?.sd?.intron_frequency || 0),
+        yMax: (metadata.statistics?.mean?.intron_frequency || 0) + (metadata.statistics?.sd?.intron_frequency || 0),
       },
       {
         feature: 'Intergenic',
         value: metadata.statistics?.mean?.intergenic_frequency || 0,
+        yMin:
+          (metadata.statistics?.mean?.intergenic_frequency || 0) - (metadata.statistics?.sd?.intergenic_frequency || 0),
+        yMax:
+          (metadata.statistics?.mean?.intergenic_frequency || 0) + (metadata.statistics?.sd?.intergenic_frequency || 0),
       },
       {
         feature: 'Promoter proc',
         value: metadata.statistics?.mean?.promoterprox_frequency || 0,
+        yMin:
+          (metadata.statistics?.mean?.promoterprox_frequency || 0) -
+          (metadata.statistics?.sd?.promoterprox_frequency || 0),
+        yMax:
+          (metadata.statistics?.mean?.promoterprox_frequency || 0) +
+          (metadata.statistics?.sd?.promoterprox_frequency || 0),
       },
       {
         feature: 'Promoter core',
         value: metadata.statistics?.mean?.promotercore_frequency || 0,
+        yMin:
+          (metadata.statistics?.mean?.promotercore_frequency || 0) -
+          (metadata.statistics?.sd?.promotercore_frequency || 0),
+        yMax:
+          (metadata.statistics?.mean?.promotercore_frequency || 0) +
+          (metadata.statistics?.sd?.promotercore_frequency || 0),
       },
     ];
   }
@@ -103,62 +208,29 @@ export const GenomicFeatureBar = (props: Props) => {
           </div>
         </div>
         <div className="d-flex justify-content-center w-100 bedset-splash-genomic-feature-bar-height">
-          <ResponsiveBar
-            data={data}
-            borderWidth={1}
-            keys={['value']}
-            indexBy="feature"
-            margin={{ top: 50, right: 10, bottom: 50, left: 60 }}
-            layout="vertical"
-            colors={[PRIMARY_COLOR]}
-            theme={{
-              text: {
-                color: 'black',
-                fontFamily: 'Arial',
-                fontSize: 14,
-              },
+          <Chart
+            type="barWithErrorBars"
+            options={chartOptions}
+            data={{
+              labels: data.map((d) => d.feature),
+              datasets: [
+                {
+                  label: displayAsPercentage ? 'Percentage' : 'Frequency',
+                  data: data.map((d) => {
+                    console.log(d);
+                    return {
+                      // x: d.feature,
+                      y: d.value,
+                      yMin: d.yMin,
+                      yMax: d.yMax,
+                    };
+                  }),
+                  backgroundColor: PRIMARY_COLOR,
+                  borderColor: PRIMARY_COLOR,
+                  borderWidth: 1,
+                },
+              ],
             }}
-            borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
-            markers={[
-              {
-                axis: 'y',
-                value: 0,
-                lineStyle: { stroke: 'black', strokeWidth: 2 },
-                legend: '',
-                legendOrientation: 'vertical',
-                legendPosition: 'top',
-              },
-
-              {
-                axis: 'x',
-                value: 0,
-                lineStyle: { stroke: 'black', strokeWidth: 2 },
-                legend: '',
-                legendOrientation: 'vertical',
-                legendPosition: 'top',
-              },
-            ]}
-            axisTop={null}
-            axisRight={null}
-            axisBottom={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: 'Feature',
-              legendPosition: 'middle',
-              legendOffset: 40,
-            }}
-            axisLeft={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legend: displayAsPercentage ? 'Frequency (%)' : 'Frequency',
-              legendPosition: 'middle',
-              legendOffset: -50,
-            }}
-            enableGridY={false}
-            labelTextColor={{ from: 'color', modifiers: [['darker', 3]] }}
-            valueFormat={(value) => (displayAsPercentage ? `${value}%` : formatNumberWithCommas(Math.round(value)))}
           />
         </div>
         <div className="text-end">
