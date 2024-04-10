@@ -21,6 +21,11 @@ COPY . /app
 
 RUN python -m pip install --upgrade pip
 
+# Need this command due to geniml dependency on hnswlib
+ENV HNSWLIB_NO_NATIVE=1
+RUN apt-get install -y python3-dev
+RUN apt-get install -y build-essential
+
 # Install CPU-only pytorch, eliminating huge nvidia dependencies
 RUN pip install torch==2.1.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip

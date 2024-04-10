@@ -3,7 +3,6 @@ import { Layout } from '../components/layout';
 import { Col, Row } from 'react-bootstrap';
 import { useBedsetMetadata } from '../queries/useBedsetMetadata';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
-import { ErrorPage } from '../components/common/error-page';
 import { BedsetSplashHeader } from '../components/bedset-splash-components/header';
 import { MeanRegionWidthCard } from '../components/bedset-splash-components/cards/median-region-width';
 import { MedianTssDistCard } from '../components/bedset-splash-components/cards/median-tss-distance';
@@ -11,6 +10,7 @@ import { GenomicFeatureBar } from '../components/bedset-splash-components/charts
 import { Plots } from '../components/bedset-splash-components/plots';
 import { GCContentCard } from '../components/bedset-splash-components/cards/gc-content-card';
 import { BedsTable } from '../components/bedset-splash-components/beds-table';
+import {AxiosError} from "axios";
 
 export const BedsetSplash = () => {
   const params = useParams();
@@ -56,7 +56,44 @@ export const BedsetSplash = () => {
       </Layout>
     );
   } else if (error) {
-    return <ErrorPage title={`BEDbase | ${bedsetId}`} error={error} />;
+    if ((error as AxiosError)?.response?.status === 404) {
+      return (
+          <Layout title={`BEDbase | ${bedsetId}`}>
+            <div
+                className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
+                style={{height: '50vh'}}
+            >
+              <h1 className="fw-bold text-center mb-3">Oh no!</h1>
+              <div className="d-flex flex-row align-items-center w-100 justify-content-center">
+                <h2 className="text-2xl text-center">
+                  We could not find BEDset with record identifier: <br/>
+                  <span className="fw-bold">{bedsetId}</span>
+                </h2>
+              </div>
+              <div className="w-50">
+                <p className="fst-italic text-center mt-3">
+                  Are you sure you have the correct record identifier? If you believe this is an error, please open an
+                  issue: <a href="https://github.com/databio/bedhost/issues">on GitHub</a>
+                </p>
+              </div>
+              <div className="d-flex flex-row align-items-center justify-content-center">
+                <a href="/">
+                  <button className="btn btn-primary">
+                    <i className="bi bi-house me-1"></i>
+                    Home
+                  </button>
+                </a>
+                <a href="https://github.com/databio/bedhost/issues">
+                  <button className="btn btn-primary ms-2">
+                    <i className="bi bi-exclamation-triangle me-1"></i>
+                    Report issue
+                  </button>
+                </a>
+              </div>
+            </div>
+          </Layout>
+      );
+    }
   } else {
     return (
       <Layout title={`BEDbase | ${bedsetId}`}>
