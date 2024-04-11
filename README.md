@@ -18,7 +18,7 @@ It needs a path to the *bedbase configuration file*, which can be provided eithe
 
 **UI**: <a href="https://bedbase.org/" target="_blank">https://bedbase.org/</a>
 
-**DEV UI**: <a href="https://bedhost-ui.pages.dev/" target="_blank">https://bedhost-ui.pages.dev/</a>
+**DEV UI**: <a href="https://dev.bedhost.pages.dev/" target="_blank">https://dev.bedhost.pages.dev/</a>
 
 **Source Code**: <a href="https://github.com/databio/bedhost/" target="_blank">https://github.com/databio/bedhost/</a>
 
