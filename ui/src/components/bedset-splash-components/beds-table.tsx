@@ -1,4 +1,11 @@
-import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  SortingState,
+  getSortedRowModel,
+} from '@tanstack/react-table';
 import { useState } from 'react';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
@@ -16,6 +23,8 @@ export const BedsTable = (props: Props) => {
 
   const [addedToCart, setAddedToCart] = useState(false);
   const [justAddedToCart, setJustAddedToCart] = useState<string | null>(null);
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   const { addBedToCart, removeBedFromCart, cart } = useBedCart();
 
   const columns = [
@@ -23,16 +32,19 @@ export const BedsTable = (props: Props) => {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Genome',
+      id: 'genome',
     }),
     columnHelper.accessor('bed_type', {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Type',
+      id: 'bed-type',
     }),
     columnHelper.accessor('name', {
       cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Name',
+      id: 'name',
     }),
     columnHelper.accessor('description', {
       cell: (info) => (
@@ -42,11 +54,13 @@ export const BedsTable = (props: Props) => {
       ),
       footer: (info) => info.column.id,
       header: 'Description',
+      id: 'description',
     }),
     columnHelper.accessor('id', {
       cell: (info) => <a href={`/bed/${info.getValue()}`}>{info.getValue()}</a>,
       footer: (info) => info.column.id,
       header: 'Record Identifier',
+      id: 'record-identifier',
     }),
 
     columnHelper.accessor('id', {
@@ -74,14 +88,21 @@ export const BedsTable = (props: Props) => {
           )}
         </div>
       ),
+      enableSorting: false,
       header: 'Actions',
+      id: 'actions',
     }),
   ];
 
   const table = useReactTable({
     data: beds,
     columns,
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
   });
 
   return (
@@ -91,8 +112,28 @@ export const BedsTable = (props: Props) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} scope="col">
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                <th key={header.id} colSpan={header.colSpan} scope="col">
+                  {header.isPlaceholder ? null : (
+                    <div
+                      className={header.column.getCanSort() ? 'cursor-pointer' : ''}
+                      onClick={header.column.getToggleSortingHandler()}
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === 'asc'
+                            ? 'Sort ascending'
+                            : header.column.getNextSortingOrder() === 'desc'
+                            ? 'Sort descending'
+                            : 'Clear sort'
+                          : undefined
+                      }
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: ' 🔼',
+                        desc: ' 🔽',
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
                 </th>
               ))}
             </tr>
