@@ -6,6 +6,10 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
+  getFacetedMinMaxValues,
+  getFacetedRowModel,
+  getFacetedUniqueValues,
+  getFilteredRowModel,
   getPaginationRowModel,
 } from '@tanstack/react-table';
 import { useState } from 'react';
@@ -30,6 +34,7 @@ export const BedsTable = (props: Props) => {
     pageIndex: 0,
     pageSize: 20,
   });
+  const [globalFilter, setGlobalFilter] = useState('');
 
   const { addBedToCart, removeBedFromCart, cart } = useBedCart();
 
@@ -106,16 +111,29 @@ export const BedsTable = (props: Props) => {
     state: {
       sorting,
       pagination,
+      globalFilter,
     },
     onSortingChange: setSorting,
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getFacetedRowModel: getFacetedRowModel(),
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    getFilteredRowModel: getFilteredRowModel(),
   });
 
   return (
     <div className="rounded border shadow-sm my-2">
+      <div className="d-flex flex-row mt-2">
+        <input
+          className="form-control"
+          placeholder="Search files"
+          value={globalFilter}
+          onChange={(e) => setGlobalFilter(e.target.value)}
+        />
+      </div>
       <table className="table mb-2">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
