@@ -1,10 +1,12 @@
 import {
+  PaginationState,
+  SortingState,
   createColumnHelper,
   flexRender,
-  getCoreRowModel,
   useReactTable,
-  SortingState,
+  getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { useBedCart } from '../../contexts/bedcart-context';
@@ -24,6 +26,10 @@ export const BedsTable = (props: Props) => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [justAddedToCart, setJustAddedToCart] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 20,
+  });
 
   const { addBedToCart, removeBedFromCart, cart } = useBedCart();
 
@@ -99,15 +105,18 @@ export const BedsTable = (props: Props) => {
     columns,
     state: {
       sorting,
+      pagination,
     },
     onSortingChange: setSorting,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   return (
     <div className="rounded border shadow-sm my-2">
-      <table className="table">
+      <table className="table mb-2">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -161,6 +170,64 @@ export const BedsTable = (props: Props) => {
         </tfoot> */}
       </table>
       <div className="h-4" />
+      <div className="d-flex justify-content-between align-items-center gap-2 mb-2">
+        <div className="d-flex flex-row align-items-center ">
+          Showing
+          <span className="fw-bold mx-1">
+            {table.getState().pagination.pageSize * table.getState().pagination.pageIndex + 1} to{' '}
+            {Math.min(
+              table.getState().pagination.pageSize * (table.getState().pagination.pageIndex + 1),
+              table.getRowCount(),
+            )}
+          </span>
+          of {table.getRowCount().toLocaleString()} files
+        </div>
+        <div className="d-flex flex-row align-items-center gap-2">
+          <div className="d-flex flex-row align-items-center btn-group">
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => table.firstPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <i className="bi bi-chevron-double-left"></i>
+            </button>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              <i className="bi bi-chevron-left"></i>
+            </button>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <i className="bi bi-chevron-right"></i>
+            </button>
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={() => table.lastPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              <i className="bi bi-chevron-double-right"></i>
+            </button>
+          </div>
+          <select
+            className="form-select"
+            value={table.getState().pagination.pageSize}
+            onChange={(e) => {
+              table.setPageSize(Number(e.target.value));
+            }}
+          >
+            {[10, 20, 30, 40, 50].map((pageSize) => (
+              <option key={pageSize} value={pageSize}>
+                Show {pageSize}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
     </div>
   );
 };
