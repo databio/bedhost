@@ -271,10 +271,10 @@ async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     tags=["search"],
     response_model=BedListSearchResult,
 )
-async def text_to_bed_search(
+async def bed_to_bed_search(
     file: UploadFile = File(None), limit: int = 10, offset: int = 0
 ):
-    _LOGGER.info(f"Searching for bedfiles...")
+    _LOGGER.info("Searching for bedfiles...")
 
     if file is not None:
         with tempfile.TemporaryDirectory() as dirpath:

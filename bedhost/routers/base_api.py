@@ -7,14 +7,19 @@ except ImportError:
 from fastapi import APIRouter
 
 from bbconf.models.base_models import StatsReturn
-
+from platform import python_version
+from bbconf import __version__ as bbconf_version
+from geniml import __version__ as geniml_version
 
 from ..main import bbagent, app
-from ..const import ALL_VERSIONS
 from ..helpers import get_openapi_version
 from ..data_models import ServiceInfoResponse
+from .._version import __version__ as bedhost_version
 
 router = APIRouter(prefix="/v1", tags=["base"])
+
+
+packages_versions = {}
 
 
 @router.get(
@@ -36,9 +41,13 @@ async def service_info():
     """
     Returns information about this service, such as versions, name, etc.
     """
-    all_versions = ALL_VERSIONS
-    service_version = all_versions["bedhost_version"]
-    all_versions.update({"openapi_version": get_openapi_version(app)})
+    all_versions = {
+        "bedhost_version": bedhost_version,
+        "bbconf_version": bbconf_version,
+        "geniml_version": geniml_version,
+        "python_version": python_version(),
+        "openapi_version": get_openapi_version(app),
+    }
 
     return ServiceInfoResponse(
         id="org.bedbase.api",
@@ -46,14 +55,19 @@ async def service_info():
         type={
             "group": "org.databio",
             "artifact": "bedbase",
-            "version": service_version,
+            "version": bedhost_version,
         },
         description="An API providing genomic interval data and metadata",
         organization={"name": "Databio Lab", "url": "https://databio.org"},
         contactUrl="https://github.com/databio/bedbase/issues",
-        documentationUrl="https://bedbase.org",
+        documentationUrl="https://docs.bedbase.org",
         updatedAt="2023-10-25T00:00:00Z",
-        environment="dev",
-        version=service_version,
+        environment="main",
+        version=bedhost_version,
         component_versions=all_versions,
+        embedding_models={
+            "vec2vec": bbagent.config.config.path.vec2vec,
+            "region2vec": bbagent.config.config.path.region2vec,
+            "text2vec": bbagent.config.config.path.text2vec,
+        },
     )

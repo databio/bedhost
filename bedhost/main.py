@@ -4,14 +4,13 @@ import uvicorn
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi.responses import HTMLResponse
 
 import markdown
 from fastapi.templating import Jinja2Templates
 from bbconf.exceptions import (
     MissingObjectError,
     MissingThumbnailError,
-    BadAccessMethodError,
     BEDFileNotFoundError,
     BedSetNotFoundError,
 )
@@ -24,11 +23,10 @@ from .helpers import (
     drs_response,
 )
 from .cli import build_parser
+from ._version import __version__ as bedhost_version
 from .const import (
-    ALL_VERSIONS,
     PKG_NAME,
     STATIC_PATH,
-    SERVER_VERSION,
 )
 
 
@@ -62,7 +60,7 @@ tags_metadata = [
 app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
-    version=SERVER_VERSION,
+    version=bedhost_version,
     docs_url="/docs",
     openapi_tags=tags_metadata,
 )
@@ -72,7 +70,7 @@ origins = [
     "http://localhost:8000",
     "http://localhost:5173",
     "https://bedbase.org",
-    "*",  # allow cross origin resource sharing, since this is a public API
+    "*",  # allow cross-origin resource sharing, since this is a public API
 ]
 
 app.add_middleware(

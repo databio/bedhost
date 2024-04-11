@@ -7,7 +7,7 @@ import { useText2BedSetSearch } from '../../queries/useText2BedSetSearch';
 import { ErrorPage } from '../common/error-page';
 import { TableToolbar } from './table-toolbar';
 import { PaginationBar } from './pagination-bar';
-import { SearchBedSetResultTable } from "./search-bedset-table.tsx";
+import { SearchBedSetResultTable } from './search-bedset-table.tsx';
 
 export const Text2BedSet = () => {
   const [searchParams] = useSearchParams();
@@ -22,11 +22,11 @@ export const Text2BedSet = () => {
     refetch: onSearch,
   } = useText2BedSetSearch({
     q: searchTerm,
-    limit: limit, // TODO: make this a variable
+    limit: limit,
     offset: offset,
     autoRun: false,
   });
-  debugger;
+
   useEffect(() => {
     if (searchTerm) {
       onSearch();
@@ -38,7 +38,6 @@ export const Text2BedSet = () => {
       return <ErrorPage title="BEDbase | Search" error={error} />;
     }
   }
-  debugger;
 
   return (
     <div className="my-2">
@@ -55,12 +54,12 @@ export const Text2BedSet = () => {
             {results ? (
               <div className="p-2 border rounded shadow-sm">
                 <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
-                <SearchBedSetResultTable results={results || []} />{' '}
+                <SearchBedSetResultTable results={results} />{' '}
                 <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
               </div>
             ) : (
               <div className="d-flex flex-column align-items-center justify-content-center mt-5 fst-italic">
-                Try seaching for some BED files!
+                Try seaching for some BEDsets!
               </div>
             )}
           </div>

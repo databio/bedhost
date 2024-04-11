@@ -8,6 +8,7 @@ type Props = {
 
 export const SearchBedSetResultTable = (props: Props) => {
   const { results } = props;
+
   return (
     <table className="table">
       <thead>
@@ -15,7 +16,7 @@ export const SearchBedSetResultTable = (props: Props) => {
           <th scope="col">Bedset ID</th>
           <th scope="col">Name</th>
           <th scope="col">Description</th>
-          <th scope={"col"}>Number of Beds</th>
+          <th scope={'col'}>Number of Beds</th>
           <th scope="col" style={{ minWidth: '140px' }}>
             Actions
           </th>

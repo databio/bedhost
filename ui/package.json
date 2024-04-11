@@ -11,9 +11,6 @@
     "generate-types": "npx openapi-typescript http://127.0.0.1:8000/openapi.json -o bedbase-types.d.ts"
   },
   "dependencies": {
-    "@nivo/bar": "^0.85.1",
-    "@nivo/core": "^0.85.1",
-    "@nivo/pie": "^0.85.1",
     "@tanstack/react-query": "^5.28.0",
     "@tanstack/react-query-devtools": "^5.28.0",
     "@tanstack/react-table": "^8.15.3",
@@ -21,9 +18,12 @@
     "axios": "^1.6.7",
     "bootstrap": "^5.3.3",
     "bootstrap-icons": "^1.11.3",
+    "chart.js": "^4.4.2",
+    "chartjs-chart-error-bars": "^4.4.0",
     "framer-motion": "^11.0.20",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.1",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
     "react-helmet-async": "^2.0.4",
