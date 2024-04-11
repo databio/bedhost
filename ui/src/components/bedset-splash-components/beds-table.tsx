@@ -19,10 +19,15 @@ export const BedsTable = (props: Props) => {
   const { addBedToCart, removeBedFromCart, cart } = useBedCart();
 
   const columns = [
-    columnHelper.accessor('bed_format', {
+    columnHelper.accessor('genome_alias', {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
-      header: 'Format',
+      header: 'Genome',
+    }),
+    columnHelper.accessor('bed_type', {
+      cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
+      footer: (info) => info.column.id,
+      header: 'Type',
     }),
     columnHelper.accessor('name', {
       cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,

@@ -101,13 +101,8 @@ async def get_bedset_metadata(
 )
 async def get_bedfiles_in_bedset(
     bedset_id: str,
-    limit: int = 100,
-    offset: int = 0,
-    full: bool = False,
 ):
-    return bbagent.bedset.get_bedset_bedfiles(
-        bedset_id, limit=limit, offset=offset, full=full
-    )
+    return bbagent.bedset.get_bedset_bedfiles(bedset_id)
 
 
 # TODO: how are we using it?
