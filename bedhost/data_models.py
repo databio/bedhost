@@ -47,7 +47,14 @@ class ComponentVersions(BaseModel):
     bedhost_version: str
     bbconf_version: str
     python_version: str
+    geniml_version: str
     openapi_version: str
+
+
+class EmbeddingModels(BaseModel):
+    vec2vec: str
+    region2vec: str
+    text2vec: str
 
 
 class ServiceInfoResponse(BaseModel):
@@ -62,3 +69,4 @@ class ServiceInfoResponse(BaseModel):
     environment: str
     version: str
     component_versions: ComponentVersions
+    embedding_models: EmbeddingModels
