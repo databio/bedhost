@@ -28,3 +28,5 @@ geniml
 local_cache
 
 environment/
+
+ui/.env
