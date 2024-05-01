@@ -70,7 +70,7 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: task_defs/port81.json
+        task-definition: deployment/task_defs/port81.json
         container-name: bedhost
         image: ${{ steps.build-image.outputs.image }}
 
