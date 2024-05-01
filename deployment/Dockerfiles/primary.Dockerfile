@@ -1,6 +1,6 @@
 FROM databio/bedhost:latest
 
-COPY config/api.bedbase.org.yaml /bedbase.yaml
+COPY deployment/config/api.bedbase.org.yaml /bedbase.yaml
 ENV BEDBASE_CONFIG=/bedbase.yaml
 
 RUN mkdir -p /data/outputs/bedstat_output
