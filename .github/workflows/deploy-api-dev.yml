@@ -24,18 +24,15 @@
 #    and best practices on handling the access key credentials.
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - deployment/config/api-dev.bedbase.org.yaml
+#  push:
+##    branches:
+##      - master
+#    paths:
+#      - deployment/config/api-dev.bedbase.org.yaml
   workflow_dispatch:
     inputs: null
-
-  workflow_run:
-    workflows: [ "Build and push dev image to Dockerhub" ]
-    types:
-      - completed
+    paths:
+      - deployment/config/api-dev.bedbase.org.yaml
 
 name: Deploy to Amazon ECS - dev1
 
@@ -45,8 +42,6 @@ jobs:
       server: dev1
     name: Deploy
     runs-on: ubuntu-latest
-
-    needs: [dockerhub-dev]
 
     steps:
     - name: Checkout
