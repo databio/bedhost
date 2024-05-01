@@ -24,14 +24,6 @@
 #    and best practices on handling the access key credentials.
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - deployment/config/api-dev.bedbase.org.yaml
-  workflow_dispatch:
-    inputs: null
-
   workflow_run:
     workflows: [ "Build and push dev image to Dockerhub" ]
     types:
