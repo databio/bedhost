@@ -28,6 +28,8 @@ on:
     workflows: [ "Build and push dev image to Dockerhub" ]
     types:
       - completed
+  workflow_dispatch:
+    inputs: null
 
 name: Deploy to Amazon ECS - dev1
 
