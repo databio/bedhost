@@ -24,13 +24,10 @@
 #    and best practices on handling the access key credentials.
 
 on:
-  push:
-    branches:
-      - master
+  workflow_dispatch:
+    inputs: null
     paths:
       - deployment/config/api.bedbase.org.yaml
-  workflow_dispatch:
-    inputs: null   
 
 name: Deploy to Amazon ECS - primary
 
@@ -70,7 +67,7 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: task_defs/port81.json
+        task-definition: deployment/task_defs/port81.json
         container-name: bedhost
         image: ${{ steps.build-image.outputs.image }}
 

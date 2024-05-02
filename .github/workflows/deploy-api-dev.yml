@@ -24,18 +24,10 @@
 #    and best practices on handling the access key credentials.
 
 on:
-  push:
-    branches:
-      - master
-    paths:
-      - deployment/config/api-dev.bedbase.org.yaml
   workflow_dispatch:
     inputs: null
-
-  workflow_run:
-    workflows: [ "Build and push dev image to Dockerhub" ]
-    types:
-      - completed
+    paths:
+      - deployment/config/api-dev.bedbase.org.yaml
 
 name: Deploy to Amazon ECS - dev1
 
@@ -45,8 +37,6 @@ jobs:
       server: dev1
     name: Deploy
     runs-on: ubuntu-latest
-
-    needs: [dockerhub-dev]
 
     steps:
     - name: Checkout
@@ -79,7 +69,7 @@ jobs:
       id: task-def
       uses: aws-actions/amazon-ecs-render-task-definition@v1
       with:
-        task-definition: task_defs/port82.json
+        task-definition: deployment/task_defs/port82.json
         container-name: bedhost
         image: ${{ steps.build-image.outputs.image }}
 
