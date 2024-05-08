@@ -24,8 +24,10 @@ from bbconf.models.bed_models import (
     BedClassification,
     BedPEPHub,
     BedListSearchResult,
+    UniverseMetadata,
+    TokenizedBedResponse,
 )
-from bbconf.exceptions import BEDFileNotFoundError
+from bbconf.exceptions import BEDFileNotFoundError, TokenizeFileNotExistError
 
 from .. import _LOGGER
 from ..main import bbagent
@@ -186,6 +188,22 @@ async def get_bed_pephub(
             status_code=404,
         )
 
+@router.get(
+    "/{bed_id}/embedding",
+    summary="Get embeddings for a single BED record",
+    response_model=List,
+)
+def get_bed_embedding(bed_id: str = BedDigest):
+    """
+    Returns embeddings for a single BED record.
+    """
+    try:
+        return bbagent.bed.get_embedding(bed_id)
+    except BEDFileNotFoundError as _:
+        raise HTTPException(
+            status_code=404,
+        )
+
 
 @router.get(
     "/{bed_id}/regions/{chr_num}",
@@ -289,3 +307,26 @@ async def bed_to_bed_search(
                 region_set, limit=limit, offset=offset
             )
     return results
+
+
+@router.get(
+    "/{bed_id}/tokenized/{universe_id}",
+    summary="Get tokenized of bed file",
+    response_model=TokenizedBedResponse,
+)
+async def get_tokenized(
+    bed_id: str,
+    universe_id: str,
+):
+    """
+    Return univers of bed file
+    Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+    """
+    try:
+        return bbagent.bed.get_tokenized(bed_id, universe_id)
+
+    except TokenizeFileNotExistError as _:
+        raise HTTPException(
+            status_code=404,
+            detail="Tokenized file not found",
+        )
