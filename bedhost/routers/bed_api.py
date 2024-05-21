@@ -188,6 +188,7 @@ async def get_bed_pephub(
             status_code=404,
         )
 
+
 @router.get(
     "/{bed_id}/embedding",
     summary="Get embeddings for a single BED record",
@@ -310,11 +311,11 @@ async def bed_to_bed_search(
 
 
 @router.get(
-    "/{bed_id}/tokenized/{universe_id}",
+    "/{bed_id}/tokens/{universe_id}",
     summary="Get tokenized of bed file",
     response_model=TokenizedBedResponse,
 )
-async def get_tokenized(
+async def get_tokens(
     bed_id: str,
     universe_id: str,
 ):
