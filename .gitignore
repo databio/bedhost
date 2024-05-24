@@ -27,7 +27,7 @@ geniml
 
 local_cache
 
-environment/
+!environment/
 
 # Environments
 .env
