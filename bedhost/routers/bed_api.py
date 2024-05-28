@@ -24,7 +24,7 @@ from bbconf.models.bed_models import (
     BedClassification,
     BedPEPHub,
     BedListSearchResult,
-    UniverseMetadata,
+    TokenizedPathResponse,
     TokenizedBedResponse,
 )
 from bbconf.exceptions import BEDFileNotFoundError, TokenizeFileNotExistError
@@ -325,6 +325,29 @@ async def get_tokens(
     """
     try:
         return bbagent.bed.get_tokenized(bed_id, universe_id)
+
+    except TokenizeFileNotExistError as _:
+        raise HTTPException(
+            status_code=404,
+            detail="Tokenized file not found",
+        )
+
+
+@router.get(
+    "/{bed_id}/tokens/{universe_id}/info",
+    summary="Get link to tokenized bed file",
+    response_model=TokenizedPathResponse,
+)
+async def get_tokens(
+    bed_id: str,
+    universe_id: str,
+):
+    """
+    Return link to tokenized bed file
+    Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+    """
+    try:
+        return bbagent.bed.get_tokenized_link(bed_id, universe_id)
 
     except TokenizeFileNotExistError as _:
         raise HTTPException(
