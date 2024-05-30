@@ -4,7 +4,7 @@ import uvicorn
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 import markdown
 from fastapi.templating import Jinja2Templates
@@ -100,6 +100,11 @@ async def index(request: Request):
 )
 async def changelog(request: Request):
     return render_markdown("changelog.md", request)
+
+
+@app.get("/")
+def lending_page():
+    return RedirectResponse(url="v1/")
 
 
 def render_markdown(filename: str, request: Request):
