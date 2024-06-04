@@ -9,7 +9,8 @@ except ImportError:
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
-from geniml.io import RegionSet
+from genimtools.tokenizers import RegionSet
+
 
 import tempfile
 import os
@@ -26,6 +27,7 @@ from bbconf.models.bed_models import (
     BedListSearchResult,
     TokenizedPathResponse,
     TokenizedBedResponse,
+    BedEmbeddingResult,
 )
 from bbconf.exceptions import BEDFileNotFoundError, TokenizeFileNotExistError
 
@@ -192,7 +194,7 @@ async def get_bed_pephub(
 @router.get(
     "/{bed_id}/embedding",
     summary="Get embeddings for a single BED record",
-    response_model=List,
+    response_model=BedEmbeddingResult,
 )
 def get_bed_embedding(bed_id: str = BedDigest):
     """
