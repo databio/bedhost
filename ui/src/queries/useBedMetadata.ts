@@ -18,7 +18,7 @@ export const useBedMetadata = (query: BedMetadataQuery) => {
     enabled = true;
   }
   let getFull = false;
-  if (full !== undefined && full && md5) {
+  if (full !== undefined && full) {
     getFull = true;
   }
 
