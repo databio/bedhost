@@ -23,7 +23,8 @@ from bbconf.models.bed_models import (
     BedStatsModel,
     BedPlots,
     BedClassification,
-    BedPEPHub,
+    # BedPEPHub,
+    BedPEPHubRestrict,
     BedListSearchResult,
     TokenizedPathResponse,
     TokenizedBedResponse,
@@ -175,7 +176,8 @@ async def get_bed_classification(
 @router.get(
     "/{bed_id}/metadata/raw",
     summary="Get raw metadata for a single BED record",
-    response_model=BedPEPHub,
+    # response_model=BedPEPHub,
+    response_model=BedPEPHubRestrict,
     description=f"Returns raw metadata for a single BED record. "
     f"This metadata is stored in PEPHub. And is not verified."
     f"Example\n bed_id: {EXAMPLE_BED}",
