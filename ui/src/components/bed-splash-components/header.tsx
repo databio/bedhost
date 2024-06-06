@@ -150,7 +150,7 @@ export const BedSplashHeader = (props: Props) => {
             <p className="mb-0">
               <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata?.genome_digest}`} target="_blank">
                 <div className="badge bg-primary">
-                  <i className="bi bi-database-fill me-2" />
+                  <i className="bi bi-database-fill me-2"/>
                   {metadata?.genome_alias || 'No assembly available'}
                 </div>
               </a>
@@ -159,7 +159,7 @@ export const BedSplashHeader = (props: Props) => {
           <div className="d-flex flex-row">
             <p className="mb-0">
               <div className="badge bg-primary">
-                <i className="bi bi-file-earmark-text-fill me-1" />
+                <i className="bi bi-file-earmark-text-fill me-1"/>
                 {metadata?.bed_format || 'No format available'}
               </div>
             </p>
@@ -167,20 +167,31 @@ export const BedSplashHeader = (props: Props) => {
           <div className="d-flex flex-row">
             <p className="mb-0">
               <div className="badge bg-primary">
-                <i className="bi bi-folder-fill me-1" />
+                <i className="bi bi-folder-fill me-1"/>
                 {metadata?.bed_type || 'No bed type available'}
               </div>
+            </p>
+          </div>
+          <div className="d-flex flex-row">
+            <p className="mb-0">
+              <a href={`http://purl.obolibrary.org/obo/${metadata?.license_id.replace(/:/g, '_')}`} target="_blank">
+                <div className="badge bg-primary">
+                  <i className="bi bi-patch-check-fill me-1"/>
+                  {metadata?.license_id || 'DUO:0000042'}
+                </div>
+              </a>
             </p>
           </div>
         </div>
         <div className="d-flex flex-column text-sm">
           <div className="d-flex flex-row align-items-center text-muted">
-            <i className="bi bi-calendar me-1" />
+            <i className="bi bi-calendar me-1"/>
             <p className="mb-0">
               <span>Created:</span>{' '}
               {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
             </p>
           </div>
+
           <div className="d-flex flex-row align-items-center text-muted">
             <i className="bi bi-calendar-check me-1" />
             <p className="mb-0">
