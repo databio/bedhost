@@ -14,7 +14,7 @@ export const StatCard = (props: Props) => {
   return (
     <div className="border rounded p-2 shadow-sm bed-splash-stat-card-height">
       <div className="d-flex flex-column align-items-center justify-content-between h-100">
-        <h4 className="fw-bold text-base">{title}</h4>
+        <h4 className="fw-bold text-sm text-center">{title}</h4>
         <div className="d-flex w-100 text-center">
           <h2 className="text-center text-primary fw-bolder w-100 mb-0 text-2xl">{stat}</h2>
         </div>
