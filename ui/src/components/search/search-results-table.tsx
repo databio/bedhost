@@ -14,12 +14,16 @@ export const SearchResultsTable = (props: Props) => {
   const { results } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   return (
-    <table className="table">
+    <table className="table text-sm">
       <thead>
         <tr>
           <th scope="col">Name</th>
+          <th scope="col">Genome</th>
+          <td scope="col">Cell Type</td>
+          <th scope="col">Description</th>
           <th scope="col">Score</th>
-          <th scope="col">BEDbase ID</th>
+          {/* <th scope="col">BEDbase ID</th> */}
+          <th scope="col">Submitted</th>
           <th scope="col" style={{ minWidth: '140px' }}>
             Actions
           </th>
@@ -30,6 +34,11 @@ export const SearchResultsTable = (props: Props) => {
           <tr key={result.id}>
             <td>{result?.metadata?.name || 'No name'}</td>
             <td>
+              <span className="badge text-bg-primary">{result?.payload.genome || 'N/A'}</span>
+            </td>
+            <td>{result?.payload.cell_type || 'No cell type'}</td>
+            <td className="text-truncate">{result?.payload.description || 'No description'}</td>
+            <td>
               <ProgressBar
                 min={5}
                 now={result.score * 100}
@@ -37,7 +46,13 @@ export const SearchResultsTable = (props: Props) => {
                 variant="primary"
               />
             </td>
-            <td>{result?.metadata?.id}</td>
+            {/* <td>{result?.metadata?.id || 'No id'}</td> */}
+            <td>
+              {result?.metadata?.submission_date === undefined
+                ? 'No date'
+                : new Date(result.metadata?.submission_date).toLocaleDateString()}
+            </td>
+
             <td>
               <a className="me-1" href={`/bed/${result.metadata?.id}`}>
                 <button className="btn btn-sm btn-outline-primary">
