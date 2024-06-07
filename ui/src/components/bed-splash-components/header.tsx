@@ -174,7 +174,7 @@ export const BedSplashHeader = (props: Props) => {
           </div>
           <div className="d-flex flex-row">
             <p className="mb-0">
-              <a href={`http://purl.obolibrary.org/obo/${metadata?.license_id.replace(/:/g, '_')}`} target="_blank">
+              <a href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`} target="_blank">
                 <div className="badge bg-primary">
                   <i className="bi bi-patch-check-fill me-1"/>
                   {metadata?.license_id || 'DUO:0000042'}
