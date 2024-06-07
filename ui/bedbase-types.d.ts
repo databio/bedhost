@@ -5,16 +5,20 @@
 
 
 export interface paths {
-  "/": {
+  "/v1": {
     /**
      * API intro page
      * @description Display the index UI page
      */
-    get: operations["index__get"];
+    get: operations["index_v1_get"];
   };
-  "/docs/changelog": {
+  "/v1/docs/changelog": {
     /** Release notes */
-    get: operations["changelog_docs_changelog_get"];
+    get: operations["changelog_v1_docs_changelog_get"];
+  };
+  "/": {
+    /** Lending Page */
+    get: operations["lending_page__get"];
   };
   "/v1/stats": {
     /**
@@ -92,6 +96,13 @@ export interface paths {
      */
     get: operations["get_bed_pephub_v1_bed__bed_id__metadata_raw_get"];
   };
+  "/v1/bed/{bed_id}/embedding": {
+    /**
+     * Get embeddings for a single BED record
+     * @description Returns embeddings for a single BED record.
+     */
+    get: operations["get_bed_embedding_v1_bed__bed_id__embedding_get"];
+  };
   "/v1/bed/{bed_id}/regions/{chr_num}": {
     /**
      * Get regions from a BED file that overlap a query region.
@@ -109,7 +120,23 @@ export interface paths {
   };
   "/v1/bed/search/bed": {
     /** Search for similar bed files */
-    post: operations["text_to_bed_search_v1_bed_search_bed_post"];
+    post: operations["bed_to_bed_search_v1_bed_search_bed_post"];
+  };
+  "/v1/bed/{bed_id}/tokens/{universe_id}": {
+    /**
+     * Get tokenized of bed file
+     * @description Return univers of bed file
+     * Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+     */
+    get: operations["get_tokens_v1_bed__bed_id__tokens__universe_id__get"];
+  };
+  "/v1/bed/{bed_id}/tokens/{universe_id}/info": {
+    /**
+     * Get link to tokenized bed file
+     * @description Return link to tokenized bed file
+     * Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+     */
+    get: operations["get_tokens_v1_bed__bed_id__tokens__universe_id__info_get"];
   };
   "/v1/bedset/example": {
     /** Get metadata for an example BEDset record */
@@ -221,6 +248,15 @@ export interface components {
       /** Bed Format */
       bed_format?: string;
     };
+    /** BedEmbeddingResult */
+    BedEmbeddingResult: {
+      /** Identifier */
+      identifier: string;
+      /** Payload */
+      payload: Record<string, never>;
+      /** Embedding */
+      embedding: number[];
+    };
     /** BedFiles */
     BedFiles: {
       bed_file?: components["schemas"]["FileModel"] | null;
@@ -235,7 +271,7 @@ export interface components {
       /** Offset */
       offset: number;
       /** Results */
-      results: components["schemas"]["BedMetadata"][];
+      results: components["schemas"]["BedMetadataBasic"][];
     };
     /** BedListSearchResult */
     BedListSearchResult: {
@@ -277,10 +313,61 @@ export interface components {
       submission_date?: string;
       /** Last Update Date */
       last_update_date?: string | null;
+      /**
+       * Is Universe
+       * @default false
+       */
+      is_universe?: boolean | null;
+      /**
+       * License Id
+       * @default DUO:0000042
+       */
+      license_id?: string | null;
       stats?: components["schemas"]["BedStatsModel"] | null;
       plots?: components["schemas"]["BedPlots"] | null;
       files?: components["schemas"]["BedFiles"] | null;
+      universe_metadata?: components["schemas"]["UniverseMetadata"] | null;
       raw_metadata?: components["schemas"]["BedPEPHub"] | null;
+    };
+    /** BedMetadataBasic */
+    BedMetadataBasic: {
+      /**
+       * Name
+       * @default
+       */
+      name?: string | null;
+      /** Genome Alias */
+      genome_alias?: string;
+      /** Genome Digest */
+      genome_digest?: string | null;
+      /**
+       * Bed Type
+       * @default bed3
+       */
+      bed_type?: string;
+      /** Bed Format */
+      bed_format?: string;
+      /** Id */
+      id: string;
+      /** Description */
+      description?: string | null;
+      /**
+       * Submission Date
+       * Format: date-time
+       */
+      submission_date?: string;
+      /** Last Update Date */
+      last_update_date?: string | null;
+      /**
+       * Is Universe
+       * @default false
+       */
+      is_universe?: boolean | null;
+      /**
+       * License Id
+       * @default DUO:0000042
+       */
+      license_id?: string | null;
     };
     /** BedPEPHub */
     BedPEPHub: {
@@ -388,12 +475,8 @@ export interface components {
     BedSetBedFiles: {
       /** Count */
       count: number;
-      /** Limit */
-      limit: number;
-      /** Offset */
-      offset: number;
       /** Results */
-      results: components["schemas"]["BedMetadata"][];
+      results: components["schemas"]["BedMetadataBasic"][];
     };
     /** BedSetListResult */
     BedSetListResult: {
@@ -469,8 +552,8 @@ export interface components {
       /** Promoterprox Percentage */
       promoterprox_percentage?: number | null;
     };
-    /** Body_text_to_bed_search_v1_bed_search_bed_post */
-    Body_text_to_bed_search_v1_bed_search_bed_post: {
+    /** Body_bed_to_bed_search_v1_bed_search_bed_post */
+    Body_bed_to_bed_search_v1_bed_search_bed_post: {
       /**
        * File
        * Format: binary
@@ -485,6 +568,8 @@ export interface components {
       bbconf_version: string;
       /** Python Version */
       python_version: string;
+      /** Geniml Version */
+      geniml_version: string;
       /** Openapi Version */
       openapi_version: string;
     };
@@ -508,6 +593,15 @@ export interface components {
       access_methods: components["schemas"]["AccessMethod"][];
       /** Description */
       description?: string | null;
+    };
+    /** EmbeddingModels */
+    EmbeddingModels: {
+      /** Vec2Vec */
+      vec2vec: string;
+      /** Region2Vec */
+      region2vec: string;
+      /** Text2Vec */
+      text2vec: string;
     };
     /** FileModel */
     FileModel: {
@@ -548,7 +642,7 @@ export interface components {
       payload: Record<string, never>;
       /** Score */
       score: number;
-      metadata?: components["schemas"]["BedMetadata"] | null;
+      metadata?: components["schemas"]["BedMetadataBasic"] | null;
     };
     /** ServiceInfoResponse */
     ServiceInfoResponse: {
@@ -571,6 +665,7 @@ export interface components {
       /** Version */
       version: string;
       component_versions: components["schemas"]["ComponentVersions"];
+      embedding_models: components["schemas"]["EmbeddingModels"];
     };
     /** StatsReturn */
     StatsReturn: {
@@ -590,6 +685,26 @@ export interface components {
        */
       genomes_number?: number;
     };
+    /** TokenizedBedResponse */
+    TokenizedBedResponse: {
+      /** Universe Id */
+      universe_id: string;
+      /** Bed Id */
+      bed_id: string;
+      /** Tokenized Bed */
+      tokenized_bed: number[];
+    };
+    /** TokenizedPathResponse */
+    TokenizedPathResponse: {
+      /** Bed Id */
+      bed_id: string;
+      /** Universe Id */
+      universe_id: string;
+      /** File Path */
+      file_path: string;
+      /** Endpoint Url */
+      endpoint_url: string;
+    };
     /** Type */
     Type: {
       /** Group */
@@ -598,6 +713,13 @@ export interface components {
       artifact: string;
       /** Version */
       version: string;
+    };
+    /** UniverseMetadata */
+    UniverseMetadata: {
+      /** Construct Method */
+      construct_method?: string | null;
+      /** Bedset Id */
+      bedset_id?: string | null;
     };
     /** ValidationError */
     ValidationError: {
@@ -626,7 +748,7 @@ export interface operations {
    * API intro page
    * @description Display the index UI page
    */
-  index__get: {
+  index_v1_get: {
     responses: {
       /** @description Successful Response */
       200: {
@@ -637,12 +759,23 @@ export interface operations {
     };
   };
   /** Release notes */
-  changelog_docs_changelog_get: {
+  changelog_v1_docs_changelog_get: {
     responses: {
       /** @description Successful Response */
       200: {
         content: {
           "text/html": string;
+        };
+      };
+    };
+  };
+  /** Lending Page */
+  lending_page__get: {
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": unknown;
         };
       };
     };
@@ -886,6 +1019,32 @@ export interface operations {
     };
   };
   /**
+   * Get embeddings for a single BED record
+   * @description Returns embeddings for a single BED record.
+   */
+  get_bed_embedding_v1_bed__bed_id__embedding_get: {
+    parameters: {
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BedEmbeddingResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
    * Get regions from a BED file that overlap a query region.
    * @description Returns the queried regions with provided ID and optional query parameters
    */
@@ -951,7 +1110,7 @@ export interface operations {
     };
   };
   /** Search for similar bed files */
-  text_to_bed_search_v1_bed_search_bed_post: {
+  bed_to_bed_search_v1_bed_search_bed_post: {
     parameters: {
       query?: {
         limit?: number;
@@ -960,7 +1119,7 @@ export interface operations {
     };
     requestBody?: {
       content: {
-        "multipart/form-data": components["schemas"]["Body_text_to_bed_search_v1_bed_search_bed_post"];
+        "multipart/form-data": components["schemas"]["Body_bed_to_bed_search_v1_bed_search_bed_post"];
       };
     };
     responses: {
@@ -968,6 +1127,60 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["BedListSearchResult"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get tokenized of bed file
+   * @description Return univers of bed file
+   * Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+   */
+  get_tokens_v1_bed__bed_id__tokens__universe_id__get: {
+    parameters: {
+      path: {
+        bed_id: string;
+        universe_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TokenizedBedResponse"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get link to tokenized bed file
+   * @description Return link to tokenized bed file
+   * Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+   */
+  get_tokens_v1_bed__bed_id__tokens__universe_id__info_get: {
+    parameters: {
+      path: {
+        bed_id: string;
+        universe_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["TokenizedPathResponse"];
         };
       };
       /** @description Validation Error */
@@ -1104,11 +1317,6 @@ export interface operations {
    */
   get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get: {
     parameters: {
-      query?: {
-        limit?: number;
-        offset?: number;
-        full?: boolean;
-      };
       path: {
         bedset_id: string;
       };

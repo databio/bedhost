@@ -14,6 +14,7 @@ type Props = {
 };
 
 const chartOptions = {
+  // aspectRatio: 1,
   responsive: true,
   plugins: {
     legend: {

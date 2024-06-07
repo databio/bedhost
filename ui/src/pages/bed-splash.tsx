@@ -12,6 +12,7 @@ import { GenomicFeatureBar } from '../components/bed-splash-components/charts/ge
 import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
 import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
+import { snakeToTitleCase } from '../utils';
 
 export const BedSplash = () => {
   const params = useParams();
@@ -107,6 +108,37 @@ export const BedSplash = () => {
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} /> : null}
             </Col>
           </Row>
+          <h2 className="fw-bold">Overview</h2>
+          <Col sm={12} md={12} className="mb-2 w-100">
+            <div className="border rounded p-1 shadow-sm">
+              <table className="table table-sm rounded text-truncate">
+                <thead>
+                  <tr>
+                    <th scope="col">Key</th>
+                    <th scope="col">Value</th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm">
+                  {Object.keys(metadata?.raw_metadata || {}).map((k) => {
+                    if (k === 'input_file' || k === 'global_sample_id' || k === 'file_name') {
+                      return null;
+                      // @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be)
+                    } else if (!metadata?.raw_metadata[k]) {
+                      return null;
+                    } else {
+                      return (
+                        <tr key={k}>
+                          <td className="fst-italic">{snakeToTitleCase(k)}</td>
+                          {/* @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be) */}
+                          <td>{metadata?.raw_metadata[k] || 'N/A'}</td>
+                        </tr>
+                      );
+                    }
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </Col>
           <h2 className="fw-bold">Statistics</h2>
           <Row className="mb-4">
             {metadata && (

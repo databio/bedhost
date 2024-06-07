@@ -90,3 +90,10 @@ export const chunkArray = <T>(arr: T[], chunkSize: number) => {
   }
   return chunks;
 };
+
+export const snakeToTitleCase = (str: string) => {
+  return str
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
