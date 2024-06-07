@@ -25,3 +25,8 @@ It needs a path to the *bedbase configuration file*, which can be provided eithe
 source environment/production.env
 BEDBASE_CONFIG=deployment/config/api.bedbase.org.yaml uvicorn bedhost.main:app --reload
 ```
+
+UI development:
+```terminal
+export VITE_API_HOST=http://localhost:8000
+```

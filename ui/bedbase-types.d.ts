@@ -460,6 +460,96 @@ export interface components {
       description?: string;
       [key: string]: unknown;
     };
+    /** BedPEPHubRestrict */
+    BedPEPHubRestrict: {
+      /** Sample Name */
+      sample_name: string;
+      /**
+       * Genome
+       * @default
+       */
+      genome?: string;
+      /**
+       * Organism
+       * @default
+       */
+      organism?: string;
+      /**
+       * Species Id
+       * @default
+       */
+      species_id?: string;
+      /**
+       * Cell Type
+       * @default
+       */
+      cell_type?: string;
+      /**
+       * Cell Line
+       * @default
+       */
+      cell_line?: string;
+      /**
+       * Exp Protocol
+       * @description Experimental protocol (e.g. ChIP-seq)
+       * @default
+       */
+      exp_protocol?: string;
+      /**
+       * Library Source
+       * @description Library source (e.g. genomic, transcriptomic)
+       * @default
+       */
+      library_source?: string;
+      /**
+       * Genotype
+       * @description Genotype of the sample
+       * @default
+       */
+      genotype?: string;
+      /**
+       * Target
+       * @description Target of the assay (e.g. H3K4me3)
+       * @default
+       */
+      target?: string;
+      /**
+       * Antibody
+       * @description Antibody used in the assay
+       * @default
+       */
+      antibody?: string;
+      /**
+       * Treatment
+       * @description Treatment of the sample (e.g. drug treatment)
+       * @default
+       */
+      treatment?: string;
+      /**
+       * Tissue
+       * @description Tissue type
+       * @default
+       */
+      tissue?: string;
+      /**
+       * Global Sample Id
+       * @description Global sample identifier
+       * @default
+       */
+      global_sample_id?: string;
+      /**
+       * Global Experiment Id
+       * @description Global experiment identifier
+       * @default
+       */
+      global_experiment_id?: string;
+      /**
+       * Description
+       * @description Description of the sample
+       * @default
+       */
+      description?: string;
+    };
     /** BedPlots */
     BedPlots: {
       chrombins?: components["schemas"]["FileModel"];
@@ -1007,7 +1097,33 @@ export interface operations {
       /** @description Successful Response */
       200: {
         content: {
-          "application/json": components["schemas"]["BedPEPHub"];
+          "application/json": components["schemas"]["BedPEPHubRestrict"];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        content: {
+          "application/json": components["schemas"]["HTTPValidationError"];
+        };
+      };
+    };
+  };
+  /**
+   * Get embeddings for a single BED record
+   * @description Returns embeddings for a single BED record.
+   */
+  get_bed_embedding_v1_bed__bed_id__embedding_get: {
+    parameters: {
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        content: {
+          "application/json": components["schemas"]["BedEmbeddingResult"];
         };
       };
       /** @description Validation Error */

@@ -1,8 +1,8 @@
 path:
   remote_url_base: http://data.bedbase.org/
-  region2vec: databio/r2v-encode-hg38
-  vec2vec: databio/v2v-geo-hg38
-  text2vec: sentence-transformers/all-MiniLM-L6-v2
+  text2vec: "sentence-transformers/all-MiniLM-L6-v2"
+  region2vec: databio/r2v-pretrained-for-search
+  vec2vec: "databio/v2v-sentencetransformers-encode"
 database:
   host: $POSTGRES_HOST
   port: 5432
