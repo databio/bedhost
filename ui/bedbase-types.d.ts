@@ -327,7 +327,8 @@ export interface components {
       plots?: components["schemas"]["BedPlots"] | null;
       files?: components["schemas"]["BedFiles"] | null;
       universe_metadata?: components["schemas"]["UniverseMetadata"] | null;
-      raw_metadata?: components["schemas"]["BedPEPHub"] | null;
+      /** Raw Metadata */
+      raw_metadata?: components["schemas"]["BedPEPHub"] | components["schemas"]["BedPEPHubRestrict"] | null;
     };
     /** BedMetadataBasic */
     BedMetadataBasic: {
@@ -1098,32 +1099,6 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["BedPEPHubRestrict"];
-        };
-      };
-      /** @description Validation Error */
-      422: {
-        content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
-  /**
-   * Get embeddings for a single BED record
-   * @description Returns embeddings for a single BED record.
-   */
-  get_bed_embedding_v1_bed__bed_id__embedding_get: {
-    parameters: {
-      path: {
-        /** @description BED digest */
-        bed_id: string;
-      };
-    };
-    responses: {
-      /** @description Successful Response */
-      200: {
-        content: {
-          "application/json": components["schemas"]["BedEmbeddingResult"];
         };
       };
       /** @description Validation Error */
