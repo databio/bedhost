@@ -113,6 +113,10 @@ a {
   min-height: 100vh;
 }
 
+.h-80 {
+  height: 80%;
+}
+
 /*  This is for the nav bar */
 .hidden {
   display: none;
@@ -148,6 +152,12 @@ a {
   animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
 }
 
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* The typing effect */
 @keyframes typing {
   from {
@@ -176,6 +186,10 @@ a {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-default {
+  cursor: default;
 }
 
 .animate-pulse {

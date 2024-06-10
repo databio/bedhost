@@ -4,7 +4,7 @@ import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { bytesToSize, formatDateTime } from '../../utils';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, OverlayTrigger } from 'react-bootstrap';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -45,10 +45,7 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-          <p className="text-muted">
-            {metadata.name} {'  |  '}
-            {metadata.raw_metadata?.global_sample_id || 'No source available'}
-          </p>
+          <p className="text-muted">{metadata.name}</p>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -148,44 +145,107 @@ export const BedSplashHeader = (props: Props) => {
         <div className="d-flex flex-row gap-1 text-lg">
           <div className="d-flex flex-row">
             <p className="mb-0">
-              <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata?.genome_digest}`} target="_blank">
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <div className="tooltip">
+                    <div className="tooltip-arrow" />
+                    <div className="tooltip-inner">Genome assembly</div>
+                  </div>
+                }
+              >
+                <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata?.genome_digest}`} target="_blank">
+                  <div className="badge bg-primary">
+                    <i className="bi bi-database-fill me-2" />
+                    {metadata?.genome_alias || 'No assembly available'}
+                  </div>
+                </a>
+              </OverlayTrigger>
+            </p>
+          </div>
+          <div className="d-flex flex-row">
+            <p className="mb-0">
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <div className="tooltip">
+                    <div className="tooltip-arrow" />
+                    <div className="tooltip-inner">BED file format</div>
+                  </div>
+                }
+              >
                 <div className="badge bg-primary">
-                  <i className="bi bi-database-fill me-2"/>
-                  {metadata?.genome_alias || 'No assembly available'}
+                  <i className="bi bi-file-earmark-text-fill me-1" />
+                  {metadata?.bed_format || 'No format available'}
                 </div>
+              </OverlayTrigger>
+            </p>
+          </div>
+          <div className="d-flex flex-row">
+            <p className="mb-0">
+              <OverlayTrigger
+                placement="top"
+                overlay={
+                  <div className="tooltip">
+                    <div className="tooltip-arrow" />
+                    <div className="tooltip-inner">BED type</div>
+                  </div>
+                }
+              >
+                <div className="badge bg-primary">
+                  <i className="bi bi-folder-fill me-1" />
+                  {metadata?.bed_type || 'No bed type available'}
+                </div>
+              </OverlayTrigger>
+            </p>
+          </div>
+          <div className="d-flex flex-row">
+            <p className="mb-0">
+              <a
+                href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`}
+                target="_blank"
+              >
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <div className="tooltip">
+                      <div className="tooltip-arrow" />
+                      <div className="tooltip-inner">License</div>
+                    </div>
+                  }
+                >
+                  <div className="badge bg-primary">
+                    <i className="bi bi-award-fill me-1" />
+                    {metadata?.license_id || 'DUO:0000042'}
+                  </div>
+                </OverlayTrigger>
               </a>
             </p>
           </div>
-          <div className="d-flex flex-row">
-            <p className="mb-0">
-              <div className="badge bg-primary">
-                <i className="bi bi-file-earmark-text-fill me-1"/>
-                {metadata?.bed_format || 'No format available'}
-              </div>
-            </p>
-          </div>
-          <div className="d-flex flex-row">
-            <p className="mb-0">
-              <div className="badge bg-primary">
-                <i className="bi bi-folder-fill me-1"/>
-                {metadata?.bed_type || 'No bed type available'}
-              </div>
-            </p>
-          </div>
-          <div className="d-flex flex-row">
-            <p className="mb-0">
-              <a href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`} target="_blank">
-                <div className="badge bg-primary">
-                  <i className="bi bi-patch-check-fill me-1"/>
-                  {metadata?.license_id || 'DUO:0000042'}
-                </div>
-              </a>
-            </p>
-          </div>
+          {metadata?.is_universe && (
+            <div className="d-flex flex-row">
+              <p className="mb-0 cursor-default">
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <div className="tooltip">
+                      <div className="tooltip-arrow" />
+                      <div className="tooltip-inner">This BED file is part of the Universe</div>
+                    </div>
+                  }
+                >
+                  <div className="badge bg-secondary">
+                    <i className="bi bi bi-globe2 me-1" />
+                    Universe
+                  </div>
+                </OverlayTrigger>
+              </p>
+            </div>
+          )}
         </div>
         <div className="d-flex flex-column text-sm">
           <div className="d-flex flex-row align-items-center text-muted">
-            <i className="bi bi-calendar me-1"/>
+            <i className="bi bi-calendar me-1" />
             <p className="mb-0">
               <span>Created:</span>{' '}
               {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
