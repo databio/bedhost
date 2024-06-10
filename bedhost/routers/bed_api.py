@@ -11,7 +11,6 @@ from fastapi.responses import PlainTextResponse
 
 from genimtools.tokenizers import RegionSet
 
-
 import tempfile
 import os
 import shutil
@@ -39,7 +38,6 @@ from ..data_models import (
     CROM_NUMBERS,
 )
 from ..const import EXAMPLE_BED
-
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
@@ -327,6 +325,7 @@ async def get_tokens(
     Return univers of bed file
     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
     """
+    _LOGGER.info(bbagent.config.config.s3)
     try:
         return bbagent.bed.get_tokenized(bed_id, universe_id)
 
