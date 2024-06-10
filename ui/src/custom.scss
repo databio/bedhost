@@ -152,6 +152,12 @@ a {
   animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
 }
 
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* The typing effect */
 @keyframes typing {
   from {

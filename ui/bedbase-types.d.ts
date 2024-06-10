@@ -329,6 +329,8 @@ export interface components {
       universe_metadata?: components["schemas"]["UniverseMetadata"] | null;
       /** Raw Metadata */
       raw_metadata?: components["schemas"]["BedPEPHub"] | components["schemas"]["BedPEPHubRestrict"] | null;
+      /** Bedsets */
+      bedsets?: components["schemas"]["BedSetMinimal"][] | null;
     };
     /** BedMetadataBasic */
     BedMetadataBasic: {
@@ -594,6 +596,15 @@ export interface components {
       description?: string;
       /** Bed Ids */
       bed_ids?: string[];
+    };
+    /** BedSetMinimal */
+    BedSetMinimal: {
+      /** Id */
+      id: string;
+      /** Name */
+      name?: string | null;
+      /** Description */
+      description?: string | null;
     };
     /** BedSetPlots */
     BedSetPlots: {
