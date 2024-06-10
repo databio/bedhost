@@ -113,6 +113,10 @@ a {
   min-height: 100vh;
 }
 
+.h-80 {
+  height: 80%;
+}
+
 /*  This is for the nav bar */
 .hidden {
   display: none;
@@ -176,6 +180,10 @@ a {
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.cursor-default {
+  cursor: default;
 }
 
 .animate-pulse {
