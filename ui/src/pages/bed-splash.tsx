@@ -109,7 +109,7 @@ export const BedSplash = () => {
             </Col>
           </Row>
           <Row className="mb-2">
-            <Col sm={12} md={4}>
+            <Col sm={12} md={6}>
               <h2 className="fw-bold">Overview</h2>
               <div className="border rounded p-1 shadow-sm">
                 <table className="table table-sm rounded text-truncate">
@@ -129,7 +129,7 @@ export const BedSplash = () => {
                       } else {
                         return (
                           <tr key={k}>
-                            <td style={{ maxWidth: '120px' }} className="fst-italic">
+                            <td style={{ maxWidth: '50px' }} className="fst-italic">
                               {snakeToTitleCase(k)}
                             </td>
 
@@ -145,7 +145,7 @@ export const BedSplash = () => {
                 </table>
               </div>
             </Col>
-            <Col sm={12} md={8}>
+            <Col sm={12} md={6}>
               <h2 className="fw-bold">BED Sets</h2>
               <div className="border rounded p-1 shadow-sm h-80">
                 <table className="table table-sm rounded text-truncate text-sm">
