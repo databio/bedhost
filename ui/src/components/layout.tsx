@@ -22,16 +22,16 @@ const Footer = () => {
         <div className="d-flex flex-column">
           <div>
             <span className="badge rounded-pill bg-primary text-primary bg-opacity-25 border border-primary me-1">
-              bedhost {data?.component_versions.bedhost_version || ''}
+              bedhost {data?.component_versions?.bedhost_version || ''}
             </span>
             <span className="badge rounded-pill bg-primary text-primary bg-opacity-25 border border-primary me-1">
-              bbconf {data?.component_versions.bbconf_version || ''}
+              bbconf {data?.component_versions?.bbconf_version || ''}
             </span>
             <span className="badge rounded-pill bg-primary text-primary bg-opacity-25 border border-primary me-1">
-              Python {data?.component_versions.python_version || ''}
+              Python {data?.component_versions?.python_version || ''}
             </span>
             <span className="badge rounded-pill bg-primary text-primary bg-opacity-25 border border-primary me-1">
-              OpenAPI {data?.component_versions.openapi_version || ''}
+              OpenAPI {data?.component_versions?.openapi_version || ''}
             </span>
           </div>
           <div className="d-flex flex-row mt-1 align-items-center">
@@ -40,7 +40,7 @@ const Footer = () => {
                 <StatusCircle className="me-1" variant="warning" size="small" />
                 Loading...
               </Fragment>
-            ) : data?.component_versions.bedhost_version ? (
+            ) : data?.component_versions?.bedhost_version ? (
               <Fragment>
                 <StatusCircle className="me-1" variant="success" size="small" />
                 Connected

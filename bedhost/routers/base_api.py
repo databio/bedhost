@@ -31,7 +31,7 @@ async def get_bedbase_db_stats():
     """
     Returns statistics
     """
-    return bbagent.get_stats()
+    return bbagent.get_stats
 
 
 @router.get(

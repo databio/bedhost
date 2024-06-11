@@ -4,7 +4,7 @@ import uvicorn
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 import markdown
 from fastapi.templating import Jinja2Templates
@@ -61,7 +61,7 @@ app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
     version=bedhost_version,
-    docs_url="/docs",
+    docs_url="/v1/docs",
     openapi_tags=tags_metadata,
 )
 
@@ -84,7 +84,7 @@ app.add_middleware(
 templates = Jinja2Templates(directory="bedhost/templates", autoescape=False)
 
 
-@app.get("/", summary="API intro page", tags=["home"])
+@app.get("/v1", summary="API intro page", tags=["home"])
 async def index(request: Request):
     """
     Display the index UI page
@@ -93,13 +93,18 @@ async def index(request: Request):
 
 
 @app.get(
-    "/docs/changelog",
+    "/v1/docs/changelog",
     summary="Release notes",
     response_class=HTMLResponse,
     tags=["home"],
 )
 async def changelog(request: Request):
     return render_markdown("changelog.md", request)
+
+
+@app.get("/")
+def lending_page():
+    return RedirectResponse(url="v1/")
 
 
 def render_markdown(filename: str, request: Request):

@@ -25,6 +25,10 @@
       "workingDirectory": null,
       "secrets": [
         {
+          "valueFrom": "B2_ENDPOINT_URL",
+          "name": "AWS_ENDPOINT_URL"
+        }, 
+        {
           "valueFrom": "BEDBASE_POSTGRES_PASSWORD",
           "name": "POSTGRES_PASSWORD"
         }, 

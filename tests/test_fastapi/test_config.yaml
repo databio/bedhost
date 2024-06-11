@@ -1,14 +1,14 @@
 path:
   remote_url_base: http://data.bedbase.org/
-  text2vec: "sentence-transformers/all-MiniLM-L6-v2"
-  region2vec: databio/r2v-pretrained-for-search
-  vec2vec: "databio/v2v-sentencetransformers-encode"
+  region2vec: databio/r2v-encode-hg38
+  vec2vec: databio/v2v-geo-hg38
+  text2vec: sentence-transformers/all-MiniLM-L6-v2
 database:
-  host: $POSTGRES_HOST
+  host: localhost
   port: 5432
-  password: $POSTGRES_PASSWORD
-  user: $POSTGRES_USER
-  database: bedbase2
+  password: docker
+  user: postgres
+  database: bedbase
 qdrant:
   host: $QDRANT_HOST
   port: 6333

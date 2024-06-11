@@ -2,12 +2,12 @@ type ObjectType = 'bed' | 'bedset';
 
 export const makeHttpDownloadLink = (md5: string) => {
   const API_BASE = import.meta.env.VITE_API_BASE || '';
-  return `${API_BASE}/objects/bed.${md5}.bedfile/access/http`;
+  return `${API_BASE}/objects/bed.${md5}.bed_file/access/http`;
 };
 
 export const makeS3DownloadLink = (md5: string) => {
   const API_BASE = import.meta.env.VITE_BEDHOST_API_URL || '';
-  return `${API_BASE}/objects/bed.${md5}.bedfile/access/s3`;
+  return `${API_BASE}/objects/bed.${md5}.bed_file/access/s3`;
 };
 
 export const formatNumberWithCommas = (n: number) => {
@@ -89,4 +89,11 @@ export const chunkArray = <T>(arr: T[], chunkSize: number) => {
     chunks.push(arr.slice(i, i + chunkSize));
   }
   return chunks;
+};
+
+export const snakeToTitleCase = (str: string) => {
+  return str
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 };

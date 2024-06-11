@@ -11,19 +11,15 @@ export const MobileNav = () => {
           <i className="bi bi-github me-2" />
           GitHub
         </Dropdown.Item>
-        <Dropdown.Item href="/validate">
-          <i className="bi bi-check-circle me-2" />
-          Validation
-        </Dropdown.Item>
         <Dropdown.Item href="/search">
           <i className="bi bi-search me-2" />
           Search
         </Dropdown.Item>
-        <Dropdown.Item href="/about">
+        <Dropdown.Item href="https://docs.bedbase.org/bedbase/">
           <i className="bi bi-info-circle me-2" />
           Docs
         </Dropdown.Item>
-        <Dropdown.Item href="/about">
+        <Dropdown.Item href="/cart">
           <i className="bi bi-cart-fill me-2" />
           Cart
         </Dropdown.Item>

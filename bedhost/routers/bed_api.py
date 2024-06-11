@@ -9,7 +9,7 @@ except ImportError:
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
-from geniml.io import RegionSet
+from genimtools.tokenizers import RegionSet
 
 import tempfile
 import os
@@ -22,10 +22,14 @@ from bbconf.models.bed_models import (
     BedStatsModel,
     BedPlots,
     BedClassification,
-    BedPEPHub,
+    # BedPEPHub,
+    BedPEPHubRestrict,
     BedListSearchResult,
+    TokenizedPathResponse,
+    TokenizedBedResponse,
+    BedEmbeddingResult,
 )
-from bbconf.exceptions import BEDFileNotFoundError
+from bbconf.exceptions import BEDFileNotFoundError, TokenizeFileNotExistError
 
 from .. import _LOGGER
 from ..main import bbagent
@@ -34,7 +38,6 @@ from ..data_models import (
     CROM_NUMBERS,
 )
 from ..const import EXAMPLE_BED
-
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
@@ -48,7 +51,7 @@ async def get_example_bed_record():
     """
     Get metadata for an example BED record.
     """
-    result = bbagent.bed.get_ids_list(limit=1, offset=0, full=True).results
+    result = bbagent.bed.get_ids_list(limit=1, offset=0).results
     if result:
         return result[0]
     raise HTTPException(status_code=404, detail="No records found")
@@ -171,7 +174,8 @@ async def get_bed_classification(
 @router.get(
     "/{bed_id}/metadata/raw",
     summary="Get raw metadata for a single BED record",
-    response_model=BedPEPHub,
+    # response_model=BedPEPHub,
+    response_model=BedPEPHubRestrict,
     description=f"Returns raw metadata for a single BED record. "
     f"This metadata is stored in PEPHub. And is not verified."
     f"Example\n bed_id: {EXAMPLE_BED}",
@@ -181,6 +185,23 @@ async def get_bed_pephub(
 ):
     try:
         return bbagent.bed.get_raw_metadata(bed_id)
+    except BEDFileNotFoundError as _:
+        raise HTTPException(
+            status_code=404,
+        )
+
+
+@router.get(
+    "/{bed_id}/embedding",
+    summary="Get embeddings for a single BED record",
+    response_model=BedEmbeddingResult,
+)
+def get_bed_embedding(bed_id: str = BedDigest):
+    """
+    Returns embeddings for a single BED record.
+    """
+    try:
+        return bbagent.bed.get_embedding(bed_id)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
@@ -289,3 +310,50 @@ async def bed_to_bed_search(
                 region_set, limit=limit, offset=offset
             )
     return results
+
+
+@router.get(
+    "/{bed_id}/tokens/{universe_id}",
+    summary="Get tokenized of bed file",
+    response_model=TokenizedBedResponse,
+)
+async def get_tokens(
+    bed_id: str,
+    universe_id: str,
+):
+    """
+    Return univers of bed file
+    Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+    """
+    _LOGGER.info(bbagent.config.config.s3)
+    try:
+        return bbagent.bed.get_tokenized(bed_id, universe_id)
+
+    except TokenizeFileNotExistError as _:
+        raise HTTPException(
+            status_code=404,
+            detail="Tokenized file not found",
+        )
+
+
+@router.get(
+    "/{bed_id}/tokens/{universe_id}/info",
+    summary="Get link to tokenized bed file",
+    response_model=TokenizedPathResponse,
+)
+async def get_tokens(
+    bed_id: str,
+    universe_id: str,
+):
+    """
+    Return link to tokenized bed file
+    Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+    """
+    try:
+        return bbagent.bed.get_tokenized_link(bed_id, universe_id)
+
+    except TokenizeFileNotExistError as _:
+        raise HTTPException(
+            status_code=404,
+            detail="Tokenized file not found",
+        )

@@ -12,6 +12,7 @@ import { GenomicFeatureBar } from '../components/bed-splash-components/charts/ge
 import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
 import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
+import { snakeToTitleCase } from '../utils';
 
 export const BedSplash = () => {
   const params = useParams();
@@ -105,6 +106,75 @@ export const BedSplash = () => {
           <Row className="mb-2">
             <Col sm={12} md={12}>
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} /> : null}
+            </Col>
+          </Row>
+          <Row className="mb-2">
+            <Col sm={12} md={6}>
+              <h2 className="fw-bold">Overview</h2>
+              <div className="border rounded p-1 shadow-sm">
+                <table className="table table-sm rounded text-truncate">
+                  <thead>
+                    <tr>
+                      <th scope="col">Key</th>
+                      <th scope="col">Value</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-sm">
+                    {Object.keys(metadata?.raw_metadata || {}).map((k) => {
+                      if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
+                        return null;
+                        // @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be)
+                      } else if (!metadata?.raw_metadata[k]) {
+                        return null;
+                      } else {
+                        return (
+                          <tr key={k}>
+                            <td style={{ maxWidth: '50px' }} className="fst-italic">
+                              {snakeToTitleCase(k)}
+                            </td>
+
+                            <td style={{ maxWidth: '120px' }} className="truncate">
+                              {/* @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be) */}
+                              {metadata?.raw_metadata[k] || 'N/A'}
+                            </td>
+                          </tr>
+                        );
+                      }
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </Col>
+            <Col sm={12} md={6}>
+              <h2 className="fw-bold">BED Sets</h2>
+              <div className="border rounded p-1 shadow-sm h-80">
+                <table className="table table-sm rounded text-truncate text-sm">
+                  <thead>
+                    <tr>
+                      <th scope="col">BED set ID</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">View</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {metadata?.bedsets?.map((bedset) => (
+                      <tr key={bedset.id} className="truncate">
+                        <td className="truncate" style={{ maxWidth: '150px' }}>
+                          {bedset.id}
+                        </td>
+                        <td className="truncate" style={{ maxWidth: '100px' }}>
+                          {bedset.name || 'No name'}
+                        </td>
+                        <td>{bedset.description || 'No description'}</td>
+                        <td>
+                          <a href={`/bedset/${bedset.id}`}>View</a>
+                        </td>
+                      </tr>
+                    )) || 'N/A'}
+                  </tbody>
+                </table>
+              </div>
             </Col>
           </Row>
           <h2 className="fw-bold">Statistics</h2>
