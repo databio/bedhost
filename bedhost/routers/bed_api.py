@@ -17,7 +17,7 @@ import shutil
 
 from bbconf.models.bed_models import (
     BedListResult,
-    BedMetadata,
+    BedMetadataAll,
     BedFiles,
     BedStatsModel,
     BedPlots,
@@ -45,7 +45,7 @@ router = APIRouter(prefix="/v1/bed", tags=["bed"])
 @router.get(
     "/example",
     summary="Get example BED record metadata",
-    response_model=BedMetadata,
+    response_model=BedMetadataAll,
 )
 async def get_example_bed_record():
     """
@@ -83,7 +83,7 @@ async def list_beds(
 @router.get(
     "/{bed_id}/metadata",
     summary="Get metadata for a single BED record",
-    response_model=BedMetadata,
+    response_model=BedMetadataAll,
     description=f"Example\n " f"bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_metadata(
