@@ -122,11 +122,11 @@ export const BedSplash = () => {
                                     </tr>
                                     </thead>
                                     <tbody className="text-sm">
-                                    {Object.keys(metadata?.raw_metadata || {}).map((k) => {
+                                    {Object.keys(metadata?.annotation || {}).map((k) => {
                                         if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
                                             return null;
                                             // @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be)
-                                        } else if (!metadata?.raw_metadata[k]) {
+                                        } else if (!metadata?.annotation[k]) {
                                             return null;
                                         } else {
                                             return (
@@ -137,7 +137,7 @@ export const BedSplash = () => {
 
                                                     <td style={{maxWidth: '120px'}} className="truncate">
                                                         {/* @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be) */}
-                                                        {metadata?.raw_metadata[k] || 'N/A'}
+                                                        {metadata?.annotation[k] || 'N/A'}
                                                     </td>
                                                 </tr>
                                             );

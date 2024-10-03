@@ -196,7 +196,7 @@ async def get_bed_pephub(
     summary="Get embeddings for a single BED record",
     response_model=BedEmbeddingResult,
 )
-def get_bed_embedding(bed_id: str = BedDigest):
+async def get_bed_embedding(bed_id: str = BedDigest):
     """
     Returns embeddings for a single BED record.
     """
@@ -206,6 +206,32 @@ def get_bed_embedding(bed_id: str = BedDigest):
         raise HTTPException(
             status_code=404,
         )
+
+
+@router.post(
+    "/embed",
+    summary="Get embeddings for a bed file.",
+    response_model=List[float],
+)
+async def embed_bed_file(
+    file: UploadFile = File(None),
+):
+    """
+    Create embedding for bed file
+    """
+    _LOGGER.info("Embedding file..")
+
+    if file is not None:
+        with tempfile.TemporaryDirectory() as dirpath:
+            file_path = os.path.join(dirpath, file.filename)
+
+            with open(file_path, "wb") as bed_file:
+                shutil.copyfileobj(file.file, bed_file)
+
+            region_set = RegionSet(file_path)
+
+            embedding = bbagent.bed._embed_file(region_set)
+    return embedding.tolist()[0]
 
 
 @router.get(
