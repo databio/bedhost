@@ -9,6 +9,7 @@ import {CODE_SNIPPETS} from '../const';
 import {BBCONF_SNIPPETS} from '../const';
 import {useExampleBed} from '../queries/useExampleBed';
 import {useExampleBedSet} from '../queries/useExampleBedSet';
+import {useStats} from "../queries/useStats.ts";
 
 type FileBadgeProps = {
     children?: React.ReactNode;
@@ -28,6 +29,7 @@ export const Home = () => {
 
     const {data: exampleBedMetadata} = useExampleBed();
     const {data: exampleBedSetMetadata} = useExampleBedSet();
+    const {data: BEDBASEStatistics} = useStats();
 
     return (
         <Layout footer title="BEDbase" fullHeight>
@@ -48,7 +50,7 @@ export const Home = () => {
                 {/*  </a>*/}
                 {/*</div>*/}
                 <h1 className="fw-bolder text-primary text-6xl mb-4">Welcome to BEDbase</h1>
-                <div className="my-3"></div>
+                <div className="my-2"></div>
                 <div className="w-75">
                     <p className="text-center text-base mb-4">
                         BEDbase is a unified platform for aggregating, analyzing, and serving genomic region data.
@@ -60,6 +62,9 @@ export const Home = () => {
                         comprehensive descriptions of specific BED files via a user-oriented web interface and
                         programmatically
                         interact with the data via an OpenAPI-compatible API.
+                    </p>
+                    <p className="text-center text-base mb-4">
+                        Number of bed files available: {BEDBASEStatistics?.bedfiles_number || 0}
                     </p>
                 </div>
                 <div className="d-flex flex-row align-items-center w-75 gap-1">
