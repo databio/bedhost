@@ -9,7 +9,7 @@ except ImportError:
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
-from genimtools.tokenizers import RegionSet
+from gtars.tokenizers import RegionSet
 
 import tempfile
 import os
