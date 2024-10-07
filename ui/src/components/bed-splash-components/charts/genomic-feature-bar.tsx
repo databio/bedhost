@@ -8,7 +8,7 @@ import { components } from '../../../../bedbase-types';
 import { PRIMARY_COLOR } from '../../../const';
 import { roundToTwoDecimals } from '../../../utils';
 
-type BedMetadata = components['schemas']['BedMetadata'];
+type BedMetadata = components['schemas']['BedMetadataAll'];
 type Props = {
   metadata: BedMetadata;
 };

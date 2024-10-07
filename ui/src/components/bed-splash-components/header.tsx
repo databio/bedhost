@@ -8,7 +8,7 @@ import { Dropdown, OverlayTrigger } from 'react-bootstrap';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
-type BedMetadata = components['schemas']['BedMetadata'];
+type BedMetadata = components['schemas']['BedMetadataAll'];
 
 type Props = {
   metadata: BedMetadata;

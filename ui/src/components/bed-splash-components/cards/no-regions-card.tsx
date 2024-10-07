@@ -2,7 +2,7 @@ import { components } from '../../../../bedbase-types';
 import { formatNumberWithCommas } from '../../../utils';
 import { StatCard } from './stat-card-wrapper';
 
-type BedMetadata = components['schemas']['BedMetadata'];
+type BedMetadata = components['schemas']['BedMetadataAll'];
 type Props = {
   metadata: BedMetadata;
 };
