@@ -50,7 +50,7 @@ export const Home = () => {
         {/*  </a>*/}
         {/*</div>*/}
         <h1 className="fw-bolder text-primary text-6xl mb-4">Welcome to BEDbase</h1>
-        <div className="my-2"></div>
+        <div className="my-3"></div>
         <div className="w-75">
           <p className="text-center text-base mb-4">
             BEDbase is a unified platform for aggregating, analyzing, and serving genomic region data. BEDbase redefines
@@ -187,7 +187,8 @@ export const Home = () => {
               </p>
             </Col>
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
+              <div
+                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
                 <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
                   <div className="d-flex flex-row align-items-center text-sm">
                     <Nav variant="pills" className="flex-row">
@@ -285,7 +286,8 @@ export const Home = () => {
             </Col>
 
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
+              <div
+                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
                 <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
                   <div className="d-flex flex-row align-items-center text-sm">
                     <Nav variant="pills" className="flex-row">
@@ -325,35 +327,32 @@ export const Home = () => {
               </div>
             </Col>
           </Row>
-            <Row className="w-100 align-items-center">
+          <Row className="w-100 align-items-center">
             <Col sm={6} md={6}>
-              <h2 className="fw-bold">BEDbase Information</h2>
+              <h2 className="fw-bold">Data Availability Summary</h2>
             </Col>
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              {/*<div className="border border-1 border-danger-subtle p-3 rounded w-100 position-relative landing-code-snippet-container">*/}
-              {/*    Hello Ther*/}
-              {/*</div>*/}
-              {/*  <div className="border border-1 border-dark w-100 p-2 rounded align-items-center my-5">*/}
-                <div className="my-5 w-100">
-                    <ul className="list-group w-100">
-                        <li className="list-group-item d-flex justify-content-between align-items-center">
-                            Number of bed files available:
-                            <span className="badge bg-primary rounded-pill">{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</span>
-                        </li>
-                        <li className="list-group-item d-flex justify-content-between align-items-center">
-                            Number of bed sets available:
-                            <span className="badge bg-success rounded-pill">{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</span>
-                        </li>
-                        <li className="list-group-item d-flex justify-content-between align-items-center">
-                            Number of genomes available:
-                            <span className="badge bg-info rounded-pill">{(bedbaseStats?.genomes_number || 0).toLocaleString()}</span>
-                        </li>
-                    </ul>
-                </div>
-
-                {/*</div>*/}
+              <div className="my-5 w-100">
+                <ul className="list-group w-100">
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    Number of bed files available:
+                    <span
+                      className="badge bg-primary rounded-pill">{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</span>
+                  </li>
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    Number of bed sets available:
+                    <span
+                      className="badge bg-success rounded-pill">{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</span>
+                  </li>
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    Number of genomes available:
+                    <span
+                      className="badge bg-info rounded-pill">{(bedbaseStats?.genomes_number || 0).toLocaleString()}</span>
+                  </li>
+                </ul>
+              </div>
             </Col>
-            </Row>
+          </Row>
         </div>
       </div>
     </Layout>

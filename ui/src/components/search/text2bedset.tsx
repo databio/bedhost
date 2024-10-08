@@ -12,7 +12,7 @@ import { SearchBedSetResultTable } from './search-bedset-table.tsx';
 export const Text2BedSet = () => {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
 
   const {
