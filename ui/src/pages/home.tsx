@@ -59,9 +59,6 @@ export const Home = () => {
             comprehensive descriptions of specific BED files via a user-oriented web interface and programmatically
             interact with the data via an OpenAPI-compatible API.
           </p>
-          <p className="text-center text-base mb-4">
-            Number of bed files available: {bedbaseStats?.bedfiles_number || 0}
-          </p>
         </div>
         <div className="d-flex flex-row align-items-center w-75 gap-1">
           <input
@@ -328,6 +325,35 @@ export const Home = () => {
               </div>
             </Col>
           </Row>
+            <Row className="w-100 align-items-center">
+            <Col sm={6} md={6}>
+              <h2 className="fw-bold">BEDbase Information</h2>
+            </Col>
+            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
+              {/*<div className="border border-1 border-danger-subtle p-3 rounded w-100 position-relative landing-code-snippet-container">*/}
+              {/*    Hello Ther*/}
+              {/*</div>*/}
+              {/*  <div className="border border-1 border-dark w-100 p-2 rounded align-items-center my-5">*/}
+                <div className="my-5 w-100">
+                    <ul className="list-group w-100">
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
+                            Number of bed files available:
+                            <span className="badge bg-primary rounded-pill">{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</span>
+                        </li>
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
+                            Number of bed sets available:
+                            <span className="badge bg-success rounded-pill">{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</span>
+                        </li>
+                        <li className="list-group-item d-flex justify-content-between align-items-center">
+                            Number of genomes available:
+                            <span className="badge bg-info rounded-pill">{(bedbaseStats?.genomes_number || 0).toLocaleString()}</span>
+                        </li>
+                    </ul>
+                </div>
+
+                {/*</div>*/}
+            </Col>
+            </Row>
         </div>
       </div>
     </Layout>
