@@ -1,5 +1,6 @@
-# bbconf @ git+https://github.com/databio/bbconf.git@dev#egg=bbconf
-bbconf>=0.7.0
+bbconf @ git+https://github.com/databio/bbconf.git@dev#egg=bbconf
+# bbconf>=0.7.0
+# from nathan L: add req here to install cpu-only pytorch
 fastapi>=0.103.0
 logmuse>=0.2.7
 markdown
