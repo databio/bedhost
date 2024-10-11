@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { DownloadBedSetModal } from '../modals/download-bedset-modal';
+import {useCopyToClipboard} from "@uidotdev/usehooks";
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
 type Props = {
@@ -13,17 +14,31 @@ const API_BASE = import.meta.env.VITE_API_BASE || '/';
 export const BedsetSplashHeader = (props: Props) => {
   const { metadata } = props;
 
+  const [, copyToClipboard] = useCopyToClipboard();
   const { cart, addMultipleBedsToCart, removeMultipleBedsFromCart } = useBedCart();
   const [addedToCart, setAddedToCart] = useState(false);
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [copiedId, setCopiedId] = useState(false);
 
   return (
     <div className="border-bottom py-2">
       <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
         <div className="d-flex flex-column align-items-start">
           <h4 className="fw-bold">
-            <i className="bi bi-file-earmark-text me-2" />
+            <i className="bi bi-file-earmark-text me-2"/>
             {metadata?.id || 'No name available'}
+            <button
+                className="btn btn-link text-primary mb-2"
+                onClick={() => {
+                  copyToClipboard(metadata.id || '');
+                  setCopiedId(true);
+                  setTimeout(() => {
+                    setCopiedId(false);
+                  }, 1000);
+                }}
+            >
+              {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
+            </button>
           </h4>
           <p className="mb-0">{metadata?.description || 'No description available'}</p>
         </div>
