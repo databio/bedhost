@@ -1,6 +1,6 @@
-import { components } from '../../../bedbase-types';
-import { useCopyToClipboard } from '@uidotdev/usehooks';
-import {useState} from "react";
+import {components} from '../../../bedbase-types';
+import {useCopyToClipboard} from '@uidotdev/usehooks';
+import {useState} from 'react';
 
 type SearchResponse = components['schemas']['BedSetListResult'];
 
@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const SearchBedSetResultTable = (props: Props) => {
-    const { results } = props;
+    const {results} = props;
     const [, copyToClipboard] = useCopyToClipboard();
     const [copiedId, setCopiedId] = useState('');
 
@@ -21,7 +21,7 @@ export const SearchBedSetResultTable = (props: Props) => {
                 <th scope="col">Name</th>
                 <th scope="col">Description</th>
                 <th scope={'col'}>Number of Beds</th>
-                <th scope="col" style={{ minWidth: '140px' }}>
+                <th scope="col" style={{minWidth: '140px'}}>
                     Actions
                 </th>
             </tr>
@@ -40,7 +40,8 @@ export const SearchBedSetResultTable = (props: Props) => {
                                 }, 1000);
                             }}
                         >
-                            {copiedId === result.id ? <i className="bi bi-check me-1"/> : <i className="bi bi-clipboard me-1"/>}
+                            {copiedId === result.id ? <i className="bi bi-check me-1"/> :
+                                <i className="bi bi-clipboard me-1"/>}
                         </button>
                     </td>
                     <td>{result?.name || 'Unknown Name'}</td>
