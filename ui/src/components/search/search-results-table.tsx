@@ -4,6 +4,7 @@ import {roundToTwoDecimals} from '../../utils';
 import {useBedCart} from '../../contexts/bedcart-context';
 import {OverlayTrigger, Tooltip} from 'react-bootstrap';
 import toast from 'react-hot-toast';
+import YAML from 'js-yaml';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
@@ -21,9 +22,12 @@ export const SearchResultsTable = (props: Props) => {
                 <th scope="col">Name</th>
                 <th scope="col">Genome</th>
                 <th scope="col">Tissue</th>
+                <th scope="col">Cell Line</th>
                 <th scope="col">Cell Type</th>
-                <th scope="col">Antibody</th>
+                {/*<th scope="col">Target </th>*/}
+                {/*<th scope="col">Antibody</th>*/}
                 <th scope="col">Description</th>
+                <th scope="col">Info</th>
                 <th scope="col">Score</th>
                 {/* <th scope="col">BEDbase ID</th> */}
                 <th scope="col" style={{minWidth: '140px'}}>
@@ -36,19 +40,23 @@ export const SearchResultsTable = (props: Props) => {
                 <tr key={result.id}>
                     <td>{result?.metadata?.name || 'No name'}</td>
                     <td>
-                        <span className="badge text-bg-primary">{result?.payload.genome || 'N/A'}</span>
+                        <span className="badge text-bg-primary">{result?.metadata?.genome_alias || 'N/A'}</span>
                     </td>
-                    <td>{result?.payload.tissue || 'N/A'}</td>
-                    <td>{result?.payload.cell_type || 'N/A'}</td>
-                    <td>{result?.payload.antibody || 'N/A'}</td>
-                    {/*<td className="text-truncate">{result?.payload.description || 'No description'}</td>*/}
+                    <td>{result?.metadata?.annotation?.tissue || 'N/A'}</td>
+                    <td>{result?.metadata?.annotation?.cell_line || 'N/A'}</td>
+                    <td>{result?.metadata?.annotation?.cell_type || 'N/A'}</td>
+                    {/*<td>{result?.metadata?.annotation?.target || 'N/A'}</td>*/}
+                    {/*<td>{result?.metadata?.annotation?.antibody || 'N/A'}</td>*/}
+
+
+                    <td>{result?.metadata?.description || ''}</td>
                     {/*<td className="bi bi-info-circle text-truncate text-center"></td>*/}
-                    <td className="text-center">
+                    <td className="text-start">
                         <OverlayTrigger
-                            placement="top"
+                            placement="auto"
                             overlay={
                                 <Tooltip id={`tooltip-${result.id}`}>
-                                    {result?.payload.description || 'No description'}
+                                    {YAML.dump(result?.metadata?.annotation, null, 4) || 'No description'}
                                 </Tooltip>
                             }
                         >
@@ -84,7 +92,7 @@ export const SearchResultsTable = (props: Props) => {
                                         toast.error('No bed ID found', {position: 'top-center'});
                                         return;
                                     }
-                                    removeBedFromCart(result.metadata?.id);
+                                    removeBedFromCart(result.metadata?.id || '');
                                 }}
                             >
                                 Remove
