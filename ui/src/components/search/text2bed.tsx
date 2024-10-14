@@ -67,7 +67,7 @@ export const Text2Bed = () => {
               </div>
             ) : (
               <div className="d-flex flex-column align-items-center justify-content-center mt-5 fst-italic">
-                Try seaching for some BED files!
+                Try searching for some BED files! e.g. K562
               </div>
             )}
           </div>

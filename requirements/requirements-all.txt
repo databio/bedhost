@@ -1,3 +1,4 @@
+geniml==0.4.3
 bbconf @ git+https://github.com/databio/bbconf.git@dev#egg=bbconf
 # bbconf>=0.7.0
 # from nathan L: add req here to install cpu-only pytorch
