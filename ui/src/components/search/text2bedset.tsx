@@ -8,6 +8,7 @@ import { ErrorPage } from '../common/error-page';
 import { TableToolbar } from './table-toolbar';
 import { PaginationBar } from './pagination-bar';
 import { SearchBedSetResultTable } from './search-bedset-table.tsx';
+import { AxiosError } from 'axios';
 
 export const Text2BedSet = () => {
   const [searchParams] = useSearchParams();
@@ -36,7 +37,7 @@ export const Text2BedSet = () => {
 
   if (error) {
     if (error) {
-      return <ErrorPage title="BEDbase | Search" error={error} />;
+      return <ErrorPage title="BEDbase | Search" error={error as AxiosError} />;
     }
   }
 

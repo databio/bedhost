@@ -6,9 +6,10 @@ import { SearchingJumper } from './searching-jumper';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useText2BedSearch } from '../../queries/useText2BedSearch';
-import { ErrorPage } from '../common/error-page';
 import { TableToolbar } from './table-toolbar';
 import { PaginationBar } from './pagination-bar';
+import { SearchError } from './search-error';
+import { AxiosError } from 'axios';
 
 export const Text2Bed = () => {
   const [searchParams] = useSearchParams();
@@ -36,7 +37,7 @@ export const Text2Bed = () => {
 
   if (error) {
     if (error) {
-      return <ErrorPage title="BEDbase | Search" error={error} />;
+      return <SearchError title="BEDbase | Search" error={error as AxiosError} />;
     }
   }
 
