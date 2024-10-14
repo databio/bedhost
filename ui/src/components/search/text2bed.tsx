@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Col, Row } from 'react-bootstrap';
 import { SearchBar } from './search-bar';
 import { SearchResultsTable } from './search-results-table';
@@ -5,14 +6,15 @@ import { SearchingJumper } from './searching-jumper';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useText2BedSearch } from '../../queries/useText2BedSearch';
-import { ErrorPage } from '../common/error-page';
 import { TableToolbar } from './table-toolbar';
 import { PaginationBar } from './pagination-bar';
+import { SearchError } from './search-error';
+import { AxiosError } from 'axios';
 
 export const Text2Bed = () => {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
 
   const {
@@ -35,7 +37,7 @@ export const Text2Bed = () => {
 
   if (error) {
     if (error) {
-      return <ErrorPage title="BEDbase | Search" error={error} />;
+      return <SearchError title="BEDbase | Search" error={error as AxiosError} />;
     }
   }
 
@@ -43,7 +45,13 @@ export const Text2Bed = () => {
     <div className="my-2">
       <Row>
         <Col sm={12} md={12}>
-          <SearchBar value={searchTerm} onChange={setSearchTerm} onSearch={() => onSearch()} />
+          <SearchBar
+            limit={limit}
+            setLimit={setLimit}
+            value={searchTerm}
+            onChange={setSearchTerm}
+            onSearch={() => onSearch()}
+          />
         </Col>
       </Row>
       <div>

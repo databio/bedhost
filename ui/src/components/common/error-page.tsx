@@ -1,11 +1,10 @@
 import { Col, Row } from 'react-bootstrap';
 import { Layout } from '../layout';
 import { Fragment } from 'react/jsx-runtime';
+import { AxiosError } from 'axios';
+import { convertStatusCodeToMessage } from '../../utils';
 
-type Error = {
-  name: string;
-  message: string;
-};
+type Error = AxiosError;
 
 type ErrorPageProps = {
   title: string | undefined;
@@ -14,13 +13,14 @@ type ErrorPageProps = {
 
 export const ErrorPage = (props: ErrorPageProps) => {
   const { title, error } = props;
+  const errorCode = error.response?.status;
   return (
     <Layout title={title} footer fullHeight>
       <div className="my-2 h-100">
         <Row className="h-50">
           <Col sm={12} md={12}>
             <div className="d-flex flex-column align-items-center justify-content-center h-100">
-              <h2 className="text-primary">Unexpected error occured!</h2>
+              <h2 className="text-primary">{convertStatusCodeToMessage(errorCode)}</h2>
               {error.message && (
                 <Fragment>
                   <label className="fw-bold">{error.name}</label>

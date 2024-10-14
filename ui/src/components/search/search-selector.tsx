@@ -18,6 +18,7 @@ export const SearchSelector = (props: Props) => {
           <Nav.Item
             onClick={() => {
               params.set('view', 't2b');
+              params.delete('q');
               setParams(params);
               setView('t2b');
             }}
@@ -27,6 +28,7 @@ export const SearchSelector = (props: Props) => {
           <Nav.Item
             onClick={() => {
               params.set('view', 'b2b');
+              params.delete('q');
               setParams(params);
               setView('b2b');
             }}
@@ -36,6 +38,7 @@ export const SearchSelector = (props: Props) => {
           <Nav.Item
             onClick={() => {
               params.set('view', 't2bs');
+              params.delete('q');
               setParams(params);
               setView('t2bs');
             }}
