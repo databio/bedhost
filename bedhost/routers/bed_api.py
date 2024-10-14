@@ -84,6 +84,7 @@ async def list_beds(
     "/{bed_id}/metadata",
     summary="Get metadata for a single BED record",
     response_model=BedMetadataAll,
+    response_model_by_alias=False,
     description=f"Example\n " f"bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_metadata(
@@ -158,6 +159,7 @@ async def get_bed_stats(
     "/{bed_id}/metadata/classification",
     summary="Get classification of single BED file",
     response_model=BedClassification,
+    response_model_by_alias=False,
     description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_classification(
@@ -176,6 +178,7 @@ async def get_bed_classification(
     summary="Get raw metadata for a single BED record",
     # response_model=BedPEPHub,
     response_model=BedPEPHubRestrict,
+    response_model_by_alias=False,
     description=f"Returns raw metadata for a single BED record. "
     f"This metadata is stored in PEPHub. And is not verified."
     f"Example\n bed_id: {EXAMPLE_BED}",
@@ -298,6 +301,8 @@ def get_regions_for_bedfile(
     summary="Search for a BedFile",
     tags=["search"],
     response_model=BedListSearchResult,
+    response_model_by_alias=False,
+
 )
 async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     """
@@ -317,6 +322,7 @@ async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     summary="Search for similar bed files",
     tags=["search"],
     response_model=BedListSearchResult,
+    response_model_by_alias=False,
 )
 async def bed_to_bed_search(
     file: UploadFile = File(None), limit: int = 10, offset: int = 0
