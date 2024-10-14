@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 
 type Props = {
   value: string;
