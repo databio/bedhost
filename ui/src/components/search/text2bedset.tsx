@@ -31,6 +31,7 @@ export const Text2BedSet = () => {
     if (searchTerm) {
       onSearch();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [limit, offset, onSearch]);
 
   if (error) {
@@ -43,7 +44,13 @@ export const Text2BedSet = () => {
     <div className="my-2">
       <Row>
         <Col sm={12} md={12}>
-          <SearchBar value={searchTerm} onChange={setSearchTerm} onSearch={() => onSearch()} />
+          <SearchBar
+            limit={limit}
+            setLimit={setLimit}
+            value={searchTerm}
+            onChange={setSearchTerm}
+            onSearch={() => onSearch()}
+          />
         </Col>
       </Row>
       <div>
@@ -53,7 +60,7 @@ export const Text2BedSet = () => {
           <div className="my-2">
             {results ? (
               <div className="p-2 border rounded shadow-sm">
-                <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
+                <TableToolbar showTotalResults limit={limit} setLimit={setLimit} total={results.count} />
                 <SearchBedSetResultTable results={results} />{' '}
                 <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
               </div>

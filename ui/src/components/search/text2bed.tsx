@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { Col, Row } from 'react-bootstrap';
 import { SearchBar } from './search-bar';
 import { SearchResultsTable } from './search-results-table';
@@ -12,7 +13,7 @@ import { PaginationBar } from './pagination-bar';
 export const Text2Bed = () => {
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
 
   const {
@@ -43,7 +44,13 @@ export const Text2Bed = () => {
     <div className="my-2">
       <Row>
         <Col sm={12} md={12}>
-          <SearchBar value={searchTerm} onChange={setSearchTerm} onSearch={() => onSearch()} />
+          <SearchBar
+            limit={limit}
+            setLimit={setLimit}
+            value={searchTerm}
+            onChange={setSearchTerm}
+            onSearch={() => onSearch()}
+          />
         </Col>
       </Row>
       <div>
