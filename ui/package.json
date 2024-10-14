@@ -22,6 +22,7 @@
     "chart.js": "^4.4.2",
     "chartjs-chart-error-bars": "^4.4.0",
     "framer-motion": "^11.0.20",
+    "js-yaml": "^4.1.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.1",
     "react-chartjs-2": "^5.2.0",
@@ -31,10 +32,10 @@
     "react-hot-toast": "^2.4.1",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^6.22.3",
-    "rehype-highlight": "^7.0.0",
-    "js-yaml": "^4.1.0"
+    "rehype-highlight": "^7.0.0"
   },
   "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^20.11.27",
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",

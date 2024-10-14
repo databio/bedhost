@@ -291,3 +291,7 @@ a {
     opacity: 0.5;
   }
 }
+
+.moreinfo-tooltip > .tooltip-inner {
+  max-width: none;
+}

@@ -54,8 +54,13 @@ export const SearchResultsTable = (props: Props) => {
               <OverlayTrigger
                 placement="auto"
                 overlay={
-                  <Tooltip id={`tooltip-${result.id}`}>
-                    {YAML.dump(result?.metadata?.annotation, null, 4) || 'No description'}
+                  <Tooltip id={`tooltip-${result.id}`} className="moreinfo-tooltip">
+                    <pre className="text-start">
+                      {YAML.dump(result?.metadata, {
+                        indent: 2,
+                        noRefs: true,
+                      }) || 'No description'}
+                    </pre>
                   </Tooltip>
                 }
               >

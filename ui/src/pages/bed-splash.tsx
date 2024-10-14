@@ -97,7 +97,7 @@ export const BedSplash = () => {
         </Layout>
       );
     } else {
-      return <ErrorPage title={`BEDbase | ${bedId}`} error={error} />;
+      return <ErrorPage title={`BEDbase | ${bedId}`} error={error as AxiosError} />;
     }
   } else {
     return (
