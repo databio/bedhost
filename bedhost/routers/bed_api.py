@@ -302,7 +302,6 @@ def get_regions_for_bedfile(
     tags=["search"],
     response_model=BedListSearchResult,
     response_model_by_alias=False,
-
 )
 async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     """
