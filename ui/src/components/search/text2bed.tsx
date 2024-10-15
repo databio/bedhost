@@ -50,7 +50,13 @@ export const Text2Bed = () => {
             setLimit={setLimit}
             value={searchTerm}
             onChange={setSearchTerm}
-            onSearch={() => onSearch()}
+            onSearch={() => {
+
+              setOffset(0);
+              setTimeout(() => {
+                onSearch();
+              }, 100);
+            }}
           />
         </Col>
       </Row>
