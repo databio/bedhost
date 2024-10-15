@@ -13,7 +13,8 @@ qdrant:
   host: $QDRANT_HOST
   port: 6333
   api_key: $QDRANT_API_KEY
-  collection: bedbase2
+  file_collection: bedbase2
+  text_collection: bed_text
 server:
   host: 0.0.0.0
   port: 8000
