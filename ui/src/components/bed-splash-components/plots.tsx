@@ -5,7 +5,7 @@ import { chunkArray, makeThumbnailImageLink } from '../../utils';
 import { Fragment } from 'react';
 import { FigureModal } from '../modals/figure-modal';
 
-type BedMetadata = components['schemas']['BedMetadata'];
+type BedMetadata = components['schemas']['BedMetadataAll'];
 
 type PlotsProps = {
   metadata: BedMetadata;

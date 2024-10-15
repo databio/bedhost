@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { components } from '../../bedbase-types';
 import { useBedbaseApi } from '../contexts/api-context';
 
-type ExampleBedResponse = components['schemas']['BedMetadata'];
+type ExampleBedResponse = components['schemas']['BedMetadataAll'];
 
 export const useExampleBed = () => {
   const { api } = useBedbaseApi();

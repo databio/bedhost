@@ -97,3 +97,21 @@ export const snakeToTitleCase = (str: string) => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };
+
+export const convertStatusCodeToMessage = (statusCode: number | undefined) => {
+  if (statusCode === undefined) {
+    return 'Unknown Error';
+  }
+  switch (statusCode) {
+    case 401:
+      return 'Unauthorized';
+    case 403:
+      return 'Forbidden';
+    case 404:
+      return 'Not Found';
+    case 500:
+      return 'Internal Server Error';
+    default:
+      return 'Unknown Error';
+  }
+};

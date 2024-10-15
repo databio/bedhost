@@ -11,7 +11,9 @@ type SearchQuery = {
 };
 
 export const useText2BedSearch = (query: SearchQuery) => {
+
   const { api } = useBedbaseApi();
+
   const { q, limit, offset, autoRun } = query;
   let enabled = false;
   if (autoRun !== undefined && autoRun === true && !!q) {
@@ -26,5 +28,6 @@ export const useText2BedSearch = (query: SearchQuery) => {
     },
     enabled: enabled,
     staleTime: 0,
+    placeholderData: (previousData) => previousData
   });
 };

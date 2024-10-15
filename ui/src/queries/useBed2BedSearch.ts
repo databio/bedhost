@@ -28,10 +28,9 @@ export const useBed2BedSearch = (query: SearchQuery) => {
         };
       }
       const formData = new FormData();
-      formData.append('limit', limit?.toString() || '10');
-      formData.append('offset', offset?.toString() || '0');
+
       formData.append('file', q);
-      const { data } = await api.post<SearchResponse>(`/bed/search/bed`, formData, {
+      const { data } = await api.post<SearchResponse>(`/bed/search/bed?limit=${limit}&offset=${offset}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

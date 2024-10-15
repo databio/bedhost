@@ -9,6 +9,7 @@ import { CODE_SNIPPETS } from '../const';
 import { BBCONF_SNIPPETS } from '../const';
 import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
+import { useStats } from '../queries/useStats.ts';
 
 type FileBadgeProps = {
   children?: React.ReactNode;
@@ -28,6 +29,7 @@ export const Home = () => {
 
   const { data: exampleBedMetadata } = useExampleBed();
   const { data: exampleBedSetMetadata } = useExampleBedSet();
+  const { data: bedbaseStats } = useStats();
 
   return (
     <Layout footer title="BEDbase" fullHeight>
@@ -60,28 +62,28 @@ export const Home = () => {
         </div>
         <div className="d-flex flex-row align-items-center w-75 gap-1">
           <input
-              className="form-control form-control-lg"
-              type="text"
-              placeholder="Start searching for BED files"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  if (searchTerm.length === 0) {
-                    return;
-                  }
-                  navigate(`/search?q=${searchTerm}`);
-                }
-              }}
-          />
-          <button
-              className="btn btn-primary btn-lg"
-              onClick={() => {
+            className="form-control form-control-lg"
+            type="text"
+            placeholder="Start searching for BED files"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
                 if (searchTerm.length === 0) {
                   return;
                 }
-                navigate(`/search?q=${searchTerm}&view=t2b`);
-              }}
+                navigate(`/search?q=${searchTerm}`);
+              }
+            }}
+          />
+          <button
+            className="btn btn-primary btn-lg"
+            onClick={() => {
+              if (searchTerm.length === 0) {
+                return;
+              }
+              navigate(`/search?q=${searchTerm}&view=t2b`);
+            }}
           >
             <span className="d-flex align-items-center">
               <i className="bi bi-search me-1"></i>
@@ -93,82 +95,83 @@ export const Home = () => {
           Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a> or a{' '}
           <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BED set</a>
         </div>
+
         <div className="flex-row w-100 landing-animation-container hidden large-flex">
           <div
-              className="d-flex flex-column align-items-center justify-content-center gap-3 px-2 text-center"
-              style={{width: '23%'}}
+            className="d-flex flex-column align-items-center justify-content-center gap-3 px-2 text-center"
+            style={{ width: '23%' }}
           >
             <FileBadge>
               <a
-                  href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1"
-                  className="fw-bold text-sm text-decoration-none"
+                href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1"
+                className="fw-bold text-sm text-decoration-none"
               >
                 Bed files
               </a>
-              <Image src="/bed.svg" alt="BED file icon" height="30px" className="ms-2"/>
+              <Image src="/bed.svg" alt="BED file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
               <a
-                  href="https://genome.ucsc.edu/goldenPath/help/bigBed.html"
-                  className="fw-bold text-sm text-decoration-none"
+                href="https://genome.ucsc.edu/goldenPath/help/bigBed.html"
+                className="fw-bold text-sm text-decoration-none"
               >
                 {' '}
                 BigBed files
               </a>
-              <Image src="/bigbed.svg" alt="BigBed file icon" height="30px" className="ms-2"/>
+              <Image src="/bigbed.svg" alt="BigBed file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
               <a
-                  href="https://genome.ucsc.edu/goldenPath/help/wiggle.html"
-                  className="fw-bold text-sm text-decoration-none"
+                href="https://genome.ucsc.edu/goldenPath/help/wiggle.html"
+                className="fw-bold text-sm text-decoration-none"
               >
                 Wig files
               </a>
-              <Image src="/wig.svg" alt="Wiggle file icon" height="30px" className="ms-2"/>
+              <Image src="/wig.svg" alt="Wiggle file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
               <a
-                  href="https://genome.ucsc.edu/goldenPath/help/bigWig.html"
-                  className="fw-bold text-sm text-decoration-none"
+                href="https://genome.ucsc.edu/goldenPath/help/bigWig.html"
+                className="fw-bold text-sm text-decoration-none"
               >
                 BigWig files
               </a>
-              <Image src="/big_wig.svg" alt="BigWig file icon" height="30px" className="ms-2"/>
+              <Image src="/big_wig.svg" alt="BigWig file icon" height="30px" className="ms-2" />
             </FileBadge>
             <FileBadge>
               <a
-                  href="https://genome.ucsc.edu/goldenPath/help/bedgraph.html"
-                  className="fw-bold text-sm text-decoration-none"
+                href="https://genome.ucsc.edu/goldenPath/help/bedgraph.html"
+                className="fw-bold text-sm text-decoration-none"
               >
                 BedGraph files
               </a>
-              <Image src="/bdg.svg" alt="BDG file icon" height="30px" className="ms-2"/>
+              <Image src="/bdg.svg" alt="BDG file icon" height="30px" className="ms-2" />
             </FileBadge>
           </div>
-          <InPaths/>
+          <InPaths />
           <div className="d-flex flex column h-100 align-items-center">
             <div className="p-2 border border-primary rounded rounded border-2 landing-main-logo-shadow">
-              <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="125px" className="landing-animation-logo"/>
+              <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="125px" className="landing-animation-logo" />
             </div>
           </div>
-          <OutPaths/>
+          <OutPaths />
           <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
             <div className="d=flex flex-column">
               <p className="mb-0 fw-bold text-center">Statistics</p>
               <div className="border border-dark rounded p-1 shadow">
-                <Image src="/stats.svg" alt="Statistics icon" width="100px" className="ms-2"/>
+                <Image src="/stats.svg" alt="Statistics icon" width="100px" className="ms-2" />
               </div>
             </div>
             <div className="d=flex flex-column">
               <p className="mb-0 fw-bold text-center">BED sets</p>
               <div className="border border-dark rounded p-1 shadow">
-                <Image src="/bedset.svg" alt="Statistics icon" height="90px" className="ms-2"/>
+                <Image src="/bedset.svg" alt="Statistics icon" height="90px" className="ms-2" />
               </div>
             </div>
             <div className="d=flex flex-column">
               <p className="mb-0 fw-bold text-center">Embeddings</p>
               <div className="border border-dark rounded p-1 shadow">
-                <Image src="/embeddings.svg" alt="Statistics icon" height="100px" className="ms-2"/>
+                <Image src="/embeddings.svg" alt="Statistics icon" height="100px" className="ms-2" />
               </div>
             </div>
           </div>
@@ -185,40 +188,40 @@ export const Home = () => {
             </Col>
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
               <div
-                  className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
+                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
                 <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
                   <div className="d-flex flex-row align-items-center text-sm">
                     <Nav variant="pills" className="flex-row">
                       {CODE_SNIPPETS.map((snippet) => (
-                          <Nav.Item key={snippet.language}>
-                            <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
-                              {snippet.language}
-                            </Nav.Link>
-                          </Nav.Item>
+                        <Nav.Item key={snippet.language}>
+                          <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
+                            {snippet.language}
+                          </Nav.Link>
+                        </Nav.Item>
                       ))}
                     </Nav>
                   </div>
                   <Tab.Content className="w-100 h-100">
                     {CODE_SNIPPETS.map((snippet) => (
-                        <Tab.Pane key={snippet.language} eventKey={snippet.language}>
-                          <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
-                            {snippet.code}
-                          </Markdown>
-                          <div className="position-absolute top-0 end-0 me-2">
-                            <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(snippet.raw);
-                                  setCopied(true);
-                                  setTimeout(() => {
-                                    setCopied(false);
-                                  }, 2000);
-                                }}
-                                className="btn btn-outline-primary btn-sm mt-2"
-                            >
-                              {copied ? 'Copied!' : 'Copy'}
-                            </button>
-                          </div>
-                        </Tab.Pane>
+                      <Tab.Pane key={snippet.language} eventKey={snippet.language}>
+                        <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
+                          {snippet.code}
+                        </Markdown>
+                        <div className="position-absolute top-0 end-0 me-2">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(snippet.raw);
+                              setCopied(true);
+                              setTimeout(() => {
+                                setCopied(false);
+                              }, 2000);
+                            }}
+                            className="btn btn-outline-primary btn-sm mt-2"
+                          >
+                            {copied ? 'Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      </Tab.Pane>
                     ))}
                   </Tab.Content>
                 </Tab.Container>
@@ -239,26 +242,26 @@ export const Home = () => {
             <Col sm={6} md={6}>
               <div className="d-flex flex-row align-items-center width-100 justify-content-center h-100 gap-1">
                 <input
-                    value={searchTermSmall}
-                    onChange={(e) => setSearchTermSmall(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        if (searchTermSmall.length === 0) {
-                          return;
-                        }
-                        navigate(`/search?q=${searchTermSmall}`);
-                      }
-                    }}
-                    className="p-2 rounded border w-100 shadow-sm"
-                />
-                <button
-                    onClick={() => {
+                  value={searchTermSmall}
+                  onChange={(e) => setSearchTermSmall(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
                       if (searchTermSmall.length === 0) {
                         return;
                       }
-                      navigate(`/search?q=${searchTermSmall}&view=t2b`);
-                    }}
-                    className="btn btn-primary btn-lg"
+                      navigate(`/search?q=${searchTermSmall}`);
+                    }
+                  }}
+                  className="p-2 rounded border w-100 shadow-sm"
+                />
+                <button
+                  onClick={() => {
+                    if (searchTermSmall.length === 0) {
+                      return;
+                    }
+                    navigate(`/search?q=${searchTermSmall}&view=t2b`);
+                  }}
+                  className="btn btn-primary btn-lg"
                 >
                   <i className="bi bi-search"></i>
                 </button>
@@ -284,43 +287,69 @@ export const Home = () => {
 
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
               <div
-                  className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
+                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
                 <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
                   <div className="d-flex flex-row align-items-center text-sm">
                     <Nav variant="pills" className="flex-row">
                       {BBCONF_SNIPPETS.map((snippet) => (
-                          <Nav.Item key={snippet.language}>
-                            <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
-                              {snippet.language}
-                            </Nav.Link>
-                          </Nav.Item>
+                        <Nav.Item key={snippet.language}>
+                          <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
+                            {snippet.language}
+                          </Nav.Link>
+                        </Nav.Item>
                       ))}
                     </Nav>
                   </div>
                   <Tab.Content className="w-100 h-100">
                     {BBCONF_SNIPPETS.map((snippet) => (
-                        <Tab.Pane key={snippet.language} eventKey={snippet.language}>
-                          <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
-                            {snippet.code}
-                          </Markdown>
-                          <div className="position-absolute top-0 end-0 me-2">
-                            <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText(snippet.raw);
-                                  setCopied(true);
-                                  setTimeout(() => {
-                                    setCopied(false);
-                                  }, 2000);
-                                }}
-                                className="btn btn-outline-primary btn-sm mt-2"
-                            >
-                              {copied ? 'Copied!' : 'Copy'}
-                            </button>
-                          </div>
-                        </Tab.Pane>
+                      <Tab.Pane key={snippet.language} eventKey={snippet.language}>
+                        <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
+                          {snippet.code}
+                        </Markdown>
+                        <div className="position-absolute top-0 end-0 me-2">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(snippet.raw);
+                              setCopied(true);
+                              setTimeout(() => {
+                                setCopied(false);
+                              }, 2000);
+                            }}
+                            className="btn btn-outline-primary btn-sm mt-2"
+                          >
+                            {copied ? 'Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      </Tab.Pane>
                     ))}
                   </Tab.Content>
                 </Tab.Container>
+              </div>
+            </Col>
+          </Row>
+          <Row className="w-100 align-items-center">
+            <Col sm={6} md={6}>
+              <h2 className="fw-bold">Data Availability Summary</h2>
+            </Col>
+            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
+              <div className="my-5 w-100">
+                <ul className="list-group w-100">
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    Number of bed files available:
+                    <span
+                      className="badge bg-primary rounded-pill">{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</span>
+                  </li>
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    Number of bed sets available:
+                    <span
+                      className="badge bg-success rounded-pill">{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</span>
+                  </li>
+                  <li className="list-group-item d-flex justify-content-between align-items-center">
+                    Number of genomes available:
+                    <span
+                      className="badge bg-info rounded-pill">{(bedbaseStats?.genomes_number || 0).toLocaleString()}</span>
+                  </li>
+                </ul>
               </div>
             </Col>
           </Row>

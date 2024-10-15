@@ -23,6 +23,7 @@ _LOGGER = logging.getLogger(PKG_NAME)
     "/example",
     summary="Get metadata for an example BEDset record",
     response_model=BedSetMetadata,
+    response_model_by_alias=False,
 )
 async def get_example_bedset_record():
     result = bbagent.bedset.get_ids_list(limit=1).results
@@ -49,6 +50,7 @@ async def list_bedsets(query: str = None, limit: int = 1000, offset: int = 0):
     response_model=BedSetMetadata,
     summary="Get all metadata for a single BEDset record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+    response_model_by_alias=False,
 )
 async def get_bedset_metadata(
     bedset_id: str,
@@ -98,6 +100,7 @@ async def get_bedset_metadata(
     "/{bedset_id}/bedfiles",
     response_model=BedSetBedFiles,
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+    response_model_by_alias=False,
 )
 async def get_bedfiles_in_bedset(
     bedset_id: str,

@@ -2,7 +2,7 @@ import type { components } from '../../bedbase-types.d.ts';
 import { useQuery } from '@tanstack/react-query';
 import { useBedbaseApi } from '../contexts/api-context';
 
-type BedMetadataResponse = components['schemas']['BedMetadata'];
+type BedMetadataResponse = components['schemas']['BedMetadataAll'];
 
 type BedMetadataQuery = {
   md5?: string;

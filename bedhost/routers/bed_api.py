@@ -9,7 +9,7 @@ except ImportError:
 from fastapi import APIRouter, HTTPException, Query, UploadFile, File
 from fastapi.responses import PlainTextResponse
 
-from genimtools.tokenizers import RegionSet
+from gtars.tokenizers import RegionSet
 
 import tempfile
 import os
@@ -17,7 +17,7 @@ import shutil
 
 from bbconf.models.bed_models import (
     BedListResult,
-    BedMetadata,
+    BedMetadataAll,
     BedFiles,
     BedStatsModel,
     BedPlots,
@@ -45,7 +45,7 @@ router = APIRouter(prefix="/v1/bed", tags=["bed"])
 @router.get(
     "/example",
     summary="Get example BED record metadata",
-    response_model=BedMetadata,
+    response_model=BedMetadataAll,
 )
 async def get_example_bed_record():
     """
@@ -83,7 +83,8 @@ async def list_beds(
 @router.get(
     "/{bed_id}/metadata",
     summary="Get metadata for a single BED record",
-    response_model=BedMetadata,
+    response_model=BedMetadataAll,
+    response_model_by_alias=False,
     description=f"Example\n " f"bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_metadata(
@@ -158,6 +159,7 @@ async def get_bed_stats(
     "/{bed_id}/metadata/classification",
     summary="Get classification of single BED file",
     response_model=BedClassification,
+    response_model_by_alias=False,
     description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 async def get_bed_classification(
@@ -176,6 +178,7 @@ async def get_bed_classification(
     summary="Get raw metadata for a single BED record",
     # response_model=BedPEPHub,
     response_model=BedPEPHubRestrict,
+    response_model_by_alias=False,
     description=f"Returns raw metadata for a single BED record. "
     f"This metadata is stored in PEPHub. And is not verified."
     f"Example\n bed_id: {EXAMPLE_BED}",
@@ -196,7 +199,7 @@ async def get_bed_pephub(
     summary="Get embeddings for a single BED record",
     response_model=BedEmbeddingResult,
 )
-def get_bed_embedding(bed_id: str = BedDigest):
+async def get_bed_embedding(bed_id: str = BedDigest):
     """
     Returns embeddings for a single BED record.
     """
@@ -206,6 +209,32 @@ def get_bed_embedding(bed_id: str = BedDigest):
         raise HTTPException(
             status_code=404,
         )
+
+
+@router.post(
+    "/embed",
+    summary="Get embeddings for a bed file.",
+    response_model=List[float],
+)
+async def embed_bed_file(
+    file: UploadFile = File(None),
+):
+    """
+    Create embedding for bed file
+    """
+    _LOGGER.info("Embedding file..")
+
+    if file is not None:
+        with tempfile.TemporaryDirectory() as dirpath:
+            file_path = os.path.join(dirpath, file.filename)
+
+            with open(file_path, "wb") as bed_file:
+                shutil.copyfileobj(file.file, bed_file)
+
+            region_set = RegionSet(file_path)
+
+            embedding = bbagent.bed._embed_file(region_set)
+    return embedding.tolist()[0]
 
 
 @router.get(
@@ -272,6 +301,7 @@ def get_regions_for_bedfile(
     summary="Search for a BedFile",
     tags=["search"],
     response_model=BedListSearchResult,
+    response_model_by_alias=False,
 )
 async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     """
@@ -291,6 +321,7 @@ async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     summary="Search for similar bed files",
     tags=["search"],
     response_model=BedListSearchResult,
+    response_model_by_alias=False,
 )
 async def bed_to_bed_search(
     file: UploadFile = File(None), limit: int = 10, offset: int = 0

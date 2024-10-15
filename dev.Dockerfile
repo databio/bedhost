@@ -27,7 +27,7 @@ RUN apt-get install -y python3-dev
 RUN apt-get install -y build-essential
 
 # Install CPU-only pytorch, eliminating huge nvidia dependencies
-RUN pip install torch==2.1.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN pip install torch==2.3.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip
 
 RUN pip install -r requirements/requirements-all.txt --no-cache-dir
