@@ -17,6 +17,8 @@ import { components } from '../../../../bedbase-types';
 import { OverlayTrigger, ProgressBar, Tooltip } from 'react-bootstrap';
 import { roundToTwoDecimals } from '../../../utils';
 import YAML from 'js-yaml';
+import { useBedCart } from '../../../contexts/bedcart-context';
+import toast from 'react-hot-toast';
 
 type Bed = components['schemas']['QdrantSearchResult'];
 
@@ -28,6 +30,7 @@ const columnHelper = createColumnHelper<Bed>();
 
 export const Bed2BedSearchResultsTable = (props: Props) => {
   const { beds } = props;
+  const { cart, addBedToCart, removeBedFromCart } = useBedCart();
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState<PaginationState>({
@@ -37,8 +40,16 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
   const [globalFilter, setGlobalFilter] = useState('');
 
   const columns = [
-    columnHelper.accessor('metadata.name', {
-      cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
+    columnHelper.accessor('metadata', {
+      cell: (info) => {
+        const bedId = info.getValue()?.id;
+        const bedName = info.getValue()?.name;
+        return (
+          <a className="m-0 p-0" href={`/bed/${bedId}`} target="_blank" rel="noreferrer">
+            <span className="max-cell-width text-truncate d-inline-block">{bedName}</span>
+          </a>
+        );
+      },
       footer: (info) => info.column.id,
       header: 'Name',
       id: 'name',
@@ -110,8 +121,43 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
       header: 'Score',
       id: 'score',
     }),
-    columnHelper.accessor('metadata.annotation.cell_type', {
-      cell: (info) => <span className="min-cell-width text-truncate d-inline-block">{info.getValue() || 'N/A'}</span>,
+    columnHelper.accessor('metadata.id', {
+      cell: (info) => {
+        const bedId = info.getValue();
+        return (
+          <div>
+            {cart.includes(bedId || '') ? (
+              <button
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => {
+                  if (bedId === undefined) {
+                    toast.error('No bed ID found', { position: 'top-center' });
+                    return;
+                  }
+                  removeBedFromCart(bedId || '');
+                }}
+              >
+                Remove
+                <i className="bi bi-cart-dash ms-1"></i>
+              </button>
+            ) : (
+              <button
+                className="btn btn-sm btn-outline-primary"
+                onClick={() => {
+                  if (bedId === undefined) {
+                    toast.error('No bed ID found', { position: 'top-center' });
+                    return;
+                  }
+                  addBedToCart(bedId || '');
+                }}
+              >
+                Add
+                <i className="bi bi-cart-plus ms-1"></i>
+              </button>
+            )}
+          </div>
+        );
+      },
       footer: (info) => info.column.id,
       header: 'Actions',
       id: 'actions',
