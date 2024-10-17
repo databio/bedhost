@@ -1,8 +1,8 @@
 path:
   remote_url_base: http://data.bedbase.org/
-  text2vec: "sentence-transformers/all-MiniLM-L6-v2"
-  region2vec: databio/r2v-pretrained-for-search
-  vec2vec: "databio/v2v-sentencetransformers-encode"
+  text2vec: 'sentence-transformers/all-MiniLM-L6-v2'
+  region2vec: databio/r2v-encode-hg38
+  vec2vec: 'databio/v2v-sentencetransformers-encode'
 database:
   host: $POSTGRES_HOST
   port: 5432
@@ -29,14 +29,14 @@ phc:
   tag: default
 access_methods:
   http:
-    type: "https"
+    type: 'https'
     description: HTTP compatible path
     prefix: https://data2.bedbase.org/
   s3:
-    type: "s3"
+    type: 's3'
     description: S3 compatible path
     prefix: s3://data2.bedbase.org/
   local:
-    type: "https"
+    type: 'https'
     description: How to serve local files.
     prefix: /static/
