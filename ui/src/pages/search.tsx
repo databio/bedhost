@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import { SearchSelector } from '../components/search/search-selector';
-import { Text2Bed } from '../components/search/text2bed';
-import { Bed2Bed } from '../components/search/bed2bed';
+import { Text2Bed } from '../components/search/text2bed/text2bed';
+import { Bed2Bed } from '../components/search/bed2bed/bed2bed';
 import { Text2BedSet } from '../components/search/text2bedset';
 
 type SearchView = 't2b' | 'b2b' | 't2bs';
