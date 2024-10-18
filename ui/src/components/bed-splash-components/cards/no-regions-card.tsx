@@ -12,7 +12,7 @@ export const NoRegionsCard = (props: Props) => {
   return (
     <StatCard
       title="Number of regions"
-      stat={`${formatNumberWithCommas(metadata.stats?.regions_no || 0)}`}
+      stat={`${formatNumberWithCommas(metadata.stats?.number_of_regions || 0)}`}
       tooltip="The number of regions in the bed file."
     />
   );

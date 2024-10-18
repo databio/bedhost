@@ -233,7 +233,7 @@ export const Home = () => {
               <h2 className="fw-bold">Search for BED files</h2>
               <p className="text-balance pe-4">
                 BEDbase offers three search endpoints for discovering BED files and BEDsets, distinguishing itself from
-                other platforms by utilizing Elasticsearch to index and search through bed file regions. This approach
+                other platforms by utilizing vector search to index and search through bed file regions. This approach
                 enhances search accuracy and efficiency compared to platforms relying on unstructured user-provided
                 metadata, which can be ambiguous and less reliable. User can search for BED files by providing a query
                 string, or a BED file.

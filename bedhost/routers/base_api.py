@@ -71,7 +71,6 @@ async def service_info():
         version=bedhost_version,
         component_versions=all_versions,
         embedding_models=EmbeddingModels(
-            vec2vec=bbagent.config.config.path.vec2vec,
             region2vec=bbagent.config.config.path.region2vec,
             text2vec=bbagent.config.config.path.text2vec,
         ),

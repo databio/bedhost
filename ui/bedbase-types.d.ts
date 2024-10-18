@@ -1015,7 +1015,7 @@ export interface components {
         /** BedStatsModel */
         BedStatsModel: {
             /** Regions No */
-            regions_no?: number | null;
+            number_of_regions?: number | null;
             /** Gc Content */
             gc_content?: number | null;
             /** Median Tss Dist */
@@ -1103,8 +1103,6 @@ export interface components {
         };
         /** EmbeddingModels */
         EmbeddingModels: {
-            /** Vec2Vec */
-            vec2vec: string;
             /** Region2Vec */
             region2vec: string;
             /** Text2Vec */
