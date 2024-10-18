@@ -46,6 +46,7 @@ router = APIRouter(prefix="/v1/bed", tags=["bed"])
     "/example",
     summary="Get example BED record metadata",
     response_model=BedMetadataAll,
+    response_model_by_alias=False,
 )
 async def get_example_bed_record():
     """
