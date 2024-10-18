@@ -1,15 +1,11 @@
 import { useRef, useCallback, Fragment, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { SearchResultsTable } from './search-results-table';
-import { SearchingJumper } from './searching-jumper';
-import { useBed2BedSearch } from '../../queries/useBed2BedSearch';
-import { PaginationBar } from './pagination-bar';
-import { TableToolbar } from './table-toolbar';
+import { SearchingJumper } from '../searching-jumper';
+import { useBed2BedSearch } from '../../../queries/useBed2BedSearch';
+import { Bed2BedSearchResultsTable } from './b2b-search-results-table';
 
 export const Bed2Bed = () => {
   const [file, setFile] = useState<File | null>(null);
-  const [limit, setLimit] = useState(10);
-  const [offset, setOffset] = useState(0);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -24,8 +20,6 @@ export const Bed2Bed = () => {
     refetch: onSearch,
   } = useBed2BedSearch({
     q: file,
-    limit: limit,
-    offset: offset,
     autoRun: false,
   });
 
@@ -35,7 +29,7 @@ export const Bed2Bed = () => {
         onSearch();
       }, 50);
     }
-  }, [file, offset, limit, onSearch]);
+  }, [file, onSearch]);
 
   return (
     <div className="d-flex flex-column align-items-center">
@@ -80,16 +74,7 @@ export const Bed2Bed = () => {
         {isSearching ? (
           <SearchingJumper />
         ) : (
-          <div className="my-2">
-            {results ? (
-              <div className="p-2 border rounded shadow-sm">
-                <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
-                {/* @ts-expect-error: I know this works I can't figure out why the error */}
-                <SearchResultsTable results={results || []} />{' '}
-                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
-              </div>
-            ) : null}
-          </div>
+          <div className="my-2">{results ? <Bed2BedSearchResultsTable beds={results.results || []} /> : null}</div>
         )}
       </div>
     </div>
