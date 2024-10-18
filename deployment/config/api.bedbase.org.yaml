@@ -1,7 +1,8 @@
 path:
   remote_url_base: http://data.bedbase.org/
   text2vec: "sentence-transformers/all-MiniLM-L6-v2"
-  region2vec: databio/r2v-pretrained-for-search
+  # region2vec: databio/r2v-pretrained-for-search
+  region2vec: databio/r2v-encode-hg38
   vec2vec: "databio/v2v-sentencetransformers-encode"
 database:
   host: $POSTGRES_HOST
