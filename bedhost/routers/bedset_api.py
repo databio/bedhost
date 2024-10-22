@@ -108,6 +108,7 @@ async def get_bedfiles_in_bedset(
     return bbagent.bedset.get_bedset_bedfiles(bedset_id)
 
 
+@router.head("/{bedset_id}/track_hub")
 @router.get("/{bedset_id}/track_hub")
 async def get_track_hub_bedset(request: Request, bedset_id: str):
     """
@@ -128,6 +129,7 @@ async def get_track_hub_bedset(request: Request, bedset_id: str):
     return Response(hub_txt, media_type="text/plain")
 
 
+@router.head("/{bedset_id}/track_hub_genome_file", include_in_schema=False)
 @router.get("/{bedset_id}/track_hub_genome_file", include_in_schema=False)
 async def get_genomes_file_bedset(request: Request, bedset_id: str):
     """
@@ -143,6 +145,7 @@ async def get_genomes_file_bedset(request: Request, bedset_id: str):
     return Response(genome_txt, media_type="text/plain")
 
 
+@router.head("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
 @router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
 async def get_trackDb_file_bedset(bedset_id: str):
     """
