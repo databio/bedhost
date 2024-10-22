@@ -121,7 +121,7 @@ async def get_track_hub_bedset(request: Request, bedset_id: str):
         f"hub \t BEDBASE_{bedset_id}\n"
         f"shortLabel \t BEDBASE_{bedset_id}\n"
         f"longLabel\t BEDBASE {bedset_id} signal tracks\n"
-        f"genomesFile\t {request.url_for('get_genomes_file_bedset', bedset_id=bedset_id)}\n"
+        f"genomesFile\t {str(request.url_for('get_genomes_file_bedset', bedset_id=bedset_id)).replace('http', 'https', 1)}\n"
         "email\t bx2ur@virginia.edu\n"
         "descriptionUrl\t https://bedbase.org/"
     )
@@ -139,7 +139,7 @@ async def get_genomes_file_bedset(request: Request, bedset_id: str):
     genome = "hg38"
     genome_txt = (
         f"genome\t {genome}\n"
-        f"trackDb\t	{request.url_for('get_trackDb_file_bedset', bedset_id=bedset_id)}"
+        f"trackDb\t	{str(request.url_for('get_trackDb_file_bedset', bedset_id=bedset_id)).replace('http', 'https', 1)}"
     )
 
     return Response(genome_txt, media_type="text/plain")
