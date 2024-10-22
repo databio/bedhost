@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request, Response
 import logging
 
 from bbconf.models.bedset_models import (
@@ -108,65 +108,62 @@ async def get_bedfiles_in_bedset(
     return bbagent.bedset.get_bedset_bedfiles(bedset_id)
 
 
-# TODO: how are we using it?
+@router.get("/{bedset_id}/track_hub")
+async def get_track_hub_bedset(request: Request, bedset_id: str):
+    """
+    Generate track hub files for the BED set
+    """
 
-# @router.get("/{bedset_id}/track_hub")
-# async def get_track_hub_bedset(request: Request, bedset_id: str):
-#     """
-#     Generate track hub files for the BED set
-#     """
-#
-#     hit = bbc.bedset.retrieve_one(bedset_id)
-#     name = hit.get("name", "")
-#
-#     hub_txt = (
-#         f"hub \t BEDBASE_{name}\n"
-#         f"shortLabel \t BEDBASE_{name}\n"
-#         f"longLabel\t BEDBASE {name} signal tracks\n"
-#         f"genomesFile\t {request.url_for('get_genomes_file_bedset', bedset_id=bedset_id)}\n"
-#         "email\t bx2ur@virginia.edu\n"
-#         "descriptionUrl\t http://www.bedbase.org/"
-#     )
-#
-#     return Response(hub_txt, media_type="text/plain")
+    bbagent.bedset.get(bedset_id)
+
+    hub_txt = (
+        f"hub \t BEDBASE_{bedset_id}\n"
+        f"shortLabel \t BEDBASE_{bedset_id}\n"
+        f"longLabel\t BEDBASE {bedset_id} signal tracks\n"
+        f"genomesFile\t {request.url_for('get_genomes_file_bedset', bedset_id=bedset_id)}\n"
+        "email\t bx2ur@virginia.edu\n"
+        "descriptionUrl\t https://bedbase.org/"
+    )
+
+    return Response(hub_txt, media_type="text/plain")
 
 
-# @router.get("/{bedset_id}/track_hub_genome_file", include_in_schema=False)
-# async def get_genomes_file_bedset(request: Request, bedset_id: str):
-#     """
-#     Generate genomes file for the BED set track hub
-#     """
-#
-#     genome = bbc.bedset.retrieve_one(bedset_id, "genome")
-#
-#     genome_txt = (
-#         f"genome\t {genome['alias']}\n"
-#         f"trackDb\t	{request.url_for('get_trackDb_file_bedset', bedset_id=bedset_id)}"
-#     )
-#
-#     return Response(genome_txt, media_type="text/plain")
+@router.get("/{bedset_id}/track_hub_genome_file", include_in_schema=False)
+async def get_genomes_file_bedset(request: Request, bedset_id: str):
+    """
+    Generate genomes file for the BED set track hub
+    """
+
+    genome = "hg38"
+    genome_txt = (
+        f"genome\t {genome}\n"
+        f"trackDb\t	{request.url_for('get_trackDb_file_bedset', bedset_id=bedset_id)}"
+    )
+
+    return Response(genome_txt, media_type="text/plain")
 
 
-# @router.get("/{md5sum}/track_hub_trackDb_file", include_in_schema=False)
-# async def get_trackDb_file_bedset(request: Request, bedset_id: str):
-#     """
-#     Generate trackDb file for the BED set track hub
-#     """
-#
-#     hit = bbc.select_bedfiles_for_bedset(
-#         bedset_id,
-#         metadata=True,
-#     )
-#
-#     trackDb_txt = ""
-#     for bed in hit:
-#         trackDb_txt = (
-#             trackDb_txt + f"track\t {bed.get('name', '')}\n"
-#             "type\t bigBed\n"
-#             f"bigDataUrl\t http://data.bedbase.org/bigbed_files/{bed.get('name', '')}.bigBed\n"
-#             f"shortLabel\t {bed.get('name', '')}\n"
-#             f"longLabel\t {bed.get('description', '')}\n"
-#             "visibility\t full\n\n"
-#         )
-#
-#     return Response(trackDb_txt, media_type="text/plain")
+@router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
+async def get_trackDb_file_bedset(bedset_id: str):
+    """
+    Generate trackDb file for the BED set track hub
+    """
+
+    hit = bbagent.bedset.get_bedset_bedfiles(bedset_id)
+
+    trackDb_txt = ""
+    for bed in hit.results:
+        metadata = bbagent.bed.get(bed.id, full=True)
+
+        if metadata.files.bigbed_file:
+
+            trackDb_txt = (
+                trackDb_txt + f"track\t {metadata.name}\n"
+                "type\t bigBed\n"
+                f"bigDataUrl\t {metadata.files.bigbed_file.access_methods[0].access_url.url} \n"
+                f"shortLabel\t {metadata.name}\n"
+                f"longLabel\t {metadata.description}\n"
+                "visibility\t full\n\n"
+            )
+
+    return Response(trackDb_txt, media_type="text/plain")
