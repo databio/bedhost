@@ -43,6 +43,23 @@ export const BedsetSplashHeader = (props: Props) => {
           <p className="mb-0">{metadata?.description || 'No description available'}</p>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
+
+          {/*  TODO: change hg38 on correct genome */}
+          {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
+          <a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}>
+            <button className="btn btn-outline-primary btn-sm">
+              <i className="bi bi-distribute-vertical me-1" />
+              Genome Browser
+            </button>
+          </a>
+
+          <a href={`${API_BASE}/bedset/${metadata.id}/pep`}>
+            <button className="btn btn-outline-primary btn-sm">
+              <i className="bi bi-download me-1" />
+              Download PEP
+            </button>
+          </a>
+
           <a href={`${API_BASE}/bedset/${metadata.id}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-info-circle me-1" />
@@ -65,12 +82,12 @@ export const BedsetSplashHeader = (props: Props) => {
                   metadata.bed_ids?.length === 0
                     ? undefined
                     : () => {
-                        addMultipleBedsToCart(metadata.bed_ids || []);
-                        setAddedToCart(true);
-                        setTimeout(() => {
-                          setAddedToCart(false);
-                        }, 500);
-                      }
+                      addMultipleBedsToCart(metadata.bed_ids || []);
+                      setAddedToCart(true);
+                      setTimeout(() => {
+                        setAddedToCart(false);
+                      }, 500);
+                    }
                 }
                 disabled={metadata.bed_ids?.length === 0 || addedToCart}
                 className="btn btn-primary btn-sm"

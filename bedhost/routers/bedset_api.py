@@ -12,6 +12,7 @@ from bbconf.exceptions import BedSetNotFoundError
 
 from ..main import bbagent
 from ..const import PKG_NAME, EXAMPLE_BEDSET
+from ..utils import zip_pep
 
 
 router = APIRouter(prefix="/v1/bedset", tags=["bedset"])
@@ -59,6 +60,20 @@ async def get_bedset_metadata(
     # TODO: fix error with not found
     try:
         return bbagent.bedset.get(bedset_id, full=full)
+    except BedSetNotFoundError as _:
+        raise HTTPException(status_code=404, detail="No records found")
+
+
+@router.get(
+    "/{bedset_id}/pep",
+    summary="Download PEP project for a single BEDset record",
+    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+)
+async def get_bedset_pep(
+    bedset_id: str,
+):
+    try:
+        return zip_pep(bbagent.bedset.get_bedset_pep(bedset_id))
     except BedSetNotFoundError as _:
         raise HTTPException(status_code=404, detail="No records found")
 
