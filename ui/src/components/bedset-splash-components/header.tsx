@@ -46,7 +46,7 @@ export const BedsetSplashHeader = (props: Props) => {
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
           <a
-            href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}>
+            href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`} target="_blank">
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-distribute-vertical me-1" />
               Genome Browser
