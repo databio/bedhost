@@ -25,24 +25,41 @@ export const BedsetSplashHeader = (props: Props) => {
       <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
         <div className="d-flex flex-column align-items-start">
           <h4 className="fw-bold">
-            <i className="bi bi-file-earmark-text me-2"/>
+            <i className="bi bi-file-earmark-text me-2" />
             {metadata?.id || 'No name available'}
             <button
-                className="btn btn-link text-primary mb-2"
-                onClick={() => {
-                  copyToClipboard(metadata.id || '');
-                  setCopiedId(true);
-                  setTimeout(() => {
-                    setCopiedId(false);
-                  }, 1000);
-                }}
+              className="btn btn-link text-primary mb-2"
+              onClick={() => {
+                copyToClipboard(metadata.id || '');
+                setCopiedId(true);
+                setTimeout(() => {
+                  setCopiedId(false);
+                }, 1000);
+              }}
             >
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-          <p className="mb-0">{metadata?.description || 'No description available'}</p>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
+
+          {/*  TODO: change hg38 on correct genome */}
+          {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
+          <a
+            href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`} target="_blank">
+            <button className="btn btn-outline-primary btn-sm">
+              <i className="bi bi-distribute-vertical me-1" />
+              Genome Browser
+            </button>
+          </a>
+
+          <a href={`${API_BASE}/bedset/${metadata.id}/pep`}>
+            <button className="btn btn-outline-primary btn-sm">
+              <i className="bi bi-download me-1" />
+              Download PEP
+            </button>
+          </a>
+
           <a href={`${API_BASE}/bedset/${metadata.id}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-info-circle me-1" />
@@ -65,12 +82,12 @@ export const BedsetSplashHeader = (props: Props) => {
                   metadata.bed_ids?.length === 0
                     ? undefined
                     : () => {
-                        addMultipleBedsToCart(metadata.bed_ids || []);
-                        setAddedToCart(true);
-                        setTimeout(() => {
-                          setAddedToCart(false);
-                        }, 500);
-                      }
+                      addMultipleBedsToCart(metadata.bed_ids || []);
+                      setAddedToCart(true);
+                      setTimeout(() => {
+                        setAddedToCart(false);
+                      }, 500);
+                    }
                 }
                 disabled={metadata.bed_ids?.length === 0 || addedToCart}
                 className="btn btn-primary btn-sm"
@@ -85,6 +102,9 @@ export const BedsetSplashHeader = (props: Props) => {
             Download BEDset
           </button>
         </div>
+      </div>
+      <div>
+        <p className="mb-2">{metadata?.description || 'No description available'}</p>
       </div>
       <div className="d-flex flex-row align-items-end justify-content-start gap-1">
         <div className="badge bg-primary text-wrap">

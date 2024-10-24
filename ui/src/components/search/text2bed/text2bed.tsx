@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Col, Row } from 'react-bootstrap';
-import { SearchBar } from './search-bar';
-import { SearchResultsTable } from './search-results-table';
-import { SearchingJumper } from './searching-jumper';
+import { SearchBar } from '../search-bar';
+import { Text2BedSearchResultsTable } from './t2b-search-results-table';
+import { SearchingJumper } from '../searching-jumper';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { useText2BedSearch } from '../../queries/useText2BedSearch';
-import { TableToolbar } from './table-toolbar';
-import { PaginationBar } from './pagination-bar';
-import { SearchError } from './search-error';
+import { useText2BedSearch } from '../../../queries/useText2BedSearch';
+import { TableToolbar } from '../table-toolbar';
+import { PaginationBar } from '../pagination-bar';
+import { SearchError } from '../search-error';
 import { AxiosError } from 'axios';
 
 export const Text2Bed = () => {
@@ -50,7 +50,12 @@ export const Text2Bed = () => {
             setLimit={setLimit}
             value={searchTerm}
             onChange={setSearchTerm}
-            onSearch={() => onSearch()}
+            onSearch={() => {
+              setOffset(0);
+              setTimeout(() => {
+                onSearch();
+              }, 100);
+            }}
           />
         </Col>
       </Row>
@@ -62,7 +67,7 @@ export const Text2Bed = () => {
             {results ? (
               <div className="p-2 border rounded shadow-sm">
                 <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
-                <SearchResultsTable results={results || []} />{' '}
+                <Text2BedSearchResultsTable results={results || []} />{' '}
                 <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
               </div>
             ) : (

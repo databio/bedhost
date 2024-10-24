@@ -1,7 +1,7 @@
 import { ProgressBar } from 'react-bootstrap';
-import { components } from '../../../bedbase-types';
-import { roundToTwoDecimals } from '../../utils';
-import { useBedCart } from '../../contexts/bedcart-context';
+import { components } from '../../../../bedbase-types';
+import { roundToTwoDecimals } from '../../../utils';
+import { useBedCart } from '../../../contexts/bedcart-context';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import YAML from 'js-yaml';
@@ -12,7 +12,7 @@ type Props = {
   results: SearchResponse;
 };
 
-export const SearchResultsTable = (props: Props) => {
+export const Text2BedSearchResultsTable = (props: Props) => {
   const { results } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   return (

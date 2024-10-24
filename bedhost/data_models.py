@@ -52,7 +52,6 @@ class ComponentVersions(BaseModel):
 
 
 class EmbeddingModels(BaseModel):
-    vec2vec: str
     region2vec: str
     text2vec: str
 
