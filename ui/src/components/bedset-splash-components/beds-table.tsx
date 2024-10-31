@@ -62,7 +62,6 @@ export const BedsTable = (props: Props) => {
       header: 'Tissue',
       id: 'Tissue',
     }),
-
     columnHelper.accessor((row) => row.annotation?.cell_type, {
       cell: (info) => (
         <span className="max-cell-width text-truncate">{info.getValue() || <span className="fst-italic"></span>}</span>
@@ -86,7 +85,12 @@ export const BedsTable = (props: Props) => {
 
     columnHelper.accessor((row) => row.id, {
       cell: (info) => (
-        <div className="d-flex flex-row w-100 gap-1 flex-end">
+        <div
+          className="d-flex flex-row w-100 gap-1 flex-end"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           {!cart.includes(info.getValue()) || (addedToCart && justAddedToCart === info.getValue()) ? (
             <button
               onClick={() => {
