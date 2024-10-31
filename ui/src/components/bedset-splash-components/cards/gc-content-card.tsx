@@ -19,7 +19,7 @@ export const GCContentCard = (props: Props) => {
             : 'N/A'}
         </h2>
         {/* plus minus */}
-        <h4 className="text-xl">± {formatNumberWithCommas(Math.round((metadata.statistics?.sd?.gc_content*100 || 0)*100)/100)} </h4>
+        <h4 className="text-xl">± {formatNumberWithCommas(Math.round((metadata.statistics?.sd?.gc_content || 0)*100)/100)} </h4>
       </div>
     </StatCard>
   );
