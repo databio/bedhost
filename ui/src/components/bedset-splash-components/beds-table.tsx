@@ -38,56 +38,53 @@ export const BedsTable = (props: Props) => {
   const { addBedToCart, removeBedFromCart, cart } = useBedCart();
 
   const columns = [
-    columnHelper.accessor(row => row.genome_alias, {
+    columnHelper.accessor((row) => row.genome_alias, {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Genome',
       id: 'genome',
     }),
-    columnHelper.accessor(row => row.bed_type, {
+    columnHelper.accessor((row) => row.bed_type, {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Type',
       id: 'bed-type',
     }),
-    columnHelper.accessor(row => row.name, {
+    columnHelper.accessor((row) => row.name, {
       cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Name',
       id: 'name',
     }),
-        columnHelper.accessor(row => row.annotation?.tissue, {
+    columnHelper.accessor((row) => row.annotation?.tissue, {
       cell: (info) => <span className="max-cell-width text-truncate ">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Tissue',
       id: 'Tissue',
     }),
 
-    columnHelper.accessor(row => row.annotation?.cell_type, {
+    columnHelper.accessor((row) => row.annotation?.cell_type, {
       cell: (info) => (
-        <span className="max-cell-width text-truncate">
-          {info.getValue() || <span className="fst-italic"></span>}
-        </span>
+        <span className="max-cell-width text-truncate">{info.getValue() || <span className="fst-italic"></span>}</span>
       ),
       footer: (info) => info.column.id,
       header: 'Cell Type',
       id: 'cell-type',
     }),
-    columnHelper.accessor(row => row.annotation?.cell_line, {
+    columnHelper.accessor((row) => row.annotation?.cell_line, {
       cell: (info) => <span className="max-cell-width text-truncate">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Cell Line',
       id: 'cell-line',
     }),
-    columnHelper.accessor(row => row.description, {
+    columnHelper.accessor((row) => row.description, {
       cell: (info) => <span className="max-cell-width text-truncate">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Description',
       id: 'description',
     }),
 
-
-    columnHelper.accessor(row => row.id, {
+    columnHelper.accessor((row) => row.id, {
       cell: (info) => (
         <div className="d-flex flex-row w-100 gap-1 flex-end">
           {!cart.includes(info.getValue()) || (addedToCart && justAddedToCart === info.getValue()) ? (
@@ -149,50 +146,50 @@ export const BedsTable = (props: Props) => {
       </div>
       <table className="table mb-2 table-hover">
         <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle">
-                {header.isPlaceholder ? null : (
-                  <div
-                    className={header.column.getCanSort() ? 'cursor-pointer' : ''}
-                    onClick={header.column.getToggleSortingHandler()}
-                    title={
-                      header.column.getCanSort()
-                        ? header.column.getNextSortingOrder() === 'asc'
-                          ? 'Sort ascending'
-                          : header.column.getNextSortingOrder() === 'desc'
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle">
+                  {header.isPlaceholder ? null : (
+                    <div
+                      className={header.column.getCanSort() ? 'cursor-pointer' : ''}
+                      onClick={header.column.getToggleSortingHandler()}
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === 'asc'
+                            ? 'Sort ascending'
+                            : header.column.getNextSortingOrder() === 'desc'
                             ? 'Sort descending'
                             : 'Clear sort'
-                        : undefined
-                    }
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {{
-                      asc: ' 🔼',
-                      desc: ' 🔽',
-                    }[header.column.getIsSorted() as string] ?? null}
-                  </div>
-                )}
-              </th>
-            ))}
-          </tr>
-        ))}
+                          : undefined
+                      }
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: ' 🔼',
+                        desc: ' 🔽',
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
+                </th>
+              ))}
+            </tr>
+          ))}
         </thead>
         <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr
-            key={row.id}
-            className="cursor-pointer"
-            onClick={() => window.location.href = `/bed/${row.original.id}`}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id} className="text-right align-middle small-font">
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
-        ))}
+          {table.getRowModel().rows.map((row) => (
+            <tr
+              key={row.id}
+              className="cursor-pointer"
+              onClick={() => (window.location.href = `/bed/${row.original.id}`)}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="text-right align-middle small-font">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className="h-4" />
