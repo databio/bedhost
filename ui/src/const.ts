@@ -110,16 +110,19 @@ from geniml.bbclient import BBClient
 
 bbclient = BBClient()
 
-regionset = bbclient.load_bed("bbad85f21962bb8d972444f7f9a3a932")
+regionset = bbclient.load_bed("02c7821a715f1f890ed2ae53d371072b")
 print(regionset)
 \`\`\`
 `;
 
 export const CLIENT_R_CODE_RAW = `
 \`\`\`r
+library(bedbaser)
 
-# BBClient is not yet available in R
-# R package is under development
+api <- BEDbase()
+
+bed_granges <- bb_to_granges(api, "02c7821a715f1f890ed2ae53d371072b")
+print(bed_granges)
 
 \`\`\`
 `;

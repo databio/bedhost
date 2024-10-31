@@ -276,10 +276,16 @@ export const Home = () => {
                 BEDbase provides a Python an R client for interacting with the BEDbase API. The client allows users to
                 download, cache, and analyze BED files and BED sets programmatically, without the need to interact with
                 the native API. BBclient is available on PyPI in geniml package with other useful tools for genomic data
-                analysis. Geniml package:{' '}
+                analysis. Python Geniml package:{' '}
                 <a href="https://pypi.org/project/geniml/" className="bi bi-box-fill">
                   {' '}
                   PyPI geniml
+                </a>
+                .
+                R package:{' '}
+                <a href="https://github.com/waldronlab/bedbaser" className="bi bi-github">
+                  {' '}
+                  BEDbaser
                 </a>
                 .
               </p>
