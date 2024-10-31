@@ -15,9 +15,6 @@ import {
 import { useState } from 'react';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import YAML from 'js-yaml';
-
 type Bed = components['schemas']['BedSetBedFiles']['results'][number];
 
 type Props = {
