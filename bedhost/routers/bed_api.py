@@ -52,7 +52,7 @@ async def get_example_bed_record():
     """
     Get metadata for an example BED record.
     """
-    result = bbagent.bed.get_ids_list(limit=1, offset=0).results
+    result = bbagent.bed.get_ids_list(limit=1, offset=0, genome="hg38").results
     if result:
         return result[0]
     raise HTTPException(status_code=404, detail="No records found")
