@@ -16,7 +16,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
   const { results } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   return (
-    <table className="table text-sm">
+    <table className="table text-sm table-hover">
       <thead>
         <tr>
           <th scope="col">Name</th>
@@ -37,7 +37,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
       </thead>
       <tbody>
         {results.results?.map((result) => (
-          <tr key={result.id}>
+          <tr key={result.id} className="position-relative">
             <td>{result?.metadata?.name || 'No name'}</td>
             <td>
               <span className="badge text-bg-primary">{result?.metadata?.genome_alias || 'N/A'}</span>
@@ -83,14 +83,15 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             {/*  */}
             {/*</td>*/}
             <td>
-              <a className="me-1" href={`/bed/${result.metadata?.id}`}>
-                <button className="btn btn-sm btn-outline-primary">
+              <a className="me-1 stretched-link" href={`/bed/${result.metadata?.id}`}>
+                <button className="btn btn-sm btn-outline-primary position-relative" style={{zIndex: 999}}>
                   <i className="bi bi-eye"></i>
                 </button>
               </a>
               {cart.includes(result?.metadata?.id || '') ? (
                 <button
-                  className="btn btn-sm btn-outline-danger"
+                  className="btn btn-sm btn-outline-danger position-relative"
+                  style={{zIndex: 999}}
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
@@ -104,7 +105,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn btn-sm btn-outline-primary position-relative"
+                  style={{zIndex: 999}}
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
