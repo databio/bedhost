@@ -52,7 +52,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             {/*<td className="bi bi-info-circle text-truncate text-center"></td>*/}
             <td className="text-start">
               <OverlayTrigger
-                placement="auto"
+                placement="left"
                 overlay={
                   <Tooltip id={`tooltip-${result.id}`} className="moreinfo-tooltip">
                     <pre className="text-start">
@@ -64,7 +64,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                   </Tooltip>
                 }
               >
-                <span className="bi bi-info-circle"></span>
+                <span className="bi bi-info-circle position-relative" style={{zIndex: 999}}></span>
               </OverlayTrigger>
             </td>
             <td>
