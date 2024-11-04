@@ -102,8 +102,8 @@ export const BedsTable = (props: Props) => {
               disabled={addedToCart && justAddedToCart === info.getValue()}
               className="btn btn-sm btn-primary"
             >
-              <i className="bi bi-cart me-1"></i>
-              {addedToCart && justAddedToCart === info.getValue() ? 'Added to cart!' : 'Add to cart'}
+              {addedToCart && justAddedToCart === info.getValue() ? 'Adding' : 'Add '}
+              <i className="bi-cart-plus me-1"></i>
             </button>
           ) : (
             <button onClick={() => removeBedFromCart(info.getValue())} className="btn btn-sm btn-outline-danger">
@@ -153,7 +153,7 @@ export const BedsTable = (props: Props) => {
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle">
+                <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle" style={{ minWidth: '110px' }}>
                   {header.isPlaceholder ? null : (
                     <div
                       className={header.column.getCanSort() ? 'cursor-pointer' : ''}

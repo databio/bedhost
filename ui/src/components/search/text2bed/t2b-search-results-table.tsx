@@ -18,26 +18,26 @@ export const Text2BedSearchResultsTable = (props: Props) => {
   return (
     <table className="table text-sm table-hover">
       <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Genome</th>
-          <th scope="col">Tissue</th>
-          <th scope="col">Cell Line</th>
-          <th scope="col">Cell Type</th>
-          {/*<th scope="col">Target </th>*/}
-          {/*<th scope="col">Antibody</th>*/}
-          <th scope="col">Description</th>
-          <th scope="col">Info</th>
-          <th scope="col">Score</th>
-          <th scope="col">Assay</th>
-          {/* <th scope="col">BEDbase ID</th> */}
-          <th scope="col" style={{ minWidth: '80px' }}>
-            Actions
-          </th>
-        </tr>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Genome</th>
+        <th scope="col">Tissue</th>
+        <th scope="col">Cell Line</th>
+        <th scope="col">Cell Type</th>
+        {/*<th scope="col">Target </th>*/}
+        {/*<th scope="col">Antibody</th>*/}
+        <th scope="col">Description</th>
+        <th scope="col">Assay</th>
+        <th scope="col">Info</th>
+        <th scope="col">Score</th>
+        {/* <th scope="col">BEDbase ID</th> */}
+        <th scope="col" style={{ minWidth: '110px' }}>
+          Actions
+        </th>
+      </tr>
       </thead>
       <tbody>
-        {results.results?.map((result) => (
+      {results.results?.map((result) => (
           <tr key={result.id} className="position-relative">
             <td>{result?.metadata?.name || 'No name'}</td>
             <td>
@@ -50,6 +50,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             {/*<td>{result?.metadata?.annotation?.antibody || 'N/A'}</td>*/}
 
             <td>{result?.metadata?.description || ''}</td>
+            <td>{result?.metadata?.annotation?.assay || 'N/A'}</td>
             {/*<td className="bi bi-info-circle text-truncate text-center"></td>*/}
             <td className="text-start">
               <OverlayTrigger
@@ -76,7 +77,6 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 variant="primary"
               />
             </td>
-            <td>{result?.metadata?.annotation?.assay || 'N/A'}</td>
 
             {/* <td>{result?.metadata?.id || 'No id'}</td> */}
             {/*<td>*/}
@@ -108,7 +108,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary position-relative"
+                  className="btn btn-sm btn-outline-primary position-relative small-font"
                   style={{ zIndex: 999 }}
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
