@@ -29,8 +29,9 @@ export const Text2BedSearchResultsTable = (props: Props) => {
           <th scope="col">Description</th>
           <th scope="col">Info</th>
           <th scope="col">Score</th>
+          <th scope="col">Assay</th>
           {/* <th scope="col">BEDbase ID</th> */}
-          <th scope="col" style={{ minWidth: '140px' }}>
+          <th scope="col" style={{ minWidth: '80px' }}>
             Actions
           </th>
         </tr>
@@ -64,7 +65,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                   </Tooltip>
                 }
               >
-                <span className="bi bi-info-circle position-relative" style={{zIndex: 999}}></span>
+                <span className="bi bi-info-circle position-relative" style={{ zIndex: 999 }}></span>
               </OverlayTrigger>
             </td>
             <td>
@@ -75,6 +76,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 variant="primary"
               />
             </td>
+            <td>{result?.metadata?.annotation?.assay || 'N/A'}</td>
+
             {/* <td>{result?.metadata?.id || 'No id'}</td> */}
             {/*<td>*/}
             {/*  /!*{result?.metadata?.submission_date === undefined*!/*/}
@@ -84,14 +87,14 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             {/*</td>*/}
             <td>
               <a className="me-1 stretched-link" href={`/bed/${result.metadata?.id}`}>
-                <button className="btn btn-sm btn-outline-primary position-relative" style={{zIndex: 999}}>
-                  <i className="bi bi-eye"></i>
-                </button>
+                {/*<button className="btn btn-sm btn-outline-primary position-relative" style={{zIndex: 999}}>*/}
+                {/*  <i className="bi bi-eye"></i>*/}
+                {/*</button>*/}
               </a>
               {cart.includes(result?.metadata?.id || '') ? (
                 <button
                   className="btn btn-sm btn-outline-danger position-relative"
-                  style={{zIndex: 999}}
+                  style={{ zIndex: 999 }}
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
@@ -106,7 +109,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
               ) : (
                 <button
                   className="btn btn-sm btn-outline-primary position-relative"
-                  style={{zIndex: 999}}
+                  style={{ zIndex: 999 }}
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
