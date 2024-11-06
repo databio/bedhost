@@ -1,43 +1,41 @@
 import subprocess
 
 try:
-    from typing import Annotated, Dict, Optional, List, Any
+    from typing import Annotated, Any, Dict, List, Optional
 except ImportError:
     from typing_extensions import Annotated
     from typing import Dict, Optional, List, Any
 
-from fastapi import APIRouter, HTTPException, Query, UploadFile, File
-from fastapi.responses import PlainTextResponse
-
-from gtars.tokenizers import RegionSet
-
-import tempfile
 import os
 import shutil
+import tempfile
 
-from bbconf.models.bed_models import (
-    BedListResult,
-    BedMetadataAll,
-    BedFiles,
-    BedStatsModel,
-    BedPlots,
-    BedClassification,
-    # BedPEPHub,
-    BedPEPHubRestrict,
-    BedListSearchResult,
-    TokenizedPathResponse,
-    TokenizedBedResponse,
-    BedEmbeddingResult,
+from bbconf.exceptions import (
+    BedBaseConfError,
+    BEDFileNotFoundError,
+    TokenizeFileNotExistError,
 )
-from bbconf.exceptions import BEDFileNotFoundError, TokenizeFileNotExistError
+from bbconf.models.bed_models import (
+    BedClassification,  # BedPEPHub,
+    BedEmbeddingResult,
+    BedFiles,
+    BedListResult,
+    BedListSearchResult,
+    BedMetadataAll,
+    BedPEPHubRestrict,
+    BedPlots,
+    BedStatsModel,
+    TokenizedBedResponse,
+    TokenizedPathResponse,
+)
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile
+from fastapi.responses import PlainTextResponse
+from gtars.tokenizers import RegionSet
 
 from .. import _LOGGER
-from ..main import bbagent
-from ..data_models import (
-    BedDigest,
-    CROM_NUMBERS,
-)
 from ..const import EXAMPLE_BED
+from ..data_models import CROM_NUMBERS, BaseListResponse, BedDigest
+from ..main import bbagent
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
@@ -236,6 +234,33 @@ async def embed_bed_file(
 
             embedding = bbagent.bed._embed_file(region_set)
     return embedding.tolist()[0]
+
+
+@router.get(
+    "/missing_plots",
+    summary="Get missing plots for a bed file.",
+    response_model=BaseListResponse,
+)
+async def missing_plots(plot_id: str):
+    """
+    Get missing plots for a bed file
+
+    example ->  plot_id: gccontent
+    """
+
+    try:
+        bed_ids = bbagent.bed.get_missing_plots(plot_id, limit=100000, offset=0)
+    except BedBaseConfError as e:
+        raise HTTPException(
+            status_code=404,
+            detail=f"{e}",
+        )
+    return BaseListResponse(
+        count=len(bed_ids),
+        limit=100000,
+        offset=0,
+        results=bed_ids,
+    )
 
 
 @router.get(

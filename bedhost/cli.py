@@ -1,6 +1,7 @@
+from ubiquerg import VersionInHelpParser
+
 from . import PKG_NAME
 from ._version import __version__
-from ubiquerg import VersionInHelpParser
 
 
 def build_parser():

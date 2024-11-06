@@ -1,34 +1,24 @@
 import os
 import sys
-import uvicorn
 
+import markdown
+import uvicorn
+from bbconf.exceptions import (
+    BEDFileNotFoundError,
+    BedSetNotFoundError,
+    MissingObjectError,
+    MissingThumbnailError,
+)
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
-
-import markdown
 from fastapi.templating import Jinja2Templates
-from bbconf.exceptions import (
-    MissingObjectError,
-    MissingThumbnailError,
-    BEDFileNotFoundError,
-    BedSetNotFoundError,
-)
-
 
 from . import _LOGGER
-from .helpers import (
-    configure,
-    attach_routers,
-    drs_response,
-)
-from .cli import build_parser
 from ._version import __version__ as bedhost_version
-from .const import (
-    PKG_NAME,
-    STATIC_PATH,
-)
-
+from .cli import build_parser
+from .const import PKG_NAME, STATIC_PATH
+from .helpers import attach_routers, configure, drs_response
 
 tags_metadata = [
     {

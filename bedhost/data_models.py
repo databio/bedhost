@@ -1,6 +1,7 @@
+from enum import Enum
+
 from fastapi import Path
 from pydantic import BaseModel
-from enum import Enum
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -69,3 +70,10 @@ class ServiceInfoResponse(BaseModel):
     version: str
     component_versions: ComponentVersions
     embedding_models: EmbeddingModels
+
+
+class BaseListResponse(BaseModel):
+    count: int
+    limit: int
+    offset: int
+    results: list
