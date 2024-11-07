@@ -16,28 +16,29 @@ export const Text2BedSearchResultsTable = (props: Props) => {
   const { results } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   return (
-    <table className="table text-sm">
+    <table className="table text-sm table-hover">
       <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Genome</th>
-          <th scope="col">Tissue</th>
-          <th scope="col">Cell Line</th>
-          <th scope="col">Cell Type</th>
-          {/*<th scope="col">Target </th>*/}
-          {/*<th scope="col">Antibody</th>*/}
-          <th scope="col">Description</th>
-          <th scope="col">Info</th>
-          <th scope="col">Score</th>
-          {/* <th scope="col">BEDbase ID</th> */}
-          <th scope="col" style={{ minWidth: '140px' }}>
-            Actions
-          </th>
-        </tr>
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Genome</th>
+        <th scope="col">Tissue</th>
+        <th scope="col">Cell Line</th>
+        <th scope="col">Cell Type</th>
+        {/*<th scope="col">Target </th>*/}
+        {/*<th scope="col">Antibody</th>*/}
+        <th scope="col">Description</th>
+        <th scope="col">Assay</th>
+        <th scope="col">Info</th>
+        <th scope="col">Score</th>
+        {/* <th scope="col">BEDbase ID</th> */}
+        <th scope="col" style={{ minWidth: '110px' }}>
+          Actions
+        </th>
+      </tr>
       </thead>
       <tbody>
-        {results.results?.map((result) => (
-          <tr key={result.id}>
+      {results.results?.map((result) => (
+          <tr key={result.id} className="position-relative">
             <td>{result?.metadata?.name || 'No name'}</td>
             <td>
               <span className="badge text-bg-primary">{result?.metadata?.genome_alias || 'N/A'}</span>
@@ -49,10 +50,11 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             {/*<td>{result?.metadata?.annotation?.antibody || 'N/A'}</td>*/}
 
             <td>{result?.metadata?.description || ''}</td>
+            <td>{result?.metadata?.annotation?.assay || 'N/A'}</td>
             {/*<td className="bi bi-info-circle text-truncate text-center"></td>*/}
             <td className="text-start">
               <OverlayTrigger
-                placement="auto"
+                placement="left"
                 overlay={
                   <Tooltip id={`tooltip-${result.id}`} className="moreinfo-tooltip">
                     <pre className="text-start">
@@ -64,7 +66,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                   </Tooltip>
                 }
               >
-                <span className="bi bi-info-circle"></span>
+                <span className="bi bi-info-circle position-relative" style={{ zIndex: 999 }}></span>
               </OverlayTrigger>
             </td>
             <td>
@@ -75,6 +77,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 variant="primary"
               />
             </td>
+
             {/* <td>{result?.metadata?.id || 'No id'}</td> */}
             {/*<td>*/}
             {/*  /!*{result?.metadata?.submission_date === undefined*!/*/}
@@ -83,14 +86,15 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             {/*  */}
             {/*</td>*/}
             <td>
-              <a className="me-1" href={`/bed/${result.metadata?.id}`}>
-                <button className="btn btn-sm btn-outline-primary">
-                  <i className="bi bi-eye"></i>
-                </button>
+              <a className="me-1 stretched-link" href={`/bed/${result.metadata?.id}`}>
+                {/*<button className="btn btn-sm btn-outline-primary position-relative" style={{zIndex: 999}}>*/}
+                {/*  <i className="bi bi-eye"></i>*/}
+                {/*</button>*/}
               </a>
               {cart.includes(result?.metadata?.id || '') ? (
                 <button
-                  className="btn btn-sm btn-outline-danger"
+                  className="btn btn-sm btn-outline-danger position-relative"
+                  style={{ zIndex: 999 }}
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
@@ -104,7 +108,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn btn-sm btn-outline-primary position-relative small-font"
+                  style={{ zIndex: 999 }}
                   onClick={() => {
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });

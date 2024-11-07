@@ -1,7 +1,7 @@
-from starlette.responses import FileResponse, RedirectResponse, JSONResponse
+import os
 
 from bbconf.bbagent import BedBaseAgent
-import os
+from starlette.responses import FileResponse, JSONResponse, RedirectResponse
 
 from . import _LOGGER
 from .exceptions import BedHostException
@@ -50,7 +50,7 @@ def attach_routers(app):
     _LOGGER.info("Mounting routers...")
 
     # importing routers here avoids circular imports
-    from .routers import bed_api, bedset_api, objects_api, base_api
+    from .routers import base_api, bed_api, bedset_api, objects_api
 
     app.include_router(base_api.router)
     app.include_router(bed_api.router)

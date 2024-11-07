@@ -10,7 +10,7 @@ export const SearchBedSetResultTable = (props: Props) => {
   const { results } = props;
 
   return (
-    <table className="table">
+    <table className="table table-hover">
       <thead>
         <tr>
           <th scope="col">Bedset ID</th>
@@ -24,14 +24,14 @@ export const SearchBedSetResultTable = (props: Props) => {
       </thead>
       <tbody>
         {results.results?.map((result) => (
-          <tr key={result.id}>
+          <tr key={result.id} className='position-relative'>
             <td>{result?.id || 'Unknown Id'}</td>
             <td>{result?.name || 'Unknown Name'}</td>
             <td>{result?.description || 'Unknown Description'}</td>
             <td>{result?.bed_ids?.length || 0}</td>
             <td>
-              <a className="me-1 align-content-center" href={`/bedset/${result?.id}`}>
-                <button className="btn btn-sm btn-outline-primary">
+              <a className="me-1 align-content-center stretched-link" href={`/bedset/${result?.id}`}>
+                <button className="btn btn-sm btn-outline-primary position-relative" style={{zIndex: 999}}>
                   <i className="bi bi-eye"></i>
                 </button>
               </a>

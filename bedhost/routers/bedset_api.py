@@ -1,19 +1,18 @@
-from fastapi import APIRouter, HTTPException, Request, Response
 import logging
 
+from bbconf.exceptions import BedSetNotFoundError
 from bbconf.models.bedset_models import (
-    BedSetMetadata,
-    BedSetListResult,
     BedSetBedFiles,
+    BedSetListResult,
+    BedSetMetadata,
     BedSetPlots,
     BedSetStats,
 )
-from bbconf.exceptions import BedSetNotFoundError
+from fastapi import APIRouter, HTTPException, Request, Response
 
+from ..const import EXAMPLE_BEDSET, PKG_NAME
 from ..main import bbagent
-from ..const import PKG_NAME, EXAMPLE_BEDSET
 from ..utils import zip_pep
-
 
 router = APIRouter(prefix="/v1/bedset", tags=["bedset"])
 

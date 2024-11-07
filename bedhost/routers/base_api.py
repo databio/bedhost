@@ -1,26 +1,27 @@
 try:
-    from typing import Annotated, Dict, Optional, List, Any
+    from typing import Annotated, Any, Dict, List, Optional
 except ImportError:
     from typing_extensions import Annotated
     from typing import Dict, Optional, List, Any
 
-from fastapi import APIRouter
-
-from bbconf.models.base_models import StatsReturn
 from platform import python_version
+
 from bbconf import __version__ as bbconf_version
+from bbconf.models.base_models import StatsReturn
+from fastapi import APIRouter
 from geniml import __version__ as geniml_version
 
-from ..main import bbagent, app
-from ..helpers import get_openapi_version
+from .._version import __version__ as bedhost_version
 from ..data_models import (
-    ServiceInfoResponse,
-    Type,
-    Organization,
+    BaseListResponse,
     ComponentVersions,
     EmbeddingModels,
+    Organization,
+    ServiceInfoResponse,
+    Type,
 )
-from .._version import __version__ as bedhost_version
+from ..helpers import get_openapi_version
+from ..main import app, bbagent
 
 router = APIRouter(prefix="/v1", tags=["base"])
 
@@ -37,6 +38,24 @@ async def get_bedbase_db_stats():
     Returns statistics
     """
     return bbagent.get_stats()
+
+
+@router.get(
+    "/genomes",
+    summary="Get available genomes",
+    response_model=BaseListResponse,
+)
+async def get_bedbase_db_stats():
+    """
+    Returns statistics
+    """
+    genomes = bbagent.get_list_genomes()
+    return BaseListResponse(
+        count=len(genomes),
+        limit=100,
+        offset=0,
+        results=genomes,
+    )
 
 
 @router.get(

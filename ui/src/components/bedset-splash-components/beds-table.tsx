@@ -15,7 +15,6 @@ import {
 import { useState } from 'react';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
-
 type Bed = components['schemas']['BedSetBedFiles']['results'][number];
 
 type Props = {
@@ -39,44 +38,59 @@ export const BedsTable = (props: Props) => {
   const { addBedToCart, removeBedFromCart, cart } = useBedCart();
 
   const columns = [
-    columnHelper.accessor('genome_alias', {
+    columnHelper.accessor((row) => row.genome_alias, {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Genome',
       id: 'genome',
     }),
-    columnHelper.accessor('bed_type', {
+    columnHelper.accessor((row) => row.bed_type, {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Type',
       id: 'bed-type',
     }),
-    columnHelper.accessor('name', {
+    columnHelper.accessor((row) => row.name, {
       cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Name',
       id: 'name',
     }),
-    columnHelper.accessor('description', {
+    columnHelper.accessor((row) => row.annotation?.tissue, {
+      cell: (info) => <span className="max-cell-width text-truncate ">{info.getValue()}</span>,
+      footer: (info) => info.column.id,
+      header: 'Tissue',
+      id: 'Tissue',
+    }),
+    columnHelper.accessor((row) => row.annotation?.cell_type, {
       cell: (info) => (
-        <span className="max-cell-width text-truncate d-inline-block">
-          {info.getValue() || <span className="fst-italic">No description</span>}
-        </span>
+        <span className="max-cell-width text-truncate">{info.getValue() || <span className="fst-italic"></span>}</span>
       ),
+      footer: (info) => info.column.id,
+      header: 'Cell Type',
+      id: 'cell-type',
+    }),
+    columnHelper.accessor((row) => row.annotation?.cell_line, {
+      cell: (info) => <span className="max-cell-width text-truncate">{info.getValue()}</span>,
+      footer: (info) => info.column.id,
+      header: 'Cell Line',
+      id: 'cell-line',
+    }),
+    columnHelper.accessor((row) => row.description, {
+      cell: (info) => <span className="max-cell-width text-truncate">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Description',
       id: 'description',
     }),
-    columnHelper.accessor('id', {
-      cell: (info) => <a href={`/bed/${info.getValue()}`}>{info.getValue()}</a>,
-      footer: (info) => info.column.id,
-      header: 'Record Identifier',
-      id: 'record-identifier',
-    }),
 
-    columnHelper.accessor('id', {
+    columnHelper.accessor((row) => row.id, {
       cell: (info) => (
-        <div className="d-flex flex-row w-100 gap-1 flex-end">
+        <div
+          className="d-flex flex-row w-100 gap-1 flex-end"
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
+        >
           {!cart.includes(info.getValue()) || (addedToCart && justAddedToCart === info.getValue()) ? (
             <button
               onClick={() => {
@@ -88,8 +102,8 @@ export const BedsTable = (props: Props) => {
               disabled={addedToCart && justAddedToCart === info.getValue()}
               className="btn btn-sm btn-primary"
             >
-              <i className="bi bi-cart me-1"></i>
-              {addedToCart && justAddedToCart === info.getValue() ? 'Added to cart!' : 'Add to cart'}
+              {addedToCart && justAddedToCart === info.getValue() ? 'Adding' : 'Add '}
+              <i className="bi-cart-plus me-1"></i>
             </button>
           ) : (
             <button onClick={() => removeBedFromCart(info.getValue())} className="btn btn-sm btn-outline-danger">
@@ -134,12 +148,12 @@ export const BedsTable = (props: Props) => {
           onChange={(e) => setGlobalFilter(e.target.value)}
         />
       </div>
-      <table className="table mb-2">
+      <table className="table mb-2 table-hover">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan} scope="col">
+                <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle" style={{ minWidth: '110px' }}>
                   {header.isPlaceholder ? null : (
                     <div
                       className={header.column.getCanSort() ? 'cursor-pointer' : ''}
@@ -168,24 +182,19 @@ export const BedsTable = (props: Props) => {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr
+              key={row.id}
+              className="cursor-pointer"
+              onClick={() => (window.location.href = `/bed/${row.original.id}`)}
+            >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+                <td key={cell.id} className="text-right align-middle small-font">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
               ))}
             </tr>
           ))}
         </tbody>
-        {/* <tfoot>
-          {table.getFooterGroups().map((footerGroup) => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map((header) => (
-                <th key={header.id}>
-                  {header.isPlaceholder ? null : flexRender(header.column.columnDef.footer, header.getContext())}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </tfoot> */}
       </table>
       <div className="h-4" />
       <div className="d-flex justify-content-between align-items-center gap-2 mb-2">

@@ -1182,7 +1182,7 @@ export interface components {
              * @description Name of species. e.g. Homo sapiens.
              * @default
              */
-            organism: string;
+            species_name: string;
             /**
              * Species Id
              * @default
@@ -1234,7 +1234,7 @@ export interface components {
              * @description Experimental protocol (e.g. ChIP-seq)
              * @default
              */
-            exp_protocol: string;
+            assay: string;
             /**
              * Antibody
              * @description Antibody used in the assay

@@ -1,17 +1,16 @@
 try:
-    from typing import Annotated, Dict, Optional, List, Any
+    from typing import Annotated, Any, Dict, List, Optional
 except ImportError:
     from typing_extensions import Annotated
     from typing import Dict, Optional, List, Any
 
-from fastapi import APIRouter, HTTPException, Request
-from bbconf.models.drs_models import DRSModel
-
-from ..main import bbagent
-from ..helpers import (
-    serve_file,
-)
 from urllib.parse import urlparse
+
+from bbconf.models.drs_models import DRSModel
+from fastapi import APIRouter, HTTPException, Request
+
+from ..helpers import serve_file
+from ..main import bbagent
 
 router = APIRouter(prefix="/v1/objects", tags=["objects"])
 
