@@ -160,27 +160,21 @@ async def get_genomes_file_bedset(request: Request, bedset_id: str):
 
 
 @router.head("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
-@router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
+@router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=True)
 async def get_trackDb_file_bedset(bedset_id: str):
     """
     Generate trackDb file for the BED set track hub
     """
+    # Response should be this type:
+    # trackDb_txt = (
+    #     trackDb_txt + f"track\t {metadata.name}\n"
+    #     "type\t bigBed\n"
+    #     f"bigDataUrl\t {metadata.files.bigbed_file.access_methods[0].access_url.url} \n"
+    #     f"shortLabel\t {metadata.name}\n"
+    #     f"longLabel\t {metadata.description}\n"
+    #     "visibility\t full\n\n"
+    # )
 
-    hit = bbagent.bedset.get_bedset_bedfiles(bedset_id)
-
-    trackDb_txt = ""
-    for bed in hit.results:
-        metadata = bbagent.bed.get(bed.id, full=True)
-
-        if metadata.files.bigbed_file:
-
-            trackDb_txt = (
-                trackDb_txt + f"track\t {metadata.name}\n"
-                "type\t bigBed\n"
-                f"bigDataUrl\t {metadata.files.bigbed_file.access_methods[0].access_url.url} \n"
-                f"shortLabel\t {metadata.name}\n"
-                f"longLabel\t {metadata.description}\n"
-                "visibility\t full\n\n"
-            )
+    trackDb_txt = bbagent.bedset.get_track_hub_file(bedset_id)
 
     return Response(trackDb_txt, media_type="text/plain")
