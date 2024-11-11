@@ -160,7 +160,7 @@ async def get_genomes_file_bedset(request: Request, bedset_id: str):
 
 
 @router.head("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
-@router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=True)
+@router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
 async def get_trackDb_file_bedset(bedset_id: str):
     """
     Generate trackDb file for the BED set track hub
