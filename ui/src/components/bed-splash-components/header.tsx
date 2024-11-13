@@ -162,12 +162,19 @@ export const BedSplashHeader = (props: Props) => {
                   </div>
                 }
               >
-                <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata?.genome_digest}`} target="_blank">
+                {metadata?.genome_digest ? (
+                  <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`} target="_blank">
+                    <div className="badge bg-primary">
+                      <i className="bi bi-database-fill me-2" />
+                      {metadata.genome_alias || 'No assembly available'}
+                    </div>
+                  </a>
+                ) : (
                   <div className="badge bg-primary">
                     <i className="bi bi-database-fill me-2" />
-                    {metadata?.genome_alias || 'No assembly available'}
+                    {metadata.genome_alias || 'No assembly available'}
                   </div>
-                </a>
+                )}
               </OverlayTrigger>
             </p>
           </div>
