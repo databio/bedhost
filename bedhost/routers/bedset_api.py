@@ -1,6 +1,6 @@
 import logging
 
-from bbconf.exceptions import BedSetNotFoundError
+from bbconf.exceptions import BedSetNotFoundError, BedSetTrackHubLimitError
 from bbconf.models.bedset_models import (
     BedSetBedFiles,
     BedSetListResult,
@@ -174,7 +174,12 @@ async def get_trackDb_file_bedset(bedset_id: str):
     #     f"longLabel\t {metadata.description}\n"
     #     "visibility\t full\n\n"
     # )
-
-    trackDb_txt = bbagent.bedset.get_track_hub_file(bedset_id)
+    try:
+        trackDb_txt = bbagent.bedset.get_track_hub_file(bedset_id)
+    except BedSetTrackHubLimitError as _:
+        raise HTTPException(
+            status_code=400,
+            detail="Track hub limit reached. Please try smaller BEDset.",
+        )
 
     return Response(trackDb_txt, media_type="text/plain")
