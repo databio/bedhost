@@ -13,6 +13,9 @@ import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
 import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
 import { snakeToTitleCase } from '../utils';
+import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table.tsx';
+import { useBedNeighbours } from '../queries/useBedNeighbours';
+
 
 export const BedSplash = () => {
   const params = useParams();
@@ -26,6 +29,14 @@ export const BedSplash = () => {
     md5: bedId,
     autoRun: true,
     full: true,
+  });
+
+  const {
+    data: neighbours,
+  } = useBedNeighbours({
+    md5: bedId,
+    limit: 10,
+    offset: 0,
   });
 
   if (isLoading) {
@@ -111,8 +122,8 @@ export const BedSplash = () => {
           <Row className="mb-2 g-3">
             <Col sm={12} md={6}>
               <h3 className="fw-bold">Overview</h3>
-              <div className="border rounded p-1 shadow-sm">
-                <table className="table table-sm rounded text-truncate text-sm">
+              <div className="border rounded px-0 pt-1 shadow-sm">
+                <table className="table table-sm table-striped text-truncate text-sm">
                   <thead>
                     <tr>
                       <th scope="col">Key</th>
@@ -147,8 +158,8 @@ export const BedSplash = () => {
             </Col>
             <Col sm={12} md={6}>
               <h3 className="fw-bold">BED Sets</h3>
-              <div className="border rounded p-1 shadow-sm h-80">
-                <table className="table table-sm rounded text-truncate text-sm">
+              <div className="border rounded px-0 pt-1 shadow-sm h-80">
+                <table className="table table-sm table-striped text-truncate text-sm">
                   <thead>
                     <tr>
                       <th scope="col">BED set ID</th>
@@ -202,21 +213,14 @@ export const BedSplash = () => {
             </Col>
           </Row>
 
-          <Row className="mb-2 g-2">
-            <h3 className="fw-bold">Similar BED Files</h3>
-            {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0">
-                <NoRegionsCard metadata={metadata} />
-                <MedianTssDistCard metadata={metadata} />
-                <MeanRegionWidthCard metadata={metadata} />
-                <GCContentCard metadata={metadata} />
+          { neighbours &&
+            <Row className="mb-2 g-2">
+              <h3 className="fw-bold">Similar BED Files</h3>
+              <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">  
+                <Text2BedSearchResultsTable results={neighbours} />
               </Col>
-            )}
-            <Col sm={12} md={8} className="d-flex flex-column mt-0">
-              <GenomicFeatureBar metadata={metadata!} />
-              {/* <PromoterAnalysisBar metadata={metadata!} /> */}
-            </Col>
-          </Row>
+            </Row>
+          }
 
         </div>
       </Layout>

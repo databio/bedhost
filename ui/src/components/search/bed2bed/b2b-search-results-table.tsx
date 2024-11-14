@@ -190,10 +190,10 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
   };
 
   return (
-    <div className="rounded border shadow-sm p-1">
+    <div className="rounded border shadow-sm px-0 py-1">
       <div className="d-flex flex-row mt-2">
         <input
-          className="form-control mx-2"
+          className="form-control mx-3 mt-1 mb-2"
           placeholder="Search files"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
@@ -246,7 +246,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
         </tbody>
       </table>
       <div className="h-4" />
-      <div className="d-flex justify-content-between align-items-center gap-2 mb-2 mx-2">
+      <div className="d-flex justify-content-between align-items-center gap-2 m-3">
         <div className="d-flex flex-row align-items-center">
           Showing
           <span className="fw-bold mx-1">

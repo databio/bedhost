@@ -299,3 +299,8 @@ a {
 .small-font {
   font-size: 0.9rem; /* Adjust the value as needed */
 }
+
+th, td {
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}

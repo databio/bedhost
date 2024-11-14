@@ -7,15 +7,16 @@ import toast from 'react-hot-toast';
 import YAML from 'js-yaml';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
+type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
 
 type Props = {
-  results: SearchResponse;
+  results: SearchResponse | BedNeighboursResponse;
 };
 
 export const Text2BedSearchResultsTable = (props: Props) => {
   const { results } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
-
+  
   const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
     if (!(e.target as HTMLElement).closest('button')) {
       window.location.href = `/bed/${id}`;

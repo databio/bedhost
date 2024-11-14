@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Col, Image, Row } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
-import { chunkArray, makeThumbnailImageLink } from '../../utils';
+import { chunkArray, makeThumbnailImageLink , makePDFImageLink } from '../../utils';
 import { Fragment } from 'react';
 import { FigureModal } from '../modals/figure-modal';
 
@@ -13,12 +13,13 @@ type PlotsProps = {
 
 type PlotProps = {
   src: string;
+  pdf: string;
   alt: string;
   title: string;
 };
 
 const Plot = (props: PlotProps) => {
-  const { src, alt, title } = props;
+  const { src, pdf, alt, title } = props;
   const [show, setShow] = useState(false);
 
   return (
@@ -47,6 +48,7 @@ const Plot = (props: PlotProps) => {
         }}
         title={title}
         src={src}
+        pdf={pdf}
         alt={alt}
       />
     </div>
@@ -55,39 +57,40 @@ const Plot = (props: PlotProps) => {
 
 export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
+  console.log(props)
+
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
     <Fragment>
-      <div className="my-2">
-        <Row className="row-cols-3 g-2">
-          {metadata.plots &&
-            chunkArray(plotNames, 3).map((chunk, idx) => (
-              <Fragment key={idx}>
-                {chunk.map((plotName) => {
-                  // this is for type checking
-                  const plotNameKey = plotName as keyof typeof metadata.plots;
-                  const plotExists = metadata.plots && metadata.plots[plotNameKey];
-                  // @ts-expect-error: type checking here is just too much
-                  const title = plotExists ? metadata.plots[plotNameKey]?.title : plotName;
-                  const alt = plotExists
-                    ? // @ts-expect-error: type checking here is just too much
-                      metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
-                    : plotName;
-                  return (
-                    <Col key={plotName}>
-                      <Plot
-                        key={plotName}
-                        src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
-                        alt={alt || 'No description available'}
-                        title={title || 'No title available'}
-                      />
-                    </Col>
-                  );
-                })}
-              </Fragment>
-            ))}
-        </Row>
-      </div>
+      <Row className="my-2 row-cols-3 g-2">
+        {metadata.plots &&
+          chunkArray(plotNames, 3).map((chunk, idx) => (
+            <Fragment key={idx}>
+              {chunk.map((plotName) => {
+                // this is for type checking
+                const plotNameKey = plotName as keyof typeof metadata.plots;
+                const plotExists = metadata.plots && metadata.plots[plotNameKey];
+                // @ts-expect-error: type checking here is just too much
+                const title = plotExists ? metadata.plots[plotNameKey]?.title : plotName;
+                const alt = plotExists
+                  ? // @ts-expect-error: type checking here is just too much
+                    metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
+                  : plotName;
+                return (
+                  <Col key={plotName}>
+                    <Plot
+                      key={plotName}
+                      src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
+                      pdf={plotExists ? makePDFImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
+                      alt={alt || 'No description available'}
+                      title={title || 'No title available'}
+                    />
+                  </Col>
+                );
+              })}
+            </Fragment>
+          ))}
+      </Row>
     </Fragment>
   );
 };

@@ -64,17 +64,17 @@ export const BedsetSplash = () => {
   } else if (error) {
     if ((error as AxiosError)?.response?.status === 404) {
       return (
-        <Layout title={`BEDbase | ${bedsetId}`}>
+        <Layout title={`BEDbase | ${bedsetId}`} footer>
           <div
             className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
             style={{ height: '50vh' }}
           >
             <h1 className="fw-bold text-center mb-3">Oh no!</h1>
             <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h2 className="text-2xl text-center">
+              <h3 className="text-2xl text-center">
                 We could not find BEDset with record identifier: <br />
                 <span className="fw-bold">{bedsetId}</span>
-              </h2>
+              </h3>
             </div>
             <div className="w-50">
               <p className="fst-italic text-center mt-3">
@@ -102,18 +102,19 @@ export const BedsetSplash = () => {
     }
   } else {
     return (
-      <Layout title={`BEDbase | ${bedsetId}`}>
+      <Layout title={`BEDbase | ${bedsetId}`} footer fullHeight>
         <div className="my-2">
           <Row className="mb-2">
-            <Col sm={12} md={12}>
+            <Col sm={12}>
               {metadata !== undefined ? <BedsetSplashHeader metadata={metadata} /> : null}
             </Col>
           </Row>
-          <h2 className="fw-bold">Statistics</h2>
-          <Row className="mb-2">
+          
+          <Row className="mb-2 g-2">
+            <h3 className="fw-bold">Statistics</h3>
             {metadata && (
-              <Row>
-                <Col sm={12} md={4} className="d-flex flex-column gap-2 px-1 justify-content-between">
+              <>
+                <Col sm={12} md={4} className="d-flex flex-column px-1 justify-content-between">
                   <MeanRegionWidthCard metadata={metadata} />
                   <MedianTssDistCard metadata={metadata} />
                   <GCContentCard metadata={metadata} />
@@ -121,28 +122,35 @@ export const BedsetSplash = () => {
                 <Col sm={12} md={8} className="h-100 align-items-stretch">
                   <GenomicFeatureBar metadata={metadata!} />
                 </Col>
-              </Row>
+              </>
             )}
           </Row>
-          <h2 className="fw-bold">Plots</h2>
+          
           <Row className="mb-2">
-            <Plots metadata={metadata!} />
+            <Col sm={12}>
+              <h3 className="fw-bold">Plots</h3>
+              <Plots metadata={metadata!} />
+            </Col>
           </Row>
-          <h2 className="fw-bold">BED files in this BED set</h2>
+          
           <Row className="mb-2">
-            {isLoadingBedfiles ? (
-              <div className="mt-2 mb-5">
-                <CardSkeleton height="100px" />
-                {Array.from({ length: 10 }).map((_, index) => (
-                  <div key={index} className="mb-2">
-                    <CardSkeleton height="15px" />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              bedfiles && <BedsTable beds={bedfiles.results} />
-            )}
+            <h3 className="fw-bold">BED files in this BED set</h3>
+            <Col sm={12}>  
+              {isLoadingBedfiles ? (
+                <div className="mt-2 mb-5">
+                  <CardSkeleton height="100px" />
+                  {Array.from({ length: 10 }).map((_, index) => (
+                    <div key={index} className="mb-2">
+                      <CardSkeleton height="15px" />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                bedfiles && <BedsTable beds={bedfiles.results} />
+              )}
+            </Col>
           </Row>
+
         </div>
       </Layout>
     );
