@@ -15,8 +15,8 @@ from bbconf.exceptions import (
     BEDFileNotFoundError,
     TokenizeFileNotExistError,
 )
+from bbconf.models.bed_models import BedClassification  # BedPEPHub,
 from bbconf.models.bed_models import (
-    BedClassification,  # BedPEPHub,
     BedEmbeddingResult,
     BedFiles,
     BedListResult,
@@ -194,6 +194,27 @@ async def get_bed_pephub(
 
 
 @router.get(
+    "/{bed_id}/neighbours",
+    summary="Get nearest neighbours for a single BED record",
+    response_model=BedListSearchResult,
+    response_model_by_alias=False,
+    description=f"Returns most similar BED files in the database. "
+    f"Example\n bed_id: {EXAMPLE_BED}",
+)
+async def get_bed_neighbours(
+    bed_id: str = BedDigest,
+    limit: int = 10,
+    offset: int = 0,
+):
+    try:
+        return bbagent.bed.get_neighbours(bed_id, limit=limit, offset=offset)
+    except BEDFileNotFoundError as _:
+        raise HTTPException(
+            status_code=404,
+        )
+
+
+@router.get(
     "/{bed_id}/embedding",
     summary="Get embeddings for a single BED record",
     response_model=BedEmbeddingResult,
@@ -335,7 +356,26 @@ async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     Example: query="cancer"
     """
     _LOGGER.info(f"Searching for: {query}")
-    results = bbagent.bed.text_to_bed_search(query, limit=limit, offset=offset)
+
+    results_sql = bbagent.bed.sql_search(
+        query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
+    )
+
+    if results_sql.count > results_sql.offset:
+        qdrant_offset = offset - results_sql.offset
+    else:
+        qdrant_offset = offset - results_sql.count
+
+    results_qdr = bbagent.bed.text_to_bed_search(
+        query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
+    )
+
+    results = BedListSearchResult(
+        count=results_qdr.count,
+        limit=limit,
+        offset=offset,
+        results=(results_sql.results + results_qdr.results)[0:limit],
+    )
 
     if results:
         return results

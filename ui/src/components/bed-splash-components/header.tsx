@@ -28,10 +28,10 @@ export const BedSplashHeader = (props: Props) => {
   return (
     <div className="border-bottom py-2">
       <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
-        <div className="d-flex flex-column align-items-start">
+        <div className="d-flex flex-column">
           <h4 className="fw-bold mb-0">
             <i className="bi bi-file-earmark-text me-2" />
-            {metadata?.id || 'No name available'}
+            {metadata?.id || 'No id available'}
             <button
               className="btn btn-link text-primary mb-2"
               onClick={() => {
@@ -45,7 +45,7 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-          <p className="text-muted">{metadata.name}</p>
+
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -142,6 +142,14 @@ export const BedSplashHeader = (props: Props) => {
         </div>
       </div>
       <div className="d-flex flex-row align-items-end justify-content-between">
+        <b>{metadata.name}</b>
+        <div className="ms-auto">
+          {metadata.description}
+        </div>
+      </div>
+
+      <div className="d-flex flex-row align-items-end justify-content-between mt-2">
+
         <div className="d-flex flex-row gap-1 text-lg">
           <div className="d-flex flex-row">
             <p className="mb-0">
@@ -154,12 +162,19 @@ export const BedSplashHeader = (props: Props) => {
                   </div>
                 }
               >
-                <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata?.genome_digest}`} target="_blank">
+                {metadata?.genome_digest ? (
+                  <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`} target="_blank">
+                    <div className="badge bg-primary">
+                      <i className="bi bi-database-fill me-2" />
+                      {metadata.genome_alias || 'No assembly available'}
+                    </div>
+                  </a>
+                ) : (
                   <div className="badge bg-primary">
                     <i className="bi bi-database-fill me-2" />
-                    {metadata?.genome_alias || 'No assembly available'}
+                    {metadata.genome_alias || 'No assembly available'}
                   </div>
-                </a>
+                )}
               </OverlayTrigger>
             </p>
           </div>
@@ -243,17 +258,17 @@ export const BedSplashHeader = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="d-flex flex-column text-sm">
-          <div className="d-flex flex-row align-items-center text-muted">
-            <i className="bi bi-calendar me-1" />
+        <div className="d-flex flex-row justify-content-between text-sm">
+          <div className="d-flex flex-row text-muted">
+            <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
               <span>Created:</span>{' '}
               {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
             </p>
           </div>
 
-          <div className="d-flex flex-row align-items-center text-muted">
-            <i className="bi bi-calendar-check me-1" />
+          <div className="d-flex flex-row text-muted">
+            <i className="bi bi-calendar4-event me-1 ms-4" />
             <p className="mb-0">
               <span>Last update:</span>{' '}
               {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
