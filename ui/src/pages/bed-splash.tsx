@@ -68,10 +68,10 @@ export const BedSplash = () => {
           >
             <h1 className="fw-bold text-center mb-3">Oh no!</h1>
             <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h2 className="text-2xl text-center">
+              <h3 className="text-2xl text-center">
                 We could not find BED with record identifier: <br />
                 <span className="fw-bold">{bedId}</span>
-              </h2>
+              </h3>
             </div>
             <div className="w-50">
               <p className="fst-italic text-center mt-3">
@@ -108,11 +108,11 @@ export const BedSplash = () => {
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} /> : null}
             </Col>
           </Row>
-          <Row className="mb-2">
+          <Row className="mb-2 g-3">
             <Col sm={12} md={6}>
-              <h2 className="fw-bold">Overview</h2>
+              <h3 className="fw-bold">Overview</h3>
               <div className="border rounded p-1 shadow-sm">
-                <table className="table table-sm rounded text-truncate">
+                <table className="table table-sm rounded text-truncate text-sm">
                   <thead>
                     <tr>
                       <th scope="col">Key</th>
@@ -146,7 +146,7 @@ export const BedSplash = () => {
               </div>
             </Col>
             <Col sm={12} md={6}>
-              <h2 className="fw-bold">BED Sets</h2>
+              <h3 className="fw-bold">BED Sets</h3>
               <div className="border rounded p-1 shadow-sm h-80">
                 <table className="table table-sm rounded text-truncate text-sm">
                   <thead>
@@ -179,25 +179,45 @@ export const BedSplash = () => {
               </div>
             </Col>
           </Row>
-          <h2 className="fw-bold">Statistics</h2>
-          <Row className="mb-4">
+          
+          <Row className="mb-2 g-2">
+            <h3 className="fw-bold">Statistics</h3>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column gap-2 px-1 justify-content-between">
+              <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
               </Col>
             )}
-            <Col sm={12} md={8} className="d-flex flex-column gap-2 px-1">
+            <Col sm={12} md={8} className="d-flex flex-column mt-0">
               <GenomicFeatureBar metadata={metadata!} />
               {/* <PromoterAnalysisBar metadata={metadata!} /> */}
             </Col>
           </Row>
-          <h2 className="fw-bold">Plots</h2>
           <Row className="mb-2">
-            <Plots metadata={metadata!} />
+            <Col sm={12}>
+              <h3 className="fw-bold">Plots</h3>
+              <Plots metadata={metadata!} />
+            </Col>
           </Row>
+
+          <Row className="mb-2 g-2">
+            <h3 className="fw-bold">Similar BED Files</h3>
+            {metadata && (
+              <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0">
+                <NoRegionsCard metadata={metadata} />
+                <MedianTssDistCard metadata={metadata} />
+                <MeanRegionWidthCard metadata={metadata} />
+                <GCContentCard metadata={metadata} />
+              </Col>
+            )}
+            <Col sm={12} md={8} className="d-flex flex-column mt-0">
+              <GenomicFeatureBar metadata={metadata!} />
+              {/* <PromoterAnalysisBar metadata={metadata!} /> */}
+            </Col>
+          </Row>
+
         </div>
       </Layout>
     );
