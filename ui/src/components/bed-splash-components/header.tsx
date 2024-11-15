@@ -143,7 +143,7 @@ export const BedSplashHeader = (props: Props) => {
       </div>
       <div>
         <h5 className='fw-semibold mb-1'>{metadata.name}</h5>
-        <p className='text-body-secondary fst-italic'>{metadata.description}</p>
+        <p className='text-body-secondary fst-italic'>{metadata?.description || 'No description available'}</p>
       </div>
 
       <div className="d-flex flex-row align-items-end justify-content-between mt-2">
