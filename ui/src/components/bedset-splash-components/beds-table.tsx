@@ -148,13 +148,19 @@ export const BedsTable = (props: Props) => {
           onChange={(e) => setGlobalFilter(e.target.value)}
         />
       </div>
-      <div className='table-responsive'>
+      <div className="table-responsive">
         <table className="table mb-2 table-hover table">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle" style={{ minWidth: '110px' }}>
+                  <th
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    scope="col"
+                    className="text-right align-middle"
+                    style={{ minWidth: '110px' }}
+                  >
                     {header.isPlaceholder ? null : (
                       <div
                         className={header.column.getCanSort() ? 'cursor-pointer' : ''}
@@ -171,8 +177,8 @@ export const BedsTable = (props: Props) => {
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                         {{
-                          asc: <i className='bi bi-caret-up-fill ms-1' />,
-                          desc: <i className='bi bi-caret-down-fill ms-1' />,
+                          asc: <i className="bi bi-caret-up-fill ms-1" />,
+                          desc: <i className="bi bi-caret-down-fill ms-1" />,
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                     )}

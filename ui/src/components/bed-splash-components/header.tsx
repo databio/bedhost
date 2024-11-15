@@ -45,7 +45,6 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
@@ -142,8 +141,8 @@ export const BedSplashHeader = (props: Props) => {
         </div>
       </div>
       <div>
-        <h5 className='fw-semibold mb-1'>{metadata.name}</h5>
-        <p className='text-body-secondary fst-italic'>{metadata?.description || 'No description available'}</p>
+        <h5 className="fw-semibold mb-1">{metadata.name}</h5>
+        <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
 
       <div className="d-flex flex-row align-items-end justify-content-between mt-2">

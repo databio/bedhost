@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Col, Image, Row } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
-import { chunkArray, makeThumbnailImageLink , makePDFImageLink } from '../../utils';
+import { chunkArray, makeThumbnailImageLink, makePDFImageLink } from '../../utils';
 import { Fragment } from 'react';
 import { FigureModal } from '../modals/figure-modal';
 

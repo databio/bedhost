@@ -16,7 +16,7 @@ type Props = {
 export const Text2BedSearchResultsTable = (props: Props) => {
   const { results } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
-  
+
   const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
     if (!(e.target as HTMLElement).closest('button')) {
       window.location.href = `/bed/${id}`;
@@ -43,8 +43,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
       </thead>
       <tbody>
         {results.results?.map((result) => (
-          <tr 
-            key={result.id} 
+          <tr
+            key={result.id}
             onClick={handleRowClick(result.metadata?.id)}
             className="cursor-pointer position-relative"
           >

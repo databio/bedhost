@@ -39,20 +39,20 @@ export const FigureModal = (props: Props) => {
         >
           <i className="bi bi-download me-1"></i> Download PNG
         </button>
-        {pdf && 
+        {pdf && (
           <button
-          className="btn btn-outline-primary"
-          onClick={() => {
-            const link = document.createElement('a');
-            link.href = pdf;
-            link.download = alt;
-            link.click();
-          }}
-        >
-          <i className="bi bi-filetype-pdf me-1"></i> Download PDF
-        </button>
-        }
-        
+            className="btn btn-outline-primary"
+            onClick={() => {
+              const link = document.createElement('a');
+              link.href = pdf;
+              link.download = alt;
+              link.click();
+            }}
+          >
+            <i className="bi bi-filetype-pdf me-1"></i> Download PDF
+          </button>
+        )}
+
         <button onClick={() => onHide()} className="btn btn-primary">
           Close
         </button>

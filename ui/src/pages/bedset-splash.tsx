@@ -105,11 +105,9 @@ export const BedsetSplash = () => {
       <Layout title={`BEDbase | ${bedsetId}`} footer fullHeight>
         <div className="my-2">
           <Row className="mb-2">
-            <Col sm={12}>
-              {metadata !== undefined ? <BedsetSplashHeader metadata={metadata} /> : null}
-            </Col>
+            <Col sm={12}>{metadata !== undefined ? <BedsetSplashHeader metadata={metadata} /> : null}</Col>
           </Row>
-          
+
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
@@ -123,17 +121,17 @@ export const BedsetSplash = () => {
               <GenomicFeatureBar metadata={metadata!} />
             </Col>
           </Row>
-          
+
           <Row className="mb-2">
             <Col sm={12}>
               <h4 className="fw-bold">Plots</h4>
               <Plots metadata={metadata!} />
             </Col>
           </Row>
-          
+
           <Row className="mb-2">
             <h4 className="fw-bold">Constituent BED Files</h4>
-            <Col sm={12}>  
+            <Col sm={12}>
               {isLoadingBedfiles ? (
                 <div className="mt-2 mb-5">
                   <CardSkeleton height="100px" />
@@ -148,7 +146,6 @@ export const BedsetSplash = () => {
               )}
             </Col>
           </Row>
-
         </div>
       </Layout>
     );

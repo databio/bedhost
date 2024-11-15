@@ -34,9 +34,7 @@ export const BedSplash = () => {
     full: true,
   });
 
-  const {
-    data: neighbours,
-  } = useBedNeighbours({
+  const { data: neighbours } = useBedNeighbours({
     md5: bedId,
     limit: 10,
     offset: 0,
@@ -51,11 +49,8 @@ export const BedSplash = () => {
   // Helper function to get filtered keys
   const getFilteredKeys = (data: BedMetadata | undefined) => {
     if (!data?.annotation) return [];
-    return Object.keys(data.annotation).filter(k => 
-      k !== 'input_file' && 
-      k !== 'file_name' && 
-      k !== 'sample_name' && 
-      getAnnotationValue(data, k)
+    return Object.keys(data.annotation).filter(
+      (k) => k !== 'input_file' && k !== 'file_name' && k !== 'sample_name' && getAnnotationValue(data, k),
     );
   };
 
@@ -154,8 +149,8 @@ export const BedSplash = () => {
                     {Object.keys(metadata?.annotation || {}).map((k) => {
                       if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
                         return null;
-                      } 
-                      
+                      }
+
                       const value = getAnnotationValue(metadata, k);
                       if (!value) {
                         return null;
@@ -176,7 +171,7 @@ export const BedSplash = () => {
                 </table>
               </div>
             </Col>
-            <Col sm={12} md={6} className='h-100'>
+            <Col sm={12} md={6} className="h-100">
               <h4 className="fw-bold">BEDsets</h4>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <table className="table table-sm table-striped text-truncate text-sm">
@@ -206,26 +201,23 @@ export const BedSplash = () => {
                           </td>
                         </tr>
                       )),
-                      ...Array(
-                        Math.max(
-                          0,
-                          getFilteredKeys(metadata).length - (metadata?.bedsets?.length || 0)
-                        )
-                      ).fill(null).map((_, index) => (
-                        <tr key={`empty-${index}`}>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                          <td>&nbsp;</td>
-                        </tr>
-                      ))
+                      ...Array(Math.max(0, getFilteredKeys(metadata).length - (metadata?.bedsets?.length || 0)))
+                        .fill(null)
+                        .map((_, index) => (
+                          <tr key={`empty-${index}`}>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                          </tr>
+                        )),
                     ]}
                   </tbody>
                 </table>
               </div>
             </Col>
           </Row>
-          
+
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
@@ -248,14 +240,14 @@ export const BedSplash = () => {
             </Col>
           </Row>
 
-          { neighbours &&
+          {neighbours && (
             <Row className="mb-2 g-2">
               <h4 className="fw-bold">Similar BED Files</h4>
-              <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">  
+              <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
                 <Text2BedSearchResultsTable results={neighbours} />
               </Col>
             </Row>
-          }
+          )}
         </div>
       </Layout>
     );

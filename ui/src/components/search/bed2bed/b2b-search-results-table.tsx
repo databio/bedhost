@@ -221,8 +221,8 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {{
-                        asc: <i className='bi bi-caret-up-fill ms-1' />,
-                        desc: <i className='bi bi-caret-down-fill ms-1' />,
+                        asc: <i className="bi bi-caret-up-fill ms-1" />,
+                        desc: <i className="bi bi-caret-down-fill ms-1" />,
                       }[header.column.getIsSorted() as string] ?? null}
                     </div>
                   )}
@@ -233,11 +233,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              onClick={handleRowClick(row.original.metadata?.id)}
-              className="cursor-pointer"
-            >
+            <tr key={row.id} onClick={handleRowClick(row.original.metadata?.id)} className="cursor-pointer">
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}

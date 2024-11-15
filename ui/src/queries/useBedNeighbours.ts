@@ -19,6 +19,6 @@ export const useBedNeighbours = (query: BedNeighboursQuery) => {
     queryFn: async () => {
       const { data } = await api.get<BedNeighboursResponse>(`/bed/${md5}/neighbours?limit=${limit}`);
       return data;
-    }
+    },
   });
 };

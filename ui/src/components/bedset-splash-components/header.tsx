@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { DownloadBedSetModal } from '../modals/download-bedset-modal';
-import {useCopyToClipboard} from "@uidotdev/usehooks";
+import { useCopyToClipboard } from '@uidotdev/usehooks';
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
 type Props = {
@@ -42,11 +42,12 @@ export const BedsetSplashHeader = (props: Props) => {
           </h4>
         </div>
         <div className="d-flex flex-row align-items-center gap-1">
-
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
           <a
-            href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`} target="_blank">
+            href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}
+            target="_blank"
+          >
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-distribute-vertical me-1" />
               Genome Browser
@@ -82,12 +83,12 @@ export const BedsetSplashHeader = (props: Props) => {
                   metadata.bed_ids?.length === 0
                     ? undefined
                     : () => {
-                      addMultipleBedsToCart(metadata.bed_ids || []);
-                      setAddedToCart(true);
-                      setTimeout(() => {
-                        setAddedToCart(false);
-                      }, 500);
-                    }
+                        addMultipleBedsToCart(metadata.bed_ids || []);
+                        setAddedToCart(true);
+                        setTimeout(() => {
+                          setAddedToCart(false);
+                        }, 500);
+                      }
                 }
                 disabled={metadata.bed_ids?.length === 0 || addedToCart}
                 className="btn btn-primary btn-sm"
@@ -104,24 +105,24 @@ export const BedsetSplashHeader = (props: Props) => {
         </div>
       </div>
       <div>
-        <p className='text-body-secondary fst-italic'>{metadata?.description || 'No description available'}</p>
+        <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
       <div className="d-flex flex-row align-items-end justify-content-between mt-2">
         <div className="d-flex flex-row gap-1">
-          <p className='mb-0'>
+          <p className="mb-0">
             <div className="badge bg-primary text-wrap">
               <i className="bi bi-hash me-1" />
               {metadata.md5sum}
             </div>
           </p>
-          { metadata.bed_ids &&
-            <p className='mb-0'>
+          {metadata.bed_ids && (
+            <p className="mb-0">
               <div className="badge bg-primary text-wrap">
                 <i className="bi bi-file-earmark-text me-1" />
                 {metadata.bed_ids?.length} BED files
               </div>
             </p>
-          }
+          )}
         </div>
       </div>
       <DownloadBedSetModal id={metadata.id} show={showDownloadModal} setShow={setShowDownloadModal} />
