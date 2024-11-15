@@ -177,12 +177,12 @@ export const BedSplash = () => {
               </div>
             </Col>
             <Col sm={12} md={6} className='h-100'>
-              <h4 className="fw-bold">BED Sets</h4>
+              <h4 className="fw-bold">BEDsets</h4>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <table className="table table-sm table-striped text-truncate text-sm">
                   <thead>
                     <tr>
-                      <th scope="col">BED set ID</th>
+                      <th scope="col">BEDset ID</th>
                       <th scope="col">Name</th>
                       <th scope="col">Description</th>
                       <th scope="col">View</th>
