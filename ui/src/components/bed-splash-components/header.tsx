@@ -141,15 +141,12 @@ export const BedSplashHeader = (props: Props) => {
           </Dropdown>
         </div>
       </div>
-      <div className="d-flex flex-row align-items-end justify-content-between">
-        <b>{metadata.name}</b>
-        <div className="ms-auto">
-          {metadata.description}
-        </div>
+      <div>
+        <h5 className='fw-semibold mb-1'>{metadata.name}</h5>
+        <p className='text-body-secondary fst-italic'>{metadata.description}</p>
       </div>
 
       <div className="d-flex flex-row align-items-end justify-content-between mt-2">
-
         <div className="d-flex flex-row gap-1 text-lg">
           <div className="d-flex flex-row">
             <p className="mb-0">
@@ -270,7 +267,7 @@ export const BedSplashHeader = (props: Props) => {
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1 ms-4" />
             <p className="mb-0">
-              <span>Last update:</span>{' '}
+              <span>Updated:</span>{' '}
               {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
             </p>
           </div>

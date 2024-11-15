@@ -79,10 +79,10 @@ export const BedSplash = () => {
           >
             <h1 className="fw-bold text-center mb-3">Oh no!</h1>
             <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h3 className="text-2xl text-center">
+              <h4 className="text-2xl text-center">
                 We could not find BED with record identifier: <br />
                 <span className="fw-bold">{bedId}</span>
-              </h3>
+              </h4>
             </div>
             <div className="w-50">
               <p className="fst-italic text-center mt-3">
@@ -121,7 +121,7 @@ export const BedSplash = () => {
           </Row>
           <Row className="mb-2 g-3">
             <Col sm={12} md={6}>
-              <h3 className="fw-bold">Overview</h3>
+              <h4 className="fw-bold">Overview</h4>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <table className="table table-sm table-striped text-truncate text-sm">
                   <thead>
@@ -157,7 +157,7 @@ export const BedSplash = () => {
               </div>
             </Col>
             <Col sm={12} md={6}>
-              <h3 className="fw-bold">BED Sets</h3>
+              <h4 className="fw-bold">BED Sets</h4>
               <div className="border rounded px-0 pt-1 shadow-sm h-80">
                 <table className="table table-sm table-striped text-truncate text-sm">
                   <thead>
@@ -192,7 +192,7 @@ export const BedSplash = () => {
           </Row>
           
           <Row className="mb-2 g-2">
-            <h3 className="fw-bold">Statistics</h3>
+            <h4 className="fw-bold">Statistics</h4>
             {metadata && (
               <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0">
                 <NoRegionsCard metadata={metadata} />
@@ -206,16 +206,17 @@ export const BedSplash = () => {
               {/* <PromoterAnalysisBar metadata={metadata!} /> */}
             </Col>
           </Row>
+          
           <Row className="mb-2">
             <Col sm={12}>
-              <h3 className="fw-bold">Plots</h3>
+              <h4 className="fw-bold">Plots</h4>
               <Plots metadata={metadata!} />
             </Col>
           </Row>
 
           { neighbours &&
             <Row className="mb-2 g-2">
-              <h3 className="fw-bold">Similar BED Files</h3>
+              <h4 className="fw-bold">Similar BED Files</h4>
               <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">  
                 <Text2BedSearchResultsTable results={neighbours} />
               </Col>

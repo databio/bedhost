@@ -71,10 +71,10 @@ export const BedsetSplash = () => {
           >
             <h1 className="fw-bold text-center mb-3">Oh no!</h1>
             <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h3 className="text-2xl text-center">
+              <h4 className="text-2xl text-center">
                 We could not find BEDset with record identifier: <br />
                 <span className="fw-bold">{bedsetId}</span>
-              </h3>
+              </h4>
             </div>
             <div className="w-50">
               <p className="fst-italic text-center mt-3">
@@ -111,30 +111,28 @@ export const BedsetSplash = () => {
           </Row>
           
           <Row className="mb-2 g-2">
-            <h3 className="fw-bold">Statistics</h3>
+            <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <>
-                <Col sm={12} md={4} className="d-flex flex-column px-1 justify-content-between">
-                  <MeanRegionWidthCard metadata={metadata} />
-                  <MedianTssDistCard metadata={metadata} />
-                  <GCContentCard metadata={metadata} />
-                </Col>
-                <Col sm={12} md={8} className="h-100 align-items-stretch">
-                  <GenomicFeatureBar metadata={metadata!} />
-                </Col>
-              </>
+              <Col sm={12} md={4} className="d-flex flex-column px-1 justify-content-between mt-0">
+                <MeanRegionWidthCard metadata={metadata} />
+                <MedianTssDistCard metadata={metadata} />
+                <GCContentCard metadata={metadata} />
+              </Col>
             )}
+            <Col sm={12} md={8} className="h-100 align-items-stretch mt-0">
+              <GenomicFeatureBar metadata={metadata!} />
+            </Col>
           </Row>
           
           <Row className="mb-2">
             <Col sm={12}>
-              <h3 className="fw-bold">Plots</h3>
+              <h4 className="fw-bold">Plots</h4>
               <Plots metadata={metadata!} />
             </Col>
           </Row>
           
           <Row className="mb-2">
-            <h3 className="fw-bold">BED files in this BED set</h3>
+            <h4 className="fw-bold">Constituent BED Files</h4>
             <Col sm={12}>  
               {isLoadingBedfiles ? (
                 <div className="mt-2 mb-5">

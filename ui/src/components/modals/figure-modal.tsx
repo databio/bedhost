@@ -49,7 +49,7 @@ export const FigureModal = (props: Props) => {
             link.click();
           }}
         >
-          <i className="bi bi-download me-1"></i> Download PDF
+          <i className="bi bi-filetype-pdf me-1"></i> Download PDF
         </button>
         }
         

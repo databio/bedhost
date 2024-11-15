@@ -193,7 +193,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
     <div className="rounded border shadow-sm px-0 py-1">
       <div className="d-flex flex-row mt-2">
         <input
-          className="form-control mx-3 mt-1 mb-2"
+          className="form-control mx-3 my-2"
           placeholder="Search files"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}

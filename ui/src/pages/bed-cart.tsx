@@ -14,7 +14,7 @@ export const BedCart = () => {
           <h1>Your cart is empty</h1>
           <p className="fs-italics">Try searching for some bedfiles!</p>
           <div className="d-flex flex-row gap-2">
-            <a href="/bed-search">
+            <a href="/search">
               <button className="btn btn-primary">
                 <i className="bi bi-search me-1"></i>
                 Search

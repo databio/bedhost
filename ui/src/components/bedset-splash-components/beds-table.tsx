@@ -139,17 +139,17 @@ export const BedsTable = (props: Props) => {
   });
 
   return (
-    <div className="rounded border shadow-sm my-2 p-0">
+    <div className="rounded border shadow-sm mb-2 p-0">
       <div className="d-flex flex-row mt-2">
         <input
-          className="form-control mx-3 mt-1 mb-2"
+          className="form-control mx-3 my-2"
           placeholder="Search files"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
         />
       </div>
       <div className='table-responsive'>
-        <table className="table mb-2 table-hover">
+        <table className="table mb-2 table-hover table">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
