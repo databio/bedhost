@@ -22,10 +22,10 @@ export const BedsetSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
+      <div className="d-flex flex-row align-items-start justify-content-between">
         <div className="d-flex flex-column align-items-start">
           <h4 className="fw-bold">
-            <i className="bi bi-file-earmark-text me-2" />
+            <i className="bi bi-journal-text me-2" />
             {metadata?.id || 'No name available'}
             <button
               className="btn btn-link text-primary mb-2"
@@ -104,16 +104,24 @@ export const BedsetSplashHeader = (props: Props) => {
         </div>
       </div>
       <div>
-        <p className="mb-2">{metadata?.description || 'No description available'}</p>
+        <p className='text-body-secondary fst-italic'>{metadata?.description || 'No description available'}</p>
       </div>
-      <div className="d-flex flex-row align-items-end justify-content-start gap-1">
-        <div className="badge bg-primary text-wrap">
-          <i className="bi bi-hash me-1" />
-          {metadata.md5sum}
-        </div>
-        <div className="badge bg-primary text-wrap">
-          <i className="bi bi-file-earmark-text me-1" />
-          {metadata.bed_ids?.length} BED files
+      <div className="d-flex flex-row align-items-end justify-content-between mt-2">
+        <div className="d-flex flex-row gap-1">
+          <p className='mb-0'>
+            <div className="badge bg-primary text-wrap">
+              <i className="bi bi-hash me-1" />
+              {metadata.md5sum}
+            </div>
+          </p>
+          { metadata.bed_ids &&
+            <p className='mb-0'>
+              <div className="badge bg-primary text-wrap">
+                <i className="bi bi-file-earmark-text me-1" />
+                {metadata.bed_ids?.length} BED files
+              </div>
+            </p>
+          }
         </div>
       </div>
       <DownloadBedSetModal id={metadata.id} show={showDownloadModal} setShow={setShowDownloadModal} />

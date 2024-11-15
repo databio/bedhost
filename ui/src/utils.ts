@@ -23,6 +23,11 @@ export const makeThumbnailImageLink = (md5: string, plotName: string, type: Obje
   return `${API_BASE}/objects/${type}.${md5}.${plotName}/access/http/thumbnail`;
 };
 
+export const makePDFImageLink = (md5: string, plotName: string, type: ObjectType) => {
+  const API_BASE = import.meta.env.VITE_API_BASE || '';
+  return `${API_BASE}/objects/${type}.${md5}.${plotName}/access/http/bytes`;
+};
+
 export const formatDateTime = (date: string) => {
   return new Date(date).toLocaleString();
 };

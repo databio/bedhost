@@ -139,65 +139,67 @@ export const BedsTable = (props: Props) => {
   });
 
   return (
-    <div className="rounded border shadow-sm my-2">
+    <div className="rounded border shadow-sm mb-2 p-0">
       <div className="d-flex flex-row mt-2">
         <input
-          className="form-control"
+          className="form-control mx-3 my-2"
           placeholder="Search files"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
         />
       </div>
-      <table className="table mb-2 table-hover">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle" style={{ minWidth: '110px' }}>
-                  {header.isPlaceholder ? null : (
-                    <div
-                      className={header.column.getCanSort() ? 'cursor-pointer' : ''}
-                      onClick={header.column.getToggleSortingHandler()}
-                      title={
-                        header.column.getCanSort()
-                          ? header.column.getNextSortingOrder() === 'asc'
-                            ? 'Sort ascending'
-                            : header.column.getNextSortingOrder() === 'desc'
-                            ? 'Sort descending'
-                            : 'Clear sort'
-                          : undefined
-                      }
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: ' 🔼',
-                        desc: ' 🔽',
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className="cursor-pointer"
-              onClick={() => (window.location.href = `/bed/${row.original.id}`)}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="text-right align-middle small-font">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className='table-responsive'>
+        <table className="table mb-2 table-hover table">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <th key={header.id} colSpan={header.colSpan} scope="col" className="text-right align-middle" style={{ minWidth: '110px' }}>
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={header.column.getCanSort() ? 'cursor-pointer' : ''}
+                        onClick={header.column.getToggleSortingHandler()}
+                        title={
+                          header.column.getCanSort()
+                            ? header.column.getNextSortingOrder() === 'asc'
+                              ? 'Sort ascending'
+                              : header.column.getNextSortingOrder() === 'desc'
+                              ? 'Sort descending'
+                              : 'Clear sort'
+                            : undefined
+                        }
+                      >
+                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {{
+                          asc: <i className='bi bi-caret-up-fill ms-1' />,
+                          desc: <i className='bi bi-caret-down-fill ms-1' />,
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody>
+            {table.getRowModel().rows.map((row) => (
+              <tr
+                key={row.id}
+                className="cursor-pointer"
+                onClick={() => (window.location.href = `/bed/${row.original.id}`)}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="text-right align-middle small-font">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
       <div className="h-4" />
-      <div className="d-flex justify-content-between align-items-center gap-2 mb-2">
+      <div className="d-flex justify-content-between align-items-center gap-2 m-3">
         <div className="d-flex flex-row align-items-center ">
           Showing
           <span className="fw-bold mx-1">

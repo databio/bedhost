@@ -678,6 +678,17 @@ export interface components {
             /** Results */
             results?: components["schemas"]["QdrantSearchResult"][];
         };
+        /** BedNeighborsResult */
+        BedNeighboursResult: {
+            /** Count */
+            count: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Results */
+            results?: components["schemas"]["QdrantSearchResult"][];
+        };
         /** BedMetadataAll */
         BedMetadataAll: {
             /**

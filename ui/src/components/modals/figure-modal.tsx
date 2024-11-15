@@ -3,13 +3,15 @@ import { Modal } from 'react-bootstrap';
 type Props = {
   title: string;
   src: string;
+  pdf?: string;
   alt: string;
   show: boolean;
   onHide: () => void;
 };
 
 export const FigureModal = (props: Props) => {
-  const { title, src, alt, show, onHide } = props;
+  const { title, src, pdf, alt, show, onHide } = props;
+
   return (
     <Modal
       animation={false}
@@ -35,8 +37,22 @@ export const FigureModal = (props: Props) => {
             link.click();
           }}
         >
-          <i className="bi bi-download me2"></i> Download
+          <i className="bi bi-download me-1"></i> Download PNG
         </button>
+        {pdf && 
+          <button
+          className="btn btn-outline-primary"
+          onClick={() => {
+            const link = document.createElement('a');
+            link.href = pdf;
+            link.download = alt;
+            link.click();
+          }}
+        >
+          <i className="bi bi-filetype-pdf me-1"></i> Download PDF
+        </button>
+        }
+        
         <button onClick={() => onHide()} className="btn btn-primary">
           Close
         </button>

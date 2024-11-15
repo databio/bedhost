@@ -183,17 +183,23 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
     getFilteredRowModel: getFilteredRowModel(),
   });
 
+  const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
+    if (!(e.target as HTMLElement).closest('button')) {
+      window.location.href = `/bed/${id}`;
+    }
+  };
+
   return (
-    <div className="rounded border shadow-sm p-1">
+    <div className="rounded border shadow-sm px-0 py-1">
       <div className="d-flex flex-row mt-2">
         <input
-          className="form-control"
+          className="form-control mx-3 my-2"
           placeholder="Search files"
           value={globalFilter}
           onChange={(e) => setGlobalFilter(e.target.value)}
         />
       </div>
-      <table className="table mb-2 text-sm">
+      <table className="table mb-2 text-sm table-hover">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
@@ -215,8 +221,8 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                     >
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {{
-                        asc: ' 🔼',
-                        desc: ' 🔽',
+                        asc: <i className='bi bi-caret-up-fill ms-1' />,
+                        desc: <i className='bi bi-caret-down-fill ms-1' />,
                       }[header.column.getIsSorted() as string] ?? null}
                     </div>
                   )}
@@ -227,7 +233,11 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
+            <tr
+              key={row.id}
+              onClick={handleRowClick(row.original.metadata?.id)}
+              className="cursor-pointer"
+            >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
               ))}
@@ -236,8 +246,8 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
         </tbody>
       </table>
       <div className="h-4" />
-      <div className="d-flex justify-content-between align-items-center gap-2 mb-2">
-        <div className="d-flex flex-row align-items-center ">
+      <div className="d-flex justify-content-between align-items-center gap-2 m-3">
+        <div className="d-flex flex-row align-items-center">
           Showing
           <span className="fw-bold mx-1">
             {table.getState().pagination.pageSize * table.getState().pagination.pageIndex + 1} to{' '}
