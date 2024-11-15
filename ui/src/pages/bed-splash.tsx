@@ -13,9 +13,12 @@ import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
 import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
 import { snakeToTitleCase } from '../utils';
-import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table.tsx';
+import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table';
 import { useBedNeighbours } from '../queries/useBedNeighbours';
+import type { components } from '../../bedbase-types.d.ts';
 
+// Use the response type to properly type the metadata
+type BedMetadata = components['schemas']['BedMetadataAll'];
 
 export const BedSplash = () => {
   const params = useParams();
@@ -38,6 +41,23 @@ export const BedSplash = () => {
     limit: 10,
     offset: 0,
   });
+
+  // Helper function to safely type the annotation keys
+  const getAnnotationValue = (data: BedMetadata | undefined, key: string) => {
+    if (!data?.annotation) return null;
+    return (data.annotation as Record<string, string | null>)[key];
+  };
+
+  // Helper function to get filtered keys
+  const getFilteredKeys = (data: BedMetadata | undefined) => {
+    if (!data?.annotation) return [];
+    return Object.keys(data.annotation).filter(k => 
+      k !== 'input_file' && 
+      k !== 'file_name' && 
+      k !== 'sample_name' && 
+      getAnnotationValue(data, k)
+    );
+  };
 
   if (isLoading) {
     return (
@@ -134,31 +154,31 @@ export const BedSplash = () => {
                     {Object.keys(metadata?.annotation || {}).map((k) => {
                       if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
                         return null;
-                        // @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be)
-                      } else if (!metadata?.annotation[k]) {
+                      } 
+                      
+                      const value = getAnnotationValue(metadata, k);
+                      if (!value) {
                         return null;
-                      } else {
-                        return (
-                          <tr key={k}>
-                            <td style={{ maxWidth: '50px' }} className="fst-italic">
-                              {snakeToTitleCase(k)}
-                            </td>
-
-                            <td style={{ maxWidth: '120px' }} className="truncate">
-                              {/* @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be) */}
-                              {metadata?.annotation[k] || 'N/A'}
-                            </td>
-                          </tr>
-                        );
                       }
+
+                      return (
+                        <tr key={k}>
+                          <td style={{ maxWidth: '50px' }} className="fst-italic">
+                            {snakeToTitleCase(k)}
+                          </td>
+                          <td style={{ maxWidth: '120px' }} className="truncate">
+                            {value ?? 'N/A'}
+                          </td>
+                        </tr>
+                      );
                     })}
                   </tbody>
                 </table>
               </div>
             </Col>
-            <Col sm={12} md={6}>
+            <Col sm={12} md={6} className='h-100'>
               <h4 className="fw-bold">BED Sets</h4>
-              <div className="border rounded px-0 pt-1 shadow-sm h-80">
+              <div className="border rounded px-0 pt-1 shadow-sm">
                 <table className="table table-sm table-striped text-truncate text-sm">
                   <thead>
                     <tr>
@@ -169,22 +189,37 @@ export const BedSplash = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {metadata?.bedsets?.map((bedset) => (
-                      <tr key={bedset.id} className="truncate">
-                        <td className="truncate" style={{ maxWidth: '150px' }}>
-                          {bedset.id}
-                        </td>
-                        <td className="truncate" style={{ maxWidth: '100px' }}>
-                          {bedset.name || 'No name'}
-                        </td>
-                        <td className="truncate" style={{ maxWidth: '300px' }}>
-                          {bedset.description || 'No description'}
-                        </td>
-                        <td>
-                          <a href={`/bedset/${bedset.id}`}>View</a>
-                        </td>
-                      </tr>
-                    )) || 'N/A'}
+                    {[
+                      ...(metadata?.bedsets || []).map((bedset) => (
+                        <tr key={bedset.id} className="truncate">
+                          <td className="truncate" style={{ maxWidth: '150px' }}>
+                            {bedset.id}
+                          </td>
+                          <td className="truncate" style={{ maxWidth: '100px' }}>
+                            {bedset.name || 'No name'}
+                          </td>
+                          <td className="truncate" style={{ maxWidth: '300px' }}>
+                            {bedset.description || 'No description'}
+                          </td>
+                          <td>
+                            <a href={`/bedset/${bedset.id}`}>View</a>
+                          </td>
+                        </tr>
+                      )),
+                      ...Array(
+                        Math.max(
+                          0,
+                          getFilteredKeys(metadata).length - (metadata?.bedsets?.length || 0)
+                        )
+                      ).fill(null).map((_, index) => (
+                        <tr key={`empty-${index}`}>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                          <td>&nbsp;</td>
+                        </tr>
+                      ))
+                    ]}
                   </tbody>
                 </table>
               </div>
@@ -203,10 +238,9 @@ export const BedSplash = () => {
             )}
             <Col sm={12} md={8} className="d-flex flex-column mt-0">
               <GenomicFeatureBar metadata={metadata!} />
-              {/* <PromoterAnalysisBar metadata={metadata!} /> */}
             </Col>
           </Row>
-          
+
           <Row className="mb-2">
             <Col sm={12}>
               <h4 className="fw-bold">Plots</h4>
@@ -222,7 +256,6 @@ export const BedSplash = () => {
               </Col>
             </Row>
           }
-
         </div>
       </Layout>
     );

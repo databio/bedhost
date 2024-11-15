@@ -57,7 +57,6 @@ const Plot = (props: PlotProps) => {
 
 export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
-  console.log(props)
 
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
