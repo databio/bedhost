@@ -26,11 +26,6 @@ export const BedsetSplash = () => {
     autoRun: true,
   });
 
-  console.log(useBedsetMetadata({
-    md5: bedsetId,
-    autoRun: true,
-  }));
-
   const { isFetching: isLoadingBedfiles, data: bedfiles } = useBedsetBedfiles({
     id: bedsetId,
     autoRun: true,

@@ -114,12 +114,14 @@ export const BedsetSplashHeader = (props: Props) => {
               {metadata.md5sum}
             </div>
           </p>
-          <p className='mb-0'>
-            <div className="badge bg-primary text-wrap">
-              <i className="bi bi-file-earmark-text me-1" />
-              {metadata.bed_ids?.length} BED files
-            </div>
-          </p>
+          { metadata.bed_ids &&
+            <p className='mb-0'>
+              <div className="badge bg-primary text-wrap">
+                <i className="bi bi-file-earmark-text me-1" />
+                {metadata.bed_ids?.length} BED files
+              </div>
+            </p>
+          }
         </div>
       </div>
       <DownloadBedSetModal id={metadata.id} show={showDownloadModal} setShow={setShowDownloadModal} />
