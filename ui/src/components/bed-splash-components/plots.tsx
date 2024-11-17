@@ -61,10 +61,10 @@ export const Plots = (props: PlotsProps) => {
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
     <Fragment>
-      <Row className="mb-2">
+      <div className="my-2">
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
-            <Fragment key={idx}>
+            <Row key={idx} className="mb-2">
               {chunk.map((plotName) => {
                 // this is for type checking
                 const plotNameKey = plotName as keyof typeof metadata.plots;
@@ -73,10 +73,10 @@ export const Plots = (props: PlotsProps) => {
                 const title = plotExists ? metadata.plots[plotNameKey]?.title : plotName;
                 const alt = plotExists
                   ? // @ts-expect-error: type checking here is just too much
-                    metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
+                  metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
                   : plotName;
                 return (
-                  <Col key={plotName}>
+                  <Col key={plotName} sm={12} md={4} className="px-1">
                     <Plot
                       key={plotName}
                       src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
@@ -87,9 +87,9 @@ export const Plots = (props: PlotsProps) => {
                   </Col>
                 );
               })}
-            </Fragment>
+            </Row>
           ))}
-      </Row>
+      </div>
     </Fragment>
   );
 };
