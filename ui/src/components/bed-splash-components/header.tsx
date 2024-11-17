@@ -144,10 +144,9 @@ export const BedSplashHeader = (props: Props) => {
         <h5 className="fw-semibold mb-1">{metadata.name}</h5>
         <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
-
-      <div className="d-flex flex-row align-items-end justify-content-between mt-2">
-        <div className="d-flex flex-row gap-1 text-lg">
-          <div className="d-flex flex-row">
+      <div className="d-flex flex-column flex-md-row align-items-end justify-content-between mt-2">
+        <div className="d-flex flex-column flex-md-row gap-1 text-lg">
+          <div className="d-flex flex-row mb-2 mb-md-0">
             <p className="mb-0">
               <OverlayTrigger
                 placement="top"
@@ -264,7 +263,7 @@ export const BedSplashHeader = (props: Props) => {
           </div>
 
           <div className="d-flex flex-row text-muted">
-            <i className="bi bi-calendar4-event me-1 ms-4" />
+            <i className="bi bi-calendar4-event me-1 ms-md-4" />
             <p className="mb-0">
               <span>Updated:</span>{' '}
               {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
@@ -272,6 +271,7 @@ export const BedSplashHeader = (props: Props) => {
           </div>
         </div>
       </div>
+
     </div>
   );
 };

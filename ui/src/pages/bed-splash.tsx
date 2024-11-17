@@ -174,16 +174,17 @@ export const BedSplash = () => {
             <Col sm={12} md={6} className="h-100">
               <h4 className="fw-bold">BEDsets</h4>
               <div className="border rounded px-0 pt-1 shadow-sm">
-                <table className="table table-sm table-striped text-truncate text-sm">
-                  <thead>
+                <div className="table-responsive">
+                  <table className="table table-sm table-striped text-truncate text-sm">
+                    <thead>
                     <tr>
                       <th scope="col">BEDset ID</th>
                       <th scope="col">Name</th>
                       <th scope="col">Description</th>
                       <th scope="col">View</th>
                     </tr>
-                  </thead>
-                  <tbody>
+                    </thead>
+                    <tbody>
                     {[
                       ...(metadata?.bedsets || []).map((bedset) => (
                         <tr key={bedset.id} className="truncate">
@@ -212,8 +213,9 @@ export const BedSplash = () => {
                           </tr>
                         )),
                     ]}
-                  </tbody>
-                </table>
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </Col>
           </Row>

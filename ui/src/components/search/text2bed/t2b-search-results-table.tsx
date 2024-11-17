@@ -24,8 +24,9 @@ export const Text2BedSearchResultsTable = (props: Props) => {
   };
 
   return (
-    <table className="table text-sm table-hover">
-      <thead>
+    <div className="table-responsive">
+      <table className="table text-sm table-hover">
+        <thead>
         <tr>
           <th scope="col">Name</th>
           <th scope="col">Genome</th>
@@ -40,8 +41,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             Actions
           </th>
         </tr>
-      </thead>
-      <tbody>
+        </thead>
+        <tbody>
         {results.results?.map((result) => (
           <tr
             key={result.id}
@@ -117,7 +118,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             </td>
           </tr>
         ))}
-      </tbody>
-    </table>
-  );
-};
+        </tbody>
+      </table>
+    </div>
+      );
+      };
