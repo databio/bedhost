@@ -1,8 +1,10 @@
 import { useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { DownloadBedSetModal } from '../modals/download-bedset-modal';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
+
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
 type Props = {
@@ -22,7 +24,7 @@ export const BedsetSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-column flex-xl-row align-items-start justify-content-xl-between mb-3 mb-xl-0">
+      <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-0">
         <div className="d-flex align-items-center">
           <h4 className="fw-bold mb-2">
             <i className="bi bi-journal-text me-2" />
@@ -41,7 +43,7 @@ export const BedsetSplashHeader = (props: Props) => {
             </button>
           </h4>
         </div>
-        <div className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end gap-1 flex-shrink-0">
+        <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-end gap-1 flex-shrink-0">
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
           <a
@@ -51,13 +53,6 @@ export const BedsetSplashHeader = (props: Props) => {
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-distribute-vertical me-1" />
               Genome Browser
-            </button>
-          </a>
-
-          <a href={`${API_BASE}/bedset/${metadata.id}/pep`}>
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-download me-1" />
-              Download PEP
             </button>
           </a>
 
@@ -98,10 +93,22 @@ export const BedsetSplashHeader = (props: Props) => {
               </button>
             )
           }
-          <button onClick={() => setShowDownloadModal(true)} className="btn btn-outline-primary btn-sm">
-            <i className="bi bi-download me-1" />
-            Download BEDset
-          </button>
+
+          <Dropdown>
+            <Dropdown.Toggle variant="outline-primary" id="dropdown-basic" size="sm">
+              <i className="bi bi-download me-1" />
+              Downloads
+            </Dropdown.Toggle>
+            <Dropdown.Menu className='border border-light-subtle shadow-sm'>
+              <Dropdown.Item className="text-primary" onClick={() => setShowDownloadModal(true)}>
+                Download BEDset
+              </Dropdown.Item>
+              <Dropdown.Item className="text-primary" href={`${API_BASE}/bedset/${metadata.id}/pep`}>
+                Download PEP
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+
         </div>
       </div>
       <div>

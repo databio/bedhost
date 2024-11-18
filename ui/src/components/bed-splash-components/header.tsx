@@ -28,7 +28,7 @@ export const BedSplashHeader = (props: Props) => {
   return (
     <div className="border-bottom py-2">
       <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-1">
-        <div className="d-flex align-items-center overflow-x-scroll w-100">
+        <div className="d-flex align-items-center overflow-x-auto w-100">
           <h4 className="fw-bold d-flex align-items-center flex-nowrap">
             <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
             <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
@@ -99,11 +99,11 @@ export const BedSplashHeader = (props: Props) => {
             {
               // If there are no files to download, disable the dropdown
               noFilesToDownload ? (
-                <Dropdown.Menu>
+                <Dropdown.Menu className='border border-light-subtle shadow-sm'>
                   <Dropdown.Item disabled>There are no files to download</Dropdown.Item>
                 </Dropdown.Menu>
               ) : (
-                <Dropdown.Menu>
+                <Dropdown.Menu className='border border-light-subtle shadow-sm'>
                   {metadata.files?.bed_file && (
                     <Fragment>
                       {(metadata.files?.bed_file?.access_methods || []).map((method) => {
@@ -144,7 +144,7 @@ export const BedSplashHeader = (props: Props) => {
         <h5 className="fw-semibold mb-1">{metadata.name}</h5>
         <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
-      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end justify-content-md-between mt-2 overflow-x-scroll">
+      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end justify-content-md-between mt-2 overflow-x-auto">
         <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-md-0">
           <div className="d-flex flex-row">
             <p className="mb-0">
