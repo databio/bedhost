@@ -64,7 +64,7 @@ export const Plots = (props: PlotsProps) => {
       <Row className="mb-2 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
-            <Fragment key={idx} className="mb-2">
+            <Fragment key={idx}>
               {chunk.map((plotName) => {
                 // this is for type checking
                 const plotNameKey = plotName as keyof typeof metadata.plots;
