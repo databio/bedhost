@@ -28,7 +28,7 @@ export const BedsetSplashHeader = (props: Props) => {
             <i className="bi bi-journal-text me-2" />
             {metadata?.id || 'No name available'}
             <button
-              className="btn btn-link text-primary mb-2"
+              className="btn btn-link text-primary mb-1"
               onClick={() => {
                 copyToClipboard(metadata.id || '');
                 setCopiedId(true);

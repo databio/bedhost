@@ -33,7 +33,7 @@ export const BedSplashHeader = (props: Props) => {
             <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
             <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
             <button
-              className="btn btn-link text-primary mb-0 ms-2 flex-shrink-0"
+              className="btn btn-link text-primary mb-1"
               onClick={() => {
                 copyToClipboard(metadata.id || '');
                 setCopiedId(true);
@@ -253,7 +253,7 @@ export const BedSplashHeader = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="d-flex flex-column flex-md-row justify-content-md-between text-sm">
+        <div className="d-flex flex-column justify-content-md-between align-items-start align-items-md-end text-sm">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
@@ -263,7 +263,7 @@ export const BedSplashHeader = (props: Props) => {
           </div>
 
           <div className="d-flex flex-row text-muted">
-            <i className="bi bi-calendar4-event me-1 ms-md-4" />
+            <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
               <span>Updated:</span>{' '}
               {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
