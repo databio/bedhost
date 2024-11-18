@@ -357,24 +357,30 @@ async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     """
     _LOGGER.info(f"Searching for: {query}")
 
-    results_sql = bbagent.bed.sql_search(
-        query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
-    )
+    # results_sql = bbagent.bed.sql_search(
+    #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
+    # )
+    #
+    # if results_sql.count > results_sql.offset:
+    #     qdrant_offset = offset - results_sql.offset
+    # else:
+    #     qdrant_offset = offset - results_sql.count
+    #
+    # results_qdr = bbagent.bed.text_to_bed_search(
+    #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
+    # )
+    #
+    # results = BedListSearchResult(
+    #     count=results_qdr.count,
+    #     limit=limit,
+    #     offset=offset,
+    #     results=(results_sql.results + results_qdr.results)[0:limit],
+    # )
 
-    if results_sql.count > results_sql.offset:
-        qdrant_offset = offset - results_sql.offset
-    else:
-        qdrant_offset = offset - results_sql.count
-
-    results_qdr = bbagent.bed.text_to_bed_search(
-        query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
-    )
-
-    results = BedListSearchResult(
-        count=results_qdr.count,
+    results = bbagent.bed.text_to_bed_search(
+        query,
         limit=limit,
         offset=offset,
-        results=(results_sql.results + results_qdr.results)[0:limit],
     )
 
     if results:
