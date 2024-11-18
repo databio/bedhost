@@ -111,13 +111,13 @@ export const BedsetSplash = () => {
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column px-1 justify-content-between mt-0">
+              <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0 gap-2">
                 <MeanRegionWidthCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
               </Col>
             )}
-            <Col sm={12} md={8} className="h-100 align-items-stretch mt-0">
+            <Col sm={12} md={8} className="h-100 align-items-stretch mt-2 mt-md-0">
               <GenomicFeatureBar metadata={metadata!} />
             </Col>
           </Row>

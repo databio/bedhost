@@ -27,13 +27,13 @@ export const BedSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
-        <div className="d-flex flex-column">
-          <h4 className="fw-bold mb-0">
-            <i className="bi bi-file-earmark-text me-2" />
-            {metadata?.id || 'No id available'}
+      <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-1 overflow-x-scroll">
+        <div className="d-flex align-items-center overflow-x-auto">
+          <h4 className="fw-bold d-flex align-items-center flex-nowrap">
+            <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
+            <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
             <button
-              className="btn btn-link text-primary mb-2"
+              className="btn btn-link text-primary mb-0 ms-2 flex-shrink-0"
               onClick={() => {
                 copyToClipboard(metadata.id || '');
                 setCopiedId(true);
@@ -46,7 +46,7 @@ export const BedSplashHeader = (props: Props) => {
             </button>
           </h4>
         </div>
-        <div className="d-flex flex-row align-items-center gap-1">
+        <div className="d-flex flex-col align-items-center gap-1">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-info-circle me-1" />
@@ -144,9 +144,9 @@ export const BedSplashHeader = (props: Props) => {
         <h5 className="fw-semibold mb-1">{metadata.name}</h5>
         <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
-      <div className="d-flex flex-column flex-md-row align-items-end justify-content-between mt-2">
-        <div className="d-flex flex-column flex-md-row gap-1 text-lg">
-          <div className="d-flex flex-row mb-2 mb-md-0">
+      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end justify-content-md-between mt-2 overflow-x-scroll">
+        <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-md-0">
+          <div className="d-flex flex-row">
             <p className="mb-0">
               <OverlayTrigger
                 placement="top"
@@ -253,7 +253,7 @@ export const BedSplashHeader = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="d-flex flex-row justify-content-between text-sm">
+        <div className="d-flex flex-column flex-md-row justify-content-md-between text-sm">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
@@ -271,7 +271,6 @@ export const BedSplashHeader = (props: Props) => {
           </div>
         </div>
       </div>
-
     </div>
   );
 };

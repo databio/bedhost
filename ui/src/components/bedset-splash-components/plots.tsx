@@ -58,7 +58,7 @@ export const Plots = (props: PlotsProps) => {
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
     <Fragment>
-      <Row className="mb-2 row-cols-3 g-2">
+      <Row className="mb-2 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
             <Fragment key={idx}>

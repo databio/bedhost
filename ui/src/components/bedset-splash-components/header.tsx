@@ -22,9 +22,9 @@ export const BedsetSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-row align-items-start justify-content-between">
-        <div className="d-flex flex-column align-items-start">
-          <h4 className="fw-bold">
+      <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-0 overflow-scroll">
+        <div className="d-flex align-items-center overflow-x-auto">
+          <h4 className="fw-bold mb-2">
             <i className="bi bi-journal-text me-2" />
             {metadata?.id || 'No name available'}
             <button
@@ -41,7 +41,7 @@ export const BedsetSplashHeader = (props: Props) => {
             </button>
           </h4>
         </div>
-        <div className="d-flex flex-row align-items-center gap-1">
+        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end gap-1">
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
           <a
@@ -107,8 +107,8 @@ export const BedsetSplashHeader = (props: Props) => {
       <div>
         <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
-      <div className="d-flex flex-row align-items-end justify-content-between mt-2">
-        <div className="d-flex flex-row gap-1">
+      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end justify-content-between mt-2">
+        <div className="d-flex flex-column flex-md-row gap-1">
           <p className="mb-0">
             <div className="badge bg-primary text-wrap">
               <i className="bi bi-hash me-1" />

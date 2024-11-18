@@ -138,40 +138,42 @@ export const BedSplash = () => {
             <Col sm={12} md={6}>
               <h4 className="fw-bold">Overview</h4>
               <div className="border rounded px-0 pt-1 shadow-sm">
-                <table className="table table-sm table-striped text-truncate text-sm">
-                  <thead>
-                    <tr>
-                      <th scope="col">Key</th>
-                      <th scope="col">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
-                    {Object.keys(metadata?.annotation || {}).map((k) => {
-                      if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
-                        return null;
-                      }
+                <div className="table-responsive">
+                  <table className="table table-sm table-striped text-truncate text-sm">
+                    <thead>
+                      <tr>
+                        <th scope="col">Key</th>
+                        <th scope="col">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      {Object.keys(metadata?.annotation || {}).map((k) => {
+                        if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
+                          return null;
+                        }
 
-                      const value = getAnnotationValue(metadata, k);
-                      if (!value) {
-                        return null;
-                      }
+                        const value = getAnnotationValue(metadata, k);
+                        if (!value) {
+                          return null;
+                        }
 
-                      return (
-                        <tr key={k}>
-                          <td style={{ maxWidth: '50px' }} className="fst-italic">
-                            {snakeToTitleCase(k)}
-                          </td>
-                          <td style={{ maxWidth: '120px' }} className="truncate">
-                            {value ?? 'N/A'}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+                        return (
+                          <tr key={k}>
+                            <td style={{ maxWidth: '50px' }} className="fst-italic">
+                              {snakeToTitleCase(k)}
+                            </td>
+                            <td style={{ maxWidth: '120px' }} className="truncate">
+                              {value ?? 'N/A'}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </Col>
-            <Col sm={12} md={6} className="h-100">
+            <Col sm={12} md={6} className='mt-2 mt-md-3'>
               <h4 className="fw-bold">BEDsets</h4>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <div className="table-responsive">
@@ -223,28 +225,28 @@ export const BedSplash = () => {
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0">
+              <Col sm={12} md={4} className="d-flex flex-column justify-content-between  mt-0 gap-2">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
               </Col>
             )}
-            <Col sm={12} md={8} className="d-flex flex-column mt-0">
+            <Col sm={12} md={8} className="d-flex flex-column mt-2 mt-md-0">
               <GenomicFeatureBar metadata={metadata!} />
             </Col>
           </Row>
 
           <Row className="mb-2">
+            <h4 className="fw-bold">Plots</h4>
             <Col sm={12}>
-              <h4 className="fw-bold">Plots</h4>
               <Plots metadata={metadata!} />
             </Col>
           </Row>
 
           {neighbours && (
-            <Row className="mb-2 g-2">
-              <h4 className="fw-bold">Similar BED Files</h4>
+            <Row className="mb-2 mx-0">
+              <h4 className="fw-bold px-0">Similar BED Files</h4>
               <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
                 <Text2BedSearchResultsTable results={neighbours} />
               </Col>
