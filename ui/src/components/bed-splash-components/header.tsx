@@ -27,8 +27,8 @@ export const BedSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-1 overflow-x-scroll">
-        <div className="d-flex align-items-center overflow-x-auto">
+      <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-1">
+        <div className="d-flex align-items-center overflow-x-scroll w-100">
           <h4 className="fw-bold d-flex align-items-center flex-nowrap">
             <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
             <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
@@ -46,7 +46,7 @@ export const BedSplashHeader = (props: Props) => {
             </button>
           </h4>
         </div>
-        <div className="d-flex flex-col align-items-center gap-1">
+        <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-info-circle me-1" />

@@ -22,8 +22,8 @@ export const BedsetSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-0 overflow-scroll">
-        <div className="d-flex align-items-center overflow-x-auto">
+      <div className="d-flex flex-column flex-xl-row align-items-start justify-content-xl-between mb-3 mb-xl-0">
+        <div className="d-flex align-items-center">
           <h4 className="fw-bold mb-2">
             <i className="bi bi-journal-text me-2" />
             {metadata?.id || 'No name available'}
@@ -41,7 +41,7 @@ export const BedsetSplashHeader = (props: Props) => {
             </button>
           </h4>
         </div>
-        <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end gap-1">
+        <div className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end gap-1 flex-shrink-0">
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
           <a
