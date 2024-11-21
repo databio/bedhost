@@ -1,10 +1,12 @@
 import { useBedCart } from '../contexts/bedcart-context';
 import { Layout } from '../components/layout';
 import { DownloadCartModal } from '../components/modals/download-cart-modal';
+import { CreateBedSetModal } from '../components/modals/create-bedset-modal';
 import { useState } from 'react';
 
 export const BedCart = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
+  const [showCreateBedsetModal, setCreateBedSetModal] = useState(false);
   const { cart, removeBedFromCart } = useBedCart();
 
   if (cart.length === 0) {
@@ -45,9 +47,13 @@ export const BedCart = () => {
             )}
           </div>
           <div className="d-flex flex-row align-items-center gap-1">
-            <button className="btn btn-sm btn-outline-primary" onClick={() => removeBedFromCart('all')}>
+            <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart('all')}>
               <i className="bi bi-trash me-2"></i>
               Clear cart
+            </button>
+            <button className="btn btn-sm btn-outline-primary" onClick={() => setCreateBedSetModal(true)}>
+              <i className="bi bi-collection-fill me-2"></i>
+              Create BEDset
             </button>
             <button className="btn btn-sm btn-primary" onClick={() => setShowDownloadModal(true)}>
               <i className="bi bi-download me-2"></i>
@@ -58,9 +64,9 @@ export const BedCart = () => {
         <div className="border rounded shadow-md p-2">
           <table className="table">
             <thead>
-              <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Action</th>
+            <tr>
+              <th scope="col">Item</th>
+              <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -84,6 +90,7 @@ export const BedCart = () => {
         </div>
       </div>
       <DownloadCartModal show={showDownloadModal} setShow={setShowDownloadModal} />
+      <CreateBedSetModal show={showCreateBedsetModal} setShow={setCreateBedSetModal} />
     </Layout>
   );
 };
