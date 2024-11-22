@@ -15,7 +15,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export const generateBEDsetCreationDescription = () => {
   const text = `
-  To create new BEDset follow these steps:
+  **To create a new BEDset:**
 
   1. Create PEP in [PEPhub](https://pephub.databio.org/), by copying the text below, and pasting it into the sample table.
   The name of the PEP project will be used as the name and identifier for the BEDset.
@@ -32,9 +32,6 @@ export const generateBEDsetCreationDescription = () => {
   }
   \`\`\`
   
-  
-  
-  \** At this point we support only PEPs from bedbase organization.
   `;
   return text;
 };
@@ -56,22 +53,27 @@ export const CreateBedSetModal = (props: Props) => {
       <Modal.Header>
         <button
           type="button"
-          className="btn-close position-absolute top-0 end-0 m-2"
+          className="btn-close position-absolute top-0 end-0 m-3 py-1 px-0"
           aria-label="Close"
           onClick={() => setShow(false)}
         ></button>
-        <div className="w-100">
-          <Modal.Title>Create BEDset</Modal.Title>
+        <div className="w-100 text-sm">
+          <h1 className="fs-5 mb-1 fw-semibold d-inline">Create BEDset</h1>
+
+          <div className="border-bottom my-3" style={{ margin: '0 -1.25em' }}></div>
+
           <Markdown className="" rehypePlugins={[rehypeHighlight]}>
             {generateBEDsetCreationDescription()}
           </Markdown>
+          <span className='text-danger'><strong>Note:</strong> We currently only support PEPs from the bedbase organization.</span>
         </div>
       </Modal.Header>
+
       <Modal.Body>
-        <div className="position-relative p-2">
+        <div className="position-relative pt-2 px-3" style={{ margin: '-1em'}}>
           <Markdown rehypePlugins={[rehypeHighlight]}>{generateBEDsetPEPMd(cart)}</Markdown>
         </div>
-        <div className="position-absolute top-0 end-0">
+        <div className="position-absolute top-0 end-0 m-3">
           <button
             className="btn btn-sm btn-primary mt-2 me-2"
             onClick={() => {
