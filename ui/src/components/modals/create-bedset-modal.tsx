@@ -5,6 +5,7 @@ import Markdown from 'react-markdown';
 import { generateBEDsetPEPMd, generateBEDsetPEPDownloadRaw } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
 import rehypeHighlight from 'rehype-highlight';
+import axios from 'axios';
 
 type Props = {
   show: boolean;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_ENDPOINT = `${API_BASE}/bedset/create/`;
 
 export const generateBEDsetCreationDescription = () => {
   const text = `
@@ -31,7 +33,8 @@ export const generateBEDsetCreationDescription = () => {
     "registry_path": "namespace/name:tag"
   }
   \`\`\`
-  
+  **Note**: We currently only support PEPs from the bedbase team. If you want to create new bedset, please create an issue: [https://github.com/databio/bedbase](https://github.com/databio/bedbase/issues)
+
   `;
   return text;
 };
@@ -41,6 +44,24 @@ export const CreateBedSetModal = (props: Props) => {
   const { cart } = useBedCart();
   const [, copyToClipboard] = useCopyToClipboard();
   const [copied, setCopied] = useState(false);
+
+  const [inputValue, setInputValue] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleInputRegistryPathChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await axios.post(API_ENDPOINT, { registry_path: inputValue });
+      setMessage('Successfully created BEDset!');
+    } catch (error) {
+      setMessage(`Unable to create BEDset. Error: ${error.message};`);
+    }
+  };
+
+
   return (
     <Modal
       animation={false}
@@ -65,12 +86,11 @@ export const CreateBedSetModal = (props: Props) => {
           <Markdown className="" rehypePlugins={[rehypeHighlight]}>
             {generateBEDsetCreationDescription()}
           </Markdown>
-          <span className='text-danger'><strong>Note:</strong> We currently only support PEPs from the bedbase organization.</span>
         </div>
       </Modal.Header>
 
       <Modal.Body>
-        <div className="position-relative pt-2 px-3" style={{ margin: '-1em'}}>
+        <div className="position-relative pt-2 px-3" style={{ margin: '-1em' }}>
           <Markdown rehypePlugins={[rehypeHighlight]}>{generateBEDsetPEPMd(cart)}</Markdown>
         </div>
         <div className="position-absolute top-0 end-0 m-3">
@@ -85,7 +105,25 @@ export const CreateBedSetModal = (props: Props) => {
             <i className="bi bi-clipboard me-2"></i>
             {copied ? 'Copied!' : 'Copy'}
           </button>
+
         </div>
+        <div className="border-top pt-4 ">
+          <div className="fw-bold text-lg ">
+            Create a BEDset
+          </div>
+          <div className="d-flex align-items-center mt-3">
+            <input type="text" className="form-control me-2" placeholder="Provide a PEPhub registry path."
+                   value={inputValue}
+                   onChange={handleInputRegistryPathChange} />
+            <button className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+          </div>
+          {message && <div className="mt-2">{message}</div>}
+
+        </div>
+
+      </Modal.Body>
+      <Modal.Body className="position-relative pt-2 ">
+
       </Modal.Body>
     </Modal>
   );
