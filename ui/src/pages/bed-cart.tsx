@@ -9,6 +9,12 @@ export const BedCart = () => {
   const [showCreateBedsetModal, setCreateBedSetModal] = useState(false);
   const { cart, removeBedFromCart } = useBedCart();
 
+  const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
+    if (!(e.target as HTMLElement).closest('button')) {
+      window.location.href = `/bed/${id}`;
+    }
+  };
+
   if (cart.length === 0) {
     return (
       <Layout title="BEDbase | Empty cart">
@@ -37,16 +43,16 @@ export const BedCart = () => {
   return (
     <Layout title="BEDbase | Cart">
       <div className="p-2">
-        <div className="d-flex flex-row align-items-center justify-content-between">
+        <div className="d-flex flex-row align-items-start justify-content-between">
           <div className="d-flex flex-column">
-            <h1 className="fw-bold mb-0">Cart</h1>
+            <h3 className="fw-bold mb-2">Cart</h3>
             {cart.length === 1 ? (
-              <p className="fst-italic mb-0">You have 1 item in your cart</p>
+              <p className="fst-italic mb-0 text-sm">You have 1 item in your cart</p>
             ) : (
               <p className="fst-italic mb-0">You have {cart.length} items in your cart</p>
             )}
           </div>
-          <div className="d-flex flex-row align-items-center gap-1">
+          <div className="d-flex flex-row align-items-center gap-1 mt-1">
             <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart('all')}>
               <i className="bi bi-trash me-2"></i>
               Clear cart
@@ -61,32 +67,32 @@ export const BedCart = () => {
             </button>
           </div>
         </div>
-        <div className="border rounded shadow-md p-2">
-          <table className="table">
-            <thead>
-            <tr>
-              <th scope="col">Item</th>
-              <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart.map((item) => (
-                <tr key={item}>
-                  <td>{item}</td>
-                  <td>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart(item)}>
-                      <i className="bi bi-trash"></i>
-                    </button>
-                    <a href={`/bed/${item}`} target="_blank">
-                      <button className="btn btn-sm btn-outline-primary ms-2">
-                        <i className="bi bi-eye"></i>
-                      </button>
-                    </a>
-                  </td>
+        <div className="p-0 pt-1 pb-3 border rounded rounded-2 shadow-sm">
+          <div className="table-responsive">
+            <table className="table table-hover">
+              <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {cart.map((item) => (
+                  <tr
+                    key={item}
+                    onClick={handleRowClick(item)}
+                    className="cursor-pointer position-relative">
+                    <td>{item}</td>
+                    <td>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart(item)}>
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <DownloadCartModal show={showDownloadModal} setShow={setShowDownloadModal} />

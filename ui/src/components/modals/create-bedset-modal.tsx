@@ -81,7 +81,7 @@ export const CreateBedSetModal = (props: Props) => {
         <div className="w-100 text-sm">
           <h1 className="fs-5 mb-1 fw-semibold d-inline">Create BEDset</h1>
 
-          <div className="border-bottom my-3" style={{ margin: '0 -1.25em' }}></div>
+          <div className="border-bottom my-3" style={{ margin: '0 -1.13em' }}></div>
 
           <Markdown className="" rehypePlugins={[rehypeHighlight]}>
             {generateBEDsetCreationDescription()}
