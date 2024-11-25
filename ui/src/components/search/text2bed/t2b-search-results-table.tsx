@@ -11,7 +11,7 @@ type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
 
 type Props = {
   results: SearchResponse | BedNeighboursResponse;
-  search_query: string | undefined;
+  search_query?: string | undefined;
 };
 
 const IsUnique = (name: string, found_id: string, search_id: string) => {
