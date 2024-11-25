@@ -57,7 +57,8 @@ export const CreateBedSetModal = (props: Props) => {
       await axios.post(API_ENDPOINT, { registry_path: inputValue });
       setMessage('Successfully created BEDset!');
     } catch (error) {
-      setMessage(`Unable to create BEDset. Error: ${error.message};`);
+      const err = error as Error;
+      setMessage(`Unable to create BEDset. Error: ${err.message};`);
     }
   };
 
