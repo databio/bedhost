@@ -254,7 +254,7 @@ export const BedSplashHeader = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="d-flex flex-column justify-content-md-between align-items-start align-items-md-end text-sm">
+        <div className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
@@ -263,7 +263,7 @@ export const BedSplashHeader = (props: Props) => {
             </p>
           </div>
 
-          <div className="d-flex flex-row text-muted">
+          <div className="d-flex flex-row text-muted ms-lg-4">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
               <span>Updated:</span>{' '}
