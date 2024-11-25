@@ -11,10 +11,36 @@ type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
 
 type Props = {
   results: SearchResponse | BedNeighboursResponse;
+  search_query: string | undefined;
+};
+
+const IsUnique = (name: string, found_id: string, search_id: string) => {
+  if (found_id === search_id) {
+    return (
+      <div className="d-flex">
+        {name} &nbsp;
+        <OverlayTrigger
+          placement="top"
+          overlay={
+            <div className="tooltip">
+              <div className="tooltip-arrow" />
+              <div className="tooltip-inner">Exact match</div>
+            </div>
+          }
+        >
+          <div className="bi bi-patch-check-fill text-success">
+          </div>
+        </OverlayTrigger>
+
+      </div>
+    );
+  } else {
+    return name;
+  }
 };
 
 export const Text2BedSearchResultsTable = (props: Props) => {
-  const { results } = props;
+  const { results, search_query } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
 
   const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
@@ -49,7 +75,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             onClick={handleRowClick(result.metadata?.id)}
             className="cursor-pointer position-relative"
           >
-            <td>{result?.metadata?.name || 'No name'}</td>
+            <td>{IsUnique(result?.metadata?.name || 'No name', result.id, search_query || '') || 'No name'}</td>
             <td>
               <span className="badge text-bg-primary">{result?.metadata?.genome_alias || 'N/A'}</span>
             </td>
@@ -121,5 +147,5 @@ export const Text2BedSearchResultsTable = (props: Props) => {
         </tbody>
       </table>
     </div>
-      );
-      };
+  );
+};
