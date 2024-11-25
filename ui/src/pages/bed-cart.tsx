@@ -68,29 +68,31 @@ export const BedCart = () => {
           </div>
         </div>
         <div className="p-0 pt-1 pb-3 border rounded rounded-2 shadow-sm">
-          <table className="table table-hover">
-            <thead>
-            <tr>
-              <th scope="col">Item</th>
-              <th scope="col">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cart.map((item) => (
-                <tr
-                  key={item}
-                  onClick={handleRowClick(item)}
-                  className="cursor-pointer position-relative">
-                  <td>{item}</td>
-                  <td>
-                    <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart(item)}>
-                      <i className="bi bi-trash"></i>
-                    </button>
-                  </td>
+          <div className="table-responsive">
+            <table className="table table-hover">
+              <thead>
+              <tr>
+                <th scope="col">Item</th>
+                <th scope="col">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {cart.map((item) => (
+                  <tr
+                    key={item}
+                    onClick={handleRowClick(item)}
+                    className="cursor-pointer position-relative">
+                    <td>{item}</td>
+                    <td>
+                      <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart(item)}>
+                        <i className="bi bi-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       <DownloadCartModal show={showDownloadModal} setShow={setShowDownloadModal} />
