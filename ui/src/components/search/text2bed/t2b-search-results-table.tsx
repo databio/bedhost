@@ -7,10 +7,10 @@ import toast from 'react-hot-toast';
 import YAML from 'js-yaml';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
-type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
+// type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
 
 type Props = {
-  results: SearchResponse | BedNeighboursResponse;
+  results: SearchResponse;
   search_query?: string | undefined;
 };
 
