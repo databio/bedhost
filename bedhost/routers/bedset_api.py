@@ -206,15 +206,24 @@ async def create_bedset(bedset: CreateBEDsetRequest):
 
     try:
         project = bbagent.config.phc.load_project(bedset.registry_path)
-    except Exception as err:
+    except Exception as _:
         raise HTTPException(
-            status_code=406, detail=f"Unable to retrieve project: {err}"
+            status_code=404, detail=f"Project: '{bedset.registry_path}' not found"
         )
 
     bedfiles_list = [
         bedfile_id.get("record_identifier") or bedfile_id.sample_name
         for bedfile_id in project.samples
     ]
+
+    try:
+        bbagent.bedset.get(identifier=project.name)
+        raise HTTPException(
+            status_code=409,
+            detail=f"BEDset with identifier {project.name} already exists",
+        )
+    except BedSetNotFoundError as _:
+        pass
 
     try:
         bbagent.bedset.create(
@@ -232,7 +241,7 @@ async def create_bedset(bedset: CreateBEDsetRequest):
         )
     except Exception as err:
         raise HTTPException(
-            status_code=406, detail=f"Unable to create bedset. Error: {err}"
+            status_code=400, detail=f"Unable to create bedset. Error: {err}"
         )
 
     return {"status": "success"}

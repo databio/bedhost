@@ -26,7 +26,7 @@ export const generateBEDsetCreationDescription = () => {
   'author': "BEDbase team",
   'source': "BEDbase",
   \`\`\`
-  3. Go to the BEDbase API ([${API_BASE}](${API_BASE}/docs#/bedset/create_bedset_v1_bedset_create__post)) and 
+  3. Use 'Submit PEP' form below or BEDbase API ([${API_BASE}](${API_BASE}/docs#/bedset/create_bedset_v1_bedset_create__post)) and 
   create a new BEDset by providing the registry path in the Body of the request. (Registry path can be copied from the PEPhub):
   \`\`\`json
   {
@@ -57,8 +57,9 @@ export const CreateBedSetModal = (props: Props) => {
       await axios.post(API_ENDPOINT, { registry_path: inputValue });
       setMessage('Successfully created BEDset!');
     } catch (error) {
-      const err = error as Error;
-      setMessage(`Unable to create BEDset. Error: ${err.message};`);
+      const err = error as Error & { response?: { data?: { detail?: string } } };
+      const errorMessage = err.response?.data?.detail || err.message;
+      setMessage(`! Unable to create BEDset. ${errorMessage}`);
     }
   };
 
@@ -110,7 +111,7 @@ export const CreateBedSetModal = (props: Props) => {
         </div>
         <div className="border-top pt-4 ">
           <div className="fw-bold text-lg ">
-            Create a BEDset
+            Submit PEP
           </div>
           <div className="d-flex align-items-center mt-3">
             <input type="text" className="form-control me-2" placeholder="Provide a PEPhub registry path."
