@@ -67,7 +67,7 @@ export const Text2Bed = () => {
             {results ? (
               <div className="p-0 pt-1 pb-3 border rounded rounded-2 shadow-sm">
                 <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
-                <Text2BedSearchResultsTable results={results || []} />{' '}
+                <Text2BedSearchResultsTable results={results || []} search_query={searchTerm} />{' '}
                 <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
               </div>
             ) : (

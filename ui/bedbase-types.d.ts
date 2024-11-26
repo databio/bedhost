@@ -78,6 +78,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/genomes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get available genomes
+         * @description Returns statistics
+         */
+        get: operations["get_bedbase_db_stats_v1_genomes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/service-info": {
         parameters: {
             query?: never;
@@ -264,6 +284,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/bed/{bed_id}/neighbours": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get nearest neighbours for a single BED record
+         * @description Returns most similar BED files in the database. Example
+         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+         */
+        get: operations["get_bed_neighbours_v1_bed__bed_id__neighbours_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/bed/{bed_id}/embedding": {
         parameters: {
             query?: never;
@@ -298,6 +339,28 @@ export interface paths {
          * @description Create embedding for bed file
          */
         post: operations["embed_bed_file_v1_bed_embed_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/bed/missing_plots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get missing plots for a bed file.
+         * @description Get missing plots for a bed file
+         *
+         *     example ->  plot_id: gccontent
+         */
+        get: operations["missing_plots_v1_bed_missing_plots_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -462,6 +525,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/bedset/{bedset_id}/pep": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download PEP project for a single BEDset record
+         * @description Example
+         *      bed_id: gse218680
+         */
+        get: operations["get_bedset_pep_v1_bedset__bedset_id__pep_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/bedset/{bedset_id}/metadata/plots": {
         parameters: {
             query?: never;
@@ -519,6 +603,50 @@ export interface paths {
         get: operations["get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/bedset/{bedset_id}/track_hub": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Track Hub Bedset
+         * @description Generate track hub files for the BED set
+         */
+        get: operations["get_track_hub_bedset_v1_bedset__bedset_id__track_hub_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        /**
+         * Get Track Hub Bedset
+         * @description Generate track hub files for the BED set
+         */
+        head: operations["get_track_hub_bedset_v1_bedset__bedset_id__track_hub_head"];
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/bedset/create/": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Bedset
+         * @description Create a new bedset by providing registry path to the PEPhub project
+         */
+        post: operations["create_bedset_v1_bedset_create__post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -626,6 +754,17 @@ export interface components {
             /** Headers */
             headers?: Record<string, never> | null;
         };
+        /** BaseListResponse */
+        BaseListResponse: {
+            /** Count */
+            count: number;
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Results */
+            results: unknown[];
+        };
         /** BedClassification */
         BedClassification: {
             /** Name */
@@ -669,17 +808,6 @@ export interface components {
         };
         /** BedListSearchResult */
         BedListSearchResult: {
-            /** Count */
-            count: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-            /** Results */
-            results?: components["schemas"]["QdrantSearchResult"][];
-        };
-        /** BedNeighborsResult */
-        BedNeighboursResult: {
             /** Count */
             count: number;
             /** Limit */
@@ -971,6 +1099,7 @@ export interface components {
             widths_histogram?: components["schemas"]["FileModel"];
             neighbor_distances?: components["schemas"]["FileModel"];
             open_chromatin?: components["schemas"]["FileModel"];
+            tss_distance?: components["schemas"]["FileModel"];
         };
         /** BedSetBedFiles */
         BedSetBedFiles: {
@@ -998,12 +1127,26 @@ export interface components {
             name: string;
             /** Md5Sum */
             md5sum: string;
+            /**
+             * Submission Date
+             * Format: date-time
+             */
+            submission_date?: string;
+            /**
+             * Last Update Date
+             * Format: date-time
+             */
+            last_update_date?: string;
             statistics?: components["schemas"]["BedSetStats"] | null;
             plots?: components["schemas"]["BedSetPlots"] | null;
             /** Description */
             description?: string;
             /** Bed Ids */
             bed_ids?: string[];
+            /** Author */
+            author?: string | null;
+            /** Source */
+            source?: string | null;
         };
         /** BedSetMinimal */
         BedSetMinimal: {
@@ -1025,7 +1168,7 @@ export interface components {
         };
         /** BedStatsModel */
         BedStatsModel: {
-            /** Regions No */
+            /** Number Of Regions */
             number_of_regions?: number | null;
             /** Gc Content */
             gc_content?: number | null;
@@ -1091,6 +1234,11 @@ export interface components {
             /** Openapi Version */
             openapi_version: string;
         };
+        /** CreateBEDsetRequest */
+        CreateBEDsetRequest: {
+            /** Registry Path */
+            registry_path: string;
+        };
         /** DRSModel */
         DRSModel: {
             /** Id */
@@ -1155,7 +1303,7 @@ export interface components {
             /** Id */
             id: string;
             /** Payload */
-            payload: Record<string, never>;
+            payload?: Record<string, never>;
             /** Score */
             score: number;
             metadata?: components["schemas"]["BedMetadataBasic"] | null;
@@ -1425,6 +1573,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["StatsReturn"];
+                };
+            };
+        };
+    };
+    get_bedbase_db_stats_v1_genomes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BaseListResponse"];
                 };
             };
         };
@@ -1700,6 +1868,41 @@ export interface operations {
             };
         };
     };
+    get_bed_neighbours_v1_bed__bed_id__neighbours_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path: {
+                /** @description BED digest */
+                bed_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BedListSearchResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_bed_embedding_v1_bed__bed_id__embedding_get: {
         parameters: {
             query?: never;
@@ -1752,6 +1955,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": number[];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    missing_plots_v1_bed_missing_plots_get: {
+        parameters: {
+            query: {
+                plot_id: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BaseListResponse"];
                 };
             };
             /** @description Validation Error */
@@ -2026,6 +2260,37 @@ export interface operations {
             };
         };
     };
+    get_bedset_pep_v1_bedset__bedset_id__pep_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bedset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     get_bedset_metadata_v1_bedset__bedset_id__metadata_plots_get: {
         parameters: {
             query?: never;
@@ -2106,6 +2371,101 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["BedSetBedFiles"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_track_hub_bedset_v1_bedset__bedset_id__track_hub_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bedset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_track_hub_bedset_v1_bedset__bedset_id__track_hub_head: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bedset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_bedset_v1_bedset_create__post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateBEDsetRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

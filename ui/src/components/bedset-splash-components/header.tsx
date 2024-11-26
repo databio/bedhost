@@ -4,6 +4,7 @@ import { components } from '../../../bedbase-types';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { DownloadBedSetModal } from '../modals/download-bedset-modal';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
+import { formatDateTime } from '../../utils.ts';
 
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
@@ -78,12 +79,12 @@ export const BedsetSplashHeader = (props: Props) => {
                   metadata.bed_ids?.length === 0
                     ? undefined
                     : () => {
-                        addMultipleBedsToCart(metadata.bed_ids || []);
-                        setAddedToCart(true);
-                        setTimeout(() => {
-                          setAddedToCart(false);
-                        }, 500);
-                      }
+                      addMultipleBedsToCart(metadata.bed_ids || []);
+                      setAddedToCart(true);
+                      setTimeout(() => {
+                        setAddedToCart(false);
+                      }, 500);
+                    }
                 }
                 disabled={metadata.bed_ids?.length === 0 || addedToCart}
                 className="btn btn-primary btn-sm"
@@ -111,10 +112,12 @@ export const BedsetSplashHeader = (props: Props) => {
 
         </div>
       </div>
-      <div>
-        <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
+      <div className="text-body-secondary fst-italic">
+        <p>{metadata?.description || 'No description available'}</p>
+        <div>Author: {metadata?.author || 'N/A'}</div>
+        <div>Source: {metadata?.source || 'N/A'}</div>
       </div>
-      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end justify-content-between mt-2">
+      <div className="d-flex flex-column flex-md-row align-items-start justify-content-between mt-2">
         <div className="d-flex flex-column flex-md-row gap-1">
           <p className="mb-0">
             <div className="badge bg-primary text-wrap">
@@ -130,6 +133,24 @@ export const BedsetSplashHeader = (props: Props) => {
               </div>
             </p>
           )}
+        </div>
+
+        <div className="d-flex flex-column flex-lg-row justify-content-end align-items-end text-sm">
+          <div className="d-flex flex-row text-muted">
+            <i className="bi bi-calendar4-event me-1" />
+            <p className="mb-0">
+              <span>Created:</span>{' '}
+              {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
+            </p>
+          </div>
+
+          <div className="d-flex flex-row text-muted ms-lg-4">
+            <i className="bi bi-calendar4-event me-1" />
+            <p className="mb-0">
+              <span>Updated:</span>{' '}
+              {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
+            </p>
+          </div>
         </div>
       </div>
       <DownloadBedSetModal id={metadata.id} show={showDownloadModal} setShow={setShowDownloadModal} />

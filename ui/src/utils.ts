@@ -39,6 +39,21 @@ export const bytesToSize = (bytes: number) => {
   return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
 };
 
+export const generateBEDsetPEPMd = (md5List: string[]) => {
+  const script = `
+  \`\`\`text
+  sample_name\n${md5List.join('\n')}
+  \`\`\`
+  `;
+  return script;
+};
+
+export const generateBEDsetPEPDownloadRaw = (md5List: string[]) => {
+  const script = `sample_name\n${md5List.join('\n')}`;
+  return script;
+};
+
+
 export const generateCurlScriptForCartDownloadMd = (md5List: string[]) => {
   const wgetCommands = md5List.map((md5, index) => {
     const downloadLink = makeHttpDownloadLink(md5);

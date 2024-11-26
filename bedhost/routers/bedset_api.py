@@ -8,10 +8,12 @@ from bbconf.models.bedset_models import (
     BedSetPlots,
     BedSetStats,
 )
+from pephubclient.helpers import is_registry_path, unwrap_registry_path
 from fastapi import APIRouter, HTTPException, Request, Response
 
 from ..const import EXAMPLE_BEDSET, PKG_NAME
 from ..main import bbagent
+from ..data_models import CreateBEDsetRequest
 from ..utils import zip_pep
 
 router = APIRouter(prefix="/v1/bedset", tags=["bedset"])
@@ -183,3 +185,63 @@ async def get_trackDb_file_bedset(bedset_id: str):
         )
 
     return Response(trackDb_txt, media_type="text/plain")
+
+
+@router.post(
+    "/create/",
+    description="Create a new bedset by providing registry path to the PEPhub project",
+)
+async def create_bedset(bedset: CreateBEDsetRequest):
+    """
+    Create a new bedset
+    """
+    # Validate the PEPhub project string
+    if not is_registry_path(bedset.registry_path):
+        raise HTTPException(status_code=406, detail="Invalid registry path")
+
+    project_reg_path = unwrap_registry_path(bedset.registry_path)
+
+    if project_reg_path.namespace not in ["databio", "bedbase", "pepkit"]:
+        raise HTTPException(status_code=403, detail="User is not in admin list")
+
+    try:
+        project = bbagent.config.phc.load_project(bedset.registry_path)
+    except Exception as _:
+        raise HTTPException(
+            status_code=404, detail=f"Project: '{bedset.registry_path}' not found"
+        )
+
+    bedfiles_list = [
+        bedfile_id.get("record_identifier") or bedfile_id.sample_name
+        for bedfile_id in project.samples
+    ]
+
+    try:
+        bbagent.bedset.get(identifier=project.name)
+        raise HTTPException(
+            status_code=409,
+            detail=f"BEDset with identifier {project.name} already exists",
+        )
+    except BedSetNotFoundError as _:
+        pass
+
+    try:
+        bbagent.bedset.create(
+            identifier=project.name,
+            name=project.name,
+            bedid_list=bedfiles_list,
+            statistics=True,
+            description=project.description,
+            annotation={
+                "source": project.config.get("source", ""),
+                "author": project.config.get("author", project_reg_path.namespace),
+            },
+            no_fail=False,
+            overwrite=False,
+        )
+    except Exception as err:
+        raise HTTPException(
+            status_code=400, detail=f"Unable to create bedset. Error: {err}"
+        )
+
+    return {"status": "success"}

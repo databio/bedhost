@@ -27,6 +27,7 @@ from bbconf.models.bed_models import (
     BedStatsModel,
     TokenizedBedResponse,
     TokenizedPathResponse,
+    QdrantSearchResult,
 )
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 from fastapi.responses import PlainTextResponse
@@ -376,6 +377,26 @@ async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
     #     offset=offset,
     #     results=(results_sql.results + results_qdr.results)[0:limit],
     # )
+    spaceless_query = query.replace(" ", "")
+    if len(spaceless_query) == 32 and spaceless_query == query:
+        try:
+            similar_results = bbagent.bed.get_neighbours(
+                query, limit=limit, offset=offset
+            )
+
+            if similar_results.results and offset == 0:
+
+                result = QdrantSearchResult(
+                    id=query,
+                    payload={},
+                    score=1.0,
+                    metadata=bbagent.bed.get(query),
+                )
+
+                similar_results.results.insert(0, result)
+            return similar_results
+        except Exception as _:
+            pass
 
     results = bbagent.bed.text_to_bed_search(
         query,
