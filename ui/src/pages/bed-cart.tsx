@@ -41,7 +41,7 @@ export const BedCart = () => {
   }
 
   return (
-    <Layout title="BEDbase | Cart">
+    <Layout footer title="BEDbase | Cart">
       <div className="p-2">
         <div className="d-flex flex-row align-items-start justify-content-between">
           <div className="d-flex flex-column">

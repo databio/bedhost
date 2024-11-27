@@ -82,38 +82,40 @@ export const CreateBedSetModal = (props: Props) => {
         ></button>
         <div className="w-100 text-sm">
           <h1 className="fs-5 mb-1 fw-semibold d-inline">Create BEDset</h1>
-
-          <div className="border-bottom my-3" style={{ margin: '0 -1.13em' }}></div>
-
-          <Markdown className="" rehypePlugins={[rehypeHighlight]}>
-            {generateBEDsetCreationDescription()}
-          </Markdown>
         </div>
       </Modal.Header>
 
       <Modal.Body>
-        <div className="position-relative pt-2 px-3" style={{ margin: '-1em' }}>
-          <Markdown rehypePlugins={[rehypeHighlight]}>{generateBEDsetPEPMd(cart)}</Markdown>
+        <div className="w-100 text-sm">
+          <Markdown rehypePlugins={[rehypeHighlight]}>
+            {generateBEDsetCreationDescription()}
+          </Markdown>
         </div>
-        <div className="position-absolute top-0 end-0 m-3">
-          <button
-            className="btn btn-sm btn-primary mt-2 me-2"
-            onClick={() => {
-              copyToClipboard(generateBEDsetPEPDownloadRaw(cart));
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
-            }}
-          >
-            <i className="bi bi-clipboard me-2"></i>
-            {copied ? 'Copied!' : 'Copy'}
-          </button>
 
-        </div>
-        <div className="border-top pt-4 ">
-          <div className="fw-bold text-lg ">
-            Submit PEP
+        <div className="position-relative my-1 px-3" style={{ margin: '-1em' }}>
+          <Markdown className='rounded rounded-2 bg-body-secondary markdown-bg' rehypePlugins={[rehypeHighlight]}>{generateBEDsetPEPMd(cart)}</Markdown>
+          <div className="position-absolute top-0 end-0 m-3">
+            <button
+              className="btn btn-sm btn-primary me-3"
+              onClick={() => {
+                copyToClipboard(generateBEDsetPEPDownloadRaw(cart));
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }}
+            >
+              <i className="bi bi-clipboard me-2"></i>
+              {copied ? 'Copied!' : 'Copy'}
+            </button>
           </div>
-          <div className="d-flex align-items-center mt-3">
+        </div>
+
+        <div className="border-bottom my-3" style={{ margin: '0 -1em' }}></div>
+
+        <div className="">
+          <span className="fw-semibold text-lg">
+            Submit PEP
+          </span>
+          <div className="d-flex align-items-center mt-1">
             <input type="text" className="form-control me-2" placeholder="Provide a PEPhub registry path."
                    value={inputValue}
                    onChange={handleInputRegistryPathChange} />
