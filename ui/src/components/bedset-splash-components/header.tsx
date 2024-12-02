@@ -114,8 +114,8 @@ export const BedsetSplashHeader = (props: Props) => {
       </div>
       <div className="text-body-secondary fst-italic">
         <p>{metadata?.description || 'No description available'}</p>
-        <div>Author: {metadata?.author || 'N/A'}</div>
-        <div>Source: {metadata?.source || 'N/A'}</div>
+        <p className="mb-0 text-sm">Author: {metadata?.author || 'None'}</p>
+        <p className="mb-0 text-sm">Source: {metadata?.source || 'None'}</p>
       </div>
       <div className="d-flex flex-column flex-md-row align-items-start justify-content-between mt-2">
         <div className="d-flex flex-column flex-md-row gap-1">
@@ -135,7 +135,7 @@ export const BedsetSplashHeader = (props: Props) => {
           )}
         </div>
 
-        <div className="d-flex flex-column flex-lg-row justify-content-end align-items-end text-sm">
+        <div className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm mt-2 mt-md-0">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
