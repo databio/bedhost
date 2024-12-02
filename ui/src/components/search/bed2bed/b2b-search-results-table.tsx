@@ -28,24 +28,26 @@ type Props = {
 
 const columnHelper = createColumnHelper<Bed>();
 
-const scoreTooltip = (
-  <OverlayTrigger
-    placement="left"
-    overlay={
-      <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
-          <pre className="text-start">
-            Cosine similarity between files.
-            Score is between 0 an 100, where 100 is a perfect match.
-          </pre>
-      </Tooltip>
-    }
-  >
-      <span>
-        Score*
-      </span>
-
-  </OverlayTrigger>
-)
+// TODO: Add tooltip for score. Element is not excepted by the table
+// const scoreTooltip = (
+//   <OverlayTrigger
+//     placement="left"
+//     overlay={
+//       <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
+//           <pre className="text-start">
+//             Cosine similarity between files.
+//             Score is between 0 an 100, where 100 is a perfect match.
+//           </pre>
+//       </Tooltip>
+//     }
+//   >
+//       <span>
+//         Score*
+//       </span>
+//
+//   </OverlayTrigger>
+// )
+const scoreTooltip: string = 'Score';
 
 export const Bed2BedSearchResultsTable = (props: Props) => {
   const { beds } = props;
@@ -220,44 +222,44 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
       </div>
       <table className="table mb-2 text-sm table-hover">
         <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th key={header.id} colSpan={header.colSpan} scope="col">
-                  {header.isPlaceholder ? null : (
-                    <div
-                      className={header.column.getCanSort() ? 'cursor-pointer' : ''}
-                      onClick={header.column.getToggleSortingHandler()}
-                      title={
-                        header.column.getCanSort()
-                          ? header.column.getNextSortingOrder() === 'asc'
-                            ? 'Sort ascending'
-                            : header.column.getNextSortingOrder() === 'desc'
+        {table.getHeaderGroups().map((headerGroup) => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <th key={header.id} colSpan={header.colSpan} scope="col">
+                {header.isPlaceholder ? null : (
+                  <div
+                    className={header.column.getCanSort() ? 'cursor-pointer' : ''}
+                    onClick={header.column.getToggleSortingHandler()}
+                    title={
+                      header.column.getCanSort()
+                        ? header.column.getNextSortingOrder() === 'asc'
+                          ? 'Sort ascending'
+                          : header.column.getNextSortingOrder() === 'desc'
                             ? 'Sort descending'
                             : 'Clear sort'
-                          : undefined
-                      }
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: <i className="bi bi-caret-up-fill ms-1" />,
-                        desc: <i className="bi bi-caret-down-fill ms-1" />,
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              ))}
-            </tr>
-          ))}
+                        : undefined
+                    }
+                  >
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {{
+                      asc: <i className="bi bi-caret-up-fill ms-1" />,
+                      desc: <i className="bi bi-caret-down-fill ms-1" />,
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </div>
+                )}
+              </th>
+            ))}
+          </tr>
+        ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} onClick={handleRowClick(row.original.metadata?.id)} className="cursor-pointer">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-              ))}
-            </tr>
-          ))}
+        {table.getRowModel().rows.map((row) => (
+          <tr key={row.id} onClick={handleRowClick(row.original.metadata?.id)} className="cursor-pointer">
+            {row.getVisibleCells().map((cell) => (
+              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+            ))}
+          </tr>
+        ))}
         </tbody>
       </table>
       <div className="h-4" />
