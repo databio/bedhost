@@ -68,7 +68,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
               overlay={
                 <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
                     <pre className="text-start">
-                      Cosine similarity between search term and bedfile
+                      Cosine similarity between search term and bedfile.
                       Score is between 0 an 100, where 100 is a perfect match.
                     </pre>
                 </Tooltip>

@@ -139,7 +139,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
         </span>
       ),
       footer: (info) => info.column.id,
-      header: scoreTooltip,
+      header: () => scoreTooltip,
       id: 'score',
     }),
     columnHelper.accessor('metadata.id', {
