@@ -28,26 +28,24 @@ type Props = {
 
 const columnHelper = createColumnHelper<Bed>();
 
-// TODO: Add tooltip for score. Element is not excepted by the table
-// const scoreTooltip = (
-//   <OverlayTrigger
-//     placement="left"
-//     overlay={
-//       <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
-//           <pre className="text-start">
-//             Cosine similarity between files.
-//             Score is between 0 an 100, where 100 is a perfect match.
-//           </pre>
-//       </Tooltip>
-//     }
-//   >
-//       <span>
-//         Score*
-//       </span>
-//
-//   </OverlayTrigger>
-// )
-const scoreTooltip: string = 'Score';
+const scoreTooltip = (
+  <OverlayTrigger
+    placement="left"
+    overlay={
+      <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
+          <pre className="text-start">
+            Cosine similarity between files.
+            Score is between 0 an 100, where 100 is a perfect match.
+          </pre>
+      </Tooltip>
+    }
+  >
+      <span>
+        Score*
+      </span>
+
+  </OverlayTrigger>
+)
 
 export const Bed2BedSearchResultsTable = (props: Props) => {
   const { beds } = props;
