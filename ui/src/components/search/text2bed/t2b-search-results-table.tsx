@@ -62,7 +62,25 @@ export const Text2BedSearchResultsTable = (props: Props) => {
           <th scope="col">Description</th>
           <th scope="col">Assay</th>
           <th scope="col">Info</th>
-          <th scope="col">Score</th>
+          <th scope="col">
+            <OverlayTrigger
+              placement="left"
+              overlay={
+                <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
+                    <pre className="text-start">
+                      Cosine similarity between search term and bedfile
+                      Score is between 0 an 100, where 100 is a perfect match.
+                    </pre>
+                </Tooltip>
+              }
+            >
+                <span>
+                  Score*
+                </span>
+
+            </OverlayTrigger>
+
+          </th>
           <th scope="col" style={{ minWidth: '110px' }}>
             Actions
           </th>

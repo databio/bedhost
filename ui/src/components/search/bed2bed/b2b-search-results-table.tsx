@@ -28,6 +28,25 @@ type Props = {
 
 const columnHelper = createColumnHelper<Bed>();
 
+const scoreTooltip = (
+  <OverlayTrigger
+    placement="left"
+    overlay={
+      <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
+          <pre className="text-start">
+            Cosine similarity between files.
+            Score is between 0 an 100, where 100 is a perfect match.
+          </pre>
+      </Tooltip>
+    }
+  >
+      <span>
+        Score*
+      </span>
+
+  </OverlayTrigger>
+)
+
 export const Bed2BedSearchResultsTable = (props: Props) => {
   const { beds } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
@@ -118,7 +137,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
         </span>
       ),
       footer: (info) => info.column.id,
-      header: 'Score',
+      header: scoreTooltip,
       id: 'score',
     }),
     columnHelper.accessor('metadata.id', {
