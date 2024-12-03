@@ -27,13 +27,13 @@ export const BedSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
-        <div className="d-flex flex-column align-items-start">
-          <h4 className="fw-bold mb-0">
-            <i className="bi bi-file-earmark-text me-2" />
-            {metadata?.id || 'No name available'}
+      <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-1">
+        <div className="d-flex align-items-center overflow-x-auto w-100">
+          <h4 className="fw-bold d-flex align-items-center flex-nowrap">
+            <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
+            <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
             <button
-              className="btn btn-link text-primary mb-2"
+              className="btn btn-link text-primary mb-1"
               onClick={() => {
                 copyToClipboard(metadata.id || '');
                 setCopiedId(true);
@@ -45,9 +45,8 @@ export const BedSplashHeader = (props: Props) => {
               {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
             </button>
           </h4>
-          <p className="text-muted">{metadata.name}</p>
         </div>
-        <div className="d-flex flex-row align-items-center gap-1">
+        <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-info-circle me-1" />
@@ -100,11 +99,11 @@ export const BedSplashHeader = (props: Props) => {
             {
               // If there are no files to download, disable the dropdown
               noFilesToDownload ? (
-                <Dropdown.Menu>
+                <Dropdown.Menu className='border border-light-subtle shadow-sm'>
                   <Dropdown.Item disabled>There are no files to download</Dropdown.Item>
                 </Dropdown.Menu>
               ) : (
-                <Dropdown.Menu>
+                <Dropdown.Menu className='border border-light-subtle shadow-sm'>
                   {metadata.files?.bed_file && (
                     <Fragment>
                       {(metadata.files?.bed_file?.access_methods || []).map((method) => {
@@ -141,8 +140,12 @@ export const BedSplashHeader = (props: Props) => {
           </Dropdown>
         </div>
       </div>
-      <div className="d-flex flex-row align-items-end justify-content-between">
-        <div className="d-flex flex-row gap-1 text-lg">
+      <div>
+        <h5 className="fw-semibold mb-1">{metadata.name}</h5>
+        <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
+      </div>
+      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end justify-content-md-between mt-2 overflow-x-auto">
+        <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-md-0">
           <div className="d-flex flex-row">
             <p className="mb-0">
               <OverlayTrigger
@@ -154,12 +157,19 @@ export const BedSplashHeader = (props: Props) => {
                   </div>
                 }
               >
-                <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata?.genome_digest}`} target="_blank">
+                {metadata?.genome_digest ? (
+                  <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`} target="_blank">
+                    <div className="badge bg-primary">
+                      <i className="bi bi-database-fill me-2" />
+                      {metadata.genome_alias || 'No assembly available'}
+                    </div>
+                  </a>
+                ) : (
                   <div className="badge bg-primary">
                     <i className="bi bi-database-fill me-2" />
-                    {metadata?.genome_alias || 'No assembly available'}
+                    {metadata.genome_alias || 'No assembly available'}
                   </div>
-                </a>
+                )}
               </OverlayTrigger>
             </p>
           </div>
@@ -243,19 +253,19 @@ export const BedSplashHeader = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="d-flex flex-column text-sm">
-          <div className="d-flex flex-row align-items-center text-muted">
-            <i className="bi bi-calendar me-1" />
+        <div className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm">
+          <div className="d-flex flex-row text-muted">
+            <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
               <span>Created:</span>{' '}
               {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
             </p>
           </div>
 
-          <div className="d-flex flex-row align-items-center text-muted">
-            <i className="bi bi-calendar-check me-1" />
+          <div className="d-flex flex-row text-muted ms-lg-4">
+            <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
-              <span>Last update:</span>{' '}
+              <span>Updated:</span>{' '}
               {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
             </p>
           </div>
