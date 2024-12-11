@@ -7,7 +7,9 @@ const STROKE_SPEAD = 0;
 export const InPaths = () => {
   return (
     <motion.svg
-      className="h-100"
+      className="h-100 w-full"
+      viewBox="0 0 300 510"
+      preserveAspectRatio="xMinYMid meet"
       initial={{
         opacity: 0,
       }}
@@ -122,7 +124,9 @@ export const InPaths = () => {
 export const OutPaths = () => {
   return (
     <motion.svg
-      className="h-100"
+      className="h-100 w-full"
+      viewBox="0 0 300 510"
+      preserveAspectRatio="xMinYMid meet"
       initial={{
         opacity: 0,
       }}

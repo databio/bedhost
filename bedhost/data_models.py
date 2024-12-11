@@ -77,3 +77,7 @@ class BaseListResponse(BaseModel):
     limit: int
     offset: int
     results: list
+
+
+class CreateBEDsetRequest(BaseModel):
+    registry_path: str
