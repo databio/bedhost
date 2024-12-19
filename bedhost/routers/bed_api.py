@@ -28,6 +28,7 @@ from bbconf.models.bed_models import (
     TokenizedBedResponse,
     TokenizedPathResponse,
     QdrantSearchResult,
+    RefGenValidReturnModel,
 )
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
 from fastapi.responses import PlainTextResponse
@@ -480,4 +481,25 @@ async def get_tokens(
         raise HTTPException(
             status_code=404,
             detail="Tokenized file not found",
+        )
+
+
+@router.get(
+    "/{bed_id}/reference_validations",
+    summary="Get reference genome validation results",
+    response_model=RefGenValidReturnModel,
+)
+async def get_ref_gen_results(
+    bed_id: str,
+):
+    """
+    Return reference genome validation results for a bed file
+    Example: bed: 0dcdf8986a72a3d85805bbc9493a1302
+    """
+    try:
+        return bbagent.bed.get_reference_validation(bed_id)
+    except BEDFileNotFoundError as _:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Bed file {bed_id} not found",
         )
