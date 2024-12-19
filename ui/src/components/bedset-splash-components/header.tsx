@@ -47,15 +47,17 @@ export const BedsetSplashHeader = (props: Props) => {
         <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-end gap-1 flex-shrink-0">
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
-          <a
-            href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}
-            target="_blank"
-          >
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-distribute-vertical me-1" />
-              Genome Browser
-            </button>
-          </a>
+          {metadata.bed_ids?.length <= 20 && (
+            <a
+              href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}
+              target="_blank"
+            >
+              <button className="btn btn-outline-primary btn-sm">
+                <i className="bi bi-distribute-vertical me-1" />
+                Genome Browser
+              </button>
+            </a>
+          )}
 
           <a href={`${API_BASE}/bedset/${metadata.id}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
@@ -100,7 +102,7 @@ export const BedsetSplashHeader = (props: Props) => {
               <i className="bi bi-download me-1" />
               Downloads
             </Dropdown.Toggle>
-            <Dropdown.Menu className='border border-light-subtle shadow-sm'>
+            <Dropdown.Menu className="border border-light-subtle shadow-sm">
               <Dropdown.Item className="text-primary" onClick={() => setShowDownloadModal(true)}>
                 Download BEDset
               </Dropdown.Item>
@@ -135,7 +137,8 @@ export const BedsetSplashHeader = (props: Props) => {
           )}
         </div>
 
-        <div className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm mt-2 mt-md-0">
+        <div
+          className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm mt-2 mt-md-0">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
