@@ -60,8 +60,10 @@ export const Text2BedSet = () => {
         ) : (
           <div className="my-2">
             {results ? (
-              <div className="p-2 border rounded shadow-sm">
-                <TableToolbar showTotalResults limit={limit} setLimit={setLimit} total={results.count} />
+              <div className="p-0 pt-1 pb-3 border rounded shadow-sm">
+                <div className="px-2 pt-2">
+                  <TableToolbar showTotalResults limit={limit} setLimit={setLimit} total={results.count} />
+                </div>
                 <SearchBedSetResultTable results={results} />{' '}
                 <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
               </div>

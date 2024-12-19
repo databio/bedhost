@@ -51,8 +51,8 @@ export const Home = () => {
         {/*</div>*/}
         <h1 className="fw-bolder text-primary text-6xl mb-4">Welcome to BEDbase</h1>
         <div className="my-3"></div>
-        <div className="w-75">
-          <p className="text-center text-base mb-4">
+        <div className="col-12 col-lg-9">
+          <p className="text-md-center text-base mb-4">
             BEDbase is a unified platform for aggregating, analyzing, and serving genomic region data. BEDbase redefines
             the way to manage genomic region data and allows users to search for BED files of interest and create
             collections tailored to research needs. BEDbase is composed of a web server and an API. Users can explore
@@ -60,7 +60,7 @@ export const Home = () => {
             interact with the data via an OpenAPI-compatible API.
           </p>
         </div>
-        <div className="d-flex flex-row align-items-center w-75 gap-1">
+        <div className="d-flex flex-row align-items-center col-12 col-lg-9 gap-1">
           <input
             className="form-control form-control-lg"
             type="text"
@@ -91,9 +91,9 @@ export const Home = () => {
             </span>
           </button>
         </div>
-        <div className="d-flex flex-row align-items-center justify-content-center gap-2 my-3">
-          Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a> or a{' '}
-          <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BED set</a>
+        <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 my-3">
+          <span>Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a></span>
+          <span>or an{' '} <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BEDset</a></span>
         </div>
 
         <div className="flex-row w-100 landing-animation-container hidden large-flex">
@@ -269,7 +269,7 @@ export const Home = () => {
             </Col>
           </Row>
           {/* <div className="my-5"></div> */}
-          <Row className="w-100 align-items-center">
+          <Row className="w-100 align-items-center mb-5 mb-md-2">
             <Col sm={6} md={6}>
               <h2 className="fw-bold">BEDbase client </h2>
               <p className="text-balance pe-4">
@@ -338,7 +338,7 @@ export const Home = () => {
               <h2 className="fw-bold">Data Availability Summary</h2>
             </Col>
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div className="my-5 w-100">
+              <div className="mt-0 mt-md-5 mb-5 w-100">
                 <ul className="list-group w-100">
                   <li className="list-group-item d-flex justify-content-between align-items-center">
                     Number of bed files available:

@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { DownloadBedSetModal } from '../modals/download-bedset-modal';
-import {useCopyToClipboard} from "@uidotdev/usehooks";
+import { useCopyToClipboard } from '@uidotdev/usehooks';
+import { formatDateTime } from '../../utils.ts';
+
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
 type Props = {
@@ -22,13 +25,13 @@ export const BedsetSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-row align-items-start justify-content-between mb-2 ">
-        <div className="d-flex flex-column align-items-start">
-          <h4 className="fw-bold">
-            <i className="bi bi-file-earmark-text me-2" />
+      <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-0">
+        <div className="d-flex align-items-center">
+          <h4 className="fw-bold mb-2">
+            <i className="bi bi-journal-text me-2" />
             {metadata?.id || 'No name available'}
             <button
-              className="btn btn-link text-primary mb-2"
+              className="btn btn-link text-primary mb-1"
               onClick={() => {
                 copyToClipboard(metadata.id || '');
                 setCopiedId(true);
@@ -41,24 +44,20 @@ export const BedsetSplashHeader = (props: Props) => {
             </button>
           </h4>
         </div>
-        <div className="d-flex flex-row align-items-center gap-1">
-
+        <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-end gap-1 flex-shrink-0">
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
-          <a
-            href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`} target="_blank">
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-distribute-vertical me-1" />
-              Genome Browser
-            </button>
-          </a>
-
-          <a href={`${API_BASE}/bedset/${metadata.id}/pep`}>
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-download me-1" />
-              Download PEP
-            </button>
-          </a>
+          {(metadata.bed_ids?.length || 0) <= 20 && (
+            <a
+              href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}
+              target="_blank"
+            >
+              <button className="btn btn-outline-primary btn-sm">
+                <i className="bi bi-distribute-vertical me-1" />
+                Genome Browser
+              </button>
+            </a>
+          )}
 
           <a href={`${API_BASE}/bedset/${metadata.id}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
@@ -97,23 +96,64 @@ export const BedsetSplashHeader = (props: Props) => {
               </button>
             )
           }
-          <button onClick={() => setShowDownloadModal(true)} className="btn btn-outline-primary btn-sm">
-            <i className="bi bi-download me-1" />
-            Download BEDset
-          </button>
+
+          <Dropdown>
+            <Dropdown.Toggle variant="outline-primary" id="dropdown-basic" size="sm">
+              <i className="bi bi-download me-1" />
+              Downloads
+            </Dropdown.Toggle>
+            <Dropdown.Menu className="border border-light-subtle shadow-sm">
+              <Dropdown.Item className="text-primary" onClick={() => setShowDownloadModal(true)}>
+                Download BEDset
+              </Dropdown.Item>
+              <Dropdown.Item className="text-primary" href={`${API_BASE}/bedset/${metadata.id}/pep`}>
+                Download PEP
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+
         </div>
       </div>
-      <div>
-        <p className="mb-2">{metadata?.description || 'No description available'}</p>
+      <div className="text-body-secondary fst-italic">
+        <p>{metadata?.description || 'No description available'}</p>
+        <p className="mb-0 text-sm">Author: {metadata?.author || 'None'}</p>
+        <p className="mb-0 text-sm">Source: {metadata?.source || 'None'}</p>
       </div>
-      <div className="d-flex flex-row align-items-end justify-content-start gap-1">
-        <div className="badge bg-primary text-wrap">
-          <i className="bi bi-hash me-1" />
-          {metadata.md5sum}
+      <div className="d-flex flex-column flex-md-row align-items-start justify-content-between mt-2">
+        <div className="d-flex flex-column flex-md-row gap-1">
+          <p className="mb-0">
+            <div className="badge bg-primary text-wrap">
+              <i className="bi bi-hash me-1" />
+              {metadata.md5sum}
+            </div>
+          </p>
+          {metadata.bed_ids && (
+            <p className="mb-0">
+              <div className="badge bg-primary text-wrap">
+                <i className="bi bi-file-earmark-text me-1" />
+                {metadata.bed_ids?.length} BED files
+              </div>
+            </p>
+          )}
         </div>
-        <div className="badge bg-primary text-wrap">
-          <i className="bi bi-file-earmark-text me-1" />
-          {metadata.bed_ids?.length} BED files
+
+        <div
+          className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm mt-2 mt-md-0">
+          <div className="d-flex flex-row text-muted">
+            <i className="bi bi-calendar4-event me-1" />
+            <p className="mb-0">
+              <span>Created:</span>{' '}
+              {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
+            </p>
+          </div>
+
+          <div className="d-flex flex-row text-muted ms-lg-4">
+            <i className="bi bi-calendar4-event me-1" />
+            <p className="mb-0">
+              <span>Updated:</span>{' '}
+              {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
+            </p>
+          </div>
         </div>
       </div>
       <DownloadBedSetModal id={metadata.id} show={showDownloadModal} setShow={setShowDownloadModal} />
