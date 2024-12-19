@@ -47,7 +47,7 @@ export const BedsetSplashHeader = (props: Props) => {
         <div className="d-flex flex-column flex-lg-row align-items-start align-items-lg-end gap-1 flex-shrink-0">
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
-          {metadata.bed_ids?.length <= 20 && (
+          {(metadata.bed_ids?.length || 0) <= 20 && (
             <a
               href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}
               target="_blank"
