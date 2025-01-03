@@ -23,6 +23,11 @@ export const makeThumbnailImageLink = (md5: string, plotName: string, type: Obje
   return `${API_BASE}/objects/${type}.${md5}.${plotName}/access/http/thumbnail`;
 };
 
+export const makePDFImageLink = (md5: string, plotName: string, type: ObjectType) => {
+  const API_BASE = import.meta.env.VITE_API_BASE || '';
+  return `${API_BASE}/objects/${type}.${md5}.${plotName}/access/http/bytes`;
+};
+
 export const formatDateTime = (date: string) => {
   return new Date(date).toLocaleString();
 };
@@ -33,6 +38,21 @@ export const bytesToSize = (bytes: number) => {
   const i = parseInt(String(Math.floor(Math.log(bytes) / Math.log(1024))));
   return Math.round(bytes / Math.pow(1024, i)) + ' ' + sizes[i];
 };
+
+export const generateBEDsetPEPMd = (md5List: string[]) => {
+  const script = `
+  \`\`\`text
+  sample_name\n${md5List.join('\n')}
+  \`\`\`
+  `;
+  return script;
+};
+
+export const generateBEDsetPEPDownloadRaw = (md5List: string[]) => {
+  const script = `sample_name\n${md5List.join('\n')}`;
+  return script;
+};
+
 
 export const generateCurlScriptForCartDownloadMd = (md5List: string[]) => {
   const wgetCommands = md5List.map((md5, index) => {

@@ -6,7 +6,7 @@ export const MobileNav = () => {
       <Dropdown.Toggle className="shadow-none" variant="none" id="navbarDropdown">
         <i className="bi bi-list fs-4" />
       </Dropdown.Toggle>
-      <Dropdown.Menu>
+      <Dropdown.Menu className='border border-light-subtle shadow'>
         <Dropdown.Item href="https://github.com/databio/bedhost">
           <i className="bi bi-github me-2" />
           GitHub

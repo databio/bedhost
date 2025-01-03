@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Col, Image, Row } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
-import { chunkArray, makeThumbnailImageLink } from '../../utils';
+import { chunkArray, makeThumbnailImageLink, makePDFImageLink } from '../../utils';
 import { Fragment } from 'react';
 import { FigureModal } from '../modals/figure-modal';
 
@@ -13,12 +13,13 @@ type PlotsProps = {
 
 type PlotProps = {
   src: string;
+  pdf: string;
   alt: string;
   title: string;
 };
 
 const Plot = (props: PlotProps) => {
-  const { src, alt, title } = props;
+  const { src, pdf, alt, title } = props;
   const [show, setShow] = useState(false);
 
   return (
@@ -31,13 +32,13 @@ const Plot = (props: PlotProps) => {
       }}
       className="h-100 border rounded p-1 shadow-sm hover-border-primary transition-all"
     >
-      <div className="px-1 d-flex flex-row justify-content-between w-100 mb-1">
-        <span className="fw-bold text-sm text-center w-100 mb-1">{title}</span>
+      <div className="px-1 text-center">
+        <span className="fw-bold text-sm mb-1">{title}</span>
         {/* <button onClick={() => setShow(true)} className="btn btn-sm btn-outline-primary text-xs">
           <i className="bi bi-eye" />
         </button> */}
       </div>
-      <div className="d-flex flex-row align-items-center w-100 justify-content-center">
+      <div className="text-center">
         <Image height="300px" src={src} alt={alt} />
       </div>
       <FigureModal
@@ -47,6 +48,7 @@ const Plot = (props: PlotProps) => {
         }}
         title={title}
         src={src}
+        pdf={pdf}
         alt={alt}
       />
     </div>
@@ -55,13 +57,14 @@ const Plot = (props: PlotProps) => {
 
 export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
+
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
     <Fragment>
-      <div className="my-2">
+      <Row className="mb-2 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
-            <Row key={idx} className="mb-2">
+            <Fragment key={idx}>
               {chunk.map((plotName) => {
                 // this is for type checking
                 const plotNameKey = plotName as keyof typeof metadata.plots;
@@ -70,22 +73,23 @@ export const Plots = (props: PlotsProps) => {
                 const title = plotExists ? metadata.plots[plotNameKey]?.title : plotName;
                 const alt = plotExists
                   ? // @ts-expect-error: type checking here is just too much
-                    metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
+                  metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
                   : plotName;
                 return (
                   <Col key={plotName} sm={12} md={4} className="px-1">
                     <Plot
                       key={plotName}
                       src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
+                      pdf={plotExists ? makePDFImageLink(metadata.id, plotName, 'bed') : '/fignotavl_png.svg'}
                       alt={alt || 'No description available'}
                       title={title || 'No title available'}
                     />
                   </Col>
                 );
               })}
-            </Row>
+            </Fragment>
           ))}
-      </div>
+      </Row>
     </Fragment>
   );
 };

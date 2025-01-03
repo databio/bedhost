@@ -28,6 +28,9 @@ const Footer = () => {
               bbconf {data?.component_versions?.bbconf_version || ''}
             </span>
             <span className="badge rounded-pill bg-primary text-primary bg-opacity-25 border border-primary me-1">
+              geniml {data?.component_versions?.geniml_version || ''}
+            </span>
+            <span className="badge rounded-pill bg-primary text-primary bg-opacity-25 border border-primary me-1">
               Python {data?.component_versions?.python_version || ''}
             </span>
             <span className="badge rounded-pill bg-primary text-primary bg-opacity-25 border border-primary me-1">

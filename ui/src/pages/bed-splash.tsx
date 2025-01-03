@@ -13,6 +13,12 @@ import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
 import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
 import { snakeToTitleCase } from '../utils';
+import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table';
+import { useBedNeighbours } from '../queries/useBedNeighbours';
+import type { components } from '../../bedbase-types.d.ts';
+
+// Use the response type to properly type the metadata
+type BedMetadata = components['schemas']['BedMetadataAll'];
 
 export const BedSplash = () => {
   const params = useParams();
@@ -27,6 +33,26 @@ export const BedSplash = () => {
     autoRun: true,
     full: true,
   });
+
+  const { data: neighbours } = useBedNeighbours({
+    md5: bedId,
+    limit: 10,
+    offset: 0,
+  });
+
+  // Helper function to safely type the annotation keys
+  const getAnnotationValue = (data: BedMetadata | undefined, key: string) => {
+    if (!data?.annotation) return null;
+    return (data.annotation as Record<string, string | null>)[key];
+  };
+
+  // Helper function to get filtered keys
+  const getFilteredKeys = (data: BedMetadata | undefined) => {
+    if (!data?.annotation) return [];
+    return Object.keys(data.annotation).filter(
+      (k) => k !== 'input_file' && k !== 'file_name' && k !== 'sample_name' && getAnnotationValue(data, k),
+    );
+  };
 
   if (isLoading) {
     return (
@@ -68,10 +94,10 @@ export const BedSplash = () => {
           >
             <h1 className="fw-bold text-center mb-3">Oh no!</h1>
             <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h2 className="text-2xl text-center">
+              <h4 className="text-2xl text-center">
                 We could not find BED with record identifier: <br />
                 <span className="fw-bold">{bedId}</span>
-              </h2>
+              </h4>
             </div>
             <div className="w-50">
               <p className="fst-italic text-center mt-3">
@@ -108,96 +134,124 @@ export const BedSplash = () => {
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} /> : null}
             </Col>
           </Row>
-          <Row className="mb-2">
+          <Row className="mb-2 g-3">
             <Col sm={12} md={6}>
-              <h2 className="fw-bold">Overview</h2>
-              <div className="border rounded p-1 shadow-sm">
-                <table className="table table-sm rounded text-truncate">
-                  <thead>
-                    <tr>
-                      <th scope="col">Key</th>
-                      <th scope="col">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
-                    {Object.keys(metadata?.annotation || {}).map((k) => {
-                      if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
-                        return null;
-                        // @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be)
-                      } else if (!metadata?.annotation[k]) {
-                        return null;
-                      } else {
+              <h4 className="fw-bold">Overview</h4>
+              <div className="border rounded px-0 pt-1 shadow-sm">
+                <div className="table-responsive">
+                  <table className="table table-sm table-striped text-truncate text-sm">
+                    <thead>
+                      <tr>
+                        <th scope="col">Key</th>
+                        <th scope="col">Value</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      {Object.keys(metadata?.annotation || {}).map((k) => {
+                        if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
+                          return null;
+                        }
+
+                        const value = getAnnotationValue(metadata, k);
+                        if (!value) {
+                          return null;
+                        }
+
                         return (
                           <tr key={k}>
                             <td style={{ maxWidth: '50px' }} className="fst-italic">
                               {snakeToTitleCase(k)}
                             </td>
-
                             <td style={{ maxWidth: '120px' }} className="truncate">
-                              {/* @ts-expect-error wants to get mad because it could be an object and React cant render that (it wont be) */}
-                              {metadata?.annotation[k] || 'N/A'}
+                              {value ?? 'N/A'}
                             </td>
                           </tr>
                         );
-                      }
-                    })}
-                  </tbody>
-                </table>
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </Col>
-            <Col sm={12} md={6}>
-              <h2 className="fw-bold">BED Sets</h2>
-              <div className="border rounded p-1 shadow-sm h-80">
-                <table className="table table-sm rounded text-truncate text-sm">
-                  <thead>
+            <Col sm={12} md={6} className='mt-2 mt-md-3'>
+              <h4 className="fw-bold">BEDsets</h4>
+              <div className="border rounded px-0 pt-1 shadow-sm">
+                <div className="table-responsive">
+                  <table className="table table-sm table-striped text-truncate text-sm">
+                    <thead>
                     <tr>
-                      <th scope="col">BED set ID</th>
+                      <th scope="col">BEDset ID</th>
                       <th scope="col">Name</th>
                       <th scope="col">Description</th>
                       <th scope="col">View</th>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {metadata?.bedsets?.map((bedset) => (
-                      <tr key={bedset.id} className="truncate">
-                        <td className="truncate" style={{ maxWidth: '150px' }}>
-                          {bedset.id}
-                        </td>
-                        <td className="truncate" style={{ maxWidth: '100px' }}>
-                          {bedset.name || 'No name'}
-                        </td>
-                        <td className="truncate" style={{ maxWidth: '300px' }}>
-                          {bedset.description || 'No description'}
-                        </td>
-                        <td>
-                          <a href={`/bedset/${bedset.id}`}>View</a>
-                        </td>
-                      </tr>
-                    )) || 'N/A'}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                    {[
+                      ...(metadata?.bedsets || []).map((bedset) => (
+                        <tr key={bedset.id} className="truncate">
+                          <td className="truncate" style={{ maxWidth: '150px' }}>
+                            {bedset.id}
+                          </td>
+                          <td className="truncate" style={{ maxWidth: '100px' }}>
+                            {bedset.name || 'No name'}
+                          </td>
+                          <td className="truncate" style={{ maxWidth: '300px' }}>
+                            {bedset.description || 'No description'}
+                          </td>
+                          <td>
+                            <a href={`/bedset/${bedset.id}`}>View</a>
+                          </td>
+                        </tr>
+                      )),
+                      ...Array(Math.max(0, getFilteredKeys(metadata).length - (metadata?.bedsets?.length || 0)))
+                        .fill(null)
+                        .map((_, index) => (
+                          <tr key={`empty-${index}`}>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                          </tr>
+                        )),
+                    ]}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </Col>
           </Row>
-          <h2 className="fw-bold">Statistics</h2>
-          <Row className="mb-4">
+
+          <Row className="mb-2 g-2">
+            <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column gap-2 px-1 justify-content-between">
+              <Col sm={12} md={4} className="d-flex flex-column justify-content-between  mt-0 gap-2">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
               </Col>
             )}
-            <Col sm={12} md={8} className="d-flex flex-column gap-2 px-1">
+            <Col sm={12} md={8} className="d-flex flex-column mt-2 mt-md-0">
               <GenomicFeatureBar metadata={metadata!} />
-              {/* <PromoterAnalysisBar metadata={metadata!} /> */}
             </Col>
           </Row>
-          <h2 className="fw-bold">Plots</h2>
+
           <Row className="mb-2">
-            <Plots metadata={metadata!} />
+            <h4 className="fw-bold">Plots</h4>
+            <Col sm={12}>
+              <Plots metadata={metadata!} />
+            </Col>
           </Row>
+
+          {neighbours && (
+            <Row className="mb-2 mx-0">
+              <h4 className="fw-bold px-0">Similar BED Files</h4>
+              <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
+                <Text2BedSearchResultsTable results={neighbours} />
+              </Col>
+            </Row>
+          )}
         </div>
       </Layout>
     );
