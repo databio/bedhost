@@ -485,7 +485,7 @@ async def get_tokens(
 
 
 @router.get(
-    "/{bed_id}/reference_validations",
+    "/{bed_id}/genome-stats",
     summary="Get reference genome validation results",
     response_model=RefGenValidReturnModel,
 )

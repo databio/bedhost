@@ -13,7 +13,7 @@ type Props = {
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
-const API_ENDPOINT = `${API_BASE}/bedset/create/`;
+const API_ENDPOINT = `${API_BASE}/bedset/create`;
 
 export const generateBEDsetCreationDescription = () => {
   const text = `
@@ -124,9 +124,6 @@ export const CreateBedSetModal = (props: Props) => {
           {message && <div className="mt-2">{message}</div>}
 
         </div>
-
-      </Modal.Body>
-      <Modal.Body className="position-relative pt-2 ">
 
       </Modal.Body>
     </Modal>

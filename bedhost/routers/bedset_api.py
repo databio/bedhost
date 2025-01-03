@@ -216,14 +216,11 @@ async def create_bedset(bedset: CreateBEDsetRequest):
         for bedfile_id in project.samples
     ]
 
-    try:
-        bbagent.bedset.get(identifier=project.name)
+    if bbagent.bedset.exists(identifier=project.name):
         raise HTTPException(
             status_code=409,
             detail=f"BEDset with identifier {project.name} already exists",
         )
-    except BedSetNotFoundError as _:
-        pass
 
     try:
         bbagent.bedset.create(
