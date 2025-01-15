@@ -12,7 +12,6 @@ type Props = {
 export const RefGenomeModal = (props: Props) => {
   const { show, onHide, genomeStats } = props;
 
-  console.log(genomeStats?.compared_genome)
   return (
     <Modal
       animation={false}

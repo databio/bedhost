@@ -49,8 +49,6 @@ export const Text2BedSearchResultsTable = (props: Props) => {
     }
   };
 
-  console.log(results.results)
-
   return (
     <div className="table-responsive">
       <table className="table text-sm table-hover">
