@@ -49,6 +49,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
     }
   };
 
+  console.log(results.results)
+
   return (
     <div className="table-responsive">
       <table className="table text-sm table-hover">
@@ -122,8 +124,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             <td>
               <ProgressBar
                 min={5}
-                now={result.score * 100}
-                label={`${roundToTwoDecimals(result.score * 100)}`}
+                now={(result.score ?? 0) * 100}
+                label={`${roundToTwoDecimals((result.score ?? 0) * 100)}`}
                 variant="primary"
               />
             </td>
