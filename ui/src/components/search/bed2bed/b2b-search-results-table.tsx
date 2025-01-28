@@ -130,8 +130,8 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
         <span className="min-cell-width text-truncate d-inline-block">
           <ProgressBar
             min={5}
-            now={info.getValue() * 100}
-            label={`${roundToTwoDecimals(info.getValue() * 100)}`}
+            now={(info.getValue() ?? 0) * 100}
+            label={`${roundToTwoDecimals((info.getValue() ?? 0) * 100)}`}
             variant="primary"
           />
         </span>
