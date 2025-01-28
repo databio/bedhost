@@ -311,3 +311,8 @@ td {
   color: #212529;
   background: #e9ecef;
 }
+
+.genome-card:hover {
+  border: 1px solid $primary;
+  filter: brightness(98%);
+}
