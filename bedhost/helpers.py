@@ -1,7 +1,11 @@
 import os
+from functools import wraps
 
+from typing import Literal
 from bbconf.bbagent import BedBaseAgent
+from bbconf.models.base_models import UsageModel
 from starlette.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi import Request
 
 from . import _LOGGER
 from .exceptions import BedHostException
@@ -74,3 +78,55 @@ def drs_response(status_code, msg):
     """Helper function to make quick DRS responses"""
     content = {"status_code": status_code, "msg": msg}
     return JSONResponse(status_code=status_code, content=content)
+
+
+from pprint import pprint
+
+
+def count_requests(
+    bbagent: BedBaseAgent,
+    event: Literal[
+        "bed_search", "bedset_search", "bed_metadata", "bedset_metadata", "files"
+    ],
+):
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            func_name = func.__name__
+
+            bed_id = kwargs.get("bed_id")
+            bedset_id = kwargs.get("bedset_id")
+            query = kwargs.get("query")
+            file_name = kwargs.get("file_path")
+
+            request: Request = kwargs.get("request")
+            if request:
+                ip_address = request.client.host
+                agent_name = request.headers.get("User-Agent", "unknown")
+            else:
+                ip_address = "unknown"
+                agent_name = "unknown"
+
+            usage = UsageModel(
+                event=event,
+                bed_id=bed_id,
+                query=query,
+                bedset_id=bedset_id,
+                ipaddress=ip_address,
+                user_agent=agent_name,
+                file_name=file_name,
+            )
+
+            bbagent.add_usage(usage)
+
+            print(usage)
+
+            # stats_dict[func_name] = stats_dict.get(func_name, {})
+            # stats_dict[func_name][bed_id] = stats_dict[func_name].get(bed_id, 0) + 1
+            # pprint(stats_dict)
+
+            return await func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

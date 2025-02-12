@@ -30,7 +30,7 @@ from bbconf.models.bed_models import (
     QdrantSearchResult,
     RefGenValidReturnModel,
 )
-from fastapi import APIRouter, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, File, HTTPException, Query, UploadFile, Request
 from fastapi.responses import PlainTextResponse
 from gtars.tokenizers import RegionSet
 
@@ -38,6 +38,7 @@ from .. import _LOGGER
 from ..const import EXAMPLE_BED
 from ..data_models import CROM_NUMBERS, BaseListResponse, BedDigest
 from ..main import bbagent
+from ..helpers import count_requests
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
@@ -88,7 +89,9 @@ async def list_beds(
     response_model_by_alias=False,
     description=f"Example\n " f"bed_id: {EXAMPLE_BED}",
 )
+@count_requests(bbagent, event="bed_metadata")
 async def get_bed_metadata(
+    request: Request,  # needed for count_requests
     bed_id: str = BedDigest,
     full: Optional[bool] = Query(
         False, description="Return full record with stats, plots, files and metadata"
@@ -352,7 +355,10 @@ def get_regions_for_bedfile(
     response_model=BedListSearchResult,
     response_model_by_alias=False,
 )
-async def text_to_bed_search(query, limit: int = 10, offset: int = 0):
+@count_requests(bbagent, event="bed_search")
+async def text_to_bed_search(
+    request: Request, query: str, limit: int = 10, offset: int = 0
+):
     """
     Search for a BedFile by a text query.
     Example: query="cancer"
