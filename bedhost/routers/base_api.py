@@ -21,7 +21,7 @@ from ..data_models import (
     Type,
 )
 from ..helpers import get_openapi_version, count_requests
-from ..main import app, bbagent
+from ..main import app, bbagent, usage_data
 
 router = APIRouter(prefix="/v1", tags=["base"])
 from fastapi.responses import RedirectResponse
@@ -98,7 +98,7 @@ async def service_info():
 
 
 @router.get("/files/{file_path:path}")
-@count_requests(bbagent, event="files")
+@count_requests(usage_data, event="files")
 async def redirect_to_download(file_path: str, request: Request):
     download_url = f"https://data2.bedbase.org/{file_path}"
     return RedirectResponse(url=download_url)

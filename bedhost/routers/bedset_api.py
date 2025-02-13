@@ -12,7 +12,7 @@ from pephubclient.helpers import is_registry_path, unwrap_registry_path
 from fastapi import APIRouter, HTTPException, Request, Response
 
 from ..const import EXAMPLE_BEDSET, PKG_NAME
-from ..main import bbagent
+from ..main import bbagent, usage_data
 from ..data_models import CreateBEDsetRequest
 from ..utils import zip_pep
 from ..helpers import count_requests
@@ -41,9 +41,8 @@ async def get_example_bedset_record():
     tags=["search"],
     response_model=BedSetListResult,
 )
-@count_requests(bbagent, event="bedset_search")
+@count_requests(usage_data, event="bedset_search")
 async def list_bedsets(
-    request: Request,  ## Added for count_requests
     query: str = None,
     limit: int = 1000,
     offset: int = 0,
@@ -61,9 +60,8 @@ async def list_bedsets(
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
     response_model_by_alias=False,
 )
-@count_requests(bbagent, event="bedset_metadata")
+@count_requests(usage_data, event="bedset_meta")
 async def get_bedset_metadata(
-    request: Request,  ## Added for count_requests
     bedset_id: str,
     full: bool = True,
 ):

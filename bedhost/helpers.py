@@ -2,10 +2,10 @@ import os
 from functools import wraps
 
 from typing import Literal
+import datetime
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import UsageModel
 from starlette.responses import FileResponse, JSONResponse, RedirectResponse
-from fastapi import Request
 
 from . import _LOGGER
 from .exceptions import BedHostException
@@ -84,49 +84,60 @@ from pprint import pprint
 
 
 def count_requests(
-    bbagent: BedBaseAgent,
-    event: Literal[
-        "bed_search", "bedset_search", "bed_metadata", "bedset_metadata", "files"
-    ],
+    usage_data: UsageModel,
+    event: Literal["bed_search", "bedset_search", "bed_meta", "bedset_meta", "files"],
 ):
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
-            func_name = func.__name__
+            if event == "files":
+                file_path = kwargs.get("file_path")
+                if "bed" in file_path or "bigbed" in file_path.lower():
+                    if file_path in usage_data.files:
+                        usage_data.files[file_path] += 1
+                    else:
+                        usage_data.files[file_path] = 1
+            elif event == "bed_search":
+                query = kwargs.get("query")
+                if query in usage_data.bed_search:
+                    usage_data.bed_search[query] += 1
+                else:
+                    usage_data.bed_search[query] = 1
+            elif event == "bedset_search":
+                query = kwargs.get("query")
+                if query in usage_data.bedset_search:
+                    usage_data.bedset_search[query] += 1
+                else:
+                    usage_data.bed_search[query] = 1
+            elif event == "bed_meta":
+                bed_id = kwargs.get("bed_id")
+                if bed_id in usage_data.bed_meta:
+                    usage_data.bed_meta[bed_id] += 1
+                else:
+                    usage_data.bed_meta[bed_id] = 1
 
-            bed_id = kwargs.get("bed_id")
-            bedset_id = kwargs.get("bedset_id")
-            query = kwargs.get("query")
-            file_name = kwargs.get("file_path")
-
-            request: Request = kwargs.get("request")
-            if request:
-                ip_address = request.client.host
-                agent_name = request.headers.get("User-Agent", "unknown")
+            elif event == "bedset_meta":
+                bedset_id = kwargs.get("bedset_id")
+                if bedset_id in usage_data.bedset_meta:
+                    usage_data.bedset_meta[bedset_id] += 1
+                else:
+                    usage_data.bedset_meta[bedset_id] = 1
             else:
-                ip_address = "unknown"
-                agent_name = "unknown"
-
-            usage = UsageModel(
-                event=event,
-                bed_id=bed_id,
-                query=query,
-                bedset_id=bedset_id,
-                ipaddress=ip_address,
-                user_agent=agent_name,
-                file_name=file_name,
-            )
-
-            bbagent.add_usage(usage)
-
-            print(usage)
-
-            # stats_dict[func_name] = stats_dict.get(func_name, {})
-            # stats_dict[func_name][bed_id] = stats_dict[func_name].get(bed_id, 0) + 1
-            # pprint(stats_dict)
-
+                raise ValueError(f"Unknown event type: {event}")
+            pprint(usage_data.model_dump())
             return await func(*args, **kwargs)
 
         return wrapper
 
     return decorator
+
+
+def init_model_usage():
+    return UsageModel(
+        bed_meta={},
+        bedset_meta={},
+        bed_search={},
+        bedset_search={},
+        files={},
+        date_from=datetime.datetime.now(),
+    )
