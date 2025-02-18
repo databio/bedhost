@@ -30,7 +30,7 @@ export const RefGenomeModal = (props: Props) => {
         <ul className='text-sm'>
           <li><strong>XS</strong> (eXtra Sequences): the proportion of shared regions in both this BED file and reference genome over the total number of regions in this BED file [recall].</li>
           <li><strong>OOBR</strong> (Out Of Bounds Regions): The proportion of shared regions from this BED file that do not exceed the bounds of the corresponding shared region in the reference genome.</li>
-          <li><strong>Sequence Fit</strong>: the proportion of shared region <span className='fst-italic'>lengths</span> in both this BED file and reference genome over the total number of region <span className='fst-italic'>lengths</span> in the reference genome [precision].</li>
+          <li><strong>SF</strong> (Sequence Fit): the proportion of shared <span className='fst-italic'>region lengths</span> in both this BED file and reference genome over the total number of <span className='fst-italic'>region lengths</span> in the reference genome [precision].</li>
         </ul>
 
         <div className='row mb-1'>
@@ -39,7 +39,7 @@ export const RefGenomeModal = (props: Props) => {
               <p className='mb-1' style={{width: '33%'}}>Genome</p>
               <p className='mb-1 mx-2' style={{width: '14%'}}>XS</p>
               <p className='mb-1 mx-2' style={{width: '14%'}}>OOBR</p>
-              <p className='mb-1 mx-2' style={{width: '14%'}}>Sequence Fit</p>
+              <p className='mb-1 mx-2' style={{width: '14%'}}>SF</p>
               <p className='mb-1 ms-auto'>Rank</p>
             </div>
           </div>

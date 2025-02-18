@@ -11,11 +11,7 @@ type BedGenomeStatsQuery = {
 
 export const useBedGenomeStats = (query: BedGenomeStatsQuery) => {
   const { api } = useBedbaseApi();
-  const { md5, autoRun } = query;
-  let enabled = false;
-  if (autoRun !== undefined && autoRun && md5) {
-    enabled = true;
-  }
+  const { md5 } = query;
 
   return useQuery({
     queryKey: ['bed-genome-stats', md5],
@@ -23,7 +19,7 @@ export const useBedGenomeStats = (query: BedGenomeStatsQuery) => {
       const { data } = await api.get<BedGenomeStatsResponse>(`/bed/${md5}/genome-stats`);
       return data;
     },
-    enabled: enabled,
+    enabled: !!md5,
     staleTime: 0,
   });
 };

@@ -39,7 +39,6 @@ export const BedSplash = () => {
     data: genomeStats,
   } = useBedGenomeStats({
     md5: bedId,
-    autoRun: true,
   });
 
   const { data: neighbours } = useBedNeighbours({
