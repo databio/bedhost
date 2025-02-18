@@ -28,9 +28,9 @@ export const RefGenomeModal = (props: Props) => {
           The ranking is based on the following metrics: 
         </p>
         <ul className='text-sm'>
-          <li><strong>XS</strong> (eXtra Sequences): the proportion of shared regions in both the query BED file and reference genome over the total number of regions in the query BED file [recall]</li>
-          <li><strong>OOBR</strong> (Out Of Bounds Regions): The proportion of shared regions from the query BED file that do not exceed the bounds of the corresponding shared region in the reference genome</li>
-          <li><strong>Sequence Fit</strong>: the proportion of shared regions in both the query BED file and reference genome over the total number of regions in the reference genome [precision]</li>
+          <li><strong>XS</strong> (eXtra Sequences): the proportion of shared regions in both this BED file and reference genome over the total number of regions in this BED file [recall].</li>
+          <li><strong>OOBR</strong> (Out Of Bounds Regions): The proportion of shared regions from this BED file that do not exceed the bounds of the corresponding shared region in the reference genome.</li>
+          <li><strong>Sequence Fit</strong>: the proportion of shared regions in both this BED file and reference genome over the total number of regions in the reference genome [precision].</li>
         </ul>
 
         <div className='row mb-1'>
