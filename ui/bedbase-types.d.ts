@@ -467,6 +467,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/bed/{bed_id}/genome-stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get reference genome validation results
+         * @description Return reference genome validation results for a bed file
+         *     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302
+         */
+        get: operations["get_ref_gen_results_v1_bed__bed_id__genome_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/bedset/example": {
         parameters: {
             query?: never;
@@ -909,7 +930,10 @@ export interface components {
         };
         /** BedPEPHub */
         BedPEPHub: {
-            /** Sample Name */
+            /**
+             * Sample Name
+             * @default
+             */
             sample_name: string;
             /**
              * Genome
@@ -1001,7 +1025,10 @@ export interface components {
         };
         /** BedPEPHubRestrict */
         BedPEPHubRestrict: {
-            /** Sample Name */
+            /**
+             * Sample Name
+             * @default
+             */
             sample_name: string;
             /**
              * Genome
@@ -1305,8 +1332,37 @@ export interface components {
             /** Payload */
             payload?: Record<string, never>;
             /** Score */
-            score: number;
+            score?: number;
             metadata?: components["schemas"]["BedMetadataBasic"] | null;
+        };
+        /** RefGenValidModel */
+        RefGenValidModel: {
+            /** Provided Genome */
+            provided_genome: string;
+            /** Compared Genome */
+            compared_genome: string;
+            /**
+             * Xs
+             * @default 0
+             */
+            xs: number;
+            /** Oobr */
+            oobr?: number | null;
+            /** Sequence Fit */
+            sequence_fit?: number | null;
+            /** Assigned Points */
+            assigned_points: number;
+            /** Tier Ranking */
+            tier_ranking: number;
+        };
+        /** RefGenValidReturnModel */
+        RefGenValidReturnModel: {
+            /** Id */
+            id: string;
+            /** Provided Genome */
+            provided_genome?: string | null;
+            /** Compared Genome */
+            compared_genome: components["schemas"]["RefGenValidModel"][];
         };
         /** ServiceInfoResponse */
         ServiceInfoResponse: {
@@ -2161,6 +2217,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["TokenizedPathResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_ref_gen_results_v1_bed__bed_id__genome_stats_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                bed_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefGenValidReturnModel"];
                 };
             };
             /** @description Validation Error */

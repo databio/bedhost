@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { useBedMetadata } from '../queries/useBedMetadata';
+import { useBedGenomeStats } from '../queries/useBedGenomeStats';
 import { Layout } from '../components/layout';
 import { Col, Row } from 'react-bootstrap';
 import { BedSplashHeader } from '../components/bed-splash-components/header';
@@ -32,6 +33,12 @@ export const BedSplash = () => {
     md5: bedId,
     autoRun: true,
     full: true,
+  });
+
+  const {
+    data: genomeStats,
+  } = useBedGenomeStats({
+    md5: bedId,
   });
 
   const { data: neighbours } = useBedNeighbours({
@@ -131,7 +138,7 @@ export const BedSplash = () => {
         <div className="my-2">
           <Row className="mb-2">
             <Col sm={12} md={12}>
-              {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} /> : null}
+              {metadata !== undefined && genomeStats !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
             </Col>
           </Row>
           <Row className="mb-2 g-3">
@@ -197,7 +204,18 @@ export const BedSplash = () => {
                               {snakeToTitleCase(k)}
                             </td>
                             <td style={{ maxWidth: '120px' }} className="truncate">
-                              {value ?? 'N/A'}
+                              { k === 'global_sample_id' ? 
+                                value.includes('encode:') ? <a href={'https://www.encodeproject.org/files/' + value.replace('encode:', '')}>{value}</a> : 
+                                value.includes('geo:') ? <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + value.replace('geo:', '')}>{value}</a> :
+                                value ?? 'N/A' 
+                              : 
+                                k === 'global_experiment_id' ? 
+                                value.includes('encode') ? <a href={'https://www.encodeproject.org'}>{value}</a> : 
+                                value.includes('geo:') ? <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + value.replace('geo:', '')}>{value}</a> :
+                                value ?? 'N/A' 
+                              :
+                                value ?? 'N/A'
+                              }
                             </td>
                           </tr>
                         );
