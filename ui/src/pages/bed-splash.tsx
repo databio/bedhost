@@ -157,6 +157,40 @@ export const BedSplash = () => {
                           return null;
                         }
 
+                        if (k === 'global_sample_id') {
+                          const parts = value.split(':');
+
+
+                          if (parts[1].startsWith('gsm') || parts[0].startsWith('encode')) {
+                            let link;
+                            if (parts[1].startsWith('gsm')) {
+                              link = (
+                                <a href={`https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${parts[1]}`}
+                                   target="_blank">
+                                  {value}
+                                </a>
+                              );
+                            } else {
+                              link = (
+                                <a href={`https://www.encodeproject.org/experiments/${parts[1]}/`}
+                                   target="_blank">
+                                  {value}
+                                </a>
+                              );
+                            }
+                            return (
+                              <tr key={k}>
+                                <td style={{ maxWidth: '50px' }} className="fst-italic">
+                                  {snakeToTitleCase(k)}
+                                </td>
+                                <td style={{ maxWidth: '120px' }} className="truncate">
+                                  {link}
+                                </td>
+                              </tr>
+                            );
+                          }
+                        }
+
                         return (
                           <tr key={k}>
                             <td style={{ maxWidth: '50px' }} className="fst-italic">
