@@ -25,15 +25,21 @@ export const RefGenomeModal = (props: Props) => {
       <Modal.Body>
         <p className='text-sm'>
           <strong>Note:</strong> Below is a ranking of the compatibility various reference genomes to this BED file (rank 1 is best).
+          The ranking is based on the following metrics: 
         </p>
+        <ul className='text-sm'>
+          <li><strong>XS</strong> (eXtra Sequences): the proportion of shared regions in both the query BED file and reference genome over the total number of regions in the query BED file [recall]</li>
+          <li><strong>OOBR</strong> (Out Of Bounds Regions): The proportion of shared regions from the query BED file that do not exceed the bounds of the corresponding shared region in the reference genome</li>
+          <li><strong>Sequence Fit</strong>: the proportion of shared regions in both the query BED file and reference genome over the total number of regions in the reference genome [precision]</li>
+        </ul>
 
         <div className='row mb-1'>
           <div className='col-12'>
             <div className='d-flex align-items-center gap-2 px-3 fw-medium text-sm'>
               <p className='mb-1' style={{width: '33%'}}>Genome</p>
-              <p className='mb-1 mx-2' style={{width: '14%'}}>xs</p>
-              <p className='mb-1 mx-2' style={{width: '14%'}}>oobr</p>
-              <p className='mb-1 mx-2' style={{width: '14%'}}>sequence fit</p>
+              <p className='mb-1 mx-2' style={{width: '14%'}}>XS</p>
+              <p className='mb-1 mx-2' style={{width: '14%'}}>OOBR</p>
+              <p className='mb-1 mx-2' style={{width: '14%'}}>Sequence Fit</p>
               <p className='mb-1 ms-auto'>Rank</p>
             </div>
           </div>
@@ -43,7 +49,7 @@ export const RefGenomeModal = (props: Props) => {
           .map(genome => (
             <div 
               className='card mb-2 shadow-sm genome-card'
-              style={{backgroundColor: (genome.tier_ranking == 1 ? '#C8EFB3' : (genome.tier_ranking == 2 ? '#FFF7BA' : (genome.tier_ranking == 3 ? '#F9D39D' : '#FCB6B6'))) }} 
+              style={{backgroundColor: (genome.tier_ranking == 1 ? '#C8EFB3A0' : (genome.tier_ranking == 2 ? '#FFF7BAA0' : (genome.tier_ranking == 3 ? '#F9D39DA0' : '#FCB6B6A0'))) }} 
               key={genome.compared_genome}
             >
               <div className='card-body'>
