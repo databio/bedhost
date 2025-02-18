@@ -7,7 +7,7 @@ except ImportError:
 from platform import python_version
 
 from bbconf import __version__ as bbconf_version
-from bbconf.models.base_models import StatsReturn
+from bbconf.models.base_models import StatsReturn, FileStats
 from fastapi import APIRouter, Request
 from geniml import __version__ as geniml_version
 
@@ -31,7 +31,7 @@ packages_versions = {}
 
 @router.get(
     "/stats",
-    summary="Get summary statistics for the DRS object store",
+    summary="Get summary statistics for BEDbase platform",
     response_model=StatsReturn,
 )
 async def get_bedbase_db_stats():
@@ -39,6 +39,18 @@ async def get_bedbase_db_stats():
     Returns statistics
     """
     return bbagent.get_stats()
+
+
+@router.get(
+    "/detailed-stats",
+    summary="Get detailed statistics for BEDbase platform, including number of files for each genome",
+    response_model=FileStats,
+)
+async def get_detailed_stats():
+    """
+    Returns detailed statistics
+    """
+    return bbagent.get_detailed_stats()
 
 
 @router.get(

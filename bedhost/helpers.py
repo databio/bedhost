@@ -80,13 +80,17 @@ def drs_response(status_code, msg):
     return JSONResponse(status_code=status_code, content=content)
 
 
-from pprint import pprint
-
-
 def count_requests(
     usage_data: UsageModel,
     event: Literal["bed_search", "bedset_search", "bed_meta", "bedset_meta", "files"],
 ):
+    """
+    Decorator to count requests for different events
+
+    :param UsageModel usage_data: usage data model
+    :param str event: event type
+    """
+
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
@@ -124,7 +128,6 @@ def count_requests(
                     usage_data.bedset_meta[bedset_id] = 1
             else:
                 raise ValueError(f"Unknown event type: {event}")
-            pprint(usage_data.model_dump())
             return await func(*args, **kwargs)
 
         return wrapper
