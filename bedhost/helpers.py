@@ -1,6 +1,10 @@
 import os
+from functools import wraps
 
+from typing import Literal
+import datetime
 from bbconf.bbagent import BedBaseAgent
+from bbconf.models.base_models import UsageModel
 from starlette.responses import FileResponse, JSONResponse, RedirectResponse
 
 from . import _LOGGER
@@ -74,3 +78,69 @@ def drs_response(status_code, msg):
     """Helper function to make quick DRS responses"""
     content = {"status_code": status_code, "msg": msg}
     return JSONResponse(status_code=status_code, content=content)
+
+
+def count_requests(
+    usage_data: UsageModel,
+    event: Literal["bed_search", "bedset_search", "bed_meta", "bedset_meta", "files"],
+):
+    """
+    Decorator to count requests for different events
+
+    :param UsageModel usage_data: usage data model
+    :param str event: event type
+    """
+
+    def decorator(func):
+        @wraps(func)
+        async def wrapper(*args, **kwargs):
+            if event == "files":
+                file_path = kwargs.get("file_path")
+                if "bed" in file_path or "bigbed" in file_path.lower():
+                    if file_path in usage_data.files:
+                        usage_data.files[file_path] += 1
+                    else:
+                        usage_data.files[file_path] = 1
+            elif event == "bed_search":
+                query = kwargs.get("query")
+                if query in usage_data.bed_search:
+                    usage_data.bed_search[query] += 1
+                else:
+                    usage_data.bed_search[query] = 1
+            elif event == "bedset_search":
+                query = kwargs.get("query")
+                if query in usage_data.bedset_search:
+                    usage_data.bedset_search[query] += 1
+                else:
+                    usage_data.bed_search[query] = 1
+            elif event == "bed_meta":
+                bed_id = kwargs.get("bed_id")
+                if bed_id in usage_data.bed_meta:
+                    usage_data.bed_meta[bed_id] += 1
+                else:
+                    usage_data.bed_meta[bed_id] = 1
+
+            elif event == "bedset_meta":
+                bedset_id = kwargs.get("bedset_id")
+                if bedset_id in usage_data.bedset_meta:
+                    usage_data.bedset_meta[bedset_id] += 1
+                else:
+                    usage_data.bedset_meta[bedset_id] = 1
+            else:
+                raise ValueError(f"Unknown event type: {event}")
+            return await func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def init_model_usage():
+    return UsageModel(
+        bed_meta={},
+        bedset_meta={},
+        bed_search={},
+        bedset_search={},
+        files={},
+        date_from=datetime.datetime.now(),
+    )

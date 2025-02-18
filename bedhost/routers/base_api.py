@@ -7,8 +7,8 @@ except ImportError:
 from platform import python_version
 
 from bbconf import __version__ as bbconf_version
-from bbconf.models.base_models import StatsReturn
-from fastapi import APIRouter
+from bbconf.models.base_models import StatsReturn, FileStats
+from fastapi import APIRouter, Request
 from geniml import __version__ as geniml_version
 
 from .._version import __version__ as bedhost_version
@@ -20,17 +20,18 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
-from ..helpers import get_openapi_version
-from ..main import app, bbagent
+from ..helpers import get_openapi_version, count_requests
+from ..main import app, bbagent, usage_data
 
 router = APIRouter(prefix="/v1", tags=["base"])
+from fastapi.responses import RedirectResponse
 
 packages_versions = {}
 
 
 @router.get(
     "/stats",
-    summary="Get summary statistics for the DRS object store",
+    summary="Get summary statistics for BEDbase platform",
     response_model=StatsReturn,
 )
 async def get_bedbase_db_stats():
@@ -38,6 +39,18 @@ async def get_bedbase_db_stats():
     Returns statistics
     """
     return bbagent.get_stats()
+
+
+@router.get(
+    "/detailed-stats",
+    summary="Get detailed statistics for BEDbase platform, including number of files for each genome",
+    response_model=FileStats,
+)
+async def get_detailed_stats():
+    """
+    Returns detailed statistics
+    """
+    return bbagent.get_detailed_stats()
 
 
 @router.get(
@@ -94,3 +107,10 @@ async def service_info():
             text2vec=bbagent.config.config.path.text2vec,
         ),
     )
+
+
+@router.get("/files/{file_path:path}")
+@count_requests(usage_data, event="files")
+async def redirect_to_download(file_path: str, request: Request):
+    download_url = f"https://data2.bedbase.org/{file_path}"
+    return RedirectResponse(url=download_url)

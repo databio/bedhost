@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime
 
 import markdown
 import uvicorn
@@ -17,8 +18,9 @@ from fastapi.templating import Jinja2Templates
 from . import _LOGGER
 from ._version import __version__ as bedhost_version
 from .cli import build_parser
-from .const import PKG_NAME, STATIC_PATH
-from .helpers import attach_routers, configure, drs_response
+from .const import PKG_NAME, STATIC_PATH, USAGE_SAVE_DAYS
+from .helpers import attach_routers, configure, drs_response, init_model_usage
+from apscheduler.schedulers.background import BackgroundScheduler
 
 tags_metadata = [
     {
@@ -156,9 +158,35 @@ if __name__ != "__main__":
         _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         global bbagent
+
+        global usage_data
+        usage_data = init_model_usage()
         bbagent = configure(
             bbconf_file_path
         )  # configure before attaching routers to avoid circular imports
+
+        scheduler = BackgroundScheduler()
+
+        def upload_usage():
+            """
+            Upload usage data to the database and reset the usage data
+            """
+
+            print("Running uploading of the usage")
+            usage_data.date_to = datetime.datetime.now()
+            bbagent.add_usage(usage_data)
+
+            usage_data.bed_meta = {}
+            usage_data.bedset_meta = {}
+            usage_data.bed_search = {}
+            usage_data.bedset_search = {}
+            usage_data.files = {}
+            usage_data.date_from = datetime.datetime.now()
+            usage_data.date_to = None
+
+        scheduler.add_job(upload_usage, "interval", days=USAGE_SAVE_DAYS)
+        scheduler.start()
+
         attach_routers(app)
     else:
         raise EnvironmentError(
