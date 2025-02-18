@@ -171,7 +171,18 @@ export const BedSplash = () => {
                               {snakeToTitleCase(k)}
                             </td>
                             <td style={{ maxWidth: '120px' }} className="truncate">
-                              {value ?? 'N/A'}
+                              { k === 'global_sample_id' ? 
+                                value.includes('encode:') ? <a href={'https://www.encodeproject.org/files/' + value.replace('encode:', '')}>{value}</a> : 
+                                value.includes('geo:') ? <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + value.replace('geo:', '')}>{value}</a> :
+                                value ?? 'N/A' 
+                              : 
+                                k === 'global_experiment_id' ? 
+                                value.includes('encode') ? <a href={'https://www.encodeproject.org'}>{value}</a> : 
+                                value.includes('geo:') ? <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + value.replace('geo:', '')}>{value}</a> :
+                                value ?? 'N/A' 
+                              :
+                                value ?? 'N/A'
+                              }
                             </td>
                           </tr>
                         );
