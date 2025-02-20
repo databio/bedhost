@@ -81,7 +81,7 @@ export const RefGenomeModal = (props: Props) => {
                         { genome.oobr ? 
                           <>
                             <span className={`text-xs position-absolute start-50 top-50 translate-middle ${(genome.oobr || 0) * 100 > 30 ? 'text-white' : 'text-dark'}`}>
-                              {((genome.xs || 0) * 100).toFixed(2) + '%'}
+                              {((genome.oobr || 0) * 100).toFixed(2) + '%'}
                             </span>
                             <div className="rounded-1 bg-primary" style={{height: '16px', width: `${(genome.oobr || 0) * 100}%` }} />
                           </>
@@ -99,7 +99,7 @@ export const RefGenomeModal = (props: Props) => {
                         { genome.sequence_fit ? 
                           <>
                             <span className={`text-xs position-absolute start-50 top-50 translate-middle ${(genome.sequence_fit || 0) * 100 > 30 ? 'text-white' : 'text-dark'}`}>
-                              {((genome.xs || 0) * 100).toFixed(2) + '%'}
+                              {((genome.sequence_fit || 0) * 100).toFixed(2) + '%'}
                             </span>
                             <div className="rounded-1 bg-primary" style={{height: '16px', width: `${(genome.sequence_fit || 0) * 100}%` }} />
                           </>
