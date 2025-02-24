@@ -110,7 +110,7 @@ export const Metrics = () => {
               <div 
                 className='border rounded genome-card cursor-pointer p-3' 
                 onClick={() => setMetricModalProps({
-                  title: 'Files by Genome',
+                  title: 'BED Files by Genome',
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_genome || {}),
                   dataLabel: 'Number of BED files',
@@ -119,7 +119,7 @@ export const Metrics = () => {
                   sliceIndex: Object.entries(detailedStats?.file_genome || {}).length
                 })}
               >
-                <h6 className='fw-semibold'>Files by Genome</h6>
+                <h6 className='fw-semibold'>BED Files by Genome</h6>
                 <MetricPlot 
                   type='bar' 
                   data={Object.entries(detailedStats?.file_genome || {})} 
@@ -132,7 +132,7 @@ export const Metrics = () => {
               <div 
                 className='border rounded genome-card cursor-pointer p-3'
                 onClick={() => setMetricModalProps({
-                  title: 'Files by Type',
+                  title: 'BED Files by Type',
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_type || {}),
                   dataLabel: 'Number of BED files',
@@ -141,7 +141,7 @@ export const Metrics = () => {
                   sliceIndex: Object.entries(detailedStats?.file_type || {}).length
                 })}
               >
-                <h6 className='fw-semibold'>Files by Type</h6>
+                <h6 className='fw-semibold'>BED Files by Type</h6>
                 <MetricPlot 
                   type='bar' 
                   data={Object.entries(detailedStats?.file_type || {})} 
@@ -157,7 +157,7 @@ export const Metrics = () => {
               <div 
                 className='h-100 border rounded genome-card cursor-pointer p-3'
                 onClick={() => setMetricModalProps({
-                  title: 'Files by Format',
+                  title: 'BED Files by Format',
                   type: 'pie',
                   data: Object.entries(detailedStats?.file_format || {}),
                   backgroundColor: [
@@ -172,7 +172,7 @@ export const Metrics = () => {
                   sliceIndex: Object.entries(detailedStats?.file_format || {}).length
                 })}
               >
-              <h6 className='fw-semibold'>Files by Format</h6>
+              <h6 className='fw-semibold'>BED Files by Format</h6>
               <div className='p-5'>
                 <MetricPlot 
                   type='pie' 
