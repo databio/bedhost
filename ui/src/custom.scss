@@ -313,6 +313,6 @@ td {
 }
 
 .genome-card:hover {
-  border: 1px solid $primary;
-  filter: brightness(98%);
+  border: 1px solid $primary !important;
+  filter: brightness(98%) !important;
 }

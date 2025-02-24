@@ -66,10 +66,30 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * Get summary statistics for the DRS object store
+         * Get summary statistics for BEDbase platform
          * @description Returns statistics
          */
         get: operations["get_bedbase_db_stats_v1_stats_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/detailed-stats": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get detailed statistics for BEDbase platform, including number of files for each genome
+         * @description Returns detailed statistics
+         */
+        get: operations["get_detailed_stats_v1_detailed_stats_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -110,6 +130,23 @@ export interface paths {
          * @description Returns information about this service, such as versions, name, etc.
          */
         get: operations["service_info_v1_service_info_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/files/{file_path}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Redirect To Download */
+        get: operations["redirect_to_download_v1_files__file_path__get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -971,7 +1008,7 @@ export interface components {
              * @description Library source (e.g. genomic, transcriptomic)
              * @default
              */
-            library_source: string;
+            assay: string;
             /**
              * Genotype
              * @description Genotype of the sample
@@ -1066,7 +1103,7 @@ export interface components {
              * @description Library source (e.g. genomic, transcriptomic)
              * @default
              */
-            library_source: string;
+            assay: string;
             /**
              * Genotype
              * @description Genotype of the sample
@@ -1313,6 +1350,21 @@ export interface components {
             /** Access Methods */
             access_methods?: components["schemas"]["AccessMethod"][];
         };
+        /** FileStats */
+        FileStats: {
+            /** File Type */
+            file_type: {
+                [key: string]: number;
+            };
+            /** File Format */
+            file_format: {
+                [key: string]: number;
+            };
+            /** File Genome */
+            file_genome: {
+                [key: string]: number;
+            };
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -1397,7 +1449,7 @@ export interface components {
              * @description Name of species. e.g. Homo sapiens.
              * @default
              */
-            species_name: string;
+            organism: string;
             /**
              * Species Id
              * @default
@@ -1443,13 +1495,13 @@ export interface components {
              * @description Library source (e.g. genomic, transcriptomic)
              * @default
              */
-            library_source: string;
+            assay: string;
             /**
              * Exp Protocol
              * @description Experimental protocol (e.g. ChIP-seq)
              * @default
              */
-            assay: string;
+            exp_protocol: string;
             /**
              * Antibody
              * @description Antibody used in the assay
@@ -1633,6 +1685,26 @@ export interface operations {
             };
         };
     };
+    get_detailed_stats_v1_detailed_stats_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FileStats"];
+                };
+            };
+        };
+    };
     get_bedbase_db_stats_v1_genomes_get: {
         parameters: {
             query?: never;
@@ -1669,6 +1741,37 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ServiceInfoResponse"];
+                };
+            };
+        };
+    };
+    redirect_to_download_v1_files__file_path__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                file_path: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -2100,7 +2203,7 @@ export interface operations {
     text_to_bed_search_v1_bed_search_text_post: {
         parameters: {
             query: {
-                query: unknown;
+                query: string;
                 limit?: number;
                 offset?: number;
             };

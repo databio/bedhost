@@ -277,7 +277,7 @@ export const BedSplash = () => {
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column justify-content-between  mt-0 gap-2">
+              <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0 gap-2">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />

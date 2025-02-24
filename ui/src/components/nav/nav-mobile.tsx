@@ -19,6 +19,10 @@ export const MobileNav = () => {
           <i className="bi bi-info-circle me-2" />
           Docs
         </Dropdown.Item>
+        <Dropdown.Item href="/metrics">
+          <i className="bi bi-bar-chart me-2" />
+          Metrics
+        </Dropdown.Item>
         <Dropdown.Item href="/cart">
           <i className="bi bi-cart-fill me-2" />
           Cart
