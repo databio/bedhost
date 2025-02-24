@@ -6,6 +6,7 @@ import { useStats } from '../queries/useStats.ts';
 import { useDetailedStats } from '../queries/useDetailedStats.ts';
 import { MetricPlot } from '../components/metrics/metric-plot.tsx';
 import { MetricModal } from '../components/modals/metric-modal.tsx';
+import { CardSkeleton } from '../components/skeletons/card-skeleton';
 
 
 interface MetricModalProps {
@@ -40,9 +41,38 @@ export const Metrics = () => {
   };
 
   const { data: bedbaseStats } = useStats();
-  const { data: detailedStats } = useDetailedStats();
+  const { data: detailedStats, isLoading } = useDetailedStats();
 
   const sliceIndex = 5;
+
+    if (isLoading) {
+      return (
+        <Layout title='BEDbase' footer>
+          <div className="my-2">
+            <Row>
+              <Col sm={12} md={12}>
+                <div className="mb-2">
+                  <CardSkeleton height="200px" />
+                </div>
+              </Col>
+            </Row>
+            <Row>
+              <Col sm={5} md={5}>
+                <div className="mb-2">
+                  <CardSkeleton height="300px" />
+                </div>
+                <div className="mb-2">
+                  <CardSkeleton height="300px" />
+                </div>
+              </Col>
+              <Col sm={7} md={7}>
+                <CardSkeleton height="100%" />
+              </Col>
+            </Row>
+          </div>
+        </Layout>
+      );
+    };
 
   return (
     <Layout footer title='BEDbase' fullHeight>
