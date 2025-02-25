@@ -8,6 +8,7 @@ import { MetricPlot } from '../components/metrics/metric-plot.tsx';
 import { MetricModal } from '../components/modals/metric-modal.tsx';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 interface MetricModalProps {
   title: string;
@@ -78,7 +79,17 @@ export const Metrics = () => {
     <Layout footer title='BEDbase' fullHeight>
       <Container fluid>
         <Row className='mt-4'>
-          <h3 className='fw-bold'>Metrics</h3>
+          <Col sm={12} md={6}>
+            <h3 className='fw-bold'>Metrics</h3>
+          </Col>
+          <Col sm={12} md={6} className='d-flex justify-content-end'>
+            <a href={`${API_BASE}/detailed-stats`}>
+              <button className="btn btn-outline-primary btn-sm">
+                <i className="bi bi-info-circle me-1" />
+                API
+              </button>
+            </a>
+          </Col>
         </Row>
         
         <Row className='mt-3'>
@@ -160,14 +171,8 @@ export const Metrics = () => {
                   title: 'BED Files by Format',
                   type: 'pie',
                   data: Object.entries(detailedStats?.file_format || {}),
-                  backgroundColor: [
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
-                    'rgba(255, 159, 64, 0.6)',
-                  ],
+                  dataLabel: 'Number of BED files',
+                  backgroundColor: ['rgba(75, 192, 192, 0.6)'],
                   borderWidth: 1,
                   sliceIndex: Object.entries(detailedStats?.file_format || {}).length
                 })}
@@ -177,14 +182,8 @@ export const Metrics = () => {
                 <MetricPlot 
                   type='pie' 
                   data={Object.entries(detailedStats?.file_format || {})} 
-                  backgroundColor={[
-                    'rgba(255, 99, 132, 0.6)',
-                    'rgba(54, 162, 235, 0.6)',
-                    'rgba(255, 206, 86, 0.6)',
-                    'rgba(75, 192, 192, 0.6)',
-                    'rgba(153, 102, 255, 0.6)',
-                    'rgba(255, 159, 64, 0.6)',
-                  ]} 
+                  dataLabel='Number of BED files'
+                  backgroundColor={['rgba(75, 192, 192, 0.6)']} 
                   borderWidth={1} 
                   sliceIndex={sliceIndex}
                 />
@@ -194,6 +193,7 @@ export const Metrics = () => {
           </Row>
         )}
 
+      {showMetricModal && (
         <MetricModal
           title={metricModalTitle}
           type={metricModalType}
@@ -205,6 +205,7 @@ export const Metrics = () => {
           show={showMetricModal}
           onHide={() => setShowMetricModal(false)}
         />
+      )}
 
       </Container>
     </Layout>

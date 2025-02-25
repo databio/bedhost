@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { MetricPlot } from '../metrics/metric-plot';
 import { useRef } from 'react';
@@ -6,7 +7,7 @@ type Props = {
   title: string;
   type: string,
   data: [string, number][];
-  dataLabel?: string;
+  dataLabel?: string | undefined;
   backgroundColor: string[];
   borderWidth: number;
   sliceIndex: number;
@@ -17,6 +18,12 @@ type Props = {
 export const MetricModal = (props: Props) => {
   const { title, type, data, dataLabel, backgroundColor, borderWidth, sliceIndex, show, onHide } = props;
   const plotRef = useRef<{ toBase64Image: () => string } | null>(null);
+
+  const [plotType, setPlotType] = useState(type);
+
+  const checkHandler = (value: string) => {
+    setPlotType(value);
+  };
 
   const handleDownload = () => {
     if (plotRef.current) {
@@ -40,7 +47,7 @@ export const MetricModal = (props: Props) => {
       <Modal.Body>
         <div className='d-flex justify-content-center' style={{maxHeight: '500px'}}>
         <MetricPlot 
-          type={type}
+          type={plotType}
           data={data} 
           dataLabel={dataLabel}
           backgroundColor={backgroundColor} 
@@ -51,7 +58,16 @@ export const MetricModal = (props: Props) => {
         </div>
         
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className='d-flex justify-content-between'>
+        <select 
+          className="form-select w-auto me-auto" 
+          aria-label="Plot Type" 
+          onChange={(e) => checkHandler(e.target.value)}
+          value={plotType}
+        >
+          <option value="bar">Bar Chart</option>
+          <option value="pie">Pie Chart</option>
+        </select>
         <button
           className='btn btn-outline-primary'
           onClick={handleDownload}
