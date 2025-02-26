@@ -20,6 +20,9 @@ const chartOptions = {
     legend: {
       position: 'top' as const,
     },
+    datalabels: {
+      display: false,
+    },
   },
 };
 
