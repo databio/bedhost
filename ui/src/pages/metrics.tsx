@@ -7,6 +7,7 @@ import { useDetailedStats } from '../queries/useDetailedStats.ts';
 import { MetricPlot } from '../components/metrics/metric-plot.tsx';
 import { MetricModal } from '../components/modals/metric-modal.tsx';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
+import { EndpointsModal } from '../components/modals/endpoints-modal.tsx';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -29,6 +30,7 @@ export const Metrics = () => {
   const [metricModalBackgroundColor, setMetricModalBackgroundColor] = useState<string[]>([]);
   const [metricModalBorderWidth, setMetricModalBorderWidth] = useState(0);
   const [metricModalSliceIndex, setMetricModalSliceIndex] = useState(0);
+  const [endpointsModalShow, setEndpointsModalShow] = useState(false);
 
   const setMetricModalProps = ({ title, type, data, dataLabel = '', backgroundColor, borderWidth, sliceIndex }: MetricModalProps): void => {
     setMetricModalTitle(title);
@@ -83,19 +85,19 @@ export const Metrics = () => {
             <h3 className='fw-bold'>Metrics</h3>
           </Col>
           <Col sm={12} md={6} className='d-flex justify-content-end'>
-            <a href={`${API_BASE}/detailed-stats`}>
-              <button className="btn btn-outline-primary btn-sm">
+            <span>
+              <button className="btn btn-outline-primary btn-sm" onClick={() => setEndpointsModalShow(true)}>
                 <i className="bi bi-info-circle me-1" />
                 API
               </button>
-            </a>
+            </span>
           </Col>
         </Row>
         
         <Row className='mt-3'>
-          <h5 className='fw-semibold'>BED File Statistics</h5>
+          <h5 className='fw-semibold'>BEDbase File Statistics</h5>
           <Col sm={12} md={12}>
-            <ul className='list-group w-100'>
+            <ul className='list-group w-100 shadow-sm'>
               <li className='list-group-item d-flex justify-content-between align-items-center'>
                 Number of bed files available:
                 <span
@@ -119,7 +121,7 @@ export const Metrics = () => {
           <Row className='h-100 mt-1 g-2'>
             <Col sm={12} md={6} className='d-flex flex-column gap-2'>
               <div 
-                className='border rounded genome-card cursor-pointer p-3' 
+                className='border rounded genome-card cursor-pointer p-3 shadow-sm' 
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Genome',
                   type: 'bar',
@@ -141,7 +143,7 @@ export const Metrics = () => {
                 />
               </div>
               <div 
-                className='border rounded genome-card cursor-pointer p-3'
+                className='border rounded genome-card cursor-pointer p-3 shadow-sm'
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Type',
                   type: 'bar',
@@ -166,7 +168,7 @@ export const Metrics = () => {
 
             <Col sm={12} md={6}>
               <div 
-                className='h-100 border rounded genome-card cursor-pointer p-3'
+                className='h-100 border rounded genome-card cursor-pointer p-3 shadow-sm'
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Format',
                   type: 'pie',
@@ -193,6 +195,13 @@ export const Metrics = () => {
           </Row>
         )}
 
+        <Row className='mt-4'>
+          <h5 className='fw-semibold'>BEDbase Usage Statistics</h5>
+          <Col sm={12} md={12}>
+            <p className='text-xs'>Coming Soon..</p>
+          </Col>
+        </Row>
+
       {showMetricModal && (
         <MetricModal
           title={metricModalTitle}
@@ -206,6 +215,13 @@ export const Metrics = () => {
           onHide={() => setShowMetricModal(false)}
         />
       )}
+
+      <EndpointsModal
+        titles = {['Detailed Stats']}
+        endpoints = {[`${API_BASE}/detailed-stats`]}
+        show = {endpointsModalShow}
+        onHide = {() => setEndpointsModalShow(false)}
+      />
 
       </Container>
     </Layout>
