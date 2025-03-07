@@ -127,7 +127,8 @@ export const Metrics = () => {
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_genome || {}),
                   dataLabel: 'Number of BED files',
-                  backgroundColor: ['rgba(75, 192, 192, 0.6)'],
+                  backgroundColor: ['rgba(24,136,66,0.6)'],
+
                   borderWidth: 1,
                   sliceIndex: Object.entries(detailedStats?.file_genome || {}).length
                 })}
@@ -137,7 +138,7 @@ export const Metrics = () => {
                   type='bar' 
                   data={Object.entries(detailedStats?.file_genome || {})} 
                   dataLabel='Number of BED files'
-                  backgroundColor={['rgba(75, 192, 192, 0.6)']} 
+                  backgroundColor={['rgba(23,139,122,0.6)']}
                   borderWidth={1} 
                   sliceIndex={sliceIndex}
                 />
@@ -149,7 +150,7 @@ export const Metrics = () => {
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_type || {}),
                   dataLabel: 'Number of BED files',
-                  backgroundColor: ['rgba(75, 192, 192, 0.6)'],
+                  backgroundColor: ['rgba(24,136,66,0.6)'],
                   borderWidth: 1,
                   sliceIndex: Object.entries(detailedStats?.file_type || {}).length
                 })}
@@ -159,7 +160,7 @@ export const Metrics = () => {
                   type='bar' 
                   data={Object.entries(detailedStats?.file_type || {})} 
                   dataLabel='Number of BED files'
-                  backgroundColor={['rgba(75, 192, 192, 0.6)']} 
+                  backgroundColor={['rgba(23,139,122, 0.6)']}
                   borderWidth={1} 
                   sliceIndex={sliceIndex}
                 />
@@ -185,7 +186,7 @@ export const Metrics = () => {
                   type='pie' 
                   data={Object.entries(detailedStats?.file_format || {})} 
                   dataLabel='Number of BED files'
-                  backgroundColor={['rgba(75, 192, 192, 0.6)']} 
+                  backgroundColor={['rgba(75, 192, 192, 0.6)']}
                   borderWidth={1} 
                   sliceIndex={sliceIndex}
                 />

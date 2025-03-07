@@ -37,13 +37,13 @@ export const MetricPlot = (props: Props) => {
       'rgba(255, 99, 132, 0.6)',   // red
       'rgba(54, 162, 235, 0.6)',   // blue
       'rgba(255, 206, 86, 0.6)',   // yellow
-      'rgba(75, 192, 192, 0.6)',   // teal
+      'rgba(51,193,43,0.6)',   // teal
       'rgba(153, 102, 255, 0.6)',  // purple
       'rgba(255, 159, 64, 0.6)',   // orange
       'rgba(199, 199, 199, 0.6)',  // gray
       'rgba(83, 102, 255, 0.6)',   // indigo
       'rgba(255, 99, 255, 0.6)',   // pink
-      'rgba(99, 255, 132, 0.6)',   // light green
+      'rgb(6,80,49)',   // light green
     ];
 
     let colorPalette = [];
