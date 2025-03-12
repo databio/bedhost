@@ -81,7 +81,7 @@ export const Metrics = () => {
   return (
     <Layout footer title='BEDbase' fullHeight>
       <Container fluid>
-        <Row className='mt-4'>
+        <Row className='mt-3'>
           <Col sm={12} md={6}>
             <h3 className='fw-bold'>Metrics</h3>
           </Col>
@@ -197,7 +197,7 @@ export const Metrics = () => {
           </Row>
         )}
 
-        <Row className='mt-4'>
+        <Row className='mt-4 pt-2'>
           <h5 className='fw-semibold'>BEDbase Usage Statistics</h5>
           <Col sm={12} md={12}>
             <p className='text-xs'>Coming Soon..</p>

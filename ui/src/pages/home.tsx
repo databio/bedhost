@@ -337,8 +337,8 @@ export const Home = () => {
             <Col sm={6} md={6}>
               <h2 className="fw-bold">Data Availability Summary</h2>
               <p className="text-balance pe-4">
-                Comprehensive metrics about BEDbase file statistics is available here:{' '}
-                <a href={`/metrics`}>BEDbase statistics</a>
+                Comprehensive metrics about BEDbase file statistics is available on the {' '}
+                <a href={`/metrics`}>metrics page</a>.
               </p>
             </Col>
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
