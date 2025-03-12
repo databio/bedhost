@@ -2,7 +2,7 @@ import { useParams } from 'react-router-dom';
 import { useBedMetadata } from '../queries/useBedMetadata';
 import { useBedGenomeStats } from '../queries/useBedGenomeStats';
 import { Layout } from '../components/layout';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { BedSplashHeader } from '../components/bed-splash-components/header';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { ErrorPage } from '../components/common/error-page';
@@ -135,7 +135,7 @@ export const BedSplash = () => {
   } else {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
-        <div className="my-2">
+        <Container className="my-2">
           <Row className="mb-2">
             <Col sm={12} md={12}>
               {metadata !== undefined && genomeStats !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
@@ -277,7 +277,7 @@ export const BedSplash = () => {
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column justify-content-between  mt-0 gap-2">
+              <Col sm={12} md={4} className="d-flex flex-column mt-0 gap-2">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
@@ -304,7 +304,7 @@ export const BedSplash = () => {
               </Col>
             </Row>
           )}
-        </div>
+        </Container>
       </Layout>
     );
   }

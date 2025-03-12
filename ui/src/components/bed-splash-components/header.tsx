@@ -54,7 +54,7 @@ export const BedSplashHeader = (props: Props) => {
         <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-info-circle me-1" />
+              <i className="bi bi-info-circle me-1"/>
               API
             </button>
           </a>
@@ -194,7 +194,6 @@ export const BedSplashHeader = (props: Props) => {
                     className="badge bg-primary border-start border-light rounded-start-0"
                     role="button"
                     onClick={() => {
-                      // conditional required to prevent double click
                       if (showRefGenomeModal !== true) {
                         setShowRefGenomeModal(true);
                       }

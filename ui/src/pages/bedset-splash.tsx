@@ -1,6 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { Layout } from '../components/layout';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { useBedsetMetadata } from '../queries/useBedsetMetadata';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { BedsetSplashHeader } from '../components/bedset-splash-components/header';
@@ -103,7 +103,7 @@ export const BedsetSplash = () => {
   } else {
     return (
       <Layout title={`BEDbase | ${bedsetId}`} footer fullHeight>
-        <div className="my-2">
+        <Container className="my-2">
           <Row className="mb-2">
             <Col sm={12}>{metadata !== undefined ? <BedsetSplashHeader metadata={metadata} /> : null}</Col>
           </Row>
@@ -111,7 +111,7 @@ export const BedsetSplash = () => {
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column justify-content-between mt-0 gap-2">
+              <Col sm={12} md={4} className="d-flex flex-column mt-0 gap-2">
                 <MeanRegionWidthCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
@@ -146,7 +146,7 @@ export const BedsetSplash = () => {
               )}
             </Col>
           </Row>
-        </div>
+        </Container>
       </Layout>
     );
   }
