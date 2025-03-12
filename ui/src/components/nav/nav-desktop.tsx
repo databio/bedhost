@@ -1,6 +1,6 @@
 import { useBedCart } from '../../contexts/bedcart-context';
 
-// const API_BASE = import.meta.env.VITE_API_BASE || '';
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 export const NavDesktop = () => {
   const { cart } = useBedCart();
@@ -18,8 +18,8 @@ export const NavDesktop = () => {
               </a>
           </li>
           <li className="text-body mx-2 my-0 nav-item h5 pt-1">
-              <a className="nav-link" href="/metrics">
-                  <i className="bi bi-bar-chart me-1 text-base"></i>Metrics
+              <a className="nav-link" href={`${API_BASE}`} target="_blank">
+                  <i className="bi bi-info-circle me-1 text-base"></i>API docs
               </a>
           </li>
           <li className="text-body mx-2 my-0 nav-item h5 pt-1">
