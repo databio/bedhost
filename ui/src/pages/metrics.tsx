@@ -4,7 +4,7 @@ import { Col,  Row, Container } from 'react-bootstrap';
 
 import { useStats } from '../queries/useStats.ts';
 import { useDetailedStats } from '../queries/useDetailedStats.ts';
-import { MetricPlot } from '../components/metrics/metric-plot.tsx';
+import { MetricPlot, MetricPlotType } from '../components/metrics/metric-plot.tsx';
 import { MetricModal } from '../components/modals/metric-modal.tsx';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { EndpointsModal } from '../components/modals/endpoints-modal.tsx';
@@ -13,7 +13,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 interface MetricModalProps {
   title: string;
-  type: string;
+  type: MetricPlotType;
   data: [string, number][];
   dataLabel?: string;
   backgroundColor: string[];
@@ -24,7 +24,7 @@ interface MetricModalProps {
 export const Metrics = () => {
   const [showMetricModal, setShowMetricModal] = useState(false);
   const [metricModalTitle, setMetricModalTitle] = useState('');
-  const [metricModalType, setMetricModalType] = useState('');
+  const [metricModalType, setMetricModalType] = useState<MetricPlotType>('bar');
   const [metricModalData, setMetricModalData] = useState<[string, number][]>([]);
   const [metricModalDataLabel, setMetricModalDataLabel] = useState('');
   const [metricModalBackgroundColor, setMetricModalBackgroundColor] = useState<string[]>([]);

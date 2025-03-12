@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import { MetricPlot } from '../metrics/metric-plot';
+import { MetricPlot, MetricPlotType } from '../metrics/metric-plot';
 import { useRef } from 'react';
 
 type Props = {
   title: string;
-  type: string,
+  type: MetricPlotType,
   data: [string, number][];
   dataLabel?: string | undefined;
   backgroundColor: string[];
@@ -21,7 +21,7 @@ export const MetricModal = (props: Props) => {
 
   const [plotType, setPlotType] = useState(type);
 
-  const checkHandler = (value: string) => {
+  const checkHandler = (value: MetricPlotType) => {
     setPlotType(value);
   };
 
@@ -62,7 +62,7 @@ export const MetricModal = (props: Props) => {
         <select 
           className="form-select w-auto me-auto" 
           aria-label="Plot Type" 
-          onChange={(e) => checkHandler(e.target.value)}
+          onChange={(e) => checkHandler(e.target.value as MetricPlotType)}
           value={plotType}
         >
           <option value="bar">Bar Chart</option>

@@ -13,8 +13,10 @@ ChartJS.register(
   ChartDataLabels
 );
 
+export type MetricPlotType = 'bar' | 'pie';
+
 type Props = {
-  type: string;
+  type: MetricPlotType;
   data: [string, number][];
   dataLabel?: string;
   backgroundColor: string[];
