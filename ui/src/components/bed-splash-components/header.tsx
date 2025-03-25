@@ -212,13 +212,13 @@ export const BedSplashHeader = (props: Props) => {
                 overlay={
                   <div className="tooltip">
                     <div className="tooltip-arrow" />
-                    <div className="tooltip-inner">BED file format</div>
+                    <div className="tooltip-inner">BED compliance</div>
                   </div>
                 }
               >
                 <div className="badge bg-primary">
                   <i className="bi bi-file-earmark-text-fill me-1" />
-                  {metadata?.bed_format || 'No format available'}
+                  {metadata?.bed_compliance || 'No compliance available'}
                 </div>
               </OverlayTrigger>
             </p>
@@ -230,13 +230,13 @@ export const BedSplashHeader = (props: Props) => {
                 overlay={
                   <div className="tooltip">
                     <div className="tooltip-arrow" />
-                    <div className="tooltip-inner">BED type</div>
+                    <div className="tooltip-inner">Data Format</div>
                   </div>
                 }
               >
                 <div className="badge bg-primary">
                   <i className="bi bi-folder-fill me-1" />
-                  {metadata?.bed_type || 'No bed type available'}
+                  {metadata?.data_format || 'No data format available'}
                 </div>
               </OverlayTrigger>
             </p>

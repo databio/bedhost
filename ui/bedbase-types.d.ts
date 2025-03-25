@@ -832,12 +832,24 @@ export interface components {
             /** Genome Digest */
             genome_digest?: string | null;
             /**
-             * Bed Type
+             * Bed Compliance
              * @default bed3
              */
-            bed_type: string;
-            /** Bed Format */
-            bed_format?: string;
+            bed_compliance: string;
+            /** Data Format */
+            data_format?: string | null;
+            /**
+             * Compliant Columns
+             * @default 3
+             */
+            compliant_columns: number;
+            /**
+             * Non Compliant Columns
+             * @default 0
+             */
+            non_compliant_columns: number;
+            /** Header */
+            header?: string | null;
         };
         /** BedEmbeddingResult */
         BedEmbeddingResult: {
@@ -887,12 +899,24 @@ export interface components {
             /** Genome Digest */
             genome_digest?: string | null;
             /**
-             * Bed Type
+             * Bed Compliance
              * @default bed3
              */
-            bed_type: string;
-            /** Bed Format */
-            bed_format?: string;
+            bed_compliance: string;
+            /** Data Format */
+            data_format?: string | null;
+            /**
+             * Compliant Columns
+             * @default 3
+             */
+            compliant_columns: number;
+            /**
+             * Non Compliant Columns
+             * @default 0
+             */
+            non_compliant_columns: number;
+            /** Header */
+            header?: string | null;
             /** Id */
             id: string;
             /** Description */
@@ -936,12 +960,24 @@ export interface components {
             /** Genome Digest */
             genome_digest?: string | null;
             /**
-             * Bed Type
+             * Bed Compliance
              * @default bed3
              */
-            bed_type: string;
-            /** Bed Format */
-            bed_format?: string;
+            bed_compliance: string;
+            /** Data Format */
+            data_format?: string | null;
+            /**
+             * Compliant Columns
+             * @default 3
+             */
+            compliant_columns: number;
+            /**
+             * Non Compliant Columns
+             * @default 0
+             */
+            non_compliant_columns: number;
+            /** Header */
+            header?: string | null;
             /** Id */
             id: string;
             /** Description */
@@ -1008,7 +1044,7 @@ export interface components {
              * @description Library source (e.g. genomic, transcriptomic)
              * @default
              */
-            assay: string;
+            library_source: string;
             /**
              * Genotype
              * @description Genotype of the sample
@@ -1103,7 +1139,7 @@ export interface components {
              * @description Library source (e.g. genomic, transcriptomic)
              * @default
              */
-            assay: string;
+            library_source: string;
             /**
              * Genotype
              * @description Genotype of the sample
@@ -1205,6 +1241,8 @@ export interface components {
             plots?: components["schemas"]["BedSetPlots"] | null;
             /** Description */
             description?: string;
+            /** Summary */
+            summary?: string;
             /** Bed Ids */
             bed_ids?: string[];
             /** Author */
@@ -1339,6 +1377,8 @@ export interface components {
             title?: string | null;
             /** Path */
             path: string;
+            /** File Digest */
+            file_digest?: string | null;
             /** Thumbnail Path */
             thumbnail_path?: string | null;
             /** Description */
@@ -1495,7 +1535,7 @@ export interface components {
              * @description Library source (e.g. genomic, transcriptomic)
              * @default
              */
-            assay: string;
+            library_source: string;
             /**
              * Exp Protocol
              * @description Experimental protocol (e.g. ChIP-seq)
@@ -1525,13 +1565,19 @@ export interface components {
              * @description Global sample identifier. e.g. GSM000
              * @default
              */
-            global_sample_id: string;
+            global_sample_id: string[];
             /**
              * Global Experiment Id
              * @description Global experiment identifier. e.g. GSE000
              * @default
              */
-            global_experiment_id: string;
+            global_experiment_id: string[];
+            /**
+             * Original File Name
+             * @description Original file name
+             * @default
+             */
+            original_file_name: string;
         };
         /** StatsReturn */
         StatsReturn: {
