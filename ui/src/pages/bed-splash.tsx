@@ -164,39 +164,39 @@ export const BedSplash = () => {
                           return null;
                         }
 
-                        if (k === 'global_sample_id') {
-                          const parts = value.split(':');
-
-
-                          if (parts[1].startsWith('gsm') || parts[0].startsWith('encode')) {
-                            let link;
-                            if (parts[1].startsWith('gsm')) {
-                              link = (
-                                <a href={`https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${parts[1]}`}
-                                   target="_blank">
-                                  {value}
-                                </a>
-                              );
-                            } else {
-                              link = (
-                                <a href={`https://www.encodeproject.org/experiments/${parts[1]}/`}
-                                   target="_blank">
-                                  {value}
-                                </a>
-                              );
-                            }
-                            return (
-                              <tr key={k}>
-                                <td style={{ maxWidth: '50px' }} className="fst-italic">
-                                  {snakeToTitleCase(k)}
-                                </td>
-                                <td style={{ maxWidth: '120px' }} className="truncate">
-                                  {link}
-                                </td>
-                              </tr>
-                            );
-                          }
-                        }
+                        // if (k === 'global_sample_id') {
+                        //   const parts = value.split(':');
+                        //
+                        //
+                        //   if (parts[1].startsWith('gsm') || parts[0].startsWith('encode')) {
+                        //     let link;
+                        //     if (parts[1].startsWith('gsm')) {
+                        //       link = (
+                        //         <a href={`https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=${parts[1]}`}
+                        //            target="_blank">
+                        //           {value}
+                        //         </a>
+                        //       );
+                        //     } else {
+                        //       link = (
+                        //         <a href={`https://www.encodeproject.org/experiments/${parts[1]}/`}
+                        //            target="_blank">
+                        //           {value}
+                        //         </a>
+                        //       );
+                        //     }
+                        //     return (
+                        //       <tr key={k}>
+                        //         <td style={{ maxWidth: '50px' }} className="fst-italic">
+                        //           {snakeToTitleCase(k)}
+                        //         </td>
+                        //         <td style={{ maxWidth: '120px' }} className="truncate">
+                        //           {link}
+                        //         </td>
+                        //       </tr>
+                        //     );
+                        //   }
+                        // }
 
                         return (
                           <tr key={k}>
@@ -204,15 +204,19 @@ export const BedSplash = () => {
                               {snakeToTitleCase(k)}
                             </td>
                             <td style={{ maxWidth: '120px' }} className="truncate">
-                              { k === 'global_sample_id' ? 
-                                value.includes('encode:') ? <a href={'https://www.encodeproject.org/files/' + value.replace('encode:', '')}>{value}</a> : 
-                                value.includes('geo:') ? <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + value.replace('geo:', '')}>{value}</a> :
-                                value ?? 'N/A' 
-                              : 
-                                k === 'global_experiment_id' ? 
-                                value.includes('encode') ? <a href={'https://www.encodeproject.org'}>{value}</a> : 
-                                value.includes('geo:') ? <a href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + value.replace('geo:', '')}>{value}</a> :
-                                value ?? 'N/A' 
+                              { k === 'global_sample_id' ?
+                                Array.isArray(value) ? value.map((v, i) => (
+                                  v.includes('encode:') ? <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>{v}</a> :
+                                  v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
+                                  v ?? 'N/A'
+                                )).reduce((prev, curr) => [prev, ', ', curr]) : value ?? 'N/A'
+                              :
+                                k === 'global_experiment_id' ?
+                                Array.isArray(value) ? value.map((v, i) => (
+                                  v.includes('encode') ? <a key={i} href={'https://www.encodeproject.org'}>{v}</a> :
+                                  v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
+                                  v ?? 'N/A'
+                                )).reduce((prev, curr) => [prev, ', ', curr]) : value ?? 'N/A'
                               :
                                 value ?? 'N/A'
                               }
