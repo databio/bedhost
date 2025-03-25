@@ -4,7 +4,7 @@ import { Col,  Row, Container } from 'react-bootstrap';
 
 import { useStats } from '../queries/useStats.ts';
 import { useDetailedStats } from '../queries/useDetailedStats.ts';
-import { MetricPlot } from '../components/metrics/metric-plot.tsx';
+import { MetricPlot, MetricPlotType } from '../components/metrics/metric-plot.tsx';
 import { MetricModal } from '../components/modals/metric-modal.tsx';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { EndpointsModal } from '../components/modals/endpoints-modal.tsx';
@@ -14,7 +14,7 @@ export const PRIMARY_COLOR = 'rgba(0, 128, 128,0.6)';
 
 interface MetricModalProps {
   title: string;
-  type: string;
+  type: MetricPlotType;
   data: [string, number][];
   dataLabel?: string;
   backgroundColor: string[];
@@ -25,7 +25,7 @@ interface MetricModalProps {
 export const Metrics = () => {
   const [showMetricModal, setShowMetricModal] = useState(false);
   const [metricModalTitle, setMetricModalTitle] = useState('');
-  const [metricModalType, setMetricModalType] = useState('');
+  const [metricModalType, setMetricModalType] = useState<MetricPlotType>('bar');
   const [metricModalData, setMetricModalData] = useState<[string, number][]>([]);
   const [metricModalDataLabel, setMetricModalDataLabel] = useState('');
   const [metricModalBackgroundColor, setMetricModalBackgroundColor] = useState<string[]>([]);
@@ -81,7 +81,7 @@ export const Metrics = () => {
   return (
     <Layout footer title='BEDbase' fullHeight>
       <Container fluid>
-        <Row className='mt-4'>
+        <Row className='mt-3'>
           <Col sm={12} md={6}>
             <h3 className='fw-bold'>Metrics</h3>
           </Col>
@@ -197,7 +197,7 @@ export const Metrics = () => {
           </Row>
         )}
 
-        <Row className='mt-4'>
+        <Row className='mt-4 pt-2'>
           <h5 className='fw-semibold'>BEDbase Usage Statistics</h5>
           <Col sm={12} md={12}>
             <p className='text-xs'>Coming Soon..</p>
