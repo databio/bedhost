@@ -54,12 +54,13 @@ def attach_routers(app):
     _LOGGER.info("Mounting routers...")
 
     # importing routers here avoids circular imports
-    from .routers import base_api, bed_api, bedset_api, objects_api
+    from .routers import base_api, bed_api, bedset_api, objects_api, extras_api
 
     app.include_router(base_api.router)
     app.include_router(bed_api.router)
     app.include_router(bedset_api.router)
     app.include_router(objects_api.router)
+    app.include_router(extras_api.router)
 
     return app
 
