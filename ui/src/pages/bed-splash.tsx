@@ -171,14 +171,14 @@ export const BedSplash = () => {
                             </td>
                             <td style={{ maxWidth: '120px' }} className="truncate">
                               { k === 'global_sample_id' ?
-                                Array.isArray(value) ? value.map((v, i) => (
+                                (Array.isArray(value) && value.length > 0) ? value.map((v, i) => (
                                   v.includes('encode:') ? <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>{v}</a> :
                                   v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
                                   v ?? 'N/A'
                                 )).reduce((prev, curr) => [prev, ', ', curr]) : value ?? 'N/A'
                               :
                                 k === 'global_experiment_id' ?
-                                Array.isArray(value) ? value.map((v, i) => (
+                                (Array.isArray(value) && value.length > 0) ? value.map((v, i) => (
                                   v.includes('encode') ? <a key={i} href={'https://www.encodeproject.org'}>{v}</a> :
                                   v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
                                   v ?? 'N/A'
