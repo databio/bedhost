@@ -1,6 +1,5 @@
 # bbconf @ git+https://github.com/databio/bbconf.git@dev#egg=bbconf
-bbconf @ git+https://github.com/databio/bbconf.git@usage_stats#egg=bbconf
-# bbconf>=0.10.0
+bbconf>=0.11.0
 fastapi>=0.103.0
 logmuse>=0.2.7
 markdown
