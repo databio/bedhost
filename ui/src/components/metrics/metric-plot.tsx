@@ -28,7 +28,8 @@ type Props = {
 export const MetricPlot = (props: Props) => {
   const { type, data, dataLabel, backgroundColor, borderWidth, sliceIndex, plotRef } = props;
 
-  const sortedData = [...data].sort((a, b) => b[1] - a[1]).slice(0, sliceIndex);
+  const sortedData = data.sort((a, b) => b[1] - a[1]).slice(0, sliceIndex);
+  const labels = sortedData.map(entry => entry[0]);
   const values = sortedData.map(entry => entry[1]);
 
   // Function to generate a color palette with the same length as the data
