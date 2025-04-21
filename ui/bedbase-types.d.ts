@@ -1541,7 +1541,7 @@ export interface components {
              * @description Experimental protocol (e.g. ChIP-seq)
              * @default
              */
-            exp_protocol: string;
+            assay: string;
             /**
              * Antibody
              * @description Antibody used in the assay
