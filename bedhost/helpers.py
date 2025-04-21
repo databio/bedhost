@@ -112,7 +112,7 @@ def count_requests(
                 if query in usage_data.bedset_search:
                     usage_data.bedset_search[query] += 1
                 else:
-                    usage_data.bed_search[query] = 1
+                    usage_data.bedset_search[query] = 1
             elif event == "bed_meta":
                 bed_id = kwargs.get("bed_id")
                 if bed_id in usage_data.bed_meta:
