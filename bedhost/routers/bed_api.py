@@ -32,7 +32,7 @@ from bbconf.models.bed_models import (
 )
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile, Request
 from fastapi.responses import PlainTextResponse
-from gtars.tokenizers import RegionSet
+from gtars.models import RegionSet
 
 from .. import _LOGGER
 from ..const import EXAMPLE_BED
