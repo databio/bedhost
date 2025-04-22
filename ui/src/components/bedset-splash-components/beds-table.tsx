@@ -44,7 +44,7 @@ export const BedsTable = (props: Props) => {
       header: 'Genome',
       id: 'genome',
     }),
-    columnHelper.accessor((row) => row.bed_type, {
+    columnHelper.accessor((row) => row.bed_compliance, {
       cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
       footer: (info) => info.column.id,
       header: 'Type',

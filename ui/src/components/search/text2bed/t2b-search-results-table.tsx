@@ -122,8 +122,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             <td>
               <ProgressBar
                 min={5}
-                now={result.score * 100}
-                label={`${roundToTwoDecimals(result.score * 100)}`}
+                now={(result.score ?? 0) * 100}
+                label={`${roundToTwoDecimals((result.score ?? 0) * 100)}`}
                 variant="primary"
               />
             </td>

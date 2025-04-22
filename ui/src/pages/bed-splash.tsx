@@ -1,7 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useBedMetadata } from '../queries/useBedMetadata';
+import { useBedGenomeStats } from '../queries/useBedGenomeStats';
 import { Layout } from '../components/layout';
-import { Col, Row } from 'react-bootstrap';
+import { Col, Container, Row } from 'react-bootstrap';
 import { BedSplashHeader } from '../components/bed-splash-components/header';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { ErrorPage } from '../components/common/error-page';
@@ -34,6 +35,12 @@ export const BedSplash = () => {
     full: true,
   });
 
+  const {
+    data: genomeStats,
+  } = useBedGenomeStats({
+    md5: bedId,
+  });
+
   const { data: neighbours } = useBedNeighbours({
     md5: bedId,
     limit: 10,
@@ -43,7 +50,7 @@ export const BedSplash = () => {
   // Helper function to safely type the annotation keys
   const getAnnotationValue = (data: BedMetadata | undefined, key: string) => {
     if (!data?.annotation) return null;
-    return (data.annotation as Record<string, string | null>)[key];
+    return (data.annotation as Record<string, string | string[] | null>)[key];
   };
 
   // Helper function to get filtered keys
@@ -128,10 +135,10 @@ export const BedSplash = () => {
   } else {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
-        <div className="my-2">
+        <Container className="my-2">
           <Row className="mb-2">
             <Col sm={12} md={12}>
-              {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} /> : null}
+              {metadata !== undefined && genomeStats !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
             </Col>
           </Row>
           <Row className="mb-2 g-3">
@@ -163,7 +170,26 @@ export const BedSplash = () => {
                               {snakeToTitleCase(k)}
                             </td>
                             <td style={{ maxWidth: '120px' }} className="truncate">
-                              {value ?? 'N/A'}
+                              { k === 'global_sample_id' ?
+                              (Array.isArray(value) && value.length > 0)
+                              ? value.map((v, i) => (
+                                  v.includes('encode:')
+                                    ? <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>{v}</a>
+                                    : v.includes('geo:')
+                                      ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a>
+                                      : v ?? 'N/A'
+                                )).reduce((prev, curr) => <>{prev}, {curr}</>)
+                              : value ?? 'N/A'
+                              :
+                                k === 'global_experiment_id' ?
+                                (Array.isArray(value) && value.length > 0) ? value.map((v, i) => (
+                                  v.includes('encode') ? <a key={i} href={'https://www.encodeproject.org'}>{v}</a> :
+                                  v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
+                                  v ?? 'N/A'
+                                )).reduce((prev, curr) => <>{prev}, {curr}</>) : value ?? 'N/A'
+                              :
+                                value ?? 'N/A'
+                              }
                             </td>
                           </tr>
                         );
@@ -225,7 +251,7 @@ export const BedSplash = () => {
           <Row className="mb-2 g-2">
             <h4 className="fw-bold">Statistics</h4>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column justify-content-between  mt-0 gap-2">
+              <Col sm={12} md={4} className="d-flex flex-column mt-0 gap-2">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
@@ -252,7 +278,7 @@ export const BedSplash = () => {
               </Col>
             </Row>
           )}
-        </div>
+        </Container>
       </Layout>
     );
   }

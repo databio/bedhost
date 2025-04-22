@@ -336,6 +336,10 @@ export const Home = () => {
           <Row className="w-100 align-items-center">
             <Col sm={6} md={6}>
               <h2 className="fw-bold">Data Availability Summary</h2>
+              <p className="text-balance pe-4">
+                Comprehensive metrics about BEDbase file statistics is available on the {' '}
+                <a href={`/metrics`}>metrics page</a>.
+              </p>
             </Col>
             <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
               <div className="mt-0 mt-md-5 mb-5 w-100">

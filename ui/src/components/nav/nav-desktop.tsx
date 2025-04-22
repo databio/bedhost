@@ -2,7 +2,6 @@ import { useBedCart } from '../../contexts/bedcart-context';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
-
 export const NavDesktop = () => {
   const { cart } = useBedCart();
   return (

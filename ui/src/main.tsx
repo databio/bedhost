@@ -7,6 +7,7 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BedCartProvider } from './contexts/bedcart-context.tsx';
 import { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
+import { Metrics } from './pages/metrics.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 
 // css stuff
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
   {
     path: '/search',
     element: <SearchPage />,
+  },
+  {
+    path: '/metrics',
+    element: <Metrics />,
   },
   {
     path: '*',

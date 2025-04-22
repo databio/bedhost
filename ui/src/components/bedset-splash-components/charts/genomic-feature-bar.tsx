@@ -29,6 +29,9 @@ const chartOptions = {
     legend: {
       position: 'top' as const,
     },
+    datalabels: {
+      display: false,
+    },
   },
 };
 
@@ -41,29 +44,29 @@ export const GenomicFeatureBar = (props: Props) => {
   if (displayAsPercentage) {
     data = [
       {
-        feature: "3' UTR",
+        feature: '3\' UTR',
         value: roundToTwoDecimals((metadata.statistics?.mean?.threeutr_percentage || 0) * 100),
         // mean - sd
         yMin: roundToTwoDecimals(
           (metadata.statistics?.mean?.threeutr_percentage || 0) * 100 -
-            (metadata.statistics?.sd?.threeutr_percentage || 0) * 100,
+          (metadata.statistics?.sd?.threeutr_percentage || 0) * 100,
         ),
         // mean + sd
         yMax: roundToTwoDecimals(
           (metadata.statistics?.mean?.threeutr_percentage || 0) * 100 +
-            (metadata.statistics?.sd?.threeutr_percentage || 0) * 100,
+          (metadata.statistics?.sd?.threeutr_percentage || 0) * 100,
         ),
       },
       {
-        feature: "5' UTR",
+        feature: '5\' UTR',
         value: roundToTwoDecimals((metadata.statistics?.mean?.fiveutr_percentage || 0) * 100),
         yMin: roundToTwoDecimals(
           (metadata.statistics?.mean?.fiveutr_percentage || 0) * 100 -
-            (metadata.statistics?.sd?.fiveutr_percentage || 0) * 100,
+          (metadata.statistics?.sd?.fiveutr_percentage || 0) * 100,
         ),
         yMax: roundToTwoDecimals(
           (metadata.statistics?.mean?.fiveutr_percentage || 0) * 100 +
-            (metadata.statistics?.sd?.fiveutr_percentage || 0) * 100,
+          (metadata.statistics?.sd?.fiveutr_percentage || 0) * 100,
         ),
       },
       {
@@ -71,11 +74,11 @@ export const GenomicFeatureBar = (props: Props) => {
         value: roundToTwoDecimals((metadata.statistics?.mean?.exon_percentage || 0) * 100),
         yMin: roundToTwoDecimals(
           (metadata.statistics?.mean?.exon_percentage || 0) * 100 -
-            (metadata.statistics?.sd?.exon_percentage || 0) * 100,
+          (metadata.statistics?.sd?.exon_percentage || 0) * 100,
         ),
         yMax: roundToTwoDecimals(
           (metadata.statistics?.mean?.exon_percentage || 0) * 100 +
-            (metadata.statistics?.sd?.exon_percentage || 0) * 100,
+          (metadata.statistics?.sd?.exon_percentage || 0) * 100,
         ),
       },
       {
@@ -83,11 +86,11 @@ export const GenomicFeatureBar = (props: Props) => {
         value: roundToTwoDecimals((metadata.statistics?.mean?.intron_percentage || 0) * 100),
         yMin: roundToTwoDecimals(
           (metadata.statistics?.mean?.intron_percentage || 0) * 100 -
-            (metadata.statistics?.sd?.intron_percentage || 0) * 100,
+          (metadata.statistics?.sd?.intron_percentage || 0) * 100,
         ),
         yMax: roundToTwoDecimals(
           (metadata.statistics?.mean?.intron_percentage || 0) * 100 +
-            (metadata.statistics?.sd?.intron_percentage || 0) * 100,
+          (metadata.statistics?.sd?.intron_percentage || 0) * 100,
         ),
       },
       {
@@ -95,11 +98,11 @@ export const GenomicFeatureBar = (props: Props) => {
         value: roundToTwoDecimals((metadata.statistics?.mean?.intergenic_percentage || 0) * 100),
         yMin: roundToTwoDecimals(
           (metadata.statistics?.mean?.intergenic_percentage || 0) * 100 -
-            (metadata.statistics?.sd?.intergenic_percentage || 0) * 100,
+          (metadata.statistics?.sd?.intergenic_percentage || 0) * 100,
         ),
         yMax: roundToTwoDecimals(
           (metadata.statistics?.mean?.intergenic_percentage || 0) * 100 +
-            (metadata.statistics?.sd?.intergenic_percentage || 0) * 100,
+          (metadata.statistics?.sd?.intergenic_percentage || 0) * 100,
         ),
       },
       {
@@ -107,11 +110,11 @@ export const GenomicFeatureBar = (props: Props) => {
         value: roundToTwoDecimals((metadata.statistics?.mean?.promoterprox_percentage || 0) * 100),
         yMin: roundToTwoDecimals(
           (metadata.statistics?.mean?.promoterprox_percentage || 0) * 100 -
-            (metadata.statistics?.sd?.promoterprox_percentage || 0) * 100,
+          (metadata.statistics?.sd?.promoterprox_percentage || 0) * 100,
         ),
         yMax: roundToTwoDecimals(
           (metadata.statistics?.mean?.promoterprox_percentage || 0) * 100 +
-            (metadata.statistics?.sd?.promoterprox_percentage || 0) * 100,
+          (metadata.statistics?.sd?.promoterprox_percentage || 0) * 100,
         ),
       },
       {
@@ -119,24 +122,24 @@ export const GenomicFeatureBar = (props: Props) => {
         value: roundToTwoDecimals((metadata.statistics?.mean?.promotercore_percentage || 0) * 100),
         yMin: roundToTwoDecimals(
           (metadata.statistics?.mean?.promotercore_percentage || 0) * 100 -
-            (metadata.statistics?.sd?.promotercore_percentage || 0) * 100,
+          (metadata.statistics?.sd?.promotercore_percentage || 0) * 100,
         ),
         yMax: roundToTwoDecimals(
           (metadata.statistics?.mean?.promotercore_percentage || 0) * 100 +
-            (metadata.statistics?.sd?.promotercore_percentage || 0) * 100,
+          (metadata.statistics?.sd?.promotercore_percentage || 0) * 100,
         ),
       },
     ];
   } else {
     data = [
       {
-        feature: "3' UTR",
+        feature: '3\' UTR',
         value: metadata.statistics?.mean?.threeutr_frequency || 0,
         yMin: (metadata.statistics?.mean?.threeutr_frequency || 0) - (metadata.statistics?.sd?.threeutr_frequency || 0),
         yMax: (metadata.statistics?.mean?.threeutr_frequency || 0) + (metadata.statistics?.sd?.threeutr_frequency || 0),
       },
       {
-        feature: "5' UTR",
+        feature: '5\' UTR',
         value: metadata.statistics?.mean?.fiveutr_frequency || 0,
         yMin: (metadata.statistics?.mean?.fiveutr_frequency || 0) - (metadata.statistics?.sd?.fiveutr_frequency || 0),
         yMax: (metadata.statistics?.mean?.fiveutr_frequency || 0) + (metadata.statistics?.sd?.fiveutr_frequency || 0),
@@ -185,7 +188,7 @@ export const GenomicFeatureBar = (props: Props) => {
   }
 
   return (
-    <div className="border rounded p-2 shadow-sm">
+    <div className="border rounded p-2 shadow-sm" style={{ height: 'calc(100% - 0.5rem - 2px)' }}>
       <div className="d-flex flex-column align-items-center justify-content-between h-100">
         <div className="d-flex position-relative flex-row align-items-center w-100">
           <h4 className="fw-bold text-base text-center w-100">Genomic Features</h4>

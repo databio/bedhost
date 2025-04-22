@@ -5,23 +5,28 @@ import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { bytesToSize, formatDateTime } from '../../utils';
 import { Dropdown, OverlayTrigger } from 'react-bootstrap';
+import { RefGenomeModal } from './refgenome-modal';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 type BedMetadata = components['schemas']['BedMetadataAll'];
+type BedGenomeStats = components['schemas']['RefGenValidReturnModel'];
 
 type Props = {
   metadata: BedMetadata;
   record_identifier: string | undefined;
+  genomeStats: BedGenomeStats;
 };
 
 export const BedSplashHeader = (props: Props) => {
-  const { metadata, record_identifier } = props;
+  const { metadata, record_identifier, genomeStats } = props;
 
   const [, copyToClipboard] = useCopyToClipboard();
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   const [addedToCart, setAddedToCart] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
+  const [showRefGenomeModal, setShowRefGenomeModal] = useState(false);
+
 
   const noFilesToDownload = !metadata.files?.bed_file && !metadata.files?.bigbed_file;
 
@@ -49,7 +54,7 @@ export const BedSplashHeader = (props: Props) => {
         <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-info-circle me-1" />
+              <i className="bi bi-info-circle me-1"/>
               API
             </button>
           </a>
@@ -158,19 +163,46 @@ export const BedSplashHeader = (props: Props) => {
                 }
               >
                 {metadata?.genome_digest ? (
-                  <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`} target="_blank">
-                    <div className="badge bg-primary">
+                  <>
+                    <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`} target="_blank">
+                      <div className={genomeStats?.compared_genome ? "badge bg-primary rounded-end-0" : "badge bg-primary"}>
+                        <i className="bi bi-database-fill me-2" />
+                        {metadata.genome_alias || 'No assembly available'}
+                      </div>
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <div className="badge bg-primary rounded-end-0">
                       <i className="bi bi-database-fill me-2" />
                       {metadata.genome_alias || 'No assembly available'}
                     </div>
-                  </a>
-                ) : (
-                  <div className="badge bg-primary">
-                    <i className="bi bi-database-fill me-2" />
-                    {metadata.genome_alias || 'No assembly available'}
-                  </div>
+                  </>
                 )}
               </OverlayTrigger>
+              {genomeStats?.compared_genome &&
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <div className="tooltip">
+                      <div className="tooltip-arrow" />
+                      <div className="tooltip-inner">Genome compatibility</div>
+                    </div>
+                  }
+                >
+                  <div 
+                    className="badge bg-primary border-start border-light rounded-start-0"
+                    role="button"
+                    onClick={() => {
+                      if (showRefGenomeModal !== true) {
+                        setShowRefGenomeModal(true);
+                      }
+                    }}
+                  >
+                    <i className="bi bi-info-circle-fill" />
+                  </div>
+                </OverlayTrigger>
+              }
             </p>
           </div>
           <div className="d-flex flex-row">
@@ -180,13 +212,13 @@ export const BedSplashHeader = (props: Props) => {
                 overlay={
                   <div className="tooltip">
                     <div className="tooltip-arrow" />
-                    <div className="tooltip-inner">BED file format</div>
+                    <div className="tooltip-inner">BED compliance</div>
                   </div>
                 }
               >
                 <div className="badge bg-primary">
                   <i className="bi bi-file-earmark-text-fill me-1" />
-                  {metadata?.bed_format || 'No format available'}
+                  {metadata?.bed_compliance || 'No compliance available'}
                 </div>
               </OverlayTrigger>
             </p>
@@ -198,13 +230,13 @@ export const BedSplashHeader = (props: Props) => {
                 overlay={
                   <div className="tooltip">
                     <div className="tooltip-arrow" />
-                    <div className="tooltip-inner">BED type</div>
+                    <div className="tooltip-inner">Data Format</div>
                   </div>
                 }
               >
                 <div className="badge bg-primary">
                   <i className="bi bi-folder-fill me-1" />
-                  {metadata?.bed_type || 'No bed type available'}
+                  {metadata?.data_format || 'No data format available'}
                 </div>
               </OverlayTrigger>
             </p>
@@ -271,6 +303,13 @@ export const BedSplashHeader = (props: Props) => {
           </div>
         </div>
       </div>
+      <RefGenomeModal
+        show={showRefGenomeModal}
+        onHide={() => {
+          setShowRefGenomeModal(false);
+        }}
+        genomeStats={genomeStats}
+      />
     </div>
   );
 };
