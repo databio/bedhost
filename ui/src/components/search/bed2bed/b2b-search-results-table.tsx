@@ -45,7 +45,7 @@ const scoreTooltip = (
       </span>
 
   </OverlayTrigger>
-)
+);
 
 export const Bed2BedSearchResultsTable = (props: Props) => {
   const { beds } = props;

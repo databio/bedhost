@@ -10,7 +10,7 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend,
-  ChartDataLabels
+  ChartDataLabels,
 );
 
 export type MetricPlotType = 'bar' | 'pie';
@@ -49,27 +49,27 @@ export const MetricPlot = (props: Props) => {
     ];
 
     let colorPalette = [];
-    
+
     // If we need more colors than in our base palette,
     // we'll cycle through with different opacities
     const cycles = Math.ceil((dataLength - colorPalette.length) / baseColors.length);
-    
+
     for (let cycle = 0; cycle < cycles; cycle++) {
       // For each cycle, adjust opacity slightly
       const opacity = 0.6 - (cycle * 0.1);
-      
+
       for (let i = 0; i < baseColors.length; i++) {
         if (colorPalette.length >= dataLength) break;
-        
+
         // Create a new color with adjusted opacity
         const baseColor = baseColors[i];
         const rgbPart = baseColor.substring(0, baseColor.lastIndexOf(','));
         const newColor = `${rgbPart}, ${opacity})`;
-        
+
         colorPalette.push(newColor);
       }
     }
-      
+
     return colorPalette;
   };
 
@@ -118,7 +118,8 @@ export const MetricPlot = (props: Props) => {
         data={plotData}
         options={plotOptions}
       />
-  )}
+    );
+  }
 
   return null;
 };
