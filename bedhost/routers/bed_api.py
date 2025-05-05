@@ -70,7 +70,7 @@ async def list_beds(
     genome: str = Query(
         default=None, description="filter by genome of the bed file. e.g. 'hg38'"
     ),
-    bed_type: str = Query(
+    bed_compliance: str = Query(
         default=None, description="filter by bed type. e.g. 'bed6+4'"
     ),
 ) -> BedListResult:
@@ -78,7 +78,7 @@ async def list_beds(
     Returns list of BED files in the database with optional filters.
     """
     return bbagent.bed.get_ids_list(
-        limit=limit, offset=offset, genome=genome, bed_type=bed_type
+        limit=limit, offset=offset, genome=genome, bed_compliance=bed_compliance
     )
 
 
