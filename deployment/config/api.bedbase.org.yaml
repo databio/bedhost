@@ -32,7 +32,8 @@ access_methods:
   http:
     type: "https"
     description: HTTP compatible path
-    prefix: https://data2.bedbase.org/
+    #    prefix: https://data2.bedbase.org/
+    prefix: https://api.bedbase.org/v1/files/
   s3:
     type: "s3"
     description: S3 compatible path
