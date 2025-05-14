@@ -32,7 +32,7 @@ export const BedSplashHeader = (props: Props) => {
 
   return (
     <div className="border-bottom py-2">
-      <div className="d-flex flex-column flex-md-row align-items-start justify-content-md-between mb-3 mb-md-1">
+      <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-1">
         <div className="d-flex align-items-center overflow-x-auto w-100">
           <h4 className="fw-bold d-flex align-items-center flex-nowrap">
             <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
@@ -149,10 +149,10 @@ export const BedSplashHeader = (props: Props) => {
         <h5 className="fw-semibold mb-1">{metadata.name}</h5>
         <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
-      <div className="d-flex flex-column flex-md-row align-items-start align-items-md-end justify-content-md-between mt-2 overflow-x-auto">
-        <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-md-0">
+      <div className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">
+        <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-xl-0">
           <div className="d-flex flex-row">
-            <p className="mb-0">
+            <div className="mb-0">
               <OverlayTrigger
                 placement="top"
                 overlay={
@@ -186,7 +186,7 @@ export const BedSplashHeader = (props: Props) => {
                   overlay={
                     <div className="tooltip">
                       <div className="tooltip-arrow" />
-                      <div className="tooltip-inner">Genome compatibility</div>
+                      <div className="tooltip-inner">Genome compatibility details</div>
                     </div>
                   }
                 >
@@ -203,10 +203,10 @@ export const BedSplashHeader = (props: Props) => {
                   </div>
                 </OverlayTrigger>
               }
-            </p>
+            </div>
           </div>
           <div className="d-flex flex-row">
-            <p className="mb-0">
+            <div className="mb-0">
               <OverlayTrigger
                 placement="top"
                 overlay={
@@ -221,10 +221,10 @@ export const BedSplashHeader = (props: Props) => {
                   {metadata?.bed_compliance || 'No compliance available'}
                 </div>
               </OverlayTrigger>
-            </p>
+            </div>
           </div>
           <div className="d-flex flex-row">
-            <p className="mb-0">
+            <div className="mb-0">
               <OverlayTrigger
                 placement="top"
                 overlay={
@@ -239,10 +239,10 @@ export const BedSplashHeader = (props: Props) => {
                   {metadata?.data_format || 'No data format available'}
                 </div>
               </OverlayTrigger>
-            </p>
+            </div>
           </div>
           <div className="d-flex flex-row">
-            <p className="mb-0">
+            <div className="mb-0">
               <a
                 href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`}
                 target="_blank"
@@ -262,11 +262,11 @@ export const BedSplashHeader = (props: Props) => {
                   </div>
                 </OverlayTrigger>
               </a>
-            </p>
+            </div>
           </div>
           {metadata?.is_universe && (
             <div className="d-flex flex-row">
-              <p className="mb-0 cursor-default">
+              <div className="mb-0 cursor-default">
                 <OverlayTrigger
                   placement="top"
                   overlay={
@@ -281,11 +281,11 @@ export const BedSplashHeader = (props: Props) => {
                     Universe
                   </div>
                 </OverlayTrigger>
-              </p>
+              </div>
             </div>
           )}
         </div>
-        <div className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm">
+        <div className="d-flex flex-column flex-md-row justify-content-xl-between align-items-start align-items-xl-end text-sm">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
@@ -294,7 +294,7 @@ export const BedSplashHeader = (props: Props) => {
             </p>
           </div>
 
-          <div className="d-flex flex-row text-muted ms-lg-4">
+          <div className="d-flex flex-row text-muted ms-md-4">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
               <span>Updated:</span>{' '}
