@@ -195,7 +195,7 @@ async def get_trackDb_file_bedset(bedset_id: str):
 
 
 @router.post(
-    "/create/",
+    "/create",
     description="Create a new bedset by providing registry path to the PEPhub project",
 )
 async def create_bedset(bedset: CreateBEDsetRequest):
