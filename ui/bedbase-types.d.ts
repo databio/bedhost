@@ -1404,6 +1404,10 @@ export interface components {
             file_genome: {
                 [key: string]: number;
             };
+            /** File Organism */
+            file_organism: {
+                [key: string]: number;
+            };
         };
         /** HTTPValidationError */
         HTTPValidationError: {

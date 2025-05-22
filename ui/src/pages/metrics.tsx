@@ -47,6 +47,8 @@ export const Metrics = () => {
   const { data: bedbaseStats } = useStats();
   const { data: detailedStats, isLoading } = useDetailedStats();
 
+  console.log(detailedStats)
+
   const sliceIndex = 5;
 
     if (isLoading) {
@@ -190,6 +192,34 @@ export const Metrics = () => {
                   backgroundColor={[PRIMARY_COLOR]}
                   borderWidth={1} 
                   sliceIndex={sliceIndex}
+                />
+                </div>
+              </div>
+            </Col>
+
+            <Col sm={12} md={12}>
+              <div 
+                className='h-100 border rounded genome-card cursor-pointer p-3 shadow-sm'
+                onClick={() => setMetricModalProps({
+                  title: 'BED Files by Organism',
+                  type: 'bar',
+                  data: Object.entries(detailedStats?.file_organism || {}),
+                  dataLabel: 'Number of BED files',
+                  backgroundColor: [PRIMARY_COLOR],
+                  borderWidth: 1,
+                  sliceIndex: Object.entries(detailedStats?.file_organism || {}).length
+                })}
+              >
+              <h6 className='fw-semibold'>BED Files by Organism</h6>
+              <div className='p-1' style={{height: 360}}>
+                <MetricPlot 
+                  type='bar' 
+                  data={Object.entries(detailedStats?.file_organism || {})} 
+                  dataLabel='Number of BED files'
+                  backgroundColor={[PRIMARY_COLOR]}
+                  borderWidth={1} 
+                  sliceIndex={sliceIndex * 2}
+                  useAspectRatio={false}
                 />
                 </div>
               </div>
