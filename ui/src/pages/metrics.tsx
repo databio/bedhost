@@ -47,8 +47,6 @@ export const Metrics = () => {
   const { data: bedbaseStats } = useStats();
   const { data: detailedStats, isLoading } = useDetailedStats();
 
-  console.log(detailedStats)
-
   const sliceIndex = 5;
 
     if (isLoading) {
