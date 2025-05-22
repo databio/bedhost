@@ -34,8 +34,13 @@ export const BedCart = () => {
                 Home
               </button>
             </a>
+            <button className="btn btn-outline-primary" onClick={() => setCreateBedSetModal(true)}>
+              <i className="bi bi-collection-fill me-2"></i>
+              Create BEDset
+            </button>
           </div>
         </div>
+        <CreateBedSetModal show={showCreateBedsetModal} setShow={setCreateBedSetModal} />
       </Layout>
     );
   }
