@@ -691,7 +691,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/v1/bedset/create/": {
+    "/v1/bedset/create": {
         parameters: {
             query?: never;
             header?: never;
