@@ -316,3 +316,17 @@ td {
   border: 1px solid $primary !important;
   outline: 1px solid $primary !important;
 }
+
+.transparent-btn {
+  //pointer-events: none;
+  cursor: default;
+
+  &:hover,
+  &:focus,
+  &:active {
+    background-color: transparent;
+    border-color: transparent;
+    color: inherit;
+    box-shadow: none;
+  }
+}
