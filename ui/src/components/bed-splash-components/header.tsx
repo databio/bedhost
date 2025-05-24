@@ -58,7 +58,7 @@ export const BedSplashHeader = (props: Props) => {
               API
             </button>
           </a>
-          {!addedToCart && cart.includes(record_identifier || '') ? (
+          {!addedToCart && cart[record_identifier || ''] ? (
             <button
               className="btn btn-outline-danger btn-sm"
               onClick={() => {
@@ -79,13 +79,26 @@ export const BedSplashHeader = (props: Props) => {
               disabled={addedToCart}
               className="btn btn-primary btn-sm"
               onClick={() => {
-                if (record_identifier == undefined) {
+                if (record_identifier == undefined || metadata === undefined) {
                   toast.error(
                     'This bed file does not have a record identifier... please contact the administrator to fix this issue.',
                   );
                   return;
                 }
-                addBedToCart(record_identifier);
+                
+                // Create the bed item object with all required fields
+                const bedItem = {
+                  id: record_identifier,
+                  name: metadata.name || 'No name',
+                  genome: metadata.genome_alias || 'N/A',
+                  tissue: metadata.annotation?.tissue || 'N/A',
+                  cell_line: metadata.annotation?.cell_line || 'N/A',
+                  cell_type: metadata.annotation?.cell_type || 'N/A',
+                  description: metadata.description || '',
+                  assay: metadata.annotation?.assay || 'N/A',
+                };
+                
+                addBedToCart(bedItem);
                 setAddedToCart(true);
                 setTimeout(() => {
                   setAddedToCart(false);

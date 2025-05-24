@@ -143,9 +143,11 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
     columnHelper.accessor('metadata.id', {
       cell: (info) => {
         const bedId = info.getValue();
+        const rowData = info.row.original; // Get the full row data
+        
         return (
           <div>
-            {cart.includes(bedId || '') ? (
+            {cart[bedId || ''] ? (
               <button
                 className="btn btn-sm btn-outline-danger"
                 onClick={() => {
@@ -162,12 +164,27 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
             ) : (
               <button
                 className="btn btn-sm btn-outline-primary"
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  
                   if (bedId === undefined) {
                     toast.error('No bed ID found', { position: 'top-center' });
                     return;
                   }
-                  addBedToCart(bedId || '');
+                  
+                  const bedItem = {
+                    id: bedId,
+                    name: rowData.metadata?.name || 'No name',
+                    genome: rowData.metadata?.genome_alias || 'N/A',
+                    tissue: rowData.metadata?.annotation?.tissue || 'N/A',
+                    cell_line: rowData.metadata?.annotation?.cell_line || 'N/A',
+                    cell_type: rowData.metadata?.annotation?.cell_type || 'N/A',
+                    description: rowData.metadata?.description || '',
+                    assay: rowData.metadata?.annotation?.assay || 'N/A',
+                  };
+                  
+                  addBedToCart(bedItem);
                 }}
               >
                 Add

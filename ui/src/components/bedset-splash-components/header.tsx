@@ -6,16 +6,18 @@ import { DownloadBedSetModal } from '../modals/download-bedset-modal';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { formatDateTime } from '../../utils.ts';
 
+type Bed = components['schemas']['BedSetBedFiles']['results'][number];
 
 type BedSetMetadata = components['schemas']['BedSetMetadata'];
 type Props = {
   metadata: BedSetMetadata;
+  beds: Bed[];
 };
 
 const API_BASE = import.meta.env.VITE_API_BASE || '/';
 
 export const BedsetSplashHeader = (props: Props) => {
-  const { metadata } = props;
+  const { metadata, beds } = props;
 
   const [, copyToClipboard] = useCopyToClipboard();
   const { cart, addMultipleBedsToCart, removeMultipleBedsFromCart } = useBedCart();
@@ -67,7 +69,7 @@ export const BedsetSplashHeader = (props: Props) => {
           </a>
           {
             // cart includes all bed ids?
-            metadata.bed_ids?.every((bedId) => cart.includes(bedId)) && !addedToCart ? (
+            metadata.bed_ids?.every((bedId) => cart[bedId]) && !addedToCart ? (
               <button
                 onClick={() => removeMultipleBedsFromCart(metadata.bed_ids || [])}
                 className="btn btn-outline-danger btn-sm"
@@ -81,7 +83,19 @@ export const BedsetSplashHeader = (props: Props) => {
                   metadata.bed_ids?.length === 0
                     ? undefined
                     : () => {
-                      addMultipleBedsToCart(metadata.bed_ids || []);
+
+                      const bedItems = beds.map(bed => ({
+                        id: bed.id,
+                        name: bed.name || 'No name',
+                        genome: bed.genome_alias || 'N/A',
+                        tissue: bed.annotation?.tissue || 'N/A',
+                        cell_line: bed.annotation?.cell_line || 'N/A',
+                        cell_type: bed.annotation?.cell_type || 'N/A',
+                        description: bed.description || 'N/A',
+                        assay: bed.annotation?.assay || 'N/A',
+                      }));
+                      
+                      addMultipleBedsToCart(bedItems);
                       setAddedToCart(true);
                       setTimeout(() => {
                         setAddedToCart(false);

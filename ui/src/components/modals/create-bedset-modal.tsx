@@ -93,12 +93,12 @@ export const CreateBedSetModal = (props: Props) => {
         </div>
 
         <div className="position-relative my-1 px-3" style={{ margin: '-1em' }}>
-          <Markdown className='rounded rounded-2 bg-body-secondary markdown-bg' rehypePlugins={[rehypeHighlight]}>{generateBEDsetPEPMd(cart)}</Markdown>
+          <Markdown className='rounded rounded-2 bg-body-secondary markdown-bg' rehypePlugins={[rehypeHighlight]}>{generateBEDsetPEPMd(Object.values(cart).map((item) => item.id))}</Markdown>
           <div className="position-absolute top-0 end-0 m-3">
             <button
               className="btn btn-sm btn-primary me-3"
               onClick={() => {
-                copyToClipboard(generateBEDsetPEPDownloadRaw(cart));
+                copyToClipboard(generateBEDsetPEPDownloadRaw(Object.values(cart).map((item) => item.id)));
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
               }}

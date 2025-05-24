@@ -30,10 +30,10 @@ export const NavDesktop = () => {
           <li className="text-body mx-2 my-0 nav-item h5 pt-1">
               <a className="nav-link position-relative" href="/cart">
                   <i className="bi bi-cart-fill"></i>
-                  {cart.length > 0 && (
+                  {Object.keys(cart).length > 0 && (
                       <span
                           className="badge bg-primary bg-opacity-25 border border-primary text-primary rounded-pill text-bg-secondary position-absolute top-0 start-100 translate-middle px-2 py-0 ms-1">
-              <span className="text-sm">{cart.length}</span>
+              <span className="text-sm">{Object.keys(cart).length}</span>
             </span>
                   )}
               </a>

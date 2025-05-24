@@ -2,50 +2,76 @@ import { useLocalStorage } from '@uidotdev/usehooks';
 import React, { Dispatch, SetStateAction, createContext, useContext } from 'react';
 import toast from 'react-hot-toast';
 
+type BedItem = {
+  id: string;
+  name: string;
+  genome: string;
+  tissue: string;
+  cell_line: string;
+  cell_type: string;
+  description: string;
+  assay: string;
+};
+
+type BedCart = Record<string, BedItem>;
+
 type ProviderProps = {
   children: React.ReactNode;
 };
 
 const BedCartContext = createContext<{
-  cart: string[];
-  setCart: Dispatch<SetStateAction<string[]>>;
-  addBedToCart: (bed: string) => void;
-  removeBedFromCart: (bed: string) => void;
-  addMultipleBedsToCart: (beds: string[]) => void;
-  removeMultipleBedsFromCart: (beds: string[]) => void;
+  cart: BedCart;
+  setCart: Dispatch<SetStateAction<BedCart>>;
+  addBedToCart: (bed: BedItem) => void;
+  removeBedFromCart: (bedId: string) => void;
+  addMultipleBedsToCart: (beds: BedItem[]) => void;
+  removeMultipleBedsFromCart: (bedIds: string[]) => void;
   // @ts-expect-error - its fine to start with undefined
 }>(undefined);
 
 export const BedCartProvider = ({ children }: ProviderProps) => {
-  const [cart, setCart] = useLocalStorage<string[]>('bed-cart', []);
+  const [cart, setCart] = useLocalStorage<BedCart>('bed-cart', {});
 
-  const addMultipleBedsToCart = (beds: string[]) => {
-    const alreadyInCart = beds.filter((bed) => cart.includes(bed));
+  const addMultipleBedsToCart = (beds: BedItem[]) => {
+    const alreadyInCart = beds.filter((bed) => cart[bed.id]);
     if (alreadyInCart.length > 0) {
-      toast.error(`BED IDs ${alreadyInCart.join(', ')} are already in the cart!`);
+      const bedIds = alreadyInCart.map(bed => bed.id);
+      toast.error(`BED IDs ${bedIds.join(', ')} are already in the cart!`);
       return;
     }
-    setCart([...cart, ...beds]);
+    
+    const newItems = beds.reduce((acc, bed) => {
+      acc[bed.id] = bed;
+      return acc;
+    }, {} as BedCart);
+    
+    setCart({ ...cart, ...newItems });
   };
 
-  const addBedToCart = (bed: string) => {
-    if (cart.includes(bed)) {
-      toast.error(`BED ID ${bed} is already in the cart!`);
+  const addBedToCart = (bed: BedItem) => {
+    if (cart[bed.id]) {
+      toast.error(`BED ID ${bed.id} is already in the cart!`);
       return;
     }
-    setCart([...cart, bed]);
+    setCart({ ...cart, [bed.id]: bed });
   };
 
-  const removeMultipleBedsFromCart = (beds: string[]) => {
-    setCart(cart.filter((item) => !beds.includes(item)));
+  const removeMultipleBedsFromCart = (bedIds: string[]) => {
+    const newCart = { ...cart };
+    bedIds.forEach(id => {
+      delete newCart[id];
+    });
+    setCart(newCart);
   };
 
-  const removeBedFromCart = (bed: string) => {
-    if (bed === 'all') {
-      setCart([]);
+  const removeBedFromCart = (bedId: string) => {
+    if (bedId === 'all') {
+      setCart({});
       return;
     }
-    setCart(cart.filter((item) => item !== bed));
+    const newCart = { ...cart };
+    delete newCart[bedId];
+    setCart(newCart);
   };
 
   return (

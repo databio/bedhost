@@ -25,6 +25,9 @@ export const Bed2Bed = () => {
 
   useEffect(() => {
     if (file) {
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement.blur();
+      }
       setTimeout(() => {
         onSearch();
       }, 50);
@@ -57,6 +60,9 @@ export const Bed2Bed = () => {
               onClick={(e) => {
                 e.stopPropagation();
                 setFile(null);
+                if (inputRef.current) {
+                  inputRef.current.value = '';
+                }
               }}
             >
               Remove
