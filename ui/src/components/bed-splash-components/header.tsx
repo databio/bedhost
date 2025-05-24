@@ -126,7 +126,7 @@ export const BedSplashHeader = (props: Props) => {
               }}
             >
               <i className="bi bi-cart-fill me-1" />
-              {addedToCart ? 'Added to cart!' : 'Add to cart'}
+              {addedToCart ? 'Adding...' : 'Add to cart'}
             </button>
           )}
           <Dropdown>
