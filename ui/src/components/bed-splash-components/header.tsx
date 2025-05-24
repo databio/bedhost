@@ -4,7 +4,7 @@ import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { bytesToSize, formatDateTime } from '../../utils';
-import { Dropdown, OverlayTrigger } from 'react-bootstrap';
+import { Dropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { RefGenomeModal } from './refgenome-modal';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -51,10 +51,30 @@ export const BedSplashHeader = (props: Props) => {
             </button>
           </h4>
         </div>
+        {!metadata?.processed && (
+          <p
+            className="text-warning text-nowrap me-1 btn btn-outline btn-sm transparent-btn"
+          >
+            <OverlayTrigger
+              placement="top"
+              overlay={
+                <Tooltip id="tooltip-top">
+                  This file has not been processed by the BedBoss pipeline yet.
+                </Tooltip>
+              }
+            >
+    <span>
+      <i className="bi bi-exclamation-triangle-fill me-1"></i>
+      Not Processed
+    </span>
+            </OverlayTrigger>
+          </p>
+        )}
+
         <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-info-circle me-1"/>
+              <i className="bi bi-info-circle me-1" />
               API
             </button>
           </a>
@@ -117,11 +137,11 @@ export const BedSplashHeader = (props: Props) => {
             {
               // If there are no files to download, disable the dropdown
               noFilesToDownload ? (
-                <Dropdown.Menu className='border border-light-subtle shadow-sm'>
+                <Dropdown.Menu className="border border-light-subtle shadow-sm">
                   <Dropdown.Item disabled>There are no files to download</Dropdown.Item>
                 </Dropdown.Menu>
               ) : (
-                <Dropdown.Menu className='border border-light-subtle shadow-sm'>
+                <Dropdown.Menu className="border border-light-subtle shadow-sm">
                   {metadata.files?.bed_file && (
                     <Fragment>
                       {(metadata.files?.bed_file?.access_methods || []).map((method) => {
@@ -162,7 +182,8 @@ export const BedSplashHeader = (props: Props) => {
         <h5 className="fw-semibold mb-1">{metadata.name}</h5>
         <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
       </div>
-      <div className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">
+      <div
+        className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">
         <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-xl-0">
           <div className="d-flex flex-row">
             <div className="mb-0">
@@ -177,8 +198,10 @@ export const BedSplashHeader = (props: Props) => {
               >
                 {metadata?.genome_digest ? (
                   <>
-                    <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`} target="_blank">
-                      <div className={genomeStats?.compared_genome ? "badge bg-primary rounded-end-0" : "badge bg-primary"}>
+                    <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`}
+                       target="_blank">
+                      <div
+                        className={genomeStats?.compared_genome ? 'badge bg-primary rounded-end-0' : 'badge bg-primary'}>
                         <i className="bi bi-database-fill me-2" />
                         {metadata.genome_alias || 'No assembly available'}
                       </div>
@@ -203,7 +226,7 @@ export const BedSplashHeader = (props: Props) => {
                     </div>
                   }
                 >
-                  <div 
+                  <div
                     className="badge bg-primary border-start border-light rounded-start-0"
                     role="button"
                     onClick={() => {
@@ -298,7 +321,8 @@ export const BedSplashHeader = (props: Props) => {
             </div>
           )}
         </div>
-        <div className="d-flex flex-column flex-md-row justify-content-xl-between align-items-start align-items-xl-end text-sm">
+        <div
+          className="d-flex flex-column flex-md-row justify-content-xl-between align-items-start align-items-xl-end text-sm">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
