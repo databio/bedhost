@@ -18,7 +18,7 @@ from fastapi.templating import Jinja2Templates
 from . import _LOGGER
 from ._version import __version__ as bedhost_version
 from .cli import build_parser
-from .const import PKG_NAME, STATIC_PATH, USAGE_SAVE_DAYS
+from .const import PKG_NAME, STATIC_PATH, USAGE_SAVE_HOURS, USAGE_RECORD_DAYS
 from .helpers import attach_routers, configure, drs_response, init_model_usage
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -173,7 +173,9 @@ if __name__ != "__main__":
             """
 
             print("Running uploading of the usage")
-            usage_data.date_to = datetime.datetime.now()
+            usage_data.date_to = datetime.datetime.now() + datetime.timedelta(
+                days=USAGE_RECORD_DAYS
+            )
             bbagent.add_usage(usage_data)
 
             usage_data.bed_meta = {}
@@ -184,7 +186,7 @@ if __name__ != "__main__":
             usage_data.date_from = datetime.datetime.now()
             usage_data.date_to = None
 
-        scheduler.add_job(upload_usage, "interval", days=USAGE_SAVE_DAYS)
+        scheduler.add_job(upload_usage, "interval", hours=USAGE_SAVE_HOURS)
         scheduler.start()
 
         attach_routers(app)

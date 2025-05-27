@@ -269,8 +269,8 @@ export const Metrics = () => {
         )}
 
         <EndpointsModal
-          titles={['Detailed Stats']}
-          endpoints={[`${API_BASE}/detailed-stats`]}
+          titles={['Detailed Stats', 'Detailed Usage']}
+          endpoints={[`${API_BASE}/detailed-stats`, `${API_BASE}/detailed-usage`]}
           show={endpointsModalShow}
           onHide={() => setEndpointsModalShow(false)}
         />
