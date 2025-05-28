@@ -99,7 +99,7 @@ export const BedSplashHeader = (props: Props) => {
               disabled={addedToCart}
               className="btn btn-primary btn-sm"
               onClick={() => {
-                if (record_identifier == undefined || metadata === undefined) {
+                if (record_identifier === undefined || metadata === undefined) {
                   toast.error(
                     'This bed file does not have a record identifier... please contact the administrator to fix this issue.',
                   );
