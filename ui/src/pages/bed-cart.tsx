@@ -15,7 +15,7 @@ export const BedCart = () => {
     }
   };
 
-  if (cart.length === 0) {
+  if (Object.keys(cart).length === 0) {
     return (
       <Layout title="BEDbase | Empty cart">
         <div className="d-flex flex-column p-4 align-items-center justify-content-center h80">
@@ -34,8 +34,13 @@ export const BedCart = () => {
                 Home
               </button>
             </a>
+            <button className="btn btn-outline-primary" onClick={() => setCreateBedSetModal(true)}>
+              <i className="bi bi-collection-fill me-2"></i>
+              Create BEDset
+            </button>
           </div>
         </div>
+        <CreateBedSetModal show={showCreateBedsetModal} setShow={setCreateBedSetModal} />
       </Layout>
     );
   }
@@ -46,10 +51,10 @@ export const BedCart = () => {
         <div className="d-flex flex-row align-items-start justify-content-between">
           <div className="d-flex flex-column">
             <h3 className="fw-bold mb-2">Cart</h3>
-            {cart.length === 1 ? (
+            {Object.keys(cart).length === 1 ? (
               <p className="fst-italic mb-0 text-sm">You have 1 item in your cart</p>
             ) : (
-              <p className="fst-italic mb-0">You have {cart.length} items in your cart</p>
+              <p className="fst-italic mb-0">You have {Object.keys(cart).length} items in your cart</p>
             )}
           </div>
           <div className="d-flex flex-row align-items-center gap-1 mt-1">
@@ -69,27 +74,53 @@ export const BedCart = () => {
         </div>
         <div className="p-0 pt-1 pb-3 border rounded rounded-2 shadow-sm">
           <div className="table-responsive">
-            <table className="table table-hover">
+            <table className="table text-sm table-hover">
               <thead>
               <tr>
-                <th scope="col">Item</th>
-                <th scope="col">Action</th>
-                </tr>
+                <th scope="col">Name</th>
+                <th scope="col">Genome</th>
+                <th scope="col">Tissue</th>
+                <th scope="col">Cell Line</th>
+                <th scope="col">Cell Type</th>
+                <th scope="col">Description</th>
+                <th scope="col">Assay</th>
+                <th scope="col" style={{ minWidth: '110px' }}>
+                  Actions
+                </th>
+              </tr>
               </thead>
               <tbody>
-                {cart.map((item) => (
-                  <tr
-                    key={item}
-                    onClick={handleRowClick(item)}
-                    className="cursor-pointer position-relative">
-                    <td>{item}</td>
-                    <td>
-                      <button className="btn btn-sm btn-outline-danger" onClick={() => removeBedFromCart(item)}>
-                        <i className="bi bi-trash"></i>
+              {Object.values(cart).map((item) => (
+                <tr
+                  key={item.id}
+                  onClick={handleRowClick(item.id)}
+                  className="cursor-pointer position-relative"
+                >
+                  <td>{item.name || 'N/A'}</td>
+                  <td>
+                    <span className="badge text-bg-primary">{item.genome || 'N/A'}</span>
+                  </td>
+                  <td>{item.tissue || 'N/A'}</td>
+                  <td>{item.cell_line || 'N/A'}</td>
+                  <td>{item.cell_type || 'N/A'}</td>
+                  <td>{item.description || ''}</td>
+                  <td>{item.assay || 'N/A'}</td>
+                  <td>
+                    {cart[item.id || ''] && (
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeBedFromCart(item.id);
+                        }}
+                      >
+                        Remove
+                        <i className="bi bi-cart-dash ms-1"></i>
                       </button>
-                    </td>
-                  </tr>
-                ))}
+                    )}
+                  </td>
+                </tr>
+              ))}
               </tbody>
             </table>
           </div>

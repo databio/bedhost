@@ -31,7 +31,6 @@ const IsUnique = (name: string, found_id: string, search_id: string) => {
           <div className="bi bi-patch-check-fill text-success">
           </div>
         </OverlayTrigger>
-
       </div>
     );
   } else {
@@ -77,9 +76,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 <span>
                   Score*
                 </span>
-
             </OverlayTrigger>
-
           </th>
           <th scope="col" style={{ minWidth: '110px' }}>
             Actions
@@ -128,7 +125,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
               />
             </td>
             <td>
-              {cart.includes(result?.metadata?.id || '') ? (
+              {cart[result?.metadata?.id || ''] ? (
                 <button
                   className="btn btn-sm btn-outline-danger"
                   onClick={(e) => {
@@ -152,7 +149,20 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                       toast.error('No bed ID found', { position: 'top-center' });
                       return;
                     }
-                    addBedToCart(result.metadata?.id);
+                    
+                    // Create the simplified bed item object
+                    const bedItem = {
+                      id: result.metadata.id,
+                      name: result.metadata.name || 'No name',
+                      genome: result.metadata.genome_alias || 'N/A',
+                      tissue: result.metadata.annotation?.tissue || 'N/A',
+                      cell_line: result.metadata.annotation?.cell_line || 'N/A',
+                      cell_type: result.metadata.annotation?.cell_type || 'N/A',
+                      description: result.metadata.description || '',
+                      assay: result.metadata.annotation?.assay || 'N/A',
+                    };
+                    
+                    addBedToCart(bedItem);
                   }}
                 >
                   Add

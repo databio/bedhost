@@ -9,7 +9,7 @@ export const useDetailedStats = () => {
     return useQuery({
         queryKey: ['detailed-stats'],
         queryFn: async () => {
-            const {data} = await api.get<BEDBASEStatistics>('/detailed-stats');
+            const {data} = await api.get<BEDBASEStatistics>('/detailed-stats?concise=true');
             return data;
         },
     });

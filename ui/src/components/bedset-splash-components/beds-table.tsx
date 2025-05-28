@@ -39,80 +39,97 @@ export const BedsTable = (props: Props) => {
 
   const columns = [
     columnHelper.accessor((row) => row.genome_alias, {
-      cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
+      cell: (info) => <span className="badge bg-primary">{info.getValue() || 'N/A'}</span>,
       footer: (info) => info.column.id,
       header: 'Genome',
       id: 'genome',
     }),
     columnHelper.accessor((row) => row.bed_compliance, {
-      cell: (info) => <span className="badge bg-primary">{info.getValue()}</span>,
+      cell: (info) => <span className="badge bg-primary">{info.getValue() || 'N/A'}</span>,
       footer: (info) => info.column.id,
       header: 'Type',
       id: 'bed-type',
     }),
     columnHelper.accessor((row) => row.name, {
-      cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue()}</span>,
+      cell: (info) => <span className="max-cell-width text-truncate d-inline-block">{info.getValue() || 'N/A'}</span>,
       footer: (info) => info.column.id,
       header: 'Name',
       id: 'name',
     }),
     columnHelper.accessor((row) => row.annotation?.tissue, {
-      cell: (info) => <span className="max-cell-width text-truncate ">{info.getValue()}</span>,
+      cell: (info) => <span className="max-cell-width text-truncate ">{info.getValue() || 'N/A'}</span>,
       footer: (info) => info.column.id,
       header: 'Tissue',
       id: 'Tissue',
     }),
     columnHelper.accessor((row) => row.annotation?.cell_type, {
       cell: (info) => (
-        <span className="max-cell-width text-truncate">{info.getValue() || <span className="fst-italic"></span>}</span>
+        <span className="max-cell-width text-truncate">{info.getValue() || 'N/A'}</span>
       ),
       footer: (info) => info.column.id,
       header: 'Cell Type',
       id: 'cell-type',
     }),
     columnHelper.accessor((row) => row.annotation?.cell_line, {
-      cell: (info) => <span className="max-cell-width text-truncate">{info.getValue()}</span>,
+      cell: (info) => <span className="max-cell-width text-truncate">{info.getValue() || 'N/A'}</span>,
       footer: (info) => info.column.id,
       header: 'Cell Line',
       id: 'cell-line',
     }),
     columnHelper.accessor((row) => row.description, {
-      cell: (info) => <span className="max-cell-width text-truncate">{info.getValue()}</span>,
+      cell: (info) => <span className="max-cell-width text-truncate">{info.getValue() || 'N/A'}</span>,
       footer: (info) => info.column.id,
       header: 'Description',
       id: 'description',
     }),
 
     columnHelper.accessor((row) => row.id, {
-      cell: (info) => (
-        <div
-          className="d-flex flex-row w-100 gap-1 flex-end"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          {!cart.includes(info.getValue()) || (addedToCart && justAddedToCart === info.getValue()) ? (
-            <button
-              onClick={() => {
-                addBedToCart(info.getValue());
-                setAddedToCart(true);
-                setJustAddedToCart(info.getValue());
-                setTimeout(() => setAddedToCart(false), 500);
-              }}
-              disabled={addedToCart && justAddedToCart === info.getValue()}
-              className="btn btn-sm btn-primary"
-            >
-              {addedToCart && justAddedToCart === info.getValue() ? 'Adding' : 'Add '}
-              <i className="bi-cart-plus me-1"></i>
-            </button>
-          ) : (
-            <button onClick={() => removeBedFromCart(info.getValue())} className="btn btn-sm btn-outline-danger">
-              <i className="bi bi-cart-x me-1"></i>
-              Remove
-            </button>
-          )}
-        </div>
-      ),
+      cell: (info) => {
+        const bedId = info.getValue();
+        const rowData = info.row.original;
+        
+        return(
+          <div
+            className="d-flex flex-row w-100 gap-1 flex-end"
+            onClick={(e) => {
+              e.stopPropagation();
+            }}
+          >
+            {!cart[bedId] || (addedToCart && justAddedToCart === bedId) ? (
+              <button
+                onClick={() => {
+
+                  const bedItem = {
+                    id: bedId,
+                    name: rowData.name || 'No name',
+                    genome: rowData.genome_alias || 'N/A',
+                    tissue: rowData.annotation?.tissue || 'N/A',
+                    cell_line: rowData.annotation?.cell_line || 'N/A',
+                    cell_type: rowData.annotation?.cell_type || 'N/A',
+                    description: rowData.description || '',
+                    assay: rowData.annotation?.assay || 'N/A',
+                  };
+                  
+                  addBedToCart(bedItem);
+                  setAddedToCart(true);
+                  setJustAddedToCart(info.getValue());
+                  setTimeout(() => setAddedToCart(false), 500);
+                }}
+                disabled={addedToCart && justAddedToCart === info.getValue()}
+                className="btn btn-sm btn-primary"
+              >
+                {addedToCart && justAddedToCart === info.getValue() ? 'Adding' : 'Add '}
+                <i className="bi-cart-plus me-1"></i>
+              </button>
+            ) : (
+              <button onClick={() => removeBedFromCart(info.getValue())} className="btn btn-sm btn-outline-danger">
+                <i className="bi bi-cart-x me-1"></i>
+                Remove
+              </button>
+            )}
+          </div>
+        )
+      },
       enableSorting: false,
       header: 'Actions',
       id: 'actions',

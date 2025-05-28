@@ -704,7 +704,7 @@ export interface paths {
          * Create Bedset
          * @description Create a new bedset by providing registry path to the PEPhub project
          */
-        post: operations["create_bedset_v1_bedset_create__post"];
+        post: operations["create_bedset_v1_bedset_create_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -939,6 +939,11 @@ export interface components {
              */
             license_id: string | null;
             annotation?: components["schemas"]["StandardMeta"] | null;
+            /**
+             * Processed
+             * @default true
+             */
+            processed: boolean | null;
             stats?: components["schemas"]["BedStatsModel"] | null;
             plots?: components["schemas"]["BedPlots"] | null;
             files?: components["schemas"]["BedFiles"] | null;
@@ -1000,6 +1005,11 @@ export interface components {
              */
             license_id: string | null;
             annotation?: components["schemas"]["StandardMeta"] | null;
+            /**
+             * Processed
+             * @default true
+             */
+            processed: boolean | null;
         };
         /** BedPEPHub */
         BedPEPHub: {
@@ -1034,11 +1044,11 @@ export interface components {
              */
             cell_line: string;
             /**
-             * Exp Protocol
+             * Assay
              * @description Experimental protocol (e.g. ChIP-seq)
              * @default
              */
-            exp_protocol: string;
+            assay: string;
             /**
              * Library Source
              * @description Library source (e.g. genomic, transcriptomic)
@@ -1129,11 +1139,11 @@ export interface components {
              */
             cell_line: string;
             /**
-             * Exp Protocol
+             * Assay
              * @description Experimental protocol (e.g. ChIP-seq)
              * @default
              */
-            exp_protocol: string;
+            assay: string;
             /**
              * Library Source
              * @description Library source (e.g. genomic, transcriptomic)
@@ -1392,16 +1402,20 @@ export interface components {
         };
         /** FileStats */
         FileStats: {
-            /** File Type */
-            file_type: {
+            /** Bed Compliance */
+            bed_compliance: {
                 [key: string]: number;
             };
-            /** File Format */
-            file_format: {
+            /** Data Format */
+            data_format: {
                 [key: string]: number;
             };
             /** File Genome */
             file_genome: {
+                [key: string]: number;
+            };
+            /** File Organism */
+            file_organism: {
                 [key: string]: number;
             };
         };
@@ -1537,7 +1551,7 @@ export interface components {
              */
             library_source: string;
             /**
-             * Exp Protocol
+             * Assay
              * @description Experimental protocol (e.g. ChIP-seq)
              * @default
              */
@@ -1565,13 +1579,13 @@ export interface components {
              * @description Global sample identifier. e.g. GSM000
              * @default
              */
-            global_sample_id: string[];
+            global_sample_id: string[] | null;
             /**
              * Global Experiment Id
              * @description Global experiment identifier. e.g. GSE000
              * @default
              */
-            global_experiment_id: string[];
+            global_experiment_id: string[] | null;
             /**
              * Original File Name
              * @description Original file name
@@ -1850,7 +1864,7 @@ export interface operations {
                 /** @description filter by genome of the bed file. e.g. 'hg38' */
                 genome?: string;
                 /** @description filter by bed type. e.g. 'bed6+4' */
-                bed_type?: string;
+                bed_compliance?: string;
             };
             header?: never;
             path?: never;
@@ -2682,7 +2696,7 @@ export interface operations {
             };
         };
     };
-    create_bedset_v1_bedset_create__post: {
+    create_bedset_v1_bedset_create_post: {
         parameters: {
             query?: never;
             header?: never;

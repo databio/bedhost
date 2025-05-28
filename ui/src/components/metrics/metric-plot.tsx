@@ -22,13 +22,14 @@ type Props = {
   backgroundColor: string[];
   borderWidth: number;
   sliceIndex: number;
+  useAspectRatio?: boolean;
   plotRef?: any;
 };
 
 export const MetricPlot = (props: Props) => {
-  const { type, data, dataLabel, backgroundColor, borderWidth, sliceIndex, plotRef } = props;
+  const { type, data, dataLabel, backgroundColor, borderWidth, useAspectRatio=true, plotRef } = props;
 
-  const sortedData = data.sort((a, b) => b[1] - a[1]).slice(0, sliceIndex);
+  const sortedData = data; // to sort use this -> .sort((a, b) => b[1] - a[1]).slice(0, sliceIndex)
   const labels = sortedData.map(entry => entry[0]);
   const values = sortedData.map(entry => entry[1]);
 
@@ -91,7 +92,7 @@ export const MetricPlot = (props: Props) => {
 
   const plotOptions = {
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: useAspectRatio,
     plugins: {
       datalabels: {
         font: {

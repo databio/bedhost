@@ -105,7 +105,7 @@ export const BedsetSplash = () => {
       <Layout title={`BEDbase | ${bedsetId}`} footer fullHeight>
         <Container className="my-2">
           <Row className="mb-2">
-            <Col sm={12}>{metadata !== undefined ? <BedsetSplashHeader metadata={metadata} /> : null}</Col>
+            <Col sm={12}>{(metadata !== undefined) && bedfiles ? <BedsetSplashHeader metadata={metadata} beds={bedfiles.results} /> : null}</Col>
           </Row>
 
           <Row className="mb-2 g-2">
