@@ -172,11 +172,14 @@ if __name__ != "__main__":
             Upload usage data to the database and reset the usage data
             """
 
-            print("Running uploading of the usage")
+            _LOGGER.info("Running uploading of the usage")
             usage_data.date_to = datetime.datetime.now() + datetime.timedelta(
                 days=USAGE_RECORD_DAYS
             )
-            bbagent.add_usage(usage_data)
+            try:
+                bbagent.add_usage(usage_data)
+            except Exception as e:
+                _LOGGER.error(f"Error while uploading usage data: {e}")
 
             usage_data.bed_meta = {}
             usage_data.bedset_meta = {}

@@ -94,6 +94,9 @@ def count_requests(
     def decorator(func):
         @wraps(func)
         async def wrapper(*args, **kwargs):
+
+            function_result = await func(*args, **kwargs)
+
             if event == "files":
                 file_path = kwargs.get("file_path")
                 if "bed" in file_path or "bigbed" in file_path.lower():
@@ -128,7 +131,7 @@ def count_requests(
                     usage_data.bedset_meta[bedset_id] = 1
             else:
                 raise ValueError(f"Unknown event type: {event}")
-            return await func(*args, **kwargs)
+            return function_result
 
         return wrapper
 
