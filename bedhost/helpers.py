@@ -105,13 +105,13 @@ def count_requests(
                     else:
                         usage_data.files[file_path] = 1
             elif event == "bed_search":
-                query = kwargs.get("query")
+                query = kwargs.get("query").strip()
                 if query in usage_data.bed_search:
                     usage_data.bed_search[query] += 1
                 else:
                     usage_data.bed_search[query] = 1
             elif event == "bedset_search":
-                query = kwargs.get("query")
+                query = kwargs.get("query").strip()
                 if query in usage_data.bedset_search:
                     usage_data.bedset_search[query] += 1
                 else:
