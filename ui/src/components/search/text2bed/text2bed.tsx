@@ -16,6 +16,7 @@ export const Text2Bed = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
+  const [genome, setGenome] = useState(searchParams.get('genome') || 'hg38');
 
   const {
     isFetching: isSearching,
@@ -24,6 +25,7 @@ export const Text2Bed = () => {
     refetch: onSearch,
   } = useText2BedSearch({
     q: searchTerm,
+    genome: genome,
     limit: limit, // TODO: make this a variable
     offset: offset,
     autoRun: false,
@@ -50,6 +52,8 @@ export const Text2Bed = () => {
             setLimit={setLimit}
             value={searchTerm}
             onChange={setSearchTerm}
+            genome={genome}
+            setGenome={setGenome}
             onSearch={() => {
               setOffset(0);
               setTimeout(() => {

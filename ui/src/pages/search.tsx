@@ -8,6 +8,8 @@ import { Text2Bed } from '../components/search/text2bed/text2bed';
 import { Bed2Bed } from '../components/search/bed2bed/bed2bed';
 import { Text2BedSet } from '../components/search/text2bedset';
 
+import { SearchViewProvider } from '../contexts/search-view-context.tsx';
+
 type SearchView = 't2b' | 'b2b' | 't2bs';
 
 export const SearchPage = () => {
@@ -16,21 +18,23 @@ export const SearchPage = () => {
 
   return (
     <Layout title="BEDbase | Search" footer fullHeight>
-      <SearchSelector
-        view={searchView}
-        setView={(view) => {
-          setSearchView(view);
-        }}
-      />
-      {searchView === 't2b' ? (
-        <Text2Bed />
-      ) : searchView === 'b2b' ? (
-        <Bed2Bed />
-      ) : searchView === 't2bs' ? (
-        <Text2BedSet />
-      ) : (
-        <div>Unknown searchView selected.</div>
-      )}
+      <SearchViewProvider searchView={searchView}>
+        <SearchSelector
+          view={searchView}
+          setView={(view) => {
+            setSearchView(view);
+          }}
+        />
+        {searchView === 't2b' ? (
+          <Text2Bed />
+        ) : searchView === 'b2b' ? (
+          <Bed2Bed />
+        ) : searchView === 't2bs' ? (
+          <Text2BedSet />
+        ) : (
+          <div>Unknown searchView selected.</div>
+        )}
+      </SearchViewProvider>
     </Layout>
   );
 };

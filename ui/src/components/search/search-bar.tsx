@@ -1,11 +1,15 @@
 import toast from 'react-hot-toast';
 import { useSearchParams } from 'react-router-dom';
 import { useMemo } from 'react';
+import { useSearchView } from '../../contexts/search-view-context.tsx';
+import { useAvailableGenomes } from '../../queries/useAvailableGenomes.ts';
 
 type Props = {
   value: string;
   limit: number;
   setLimit: (limit: number) => void;
+  genome: string;
+  setGenome: (genome: string) => void;
   onChange: (value: string) => void;
   onSearch: () => void;
 };
@@ -21,8 +25,12 @@ const placeholders = [
 ];
 
 export const SearchBar = (props: Props) => {
-  const { value, onChange, onSearch, limit, setLimit } = props;
+  const { value, onChange, onSearch, limit, setLimit, genome, setGenome } = props;
   const [, setSearchParams] = useSearchParams();
+  const { searchView } = useSearchView();
+  const { data: genomes } = useAvailableGenomes();
+
+
   const placeholder = useMemo(() => placeholders[Math.floor(Math.random() * placeholders.length)], []);
   return (
     <div className="d-flex flex-row align-items-center">
@@ -51,7 +59,18 @@ export const SearchBar = (props: Props) => {
           }
         }}
       />
-      <select className="form-select ms-1 w-auto" value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+      {searchView === 't2b' &&
+        <select className="form-select w-auto" value={genome} onChange={(e) => setGenome(String(e.target.value))}>
+          {
+            genomes?.results.map((genome) => (
+              <option value={genome}>{genome}</option>
+            ))
+          }
+
+        </select>
+      }
+
+      <select className="form-select w-auto" value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
         <option value={10}>Limit 10</option>
         <option value={20}>Limit 20</option>
         <option value={50}>Limit 50</option>
