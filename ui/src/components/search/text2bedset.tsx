@@ -46,6 +46,7 @@ export const Text2BedSet = () => {
       <Row>
         <Col sm={12} md={12}>
           <SearchBar
+            view={"t2bs"}
             limit={limit}
             setLimit={setLimit}
             value={searchTerm}
