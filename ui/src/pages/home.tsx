@@ -7,7 +7,7 @@ import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import { CODE_SNIPPETS } from '../const';
 import { BBCONF_SNIPPETS } from '../const';
-import { useExampleBed } from '../queries/useExampleBed';
+// import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
 
@@ -27,7 +27,7 @@ export const Home = () => {
 
   const navigate = useNavigate();
 
-  const { data: exampleBedMetadata } = useExampleBed();
+  // const { data: exampleBedMetadata } = useExampleBed(); # if example will be dynamic again
   const { data: exampleBedSetMetadata } = useExampleBedSet();
   const { data: bedbaseStats } = useStats();
 
