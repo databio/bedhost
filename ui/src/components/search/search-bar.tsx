@@ -33,7 +33,7 @@ export const SearchBar = (props: Props) => {
 
   const placeholder = useMemo(() => placeholders[Math.floor(Math.random() * placeholders.length)], []);
   return (
-    <div className="d-flex flex-row align-items-center">
+    <div className="d-flex flex-row align-items-center gap-1">
       <input
         value={value}
         onChange={(e) => {
@@ -77,7 +77,7 @@ export const SearchBar = (props: Props) => {
         <option value={100}>Limit 100</option>
       </select>
       <button
-        className="btn btn-primary ms-1"
+        className="btn btn-primary"
         onClick={() => {
           if (value === '') {
             toast.error('Please enter a search term', {
