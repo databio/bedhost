@@ -71,9 +71,13 @@ export const Bed2Bed = () => {
         ) : (
           <Fragment>
             <p className="text-center fst-italic">Select a file or drag and drop one</p>
+            <p className="text-center fst-italic">
+              *Provided file should be aligned to hg38 assembly.
+            </p>
             <i className="bi bi-arrow-up-circle-fill d-block text-center text-primary fs-1 mt-3 opacity-75"></i>
           </Fragment>
-        )}
+        )
+        }
       </div>
       <input {...getInputProps()} ref={inputRef} className="d-none" type="file" id="file" accept=".bed,.bed.gz" />
       <div className="w-100 my-2">
