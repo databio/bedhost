@@ -92,7 +92,8 @@ export const Home = () => {
           </button>
         </div>
         <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 my-3">
-          <span>Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a></span>
+          {/*<span>Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a></span>*/}
+          <span>Or, explore an <a href={`/bed/bd2578e70c0efe3674d0d39c782fe9e1`}>example BED file</a></span>
           <span>or an{' '} <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BEDset</a></span>
         </div>
 
