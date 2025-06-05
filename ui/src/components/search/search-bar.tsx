@@ -60,13 +60,13 @@ export const SearchBar = (props: Props) => {
         }}
       />
       {searchView === 't2b' &&
-        <select className="form-select w-auto" value={genome} onChange={(e) => setGenome(String(e.target.value))}>
-          {
-            genomes?.results.map((genome) => (
-              <option value={genome}>{genome}</option>
-            ))
-          }
-
+        <select className="form-select w-auto" value={genome}
+                onChange={(e) => setGenome(String(e.target.value))}>
+          {genomes?.results.map((genomeItem, index) => (
+            <option key={index} value={String(genomeItem)}>
+              {String(genomeItem)}
+            </option>
+          ))}
         </select>
       }
 
