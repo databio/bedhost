@@ -10,8 +10,7 @@ export const useUmap = () => {
       }
       const data = await response.json();
       return data;
+      // TODO: we need to cache it!!!
     },
-    staleTime: 1000 * 60 * 5,
-    cacheTime: 1000 * 60 * 30,
   });
 };

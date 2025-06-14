@@ -40,7 +40,7 @@ export const Graph3D: React.FC = () => {
   };
 
   const handleSearch = () => {
-    const node = graphDataWithoutLinks.nodes.find(n => n.id === searchId);
+    const node = graphDataWithoutLinks.nodes.find((n: GraphNode) => n.id === searchId);
     if (node && fgRef.current) {
       fgRef.current.cameraPosition(
         { x: node.x, y: node.y, z: node.z + 300 }, // zoom in 300 units away
