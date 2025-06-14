@@ -8,6 +8,7 @@ import { BedCartProvider } from './contexts/bedcart-context.tsx';
 import { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
 import { Metrics } from './pages/metrics.tsx';
+import { Graph3D } from './pages/visualization.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 
 // css stuff
@@ -60,6 +61,10 @@ const router = createBrowserRouter([
   {
     path: '*',
     element: <div>Not Found</div>,
+  },
+  {
+    path: '/umap',
+    element: <Graph3D />,
   },
 ]);
 
