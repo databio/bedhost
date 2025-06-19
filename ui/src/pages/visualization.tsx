@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 // import graphData from './output.json';
 import { Link } from 'react-router-dom';
 import { useUmap } from '../queries/useUmapData';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export interface GraphNode {
   id: string;
@@ -20,6 +21,50 @@ export const Graph3D: React.FC = () => {
   const fgRef = useRef<any>();
   const [searchId, setSearchId] = useState('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const initialSearchId = queryParams.get('searchId');
+    if (initialSearchId) {
+      setSearchId(initialSearchId);
+      const timer = setTimeout(() => {
+        handleSearch();
+      }, 1000); // Give time for the graph to initialize
+      return () => clearTimeout(timer);
+    }
+  }, [location.search, umap_data]);
+
+  const handleSearch = () => {
+
+    if (!umap_data) return;
+    const node = graphDataWithoutLinks.nodes.find((n: GraphNode) => n.id === searchId);
+
+    if (node && fgRef.current) {
+      fgRef.current.cameraPosition(
+        { x: node.x, y: node.y, z: node.z + 300 }, // zoom in 300 units away
+        node,
+        2000, // animate over 2 seconds
+      );
+      setMessage(`Found: ${node.id}`);
+      navigate(`?searchId=${node.id}`);
+    } else {
+
+      fgRef.current.cameraPosition(
+        { x: 0, y: 0, z: 1000 }, // reset to default center position
+        { x: 0, y: 0, z: 0 }, // look at the center
+        2000, // animate over 2 seconds
+      );
+      if (!searchId) {
+        setMessage('');
+      } else {
+        setMessage(`Node with ID ${searchId} not found.`);
+      }
+      // setMessage('BED file not found or search is empty.');
+      navigate(`?searchId=${node.id}`);
+    }
+  };
 
   if (isLoading) {
     return <div>Loading data...</div>;
@@ -39,38 +84,26 @@ export const Graph3D: React.FC = () => {
     links: [],
   };
 
-  const handleSearch = () => {
-    const node = graphDataWithoutLinks.nodes.find((n: GraphNode) => n.id === searchId);
-    if (node && fgRef.current) {
-      fgRef.current.cameraPosition(
-        { x: node.x, y: node.y, z: node.z + 300 }, // zoom in 300 units away
-        node,
-        2000, // animate over 2 seconds
-      );
-      setMessage(`Found: ${node.id}`);
-
-    } else {
-
-      fgRef.current.cameraPosition(
-        { x: 0, y: 0, z: 1000 }, // reset to default center position
-        { x: 0, y: 0, z: 0 }, // look at the center
-        2000, // animate over 2 seconds
-      );
-      setMessage('BED file not found.');
-    }
-  };
   return (
     <div>
 
       <div className="z-1 position-absolute p-1 rounded-3">
-        <input
-          type="text"
-          placeholder="Search bed by ID"
-          value={searchId}
-          onChange={e => setSearchId(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && handleSearch()}
-          className="form-control me-2"
-        />
+        <div className="d-flex">
+          <input
+            type="text"
+            placeholder="Search bed by ID"
+            value={searchId}
+            onChange={e => setSearchId(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+            className="form-control me-2"
+          />
+          <button
+            onClick={handleSearch}
+            className="btn btn-primary"
+          >
+            Search
+          </button>
+        </div>
         <div className="z-2 position-absolute p-1 text-white p-3">
           {message && <p className="z-2">{message}</p>}
         </div>
