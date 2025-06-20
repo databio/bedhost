@@ -4,6 +4,7 @@ import { Col, Row, Container } from 'react-bootstrap';
 
 import { useStats } from '../queries/useStats.ts';
 import { useDetailedStats } from '../queries/useDetailedStats.ts';
+import { useDetailedUsage } from '../queries/useDetailedUsage.ts';
 import { MetricPlot, MetricPlotType } from '../components/metrics/metric-plot.tsx';
 import { MetricModal } from '../components/modals/metric-modal.tsx';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
@@ -16,10 +17,9 @@ interface MetricModalProps {
   title: string;
   type: MetricPlotType;
   data: [string, number][];
-  dataLabel?: string;
-  backgroundColor: string[];
-  borderWidth: number;
-  sliceIndex: number;
+  xlab?: string;
+  ylab?: string;
+  height?: number;
 }
 
 export const Metrics = () => {
@@ -27,37 +27,33 @@ export const Metrics = () => {
   const [metricModalTitle, setMetricModalTitle] = useState('');
   const [metricModalType, setMetricModalType] = useState<MetricPlotType>('bar');
   const [metricModalData, setMetricModalData] = useState<[string, number][]>([]);
-  const [metricModalDataLabel, setMetricModalDataLabel] = useState('');
-  const [metricModalBackgroundColor, setMetricModalBackgroundColor] = useState<string[]>([]);
-  const [metricModalBorderWidth, setMetricModalBorderWidth] = useState(0);
-  const [metricModalSliceIndex, setMetricModalSliceIndex] = useState(0);
+  const [metricModalXlab, setMetricModalXlab] = useState('');
+  const [metricModalYlab, setMetricModalYlab] = useState('');
+  const [metricModalHeight, setMetricModalHeight] = useState(500);
   const [endpointsModalShow, setEndpointsModalShow] = useState(false);
 
   const setMetricModalProps = ({
                                  title,
                                  type,
                                  data,
-                                 dataLabel = '',
-                                 backgroundColor,
-                                 borderWidth,
-                                 sliceIndex,
+                                 xlab = '',
+                                 ylab = '',
+                                 height = 250,
                                }: MetricModalProps): void => {
     setMetricModalTitle(title);
     setMetricModalType(type);
     setMetricModalData(data);
-    setMetricModalDataLabel(dataLabel);
-    setMetricModalBackgroundColor(backgroundColor);
-    setMetricModalBorderWidth(borderWidth);
-    setMetricModalSliceIndex(sliceIndex);
+    setMetricModalXlab(xlab);
+    setMetricModalYlab(ylab);
+    setMetricModalHeight(height);
     setShowMetricModal(true);
   };
 
   const { data: bedbaseStats } = useStats();
-  const { data: detailedStats, isLoading } = useDetailedStats();
+  const { data: detailedStats, isLoading: statsIsLoading } = useDetailedStats();
+  const { data: usageStats, isLoading: usageIsLoading} = useDetailedUsage();
 
-  const sliceIndex = 5;
-
-  if (isLoading) {
+  if (statsIsLoading || usageIsLoading) {
     return (
       <Layout title="BEDbase" footer>
         <div className="my-2">
@@ -132,113 +128,84 @@ export const Metrics = () => {
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
               <div
                 className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Genome',
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_genome || {}),
-                  dataLabel: 'Number of BED files',
-                  backgroundColor: [PRIMARY_COLOR],
-
-                  borderWidth: 1,
-                  sliceIndex: Object.entries(detailedStats?.file_genome || {}).length,
+                  ylab: 'Number of BED Files',
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Genome</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(detailedStats?.file_genome || {})}
-                  dataLabel="Number of BED files"
-                  backgroundColor={[PRIMARY_COLOR]}
-                  borderWidth={1}
-                  sliceIndex={sliceIndex}
+                  ylab="Number of BED Files"
                 />
               </div>
               <div
                 className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
                 onClick={() => setMetricModalProps({
-                  title: 'BED Files by BED compliance',
+                  title: 'BED Files by BED Compliance',
                   type: 'bar',
                   data: Object.entries(detailedStats?.bed_compliance || {}),
-                  dataLabel: 'Number of BED files',
-                  backgroundColor: [PRIMARY_COLOR],
-                  borderWidth: 1,
-                  sliceIndex: Object.entries(detailedStats?.bed_compliance || {}).length,
+                  ylab: 'Number of BED Files',
                 })}
               >
-                <h6 className="fw-semibold">BED Files by BED compliance</h6>
+                <h6 className="fw-semibold">BED Files by BED Compliance</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(detailedStats?.bed_compliance || {})}
-                  dataLabel="Number of BED files"
-                  backgroundColor={[PRIMARY_COLOR]}
-                  borderWidth={1}
-                  sliceIndex={sliceIndex}
+                  ylab="Number of BED Files"
                 />
               </div>
             </Col>
 
-            <Col sm={12} md={6}>
+            <Col sm={12} md={6} className="d-flex flex-column gap-2">
               <div
-                className="h-100 border rounded genome-card cursor-pointer p-3 shadow-sm"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Data Format',
                   type: 'pie',
                   data: Object.entries(detailedStats?.data_format || {}),
-                  dataLabel: 'Number of BED files',
-                  backgroundColor: [PRIMARY_COLOR],
-                  borderWidth: 1,
-                  sliceIndex: Object.entries(detailedStats?.data_format || {}).length,
+                  ylab: 'Number of BED Files',
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Data Format</h6>
-                <div className="p-5">
-                  <MetricPlot
-                    type="pie"
-                    data={Object.entries(detailedStats?.data_format || {})}
-                    dataLabel="Number of BED files"
-                    backgroundColor={[PRIMARY_COLOR]}
-                    borderWidth={1}
-                    sliceIndex={sliceIndex * 2}
-                  />
-                </div>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(detailedStats?.data_format || {})}
+                  ylab="Number of BED Files"
+                />
               </div>
-            </Col>
 
-
-            <Col sm={12} md={12}>
               <div
-                className="h-100 border rounded genome-card cursor-pointer p-3 shadow-sm"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Organism',
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_organism || {}),
-                  dataLabel: 'Number of BED files',
-                  backgroundColor: [PRIMARY_COLOR],
-                  borderWidth: 1,
-                  sliceIndex: Object.entries(detailedStats?.file_organism || {}).length,
+                  ylab: 'Number of BED Files',
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Organism</h6>
-                <div className="p-1" style={{ height: 360 }}>
                   <MetricPlot
                     type="bar"
                     data={Object.entries(detailedStats?.file_organism || {})}
-                    dataLabel="Number of BED files"
-                    backgroundColor={[PRIMARY_COLOR]}
-                    borderWidth={1}
-                    sliceIndex={sliceIndex * 6}
-                    useAspectRatio={false}
+                    ylab="Number of BED Files"
                   />
-                </div>
               </div>
             </Col>
           </Row>
         )}
 
-        <Col sm={12} md={12} className="mt-3">
+        <Col sm={12} md={12} className="mt-3 text-xs">
           <i className="text-primary bi bi-info-circle-fill "></i>
           <i> Data Format and BED compliance are calculated based on BED classification pipeline.
-            <br /> BED compliance refers to the representation of a BED file as `bedn+m`.
+            <br />BED compliance refers to the representation of a BED file as `bedn+m`.
             <br />Data Format is assignment of region set files to one of the formats: `bed`, `narrow_peak`, `broadpeak
             and others`.
             <br />More information: <a href={'https://docs.bedbase.org/bedbase/user/bed_classification/'}> BEDbase
@@ -247,22 +214,97 @@ export const Metrics = () => {
 
         </Col>
 
-        <Row className="mt-4 pt-2">
-          <h5 className="fw-semibold">BEDbase Usage Statistics</h5>
-          <Col sm={12} md={12}>
-            <p className="text-xs">Coming Soon..</p>
-          </Col>
-        </Row>
+        {usageStats && (
+          <Row className="h-100 mt-4 pt-2 g-2 mb-5">
+            <h5 className="fw-semibold mb-0">BEDbase Usage Statistics</h5>
+            <Col sm={12} md={6} className="d-flex flex-column gap-2">
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED Files Popularity',
+                  type: 'bar',
+                  data: Object.entries(usageStats?.bed_metadata || {}),
+                  ylab: 'Times Accessed',
+                })}
+              >
+                <h6 className="fw-semibold">BED File Popularity</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(usageStats?.bed_metadata || {})}
+                  ylab="Times Accessed"
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED Search Terms',
+                  type: 'bar',
+                  data: Object.entries(usageStats?.bed_search_terms || {}),
+                  ylab: 'Number of BED Files',
+                })}
+              >
+                <h6 className="fw-semibold">BED Search Terms</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(usageStats?.bed_search_terms || {})}
+                  xlab='Search Query'
+                  ylab="Number of Searches"
+                />
+              </div>
+            </Col>
+
+            <Col sm={12} md={6} className="d-flex flex-column gap-2">
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BEDset Popularity',
+                  type: 'pie',
+                  data: Object.entries(usageStats?.bedset_metadata || {}),
+                  ylab: 'Number of BED Files',
+                })}
+              >
+                <h6 className="fw-semibold">BEDset Popularity</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(usageStats?.bedset_metadata || {})}
+                  ylab="Times Accessed"
+                />
+              </div>
+
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED Files by Organism',
+                  type: 'bar',
+                  data: Object.entries(usageStats?.bedset_search_terms || {}),
+                  xlab: 'Search Query',
+                  ylab: 'Number of BED Files',
+                })}
+              >
+                <h6 className="fw-semibold">BEDset Search Terms</h6>
+                  <MetricPlot
+                    type="bar"
+                    data={Object.entries(usageStats?.bedset_search_terms || {})}
+                    xlab='Search Query'
+                    ylab="Number of Searches"
+                  />
+              </div>
+            </Col>
+          </Row>
+        )}
 
         {showMetricModal && (
           <MetricModal
             title={metricModalTitle}
             type={metricModalType}
             data={metricModalData}
-            dataLabel={metricModalDataLabel}
-            backgroundColor={metricModalBackgroundColor}
-            borderWidth={metricModalBorderWidth}
-            sliceIndex={metricModalSliceIndex}
+            xlab={metricModalXlab}
+            ylab={metricModalYlab}
+            height={metricModalHeight}
             show={showMetricModal}
             onHide={() => setShowMetricModal(false)}
           />

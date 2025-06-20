@@ -7,16 +7,15 @@ type Props = {
   title: string;
   type: MetricPlotType,
   data: [string, number][];
-  dataLabel?: string | undefined;
-  backgroundColor: string[];
-  borderWidth: number;
-  sliceIndex: number;
+  xlab?: string;
+  ylab?: string;
+  height?: number;
   show: boolean;
   onHide: () => void;
 };
 
 export const MetricModal = (props: Props) => {
-  const { title, type, data, dataLabel, backgroundColor, borderWidth, sliceIndex, show, onHide } = props;
+  const { title, type, data, xlab, ylab, height, show, onHide } = props;
   const plotRef = useRef<{ toBase64Image: () => string } | null>(null);
 
   const [plotType, setPlotType] = useState(type);
@@ -49,11 +48,9 @@ export const MetricModal = (props: Props) => {
         <MetricPlot 
           type={plotType}
           data={data} 
-          dataLabel={dataLabel}
-          backgroundColor={backgroundColor} 
-          borderWidth={borderWidth} 
-          sliceIndex={sliceIndex}
-          plotRef={plotRef}
+          xlab={xlab}
+          ylab={ylab}
+          height={height}
         />
         </div>
         

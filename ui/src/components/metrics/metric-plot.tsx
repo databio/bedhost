@@ -1,126 +1,142 @@
-import { Bar, Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from 'chart.js';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { useEffect, useRef } from 'react';
+import embed from 'vega-embed';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  ArcElement,
-  Title,
-  Tooltip,
-  Legend,
-  ChartDataLabels,
-);
 
 export type MetricPlotType = 'bar' | 'pie';
 
 type Props = {
   type: MetricPlotType;
   data: [string, number][];
-  dataLabel?: string;
-  backgroundColor: string[];
-  borderWidth: number;
-  sliceIndex: number;
-  useAspectRatio?: boolean;
-  plotRef?: any;
+  xlab?: string;
+  ylab?: string;
+  height?: number;
 };
 
+const maxLength = 14; 
+
+const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250) => {
+  return {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    data: {values: data.map((x: string[]) => ({
+      label: x[0],
+      label_disp: x[0].length > maxLength ? x[0].substring(0, maxLength) + '...' : x[0],
+      value: x[1]
+    }))},
+    layer: [
+      {
+        mark: {type: "bar", cornerRadiusTopLeft: 3, cornerRadiusTopRight: 3},
+        encoding: {
+          x: {
+            field: "label_disp",
+            type: "nominal",
+            title: xlab,
+            axis: {
+              labelAngle: 33
+            },
+            sort: null
+          },
+          y: {
+            field: "value",
+            type: "quantitative",
+            title: ylab,
+            sort: null
+          },
+          opacity: {value: 0.88},
+          tooltip: [
+            {field: "label", type: "nominal", title: xlab},
+            {field: "value", type: "quantitative", title: ylab}
+          ]
+        },
+      },
+      {
+        mark: {type: "text", dy: 3},
+        encoding: {
+          text: {
+            field: "value",
+            type: "quantitative"
+          },
+          opacity: {value: 0.88},
+        },
+      }
+    ],
+    width: "container",
+    height: height,
+  };
+}
+
+
+const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 222) => {
+  return {
+    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    data: {values: data.map((x: string[]) => ({
+      label: x[0],
+      label_disp: x[0].length > maxLength ? x[0].substring(0, maxLength) + '...' : x[0],
+      value: x[1]
+    }))},
+    layer: [
+      {
+        mark: "arc",
+        encoding: {
+          color: {
+            field: "label",
+            type: "nominal",
+          },
+          theta: {
+            field: "value",
+            type: "quantitative",
+            title: ylab
+          },
+          opacity: {value: 0.88},
+          tooltip: [
+            {field: "label", type: "nominal", title: xlab},
+            {field: "value", type: "quantitative", title: ylab}
+          ]
+        },
+      },
+      {
+        mark: {type: "text"},
+        encoding: {
+          text: {
+            field: "value",
+            type: "quantitative"
+          },
+          opacity: {value: 0.88},
+        },
+      }
+    ],
+    width: "container",
+    height: height,
+  };
+}
+
 export const MetricPlot = (props: Props) => {
-  const { type, data, dataLabel, backgroundColor, borderWidth, useAspectRatio=true, plotRef } = props;
+  const { type, data, xlab, ylab, height } = props;
 
-  const sortedData = data; // to sort use this -> .sort((a, b) => b[1] - a[1]).slice(0, sliceIndex)
-  const labels = sortedData.map(entry => entry[0]);
-  const values = sortedData.map(entry => entry[1]);
+  const plotRef = useRef<HTMLDivElement>(null);
+  const spec = type == 'bar' ? barSpec(data, xlab, ylab, height) : pieSpec(data, xlab, ylab, height)
 
-  // Function to generate a color palette with the same length as the data
-  const generateColorPalette = (dataLength: number): string[] => {
-
-    const baseColors = [
-      'rgba(255, 99, 132, 0.6)',   // red
-      'rgba(54, 162, 235, 0.6)',   // blue
-      'rgba(255, 206, 86, 0.6)',   // yellow
-      'rgba(51,193,43,0.6)',   // teal
-      'rgba(153, 102, 255, 0.6)',  // purple
-      'rgba(255, 159, 64, 0.6)',   // orange
-      'rgba(199, 199, 199, 0.6)',  // gray
-      'rgba(83, 102, 255, 0.6)',   // indigo
-      'rgba(255, 99, 255, 0.6)',   // pink
-      'rgb(6,80,49)',   // light green
-    ];
-
-    let colorPalette = [];
-
-    // If we need more colors than in our base palette,
-    // we'll cycle through with different opacities
-    const cycles = Math.ceil((dataLength - colorPalette.length) / baseColors.length);
-
-    for (let cycle = 0; cycle < cycles; cycle++) {
-      // For each cycle, adjust opacity slightly
-      const opacity = 0.6 - (cycle * 0.1);
-
-      for (let i = 0; i < baseColors.length; i++) {
-        if (colorPalette.length >= dataLength) break;
-
-        // Create a new color with adjusted opacity
-        const baseColor = baseColors[i];
-        const rgbPart = baseColor.substring(0, baseColor.lastIndexOf(','));
-        const newColor = `${rgbPart}, ${opacity})`;
-
-        colorPalette.push(newColor);
+  useEffect(() => {
+    if (plotRef.current && spec) {   
+      try {
+        // @ts-ignore vega lite spec is fine
+        embed(plotRef.current, spec)
+        .catch(error => {
+          console.error('Embed error after parsing:', error);
+        });
+      } catch (error) {
+        console.error(error);
       }
     }
+    
+    return () => {
+      if (plotRef.current) {
+        plotRef.current.innerHTML = '';
+      }
+    };
+  }, [spec]);
 
-    return colorPalette;
-  };
 
-  const ensureColorPalette = (data: [string, number][]): string[] => {
-    return generateColorPalette(data.length);
-  };
-
-  const plotData = {
-    labels: labels,
-    datasets: [
-      {
-        label: dataLabel,
-        data: values,
-        backgroundColor: type === 'bar' ? backgroundColor : ensureColorPalette(data),
-        borderWidth: borderWidth,
-      },
-    ],
-  };
-
-  const plotOptions = {
-    responsive: true,
-    maintainAspectRatio: useAspectRatio,
-    plugins: {
-      datalabels: {
-        font: {
-          size: 10,
-        },
-        align: 'end' as const,
-        offset: 2,
-      },
-    },
-  };
-
-  if (type === 'bar') {
-    return (
-      <Bar
-        ref={plotRef}
-        data={plotData}
-        options={plotOptions}
-      />
-    );
-  } else if (type === 'pie') {
-    return (
-      <Pie
-        ref={plotRef}
-        data={plotData}
-        options={plotOptions}
-      />
-    );
-  }
-
-  return null;
+  return (
+    <div className='w-100' ref={plotRef} />
+  )
 };
