@@ -23,6 +23,8 @@ export const Graph3D: React.FC = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
+  const [colorByOption, setColorByOption] = useState<'cell_line' | 'assay'>('cell_line');
+
 
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
@@ -84,10 +86,41 @@ export const Graph3D: React.FC = () => {
     links: [],
   };
 
+  const toggleColorBy = () => {
+    setColorByOption(prev => prev === 'cell_line' ? 'assay' : 'cell_line');
+  };
+
   return (
     <div>
 
       <div className="z-1 position-absolute p-1 rounded-3">
+        <div className="d-flex mb-2">
+          <div className="btn-group w-100" role="group" aria-label="Color by option">
+            <input
+              type="radio"
+              className="btn-check"
+              name="colorByOptions"
+              id="colorByCell"
+              checked={colorByOption === 'cell_line'}
+              onChange={() => setColorByOption('cell_line')}
+            />
+            <label className="btn btn-outline-primary" htmlFor="colorByCell">
+              Cell Line
+            </label>
+
+            <input
+              type="radio"
+              className="btn-check"
+              name="colorByOptions"
+              id="colorByAssay"
+              checked={colorByOption === 'assay'}
+              onChange={() => setColorByOption('assay')}
+            />
+            <label className="btn btn-outline-primary" htmlFor="colorByAssay">
+              Assay
+            </label>
+          </div>
+        </div>
         <div className="d-flex">
           <input
             type="text"
@@ -104,6 +137,7 @@ export const Graph3D: React.FC = () => {
             Search
           </button>
         </div>
+
         <div className="z-2 position-absolute p-1 text-white p-3">
           {message && <p className="z-2">{message}</p>}
         </div>
@@ -115,7 +149,7 @@ export const Graph3D: React.FC = () => {
         nodeLabel={(node: GraphNode) => (
           `<div><b>${node.id}</b><br/>cell_line: ${node.cell_line}<br/>assay: ${node.assay}<br/>${node.description}</div>`
         )}
-        nodeAutoColorBy="cell_line"
+        nodeAutoColorBy={colorByOption}
         nodeRelSize={60}
         enableNodeDrag={false}
         onNodeClick={(node: GraphNode) => {
