@@ -74,7 +74,7 @@ export const BedSplashHeader = (props: Props) => {
         <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
 
           {(metadata?.processed && metadata?.genome_alias == 'hg38') &&
-            <a href={`${API_BASE}/umap?searchId=${record_identifier}`}>
+            <a href={`/umap?searchId=${record_identifier}`}>
               <button className="btn btn-outline-primary btn-sm">
                 <i className="bi bi-globe2 me-1" />
                 Visualize
