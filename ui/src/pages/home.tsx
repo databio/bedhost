@@ -229,6 +229,20 @@ export const Home = () => {
               </div>
             </Col>
           </Row>
+          <Row className="w-100 align-items-center mb-5">
+            <Col sm={6} md={6}>
+              <h2 className="fw-bold">BED Embedding visualization</h2>
+              <p className="text-balance pe-4">
+                BEDbase supports visualization of UMAP of hg38 BED embeddings. It allows users to explore the
+                similarity of genomic regions based on their embeddings, and
+                providing insights into the relationships between different BED files.
+                The visualization is available on the <a href="/umap">UMAP visualization</a>.
+              </p>
+            </Col>
+            <Col>
+              <Image src="/umap.png" alt="UMAP visualization" height="300px" className="mb-3 d-flex img-fluid" />
+            </Col>
+          </Row>
           <Row className="w-100 mb-5">
             <Col sm={6} md={6}>
               <h2 className="fw-bold">Search for BED files</h2>
