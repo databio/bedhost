@@ -20,6 +20,7 @@ interface MetricModalProps {
   xlab?: string;
   ylab?: string;
   height?: number;
+  color?: number;
 }
 
 export const Metrics = () => {
@@ -29,7 +30,8 @@ export const Metrics = () => {
   const [metricModalData, setMetricModalData] = useState<[string, number][]>([]);
   const [metricModalXlab, setMetricModalXlab] = useState('');
   const [metricModalYlab, setMetricModalYlab] = useState('');
-  const [metricModalHeight, setMetricModalHeight] = useState(500);
+  const [metricModalHeight, setMetricModalHeight] = useState(400);
+  const [metricModalColor, setMetricModalColor] = useState(1);
   const [endpointsModalShow, setEndpointsModalShow] = useState(false);
 
   const setMetricModalProps = ({
@@ -38,7 +40,8 @@ export const Metrics = () => {
                                  data,
                                  xlab = '',
                                  ylab = '',
-                                 height = 250,
+                                 height = 400,
+                                 color = 1,
                                }: MetricModalProps): void => {
     setMetricModalTitle(title);
     setMetricModalType(type);
@@ -46,6 +49,7 @@ export const Metrics = () => {
     setMetricModalXlab(xlab);
     setMetricModalYlab(ylab);
     setMetricModalHeight(height);
+    setMetricModalColor(color);
     setShowMetricModal(true);
   };
 
@@ -133,14 +137,18 @@ export const Metrics = () => {
                   title: 'BED Files by Genome',
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_genome || {}),
+                  xlab: 'Reference Genome',
                   ylab: 'Number of BED Files',
+                  color: 0
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Genome</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(detailedStats?.file_genome || {})}
+                  xlab="Reference Genome"
                   ylab="Number of BED Files"
+                  color={0}
                 />
               </div>
               <div
@@ -150,14 +158,18 @@ export const Metrics = () => {
                   title: 'BED Files by BED Compliance',
                   type: 'bar',
                   data: Object.entries(detailedStats?.bed_compliance || {}),
+                  xlab: 'Compliance Type',
                   ylab: 'Number of BED Files',
+                  color: 1
                 })}
               >
                 <h6 className="fw-semibold">BED Files by BED Compliance</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(detailedStats?.bed_compliance || {})}
+                  xlab="Compliance Type"
                   ylab="Number of BED Files"
+                  color={1}
                 />
               </div>
             </Col>
@@ -168,16 +180,20 @@ export const Metrics = () => {
                 style={{height: 400}}
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Data Format',
-                  type: 'pie',
+                  type: 'bar',
                   data: Object.entries(detailedStats?.data_format || {}),
+                  xlab: 'Data Format',
                   ylab: 'Number of BED Files',
+                  color: 2
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Data Format</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(detailedStats?.data_format || {})}
+                  xlab="Data Format"
                   ylab="Number of BED Files"
+                  color={2}
                 />
               </div>
 
@@ -188,21 +204,25 @@ export const Metrics = () => {
                   title: 'BED Files by Organism',
                   type: 'bar',
                   data: Object.entries(detailedStats?.file_organism || {}),
+                  xlab: 'Organism',
                   ylab: 'Number of BED Files',
+                  color: 3
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Organism</h6>
                   <MetricPlot
                     type="bar"
                     data={Object.entries(detailedStats?.file_organism || {})}
+                    xlab="Organism"
                     ylab="Number of BED Files"
+                    color={3}
                   />
               </div>
             </Col>
           </Row>
         )}
 
-        <Col sm={12} md={12} className="mt-3 text-xs">
+        <Col sm={12} md={12} className="mt-2 text-xs">
           <i className="text-primary bi bi-info-circle-fill "></i>
           <i> Data Format and BED compliance are calculated based on BED classification pipeline.
             <br />BED compliance refers to the representation of a BED file as `bedn+m`.
@@ -225,14 +245,18 @@ export const Metrics = () => {
                   title: 'BED Files Popularity',
                   type: 'bar',
                   data: Object.entries(usageStats?.bed_metadata || {}),
+                  xlab: 'BED ID',
                   ylab: 'Times Accessed',
+                  color: 0
                 })}
               >
                 <h6 className="fw-semibold">BED File Popularity</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(usageStats?.bed_metadata || {})}
+                  xlab='BED ID'
                   ylab="Times Accessed"
+                  color={0}
                 />
               </div>
               <div
@@ -242,15 +266,18 @@ export const Metrics = () => {
                   title: 'BED Search Terms',
                   type: 'bar',
                   data: Object.entries(usageStats?.bed_search_terms || {}),
+                  xlab: 'BED Search Query',
                   ylab: 'Number of BED Files',
+                  color: 1
                 })}
               >
                 <h6 className="fw-semibold">BED Search Terms</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(usageStats?.bed_search_terms || {})}
-                  xlab='Search Query'
+                  xlab='BED Search Query'
                   ylab="Number of Searches"
+                  color={1}
                 />
               </div>
             </Col>
@@ -261,16 +288,20 @@ export const Metrics = () => {
                 style={{height: 400}}
                 onClick={() => setMetricModalProps({
                   title: 'BEDset Popularity',
-                  type: 'pie',
+                  type: 'bar',
                   data: Object.entries(usageStats?.bedset_metadata || {}),
+                  xlab: 'BEDset ID',
                   ylab: 'Number of BED Files',
+                  color: 2
                 })}
               >
                 <h6 className="fw-semibold">BEDset Popularity</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(usageStats?.bedset_metadata || {})}
+                  xlab='BEDset ID'
                   ylab="Times Accessed"
+                  color={2}
                 />
               </div>
 
@@ -278,19 +309,21 @@ export const Metrics = () => {
                 className="border rounded genome-card cursor-pointer p-3 shadow-sm"
                 style={{height: 400}}
                 onClick={() => setMetricModalProps({
-                  title: 'BED Files by Organism',
+                  title: 'BEDset Search Term',
                   type: 'bar',
                   data: Object.entries(usageStats?.bedset_search_terms || {}),
-                  xlab: 'Search Query',
+                  xlab: 'BEDset Search Query',
                   ylab: 'Number of BED Files',
+                  color: 3
                 })}
               >
                 <h6 className="fw-semibold">BEDset Search Terms</h6>
                   <MetricPlot
                     type="bar"
                     data={Object.entries(usageStats?.bedset_search_terms || {})}
-                    xlab='Search Query'
+                    xlab='BEDset Search Query'
                     ylab="Number of Searches"
+                    color={3}
                   />
               </div>
             </Col>
@@ -305,6 +338,7 @@ export const Metrics = () => {
             xlab={metricModalXlab}
             ylab={metricModalYlab}
             height={metricModalHeight}
+            color={metricModalColor}
             show={showMetricModal}
             onHide={() => setShowMetricModal(false)}
           />
