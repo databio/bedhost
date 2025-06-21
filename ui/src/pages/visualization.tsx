@@ -86,10 +86,6 @@ export const Graph3D: React.FC = () => {
     links: [],
   };
 
-  const toggleColorBy = () => {
-    setColorByOption(prev => prev === 'cell_line' ? 'assay' : 'cell_line');
-  };
-
   return (
     <div>
 
