@@ -1419,6 +1419,25 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /** UsageStats */
+        UsageStats: {
+            /** Bed Metadata */
+            bed_metadata: {
+                [key: string]: number;
+            };
+            /** Bedset Metadata */
+            bedset_metadata: {
+                [key: string]: number;
+            };
+            /** Bed Search Terms */
+            bed_search_terms: {
+                [key: string]: number;
+            };
+            /** Bedset Search Terms */
+            bedset_search_terms: {
+                [key: string]: number;
+            };
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
