@@ -247,7 +247,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bed_metadata || {}),
                   xlab: 'BED ID',
                   ylab: 'Times Accessed',
-                  color: 4
+                  color: 6
                 })}
               >
                 <h6 className="fw-semibold">BED File Popularity</h6>
@@ -256,7 +256,7 @@ export const Metrics = () => {
                   data={Object.entries(usageStats?.bed_metadata || {})}
                   xlab='BED ID'
                   ylab="Times Accessed"
-                  color={4}
+                  color={6}
                 />
               </div>
               <div
@@ -268,7 +268,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bed_search_terms || {}),
                   xlab: 'BED Search Query',
                   ylab: 'Number of BED Files',
-                  color: 6
+                  color: 8
                 })}
               >
                 <h6 className="fw-semibold">BED Search Terms</h6>
@@ -277,7 +277,7 @@ export const Metrics = () => {
                   data={Object.entries(usageStats?.bed_search_terms || {})}
                   xlab='BED Search Query'
                   ylab="Number of Searches"
-                  color={6}
+                  color={8}
                 />
               </div>
             </Col>
@@ -292,7 +292,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bedset_metadata || {}),
                   xlab: 'BEDset ID',
                   ylab: 'Number of BED Files',
-                  color: 5
+                  color: 7
                 })}
               >
                 <h6 className="fw-semibold">BEDset Popularity</h6>
@@ -301,7 +301,7 @@ export const Metrics = () => {
                   data={Object.entries(usageStats?.bedset_metadata || {})}
                   xlab='BEDset ID'
                   ylab="Times Accessed"
-                  color={5}
+                  color={7}
                 />
               </div>
 
@@ -314,7 +314,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bedset_search_terms || {}),
                   xlab: 'BEDset Search Query',
                   ylab: 'Number of BED Files',
-                  color: 7
+                  color: 9
                 })}
               >
                 <h6 className="fw-semibold">BEDset Search Terms</h6>
@@ -323,7 +323,7 @@ export const Metrics = () => {
                     data={Object.entries(usageStats?.bedset_search_terms || {})}
                     xlab='BEDset Search Query'
                     ylab="Number of Searches"
-                    color={7}
+                    color={9}
                   />
               </div>
             </Col>

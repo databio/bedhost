@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import embed from 'vega-embed';
 
-
 export type MetricPlotType = 'bar' | 'pie';
 
 type Props = {
@@ -129,7 +128,6 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
   };
 }
 
-
 const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 222) => {
   return {
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
@@ -216,7 +214,6 @@ export const MetricPlot = (props: Props) => {
       }
     };
   }, [spec]);
-
 
   return (
     <div className='w-100' ref={plotRef} />
