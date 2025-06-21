@@ -160,7 +160,7 @@ export const Metrics = () => {
                   data: Object.entries(detailedStats?.bed_compliance || {}),
                   xlab: 'Compliance Type',
                   ylab: 'Number of BED Files',
-                  color: 1
+                  color: 2
                 })}
               >
                 <h6 className="fw-semibold">BED Files by BED Compliance</h6>
@@ -169,7 +169,7 @@ export const Metrics = () => {
                   data={Object.entries(detailedStats?.bed_compliance || {})}
                   xlab="Compliance Type"
                   ylab="Number of BED Files"
-                  color={1}
+                  color={2}
                 />
               </div>
             </Col>
@@ -184,7 +184,7 @@ export const Metrics = () => {
                   data: Object.entries(detailedStats?.data_format || {}),
                   xlab: 'Data Format',
                   ylab: 'Number of BED Files',
-                  color: 2
+                  color: 1
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Data Format</h6>
@@ -193,7 +193,7 @@ export const Metrics = () => {
                   data={Object.entries(detailedStats?.data_format || {})}
                   xlab="Data Format"
                   ylab="Number of BED Files"
-                  color={2}
+                  color={1}
                 />
               </div>
 
@@ -247,7 +247,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bed_metadata || {}),
                   xlab: 'BED ID',
                   ylab: 'Times Accessed',
-                  color: 0
+                  color: 4
                 })}
               >
                 <h6 className="fw-semibold">BED File Popularity</h6>
@@ -256,7 +256,7 @@ export const Metrics = () => {
                   data={Object.entries(usageStats?.bed_metadata || {})}
                   xlab='BED ID'
                   ylab="Times Accessed"
-                  color={0}
+                  color={4}
                 />
               </div>
               <div
@@ -268,7 +268,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bed_search_terms || {}),
                   xlab: 'BED Search Query',
                   ylab: 'Number of BED Files',
-                  color: 1
+                  color: 6
                 })}
               >
                 <h6 className="fw-semibold">BED Search Terms</h6>
@@ -277,7 +277,7 @@ export const Metrics = () => {
                   data={Object.entries(usageStats?.bed_search_terms || {})}
                   xlab='BED Search Query'
                   ylab="Number of Searches"
-                  color={1}
+                  color={6}
                 />
               </div>
             </Col>
@@ -292,7 +292,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bedset_metadata || {}),
                   xlab: 'BEDset ID',
                   ylab: 'Number of BED Files',
-                  color: 2
+                  color: 5
                 })}
               >
                 <h6 className="fw-semibold">BEDset Popularity</h6>
@@ -301,7 +301,7 @@ export const Metrics = () => {
                   data={Object.entries(usageStats?.bedset_metadata || {})}
                   xlab='BEDset ID'
                   ylab="Times Accessed"
-                  color={2}
+                  color={5}
                 />
               </div>
 
@@ -314,7 +314,7 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bedset_search_terms || {}),
                   xlab: 'BEDset Search Query',
                   ylab: 'Number of BED Files',
-                  color: 3
+                  color: 7
                 })}
               >
                 <h6 className="fw-semibold">BEDset Search Terms</h6>
@@ -323,7 +323,7 @@ export const Metrics = () => {
                     data={Object.entries(usageStats?.bedset_search_terms || {})}
                     xlab='BEDset Search Query'
                     ylab="Number of Searches"
-                    color={3}
+                    color={7}
                   />
               </div>
             </Col>

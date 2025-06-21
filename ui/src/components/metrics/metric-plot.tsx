@@ -14,16 +14,16 @@ type Props = {
 };
 
 const baseColors = [
-  'rgba(255, 99, 132, 0.6)',   // red
-  'rgba(54, 162, 235, 0.6)',   // blue
-  'rgba(255, 206, 86, 0.6)',   // yellow
-  'rgba(51,193,43,0.6)',   // teal
-  'rgba(153, 102, 255, 0.6)',  // purple
-  'rgba(255, 159, 64, 0.6)',   // orange
-  'rgba(199, 199, 199, 0.6)',  // gray
-  'rgba(83, 102, 255, 0.6)',   // indigo
-  'rgba(255, 99, 255, 0.6)',   // pink
-  'rgb(6,80,49)',   // light green
+  'rgb(94, 79, 162)',
+  'rgb(67, 143, 180)',
+  'rgb(119, 198, 167)',
+  'rgb(190, 229, 160)',
+  'rgb(240, 248, 169)',
+  'rgb(254, 237, 161)',
+  'rgb(253, 190, 112)',
+  'rgb(244, 125, 77)',
+  'rgb(214, 66, 75)',
+  'rgb(158, 1, 66)'
 ];
 
 // // Function to generate a color palette with the same length as the data
@@ -65,7 +65,6 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: {values: data.map((x: string[]) => ({
       label: x[0],
-      label_disp: x[0].length > maxLength ? x[0].substring(0, maxLength) + '...' : x[0],
       value: x[1]
     }))},
     layer: [
@@ -91,7 +90,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
           color: {
             value: baseColors[color],
           },
-          opacity: {value: 0.88},
+          opacity: {value: 0.75},
           tooltip: [
             {field: "label", type: "nominal", title: xlab},
             {field: "value", type: "quantitative", title: ylab}
@@ -116,7 +115,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
             type: "quantitative",
             sort: null
           },
-          opacity: {value: 0.88},
+          opacity: {value: 0.75},
         },
       }
     ],
@@ -136,7 +135,6 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
     $schema: "https://vega.github.io/schema/vega-lite/v5.json",
     data: {values: data.map((x: string[]) => ({
       label: x[0],
-      label_disp: x[0].length > maxLength ? x[0].substring(0, maxLength) + '...' : x[0],
       value: x[1]
     }))},
     encoding: {
@@ -156,10 +154,14 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
             field: "label",
             type: "nominal",
             title: xlab,
-            sort: null
+            sort: null,
+            scale: {
+              scheme: "spectral",
+              reverse: true
+            },
           },
           order: {field: "value", type: "quantitative"},
-          opacity: {value: 0.88},
+          opacity: {value: 0.75},
           tooltip: [
             {field: "label", type: "nominal", title: xlab},
             {field: "value", type: "quantitative", title: ylab}
@@ -175,7 +177,7 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
             sort: null
           },
           order: {field: "value", type: "quantitative"},
-          opacity: {value: 0.88},
+          opacity: {value: 0.75},
         },
       }
     ],
