@@ -11,3 +11,5 @@ pephubclient>=0.4.1
 psycopg[binary,pool]
 python-multipart>=0.0.9
 APScheduler>=3.11.0
+cachetools>=4.2.4
+

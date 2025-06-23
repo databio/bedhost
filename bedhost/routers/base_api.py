@@ -20,6 +20,7 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
+from ..dependencies import fetch_detailed_stats
 from ..helpers import get_openapi_version, count_requests
 from ..main import app, bbagent, usage_data
 
@@ -52,7 +53,7 @@ async def get_detailed_stats(
     """
     Returns detailed statistics
     """
-    return bbagent.get_detailed_stats(concise=concise)
+    return fetch_detailed_stats(concise=concise)
 
 
 @router.get(
