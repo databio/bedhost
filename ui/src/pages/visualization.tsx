@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import ForceGraph3D from 'react-force-graph-3d';
 // import graphData from './output.json';
 import { Link } from 'react-router-dom';
-import { useUmap } from '../queries/useUmapData';
+import { useUmapEmbeddings } from '../queries/useUmapEmbeddings.ts';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 export interface GraphNode {
@@ -16,14 +16,16 @@ export interface GraphNode {
   z: number;
 }
 
-export const Graph3D: React.FC = () => {
-  const { data: umap_data, isLoading, error } = useUmap();
+type ColorBy = 'cell_line' | 'assay';
+
+export const UMAPGraph: React.FC = () => {
+  const { data: umap_data, isLoading, error } = useUmapEmbeddings();
   const fgRef = useRef<any>();
   const [searchId, setSearchId] = useState('');
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
   const location = useLocation();
-  const [colorByOption, setColorByOption] = useState<'cell_line' | 'assay'>('cell_line');
+  const [colorByOption, setColorByOption] = useState<ColorBy>('cell_line');
 
 
   useEffect(() => {

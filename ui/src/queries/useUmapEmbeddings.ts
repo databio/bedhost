@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 
-export const useUmap = () => {
+export const useUmapEmbeddings = () => {
   return useQuery({
     queryKey: ['umapData'],
     queryFn: async () => {
