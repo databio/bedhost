@@ -93,7 +93,7 @@ export const Home = () => {
         </div>
         <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 my-3">
           {/*<span>Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a></span>*/}
-          <span>Or, explore an <a href={`/bed/bd2578e70c0efe3674d0d39c782fe9e1`}>example BED file</a></span>
+          <span>Or, explore an <a href={`/bed/dcc005e8761ad5599545cc538f6a2a4d`}>example BED file</a></span>
           <span>or an{' '} <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BEDset</a></span>
         </div>
 
@@ -227,6 +227,20 @@ export const Home = () => {
                   </Tab.Content>
                 </Tab.Container>
               </div>
+            </Col>
+          </Row>
+          <Row className="w-100 align-items-center mb-5">
+            <Col sm={6} md={6}>
+              <h2 className="fw-bold">BED Embedding visualization</h2>
+              <p className="text-balance pe-4">
+                BEDbase supports visualization of UMAP of hg38 BED embeddings. It allows users to explore the
+                similarity of genomic regions based on their embeddings, and
+                providing insights into the relationships between different BED files.
+                The visualization is available on the <a href="/umap">UMAP visualization</a>.
+              </p>
+            </Col>
+            <Col>
+              <Image src="/umap.png" alt="UMAP visualization" height="300px" className="mb-3 d-flex img-fluid" />
             </Col>
           </Row>
           <Row className="w-100 mb-5">
