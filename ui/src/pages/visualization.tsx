@@ -33,10 +33,9 @@ export const UMAPGraph: React.FC = () => {
     const initialSearchId = queryParams.get('searchId');
     if (initialSearchId) {
       setSearchId(initialSearchId);
-      const timer = setTimeout(() => {
+      if (umap_data) {
         handleSearch();
-      }, 1000); // Give time for the graph to initialize
-      return () => clearTimeout(timer);
+      }
     }
   }, [location.search, umap_data]);
 
