@@ -1,15 +1,17 @@
 import { useEffect, useRef } from 'react';
 import embed from 'vega-embed';
 
-export type MetricPlotType = 'bar' | 'pie';
+export type MetricPlotType = 'bar' | 'pie' | 'hist';
 
 type Props = {
   type: MetricPlotType;
   data: [string, number][];
+  median?: number;
   xlab?: string;
   ylab?: string;
   height?: number;
   color?: number;
+  angle?: boolean;
 };
 
 const baseColors = [
@@ -59,9 +61,9 @@ const baseColors = [
 
 const maxLength = 14; 
 
-const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250, color = 0) => {
+const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250, color = 0, angle = true) => {
   return {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     data: {values: data.map((x: string[]) => ({
       label: x[0],
       value: x[1]
@@ -75,7 +77,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
             type: "nominal",
             title: xlab,
             axis: {
-              labelAngle: 33,
+              labelAngle: angle ? 33 : 90,
               labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`
             },
             sort: null
@@ -130,7 +132,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
 
 const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 222) => {
   return {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     data: {values: data.map((x: string[]) => ({
       label: x[0],
       value: x[1]
@@ -189,11 +191,107 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
   };
 }
 
+const histSpec = (data: any, median: number = 0, xlab: string = '', ylab: string = '', height: number = 250, color = 0, angle = true) => {
+  return {
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
+    data: {values: data.map((x: string[]) => ({
+      label: x[0],
+      value: x[1]
+    }))},
+    layer: [
+      {
+        mark: {type: "bar", cornerRadiusTopLeft: 1.5, cornerRadiusTopRight: 1.5},
+        encoding: {
+          x: {
+            field: "label",
+            type: "quantitative",
+            title: xlab,
+            axis: {
+              labelAngle: angle ? 33 : 90,
+              labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`
+            },
+            sort: null,
+            scale: {padding: 0}
+          },
+          y: {
+            field: "value",
+            type: "quantitative",
+            title: ylab,
+            sort: null
+          },
+          color: {
+            value: baseColors[color],
+          },
+          opacity: {value: 0.75},
+          tooltip: [
+            {field: "label", type: "quantitative", title: xlab},
+            {field: "value", type: "quantitative", title: ylab}
+          ]
+        },
+      },
+      {
+        mark: {type: 'rule', color: 'black'},
+        encoding: {
+          x: {datum: median}
+        }
+      },
+      {
+        mark: {
+          type: 'text', 
+          dy: -20
+          // align: 'center',
+          // baseline: 'bottom',
+          // fontSize: 12,
+          // color: 'black',
+          // fontWeight: 'normal',
+          // font: 'Arial, sans-serif'
+        },
+        encoding: {
+          x: {datum: median},
+          y: {value: 0},
+          text: {value: ['Median', '(' + median + ')']}
+        }
+      }
+      // {
+      //   mark: {type: "text", dy: -7, fontSize: 8.5},
+      //   encoding: {
+      //     text: {
+      //       field: "value",
+      //       type: "quantitative",
+      //       sort: null
+      //     },
+      //     x: {
+      //       field: "label",
+      //       type: "quantitative",
+      //       sort: null
+      //     },
+      //     y: {
+      //       field: "value",
+      //       type: "quantitative",
+      //       sort: null
+      //     },
+      //     opacity: {value: 0.75},
+      //   },
+      // }
+    ],
+    width: "container",
+    height: height,
+    config: {
+      view: {
+        cursor: "inherit"
+      }
+    }
+  };
+}
+
 export const MetricPlot = (props: Props) => {
-  const { type, data, xlab, ylab, height, color } = props;
+  const { type, data, median, xlab, ylab, height, color, angle } = props;
 
   const plotRef = useRef<HTMLDivElement>(null);
-  const spec = type == 'bar' ? barSpec(data, xlab, ylab, height, color) : pieSpec(data, xlab, ylab, height)
+  const spec = 
+  type == 'bar' ? barSpec(data, xlab, ylab, height, color, angle) : 
+  type == 'pie' ? pieSpec(data, xlab, ylab, height) : histSpec(data, median, xlab, ylab, height, color, angle)
+  
 
   useEffect(() => {
     if (plotRef.current && spec) {   
