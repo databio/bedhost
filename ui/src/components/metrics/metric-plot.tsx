@@ -13,16 +13,18 @@ type Props = {
 };
 
 const baseColors = [
-  'rgb(94, 79, 162)',
-  'rgb(67, 143, 180)',
-  'rgb(119, 198, 167)',
-  'rgb(190, 229, 160)',
-  'rgb(240, 248, 169)',
-  'rgb(254, 237, 161)',
-  'rgb(253, 190, 112)',
-  'rgb(244, 125, 77)',
-  'rgb(214, 66, 75)',
-  'rgb(158, 1, 66)'
+  'rgba(0, 128, 128,0.6)',
+  'rgb(96,141,174)',  // dusty sky-blue
+  'rgb(52,119,95)',  // Okabe-Ito “sky blue”✓
+  'rgb(  0, 158, 115)',  // Okabe-Ito “bluish green”✓
+  'rgb( 46, 172, 142)',  // soft teal
+  'rgb( 84, 185, 147)',  // mint-teal
+  'rgb(129, 198, 159)',
+  'rgba(176,179,105,0.6)',// light sage
+  'rgba(248,194,147,0.6)',
+  'rgb(166, 208, 176)',  // pale moss
+  'rgb(198, 220, 196)',  // misty mint-grey
+
 ];
 
 // // Function to generate a color palette with the same length as the data
@@ -57,7 +59,7 @@ const baseColors = [
 //   return generateColorPalette(data.length);
 // };
 
-const maxLength = 14; 
+const maxLength = 14;
 
 const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250, color = 0) => {
   return {
@@ -75,8 +77,9 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
             type: "nominal",
             title: xlab,
             axis: {
-              labelAngle: 33,
-              labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`
+              labelAngle: -45,
+              labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`,
+              grid: false // Disable horizontal grid lines
             },
             sort: null
           },
@@ -89,7 +92,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
           color: {
             value: baseColors[color],
           },
-          opacity: {value: 0.75},
+          opacity: {value: 0.85},
           tooltip: [
             {field: "label", type: "nominal", title: xlab},
             {field: "value", type: "quantitative", title: ylab}
@@ -196,7 +199,7 @@ export const MetricPlot = (props: Props) => {
   const spec = type == 'bar' ? barSpec(data, xlab, ylab, height, color) : pieSpec(data, xlab, ylab, height)
 
   useEffect(() => {
-    if (plotRef.current && spec) {   
+    if (plotRef.current && spec) {
       try {
         // @ts-ignore vega lite spec is fine
         embed(plotRef.current, spec)
@@ -207,7 +210,7 @@ export const MetricPlot = (props: Props) => {
         console.error(error);
       }
     }
-    
+
     return () => {
       if (plotRef.current) {
         plotRef.current.innerHTML = '';

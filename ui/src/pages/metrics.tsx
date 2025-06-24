@@ -180,7 +180,7 @@ export const Metrics = () => {
                 style={{height: 400}}
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Data Format',
-                  type: 'bar',
+                  type: 'pie',
                   data: Object.entries(detailedStats?.data_format || {}),
                   xlab: 'Data Format',
                   ylab: 'Number of BED Files',
@@ -189,7 +189,7 @@ export const Metrics = () => {
               >
                 <h6 className="fw-semibold">BED Files by Data Format</h6>
                 <MetricPlot
-                  type="bar"
+                  type="pie"
                   data={Object.entries(detailedStats?.data_format || {})}
                   xlab="Data Format"
                   ylab="Number of BED Files"
