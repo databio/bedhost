@@ -10,6 +10,8 @@ import { MetricModal } from '../components/modals/metric-modal.tsx';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { EndpointsModal } from '../components/modals/endpoints-modal.tsx';
 
+import testData from '../test.json'
+
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 export const PRIMARY_COLOR = 'rgba(0, 128, 128,0.6)';
 
@@ -17,10 +19,12 @@ interface MetricModalProps {
   title: string;
   type: MetricPlotType;
   data: [string, number][];
+  median?: number;
   xlab?: string;
   ylab?: string;
   height?: number;
   color?: number;
+  angle?: boolean;
 }
 
 export const Metrics = () => {
@@ -28,30 +32,44 @@ export const Metrics = () => {
   const [metricModalTitle, setMetricModalTitle] = useState('');
   const [metricModalType, setMetricModalType] = useState<MetricPlotType>('bar');
   const [metricModalData, setMetricModalData] = useState<[string, number][]>([]);
+  const [metricModalMedian, setMetricModalMedian] = useState(0);
   const [metricModalXlab, setMetricModalXlab] = useState('');
   const [metricModalYlab, setMetricModalYlab] = useState('');
   const [metricModalHeight, setMetricModalHeight] = useState(400);
   const [metricModalColor, setMetricModalColor] = useState(1);
+  const [metricModalAngle, setMetricModalAngle] = useState(true);
   const [endpointsModalShow, setEndpointsModalShow] = useState(false);
 
   const setMetricModalProps = ({
                                  title,
                                  type,
                                  data,
+                                 median = 0,
                                  xlab = '',
                                  ylab = '',
                                  height = 400,
                                  color = 1,
+                                 angle = true,
                                }: MetricModalProps): void => {
     setMetricModalTitle(title);
     setMetricModalType(type);
     setMetricModalData(data);
+    setMetricModalMedian(median);
     setMetricModalXlab(xlab);
     setMetricModalYlab(ylab);
     setMetricModalHeight(height);
     setMetricModalColor(color);
+    setMetricModalAngle(angle);
     setShowMetricModal(true);
   };
+
+  console.log(testData['file_size'])
+  const histData = Object.fromEntries(testData['file_size']['bins'].map((key, index) =>
+    [key, testData['file_size']['counts'][index]]));
+
+  const histMedian = testData['file_size']['meadian']
+
+  console.log(histData)
 
   const { data: bedbaseStats } = useStats();
   const { data: detailedStats, isLoading: statsIsLoading } = useDetailedStats();
@@ -280,6 +298,33 @@ export const Metrics = () => {
                   color={8}
                 />
               </div>
+
+              {/* HIST TEST */}
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'file size histogram',
+                  type: 'hist',
+                  data: Object.entries(histData || {}),
+                  median: histMedian,
+                  xlab: 'bin',
+                  ylab: 'counts',
+                  color: 8,
+                  angle: false
+                })}
+              >
+                <h6 className="fw-semibold">BED Search Terms</h6>
+                <MetricPlot
+                  type="hist"
+                  data={Object.entries(histData || {})}
+                  median={histMedian}
+                  xlab='bin'
+                  ylab='counts'
+                  color={8}
+                  angle={false}
+                />
+              </div>
             </Col>
 
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
@@ -335,10 +380,12 @@ export const Metrics = () => {
             title={metricModalTitle}
             type={metricModalType}
             data={metricModalData}
+            median={metricModalMedian}
             xlab={metricModalXlab}
             ylab={metricModalYlab}
             height={metricModalHeight}
             color={metricModalColor}
+            angle={metricModalAngle}
             show={showMetricModal}
             onHide={() => setShowMetricModal(false)}
           />

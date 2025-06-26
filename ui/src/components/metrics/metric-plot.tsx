@@ -1,15 +1,17 @@
 import { useEffect, useRef } from 'react';
 import embed from 'vega-embed';
 
-export type MetricPlotType = 'bar' | 'pie';
+export type MetricPlotType = 'bar' | 'pie' | 'hist';
 
 type Props = {
   type: MetricPlotType;
   data: [string, number][];
+  median?: number;
   xlab?: string;
   ylab?: string;
   height?: number;
   color?: number;
+  angle?: boolean;
 };
 
 const baseColors = [
@@ -59,11 +61,11 @@ const baseColors = [
 //   return generateColorPalette(data.length);
 // };
 
-const maxLength = 14;
+const maxLength = 14; 
 
-const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250, color = 0) => {
+const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250, color = 0, angle = true) => {
   return {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     data: {values: data.map((x: string[]) => ({
       label: x[0],
       value: x[1]
@@ -77,9 +79,8 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
             type: "nominal",
             title: xlab,
             axis: {
-              labelAngle: -45,
-              labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`,
-              grid: false // Disable horizontal grid lines
+              labelAngle: angle ? 33 : 90,
+              labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`
             },
             sort: null
           },
@@ -92,7 +93,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
           color: {
             value: baseColors[color],
           },
-          opacity: {value: 0.85},
+          opacity: {value: 0.75},
           tooltip: [
             {field: "label", type: "nominal", title: xlab},
             {field: "value", type: "quantitative", title: ylab}
@@ -133,7 +134,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
 
 const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 222) => {
   return {
-    $schema: "https://vega.github.io/schema/vega-lite/v5.json",
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
     data: {values: data.map((x: string[]) => ({
       label: x[0],
       value: x[1]
@@ -199,7 +200,7 @@ export const MetricPlot = (props: Props) => {
   const spec = type == 'bar' ? barSpec(data, xlab, ylab, height, color) : pieSpec(data, xlab, ylab, height)
 
   useEffect(() => {
-    if (plotRef.current && spec) {
+    if (plotRef.current && spec) {   
       try {
         // @ts-ignore vega lite spec is fine
         embed(plotRef.current, spec)
@@ -210,7 +211,7 @@ export const MetricPlot = (props: Props) => {
         console.error(error);
       }
     }
-
+    
     return () => {
       if (plotRef.current) {
         plotRef.current.innerHTML = '';

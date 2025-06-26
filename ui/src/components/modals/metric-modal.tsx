@@ -6,16 +6,18 @@ type Props = {
   title: string;
   type: MetricPlotType,
   data: [string, number][];
+  median?: number;
   xlab?: string;
   ylab?: string;
   height?: number;
   color?: number;
+  angle?: boolean;
   show: boolean;
   onHide: () => void;
 };
 
 export const MetricModal = (props: Props) => {
-  const { title, type, data, xlab, ylab, height, color, show, onHide } = props;
+  const { title, type, data, median, xlab, ylab, height, color, angle, show, onHide } = props;
   const [plotType, setPlotType] = useState(type);
 
   const checkHandler = (value: MetricPlotType) => {
@@ -37,10 +39,12 @@ export const MetricModal = (props: Props) => {
         <MetricPlot 
           type={plotType}
           data={data} 
+          median={median}
           xlab={xlab}
           ylab={ylab}
           height={height}
           color={color}
+          angle={angle}
         />
         </div>
         
