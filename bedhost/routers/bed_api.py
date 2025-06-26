@@ -1,10 +1,10 @@
 import subprocess
 
 try:
-    from typing import Annotated, Any, Dict, List, Optional
+    from typing import Annotated, Any, Dict, List, Optional, Union
 except ImportError:
     from typing_extensions import Annotated
-    from typing import Dict, Optional, List, Any
+    from typing import Dict, Optional, List, Any, Union
 
 import os
 import shutil
@@ -447,7 +447,7 @@ async def text_to_bed_search(
     limit: int = 10,
     offset: int = 0,
 ):
-    bbagent.bed.sql_search(
+    return bbagent.bed.sql_search(
         query=query,
         genome=genome,
         assay=assay,
