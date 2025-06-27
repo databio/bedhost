@@ -8,7 +8,7 @@ type Props = {
   value: string;
   limit: number;
   setLimit: (limit: number) => void;
-  genome: string;
+  genome: string | undefined;
   assay: string | undefined;
   setGenome: (genome: string) => void;
   setAssay: (assay: string | undefined) => void;
