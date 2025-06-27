@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useMemo, useState } from 'react';
 import { useSearchView } from '../../contexts/search-view-context.tsx';
 import { useAvailableGenomes } from '../../queries/useAvailableGenomes.ts';
+import { useAvailableAssays } from '../../queries/useAvailableAssays.ts';
 
 type Props = {
   value: string;
@@ -30,9 +31,10 @@ export const SearchBar = (props: Props) => {
   const [, setSearchParams] = useSearchParams();
   const { searchView } = useSearchView();
   const { data: genomes } = useAvailableGenomes();
+  const { data: assays } = useAvailableAssays();
 
   const [showOptions, setShowOptions] = useState(false);
-  const assays = ['ATAC-seq', 'ChIP-Seq'];
+  // const assays = ['ATAC-seq', 'ChIP-Seq'];
 
   const placeholder = useMemo(() => placeholders[Math.floor(Math.random() * placeholders.length)], []);
   return (
@@ -63,14 +65,14 @@ export const SearchBar = (props: Props) => {
             }
           }}
         />
-        
+
         <select className="form-select w-auto" value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
           <option value={10}>Limit 10</option>
           <option value={20}>Limit 20</option>
           <option value={50}>Limit 50</option>
           <option value={100}>Limit 100</option>
         </select>
-        { searchView === 't2b' && (
+        {searchView === 't2b' && (
           <button
             className="btn btn-warning"
             onClick={() => setShowOptions(!showOptions)}
@@ -93,15 +95,16 @@ export const SearchBar = (props: Props) => {
           Search
         </button>
       </div>
-      { showOptions && (
-        <div className='mt-2'>
+      {showOptions && (
+        <div className="mt-2">
           {searchView === 't2b' &&
-            <div className='d-flex align-items-center'>
-              <h6 className='mb-0 fw-bold'>Search Options</h6>
+            <div className="d-flex align-items-center">
+              <h6 className="mb-0 fw-bold">Search Options</h6>
 
-              <h6 className='mb-0 fw-semibold ms-auto'>Genome:</h6>
+              <h6 className="mb-0 fw-semibold ms-auto">Genome:</h6>
               <select className="form-select w-auto ms-1 border-0" value={genome}
                       onChange={(e) => setGenome(String(e.target.value))}>
+                <option value={''}>None</option>
                 {genomes?.results.map((genomeItem, index) => (
                   <option key={index} value={String(genomeItem)}>
                     {String(genomeItem)}
@@ -109,11 +112,11 @@ export const SearchBar = (props: Props) => {
                 ))}
               </select>
 
-              <h6 className='mb-0 fw-semibold ms-4'>Assay:</h6>
+              <h6 className="mb-0 fw-semibold ms-4">Assay:</h6>
               <select className="form-select w-auto ms-1 border-0" value={assay}
-                    onChange={(e) => setAssay(String(e.target.value))}>
-                <option value={undefined}>None</option>
-                {assays.map((assayItem, index) => (
+                      onChange={(e) => setAssay(String(e.target.value))}>
+                <option value={''}>None</option>
+                {assays?.results.map((assayItem, index) => (
                   <option key={index} value={String(assayItem)}>
                     {String(assayItem)}
                   </option>
@@ -123,8 +126,8 @@ export const SearchBar = (props: Props) => {
           }
         </div>
       )}
-      
+
     </>
-    
+
   );
 };
