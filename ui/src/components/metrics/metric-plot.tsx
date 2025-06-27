@@ -12,6 +12,7 @@ type Props = {
   height?: number;
   color?: number;
   angle?: boolean;
+  action?: boolean;
 };
 
 const baseColors = [
@@ -26,38 +27,6 @@ const baseColors = [
   'rgb(214, 66, 75)',
   'rgb(158, 1, 66)'
 ];
-
-// // Function to generate a color palette with the same length as the data
-// const generateColorPalette = (dataLength: number): string[] => {
-
-//   let colorPalette = [];
-
-//   // If we need more colors than in our base palette,
-//   // we'll cycle through with different opacities
-//   const cycles = Math.ceil((dataLength - colorPalette.length) / baseColors.length);
-
-//   for (let cycle = 0; cycle < cycles; cycle++) {
-//     // For each cycle, adjust opacity slightly
-//     const opacity = 0.6 - (cycle * 0.1);
-
-//     for (let i = 0; i < baseColors.length; i++) {
-//       if (colorPalette.length >= dataLength) break;
-
-//       // Create a new color with adjusted opacity
-//       const baseColor = baseColors[i];
-//       const rgbPart = baseColor.substring(0, baseColor.lastIndexOf(','));
-//       const newColor = `${rgbPart}, ${opacity})`;
-
-//       colorPalette.push(newColor);
-//     }
-//   }
-
-//   return colorPalette;
-// };
-
-// const ensureColorPalette = (data: [string, number][]): string[] => {
-//   return generateColorPalette(data.length);
-// };
 
 const maxLength = 14; 
 
@@ -285,7 +254,7 @@ const histSpec = (data: any, median: number = 0, xlab: string = '', ylab: string
 }
 
 export const MetricPlot = (props: Props) => {
-  const { type, data, median, xlab, ylab, height, color, angle } = props;
+  const { type, data, median, xlab, ylab, height, color, angle, action } = props;
 
   const plotRef = useRef<HTMLDivElement>(null);
   const spec = 
@@ -297,7 +266,7 @@ export const MetricPlot = (props: Props) => {
     if (plotRef.current && spec) {   
       try {
         // @ts-ignore vega lite spec is fine
-        embed(plotRef.current, spec)
+        embed(plotRef.current, spec, {"actions": action})
         .catch(error => {
           console.error('Embed error after parsing:', error);
         });

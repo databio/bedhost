@@ -180,7 +180,7 @@ export const Home = () => {
         <div className="my-2 w-100">
           <Row className="w-100 align-items-center mb-5">
             <Col sm={6} md={6}>
-              <h2 className="fw-bold">Web server and API</h2>
+              <h2 className="fw-bold">Web Server and API</h2>
               <p className="text-balance pe-4">
                 The BEDbase web server and API are designed to provide a user-friendly interface for exploring and
                 working with genomic region data. The web server allows users to search for BED files and BED sets, view
@@ -231,7 +231,7 @@ export const Home = () => {
           </Row>
           <Row className="w-100 align-items-center mb-5">
             <Col sm={6} md={6}>
-              <h2 className="fw-bold">BED Embedding visualization</h2>
+              <h2 className="fw-bold">BED Embedding Visualization</h2>
               <p className="text-balance pe-4">
                 BEDbase supports visualization of UMAP of hg38 BED embeddings. It allows users to explore the
                 similarity of genomic regions based on their embeddings, and
@@ -245,7 +245,7 @@ export const Home = () => {
           </Row>
           <Row className="w-100 mb-5">
             <Col sm={6} md={6}>
-              <h2 className="fw-bold">Search for BED files</h2>
+              <h2 className="fw-bold">Search for BED Files</h2>
               <p className="text-balance pe-4">
                 BEDbase offers three search endpoints for discovering BED files and BEDsets, distinguishing itself from
                 other platforms by utilizing vector search to index and search through bed file regions. This approach
@@ -286,7 +286,7 @@ export const Home = () => {
           {/* <div className="my-5"></div> */}
           <Row className="w-100 align-items-center mb-5 mb-md-2">
             <Col sm={6} md={6}>
-              <h2 className="fw-bold">BEDbase client </h2>
+              <h2 className="fw-bold">BEDbase Client </h2>
               <p className="text-balance pe-4">
                 BEDbase provides a Python an R client for interacting with the BEDbase API. The client allows users to
                 download, cache, and analyze BED files and BED sets programmatically, without the need to interact with

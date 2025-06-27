@@ -10,8 +10,6 @@ import { MetricModal } from '../components/modals/metric-modal.tsx';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { EndpointsModal } from '../components/modals/endpoints-modal.tsx';
 
-import testData from '../test.json'
-
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 export const PRIMARY_COLOR = 'rgba(0, 128, 128,0.6)';
 
@@ -26,6 +24,13 @@ interface MetricModalProps {
   color?: number;
   angle?: boolean;
 }
+
+const transformHistogramData = (bins: number[], counts: number[]): [string, number][] => {
+  return counts.map((count, index) => {
+    const binLabel = bins[index] !== undefined ? String(bins[index]) : '';
+    return [binLabel, Number(count)];
+  });
+};
 
 export const Metrics = () => {
   const [showMetricModal, setShowMetricModal] = useState(false);
@@ -63,17 +68,12 @@ export const Metrics = () => {
     setShowMetricModal(true);
   };
 
-  console.log(testData['file_size'])
-  const histData = Object.fromEntries(testData['file_size']['bins'].map((key, index) =>
-    [key, testData['file_size']['counts'][index]]));
-
-  const histMedian = testData['file_size']['meadian']
-
-  console.log(histData)
 
   const { data: bedbaseStats } = useStats();
   const { data: detailedStats, isLoading: statsIsLoading } = useDetailedStats();
   const { data: usageStats, isLoading: usageIsLoading} = useDetailedUsage();
+
+  console.log(detailedStats)
 
   if (statsIsLoading || usageIsLoading) {
     return (
@@ -167,6 +167,7 @@ export const Metrics = () => {
                   xlab="Reference Genome"
                   ylab="Number of BED Files"
                   color={0}
+                  action={false}
                 />
               </div>
               <div
@@ -188,6 +189,94 @@ export const Metrics = () => {
                   xlab="Compliance Type"
                   ylab="Number of BED Files"
                   color={2}
+                  action={false}
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED Comments',
+                  type: 'bar',
+                  data: Object.entries(detailedStats?.bed_comments || {}),
+                  xlab: 'Comment Type',
+                  ylab: 'Number of BED Files',
+                  color: 4
+                })}
+              >
+                <h6 className="fw-semibold">BED Files by BED Comments</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(detailedStats?.bed_comments || {})}
+                  xlab="Comment Type"
+                  ylab="Number of BED Files"
+                  color={4}
+                  action={false}
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED File Size Histogram',
+                  type: 'hist',
+                  data: transformHistogramData(
+                          Array.isArray(detailedStats?.file_size?.bins) ? detailedStats.file_size.bins : [],
+                          Array.isArray(detailedStats?.file_size?.counts) ? detailedStats.file_size.counts : []
+                        ),
+                  median: detailedStats?.file_size?.meadian,
+                  xlab: 'File Size',
+                  ylab: 'Counts',
+                  color: 6,
+                  angle: false
+                })}
+              >
+                <h6 className="fw-semibold">BED File Size Histogram</h6>
+                <MetricPlot
+                  type="hist"
+                  data={transformHistogramData(
+                          Array.isArray(detailedStats?.file_size?.bins) ? detailedStats.file_size.bins : [],
+                          Array.isArray(detailedStats?.file_size?.counts) ? detailedStats.file_size.counts : []
+                        )}
+                  median={detailedStats?.file_size?.meadian}
+                  xlab='File Size'
+                  ylab='Counts'
+                  color={6}
+                  angle={false}
+                  action={false}
+                />
+              </div>
+
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED Mean Region Width Histogram',
+                  type: 'hist',
+                  data: transformHistogramData(
+                          Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
+                          Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : []
+                        ),
+                  median: detailedStats?.mean_region_width?.meadian,
+                  xlab: 'Mean Region Width',
+                  ylab: 'Counts',
+                  color: 8,
+                  angle: false
+                })}
+              >
+                <h6 className="fw-semibold">BED Mean Region Width Histogram</h6>
+                <MetricPlot
+                  type="hist"
+                  data={transformHistogramData(
+                          Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
+                          Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : []
+                        )}
+                  median={detailedStats?.mean_region_width?.meadian}
+                  xlab='Mean Region Width'
+                  ylab='Counts'
+                  color={8}
+                  angle={false}
+                  action={false}
                 />
               </div>
             </Col>
@@ -212,6 +301,7 @@ export const Metrics = () => {
                   xlab="Data Format"
                   ylab="Number of BED Files"
                   color={1}
+                  action={false}
                 />
               </div>
 
@@ -234,7 +324,62 @@ export const Metrics = () => {
                     xlab="Organism"
                     ylab="Number of BED Files"
                     color={3}
+                  action={false}
                   />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED GEO Status',
+                  type: 'bar',
+                  data: Object.entries(detailedStats?.geo_status || {}),
+                  xlab: 'GEO Status',
+                  ylab: 'Number of BED Files',
+                  color: 5
+                })}
+              >
+                <h6 className="fw-semibold">BED Files by GEO Status</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(detailedStats?.geo_status || {})}
+                  xlab="GEO Status"
+                  ylab="Number of BED Files"
+                  color={5}
+                  action={false}
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
+                style={{height: 400}}
+                onClick={() => setMetricModalProps({
+                  title: 'BED Number of Regions Histogram',
+                  type: 'hist',
+                  data: transformHistogramData(
+                          Array.isArray(detailedStats?.number_of_regions?.bins) ? detailedStats.number_of_regions.bins : [],
+                          Array.isArray(detailedStats?.number_of_regions?.counts) ? detailedStats.number_of_regions.counts : []
+                        ),
+                  median: detailedStats?.number_of_regions?.meadian,
+                  xlab: 'Number of Regions',
+                  ylab: 'Counts',
+                  color: 7,
+                  angle: false
+                })}
+              >
+                <h6 className="fw-semibold">BED Number of Regions Histogram</h6>
+                <MetricPlot
+                  type="hist"
+                  data={transformHistogramData(
+                          Array.isArray(detailedStats?.number_of_regions?.bins) ? detailedStats.number_of_regions.bins : [],
+                          Array.isArray(detailedStats?.number_of_regions?.counts) ? detailedStats.number_of_regions.counts : []
+                        )}
+                  median={detailedStats?.number_of_regions?.meadian}
+                  xlab='Number of Regions'
+                  ylab='Counts'
+                  color={7}
+                  angle={false}
+                  action={false}
+                />
               </div>
             </Col>
           </Row>
@@ -275,6 +420,7 @@ export const Metrics = () => {
                   xlab='BED ID'
                   ylab="Times Accessed"
                   color={6}
+                  action={false}
                 />
               </div>
               <div
@@ -296,33 +442,7 @@ export const Metrics = () => {
                   xlab='BED Search Query'
                   ylab="Number of Searches"
                   color={8}
-                />
-              </div>
-
-              {/* HIST TEST */}
-              <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm"
-                style={{height: 400}}
-                onClick={() => setMetricModalProps({
-                  title: 'file size histogram',
-                  type: 'hist',
-                  data: Object.entries(histData || {}),
-                  median: histMedian,
-                  xlab: 'bin',
-                  ylab: 'counts',
-                  color: 8,
-                  angle: false
-                })}
-              >
-                <h6 className="fw-semibold">BED Search Terms</h6>
-                <MetricPlot
-                  type="hist"
-                  data={Object.entries(histData || {})}
-                  median={histMedian}
-                  xlab='bin'
-                  ylab='counts'
-                  color={8}
-                  angle={false}
+                  action={false}
                 />
               </div>
             </Col>
@@ -347,6 +467,7 @@ export const Metrics = () => {
                   xlab='BEDset ID'
                   ylab="Times Accessed"
                   color={7}
+                  action={false}
                 />
               </div>
 
@@ -369,6 +490,7 @@ export const Metrics = () => {
                     xlab='BEDset Search Query'
                     ylab="Number of Searches"
                     color={9}
+                  action={false}
                   />
               </div>
             </Col>
