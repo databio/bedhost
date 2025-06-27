@@ -9,10 +9,10 @@ type Props = {
   value: string;
   limit: number;
   setLimit: (limit: number) => void;
-  genome: string | undefined;
-  assay: string | undefined;
-  setGenome: (genome: string) => void;
-  setAssay: (assay: string | undefined) => void;
+  genome: string;
+  assay: string;
+  setGenome: (assay: string) => void;
+  setAssay: (assay: string) => void;
   onChange: (value: string) => void;
   onSearch: () => void;
 };
