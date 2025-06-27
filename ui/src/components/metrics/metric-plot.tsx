@@ -16,16 +16,18 @@ type Props = {
 };
 
 const baseColors = [
-  'rgb(94, 79, 162)',
-  'rgb(67, 143, 180)',
-  'rgb(119, 198, 167)',
-  'rgb(190, 229, 160)',
-  'rgb(240, 248, 169)',
-  'rgb(254, 237, 161)',
-  'rgb(253, 190, 112)',
-  'rgb(244, 125, 77)',
-  'rgb(214, 66, 75)',
-  'rgb(158, 1, 66)'
+  'rgba(0, 128, 128,0.6)',
+  'rgb(96,141,174)',  // dusty sky-blue
+  'rgb(52,119,65)',  // Okabe-Ito “sky blue”✓
+  'rgb(25,97,22)',  // Okabe-Ito “bluish green”✓
+  'rgb(53,133,56)',  // soft teal
+  'rgb( 84, 185, 147)',  // mint-teal
+  'rgb(92,119,103)',
+  'rgba(114,117,69,0.6)',// light sage
+  'rgba(152,119,89,0.6)',
+  'rgb(48,89,63)',  // pale moss
+  'rgb(86,145,78)',  // misty mint-grey
+
 ];
 
 const maxLength = 14; 
