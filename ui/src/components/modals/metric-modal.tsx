@@ -50,16 +50,20 @@ export const MetricModal = (props: Props) => {
         
       </Modal.Body>
       <Modal.Footer className='d-flex justify-content-between'>
-        <select 
-          className="form-select w-auto ms-auto" 
-          aria-label="Plot Type" 
-          onChange={(e) => checkHandler(e.target.value as MetricPlotType)}
-          value={plotType}
-        >
-          <option value="bar">Bar Chart</option>
-          <option value="pie">Pie Chart</option>
-        </select>
-        <button onClick={() => onHide()} className='btn btn-primary'>
+
+        {type !== 'hist' && (
+          <select 
+            className="form-select w-auto ms-auto" 
+            aria-label="Plot Type" 
+            onChange={(e) => checkHandler(e.target.value as MetricPlotType)}
+            value={plotType}
+          >
+            <option value="bar">Bar Chart</option>
+            <option value="pie">Pie Chart</option>
+          </select>
+        )}
+        
+        <button onClick={() => onHide()} className={`btn btn-primary ${type === 'hist' && 'ms-auto'}`}>
           Close
         </button>
       </Modal.Footer>

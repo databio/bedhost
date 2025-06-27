@@ -12,54 +12,21 @@ type Props = {
   height?: number;
   color?: number;
   angle?: boolean;
+  action?: boolean;
 };
 
 const baseColors = [
-  'rgba(0, 128, 128,0.6)',
-  'rgb(96,141,174)',  // dusty sky-blue
-  'rgb(52,119,95)',  // Okabe-Ito “sky blue”✓
-  'rgb(  0, 158, 115)',  // Okabe-Ito “bluish green”✓
-  'rgb( 46, 172, 142)',  // soft teal
-  'rgb( 84, 185, 147)',  // mint-teal
-  'rgb(129, 198, 159)',
-  'rgba(176,179,105,0.6)',// light sage
-  'rgba(248,194,147,0.6)',
-  'rgb(166, 208, 176)',  // pale moss
-  'rgb(198, 220, 196)',  // misty mint-grey
-
+  'rgb(94, 79, 162)',
+  'rgb(67, 143, 180)',
+  'rgb(119, 198, 167)',
+  'rgb(190, 229, 160)',
+  'rgb(240, 248, 169)',
+  'rgb(254, 237, 161)',
+  'rgb(253, 190, 112)',
+  'rgb(244, 125, 77)',
+  'rgb(214, 66, 75)',
+  'rgb(158, 1, 66)'
 ];
-
-// // Function to generate a color palette with the same length as the data
-// const generateColorPalette = (dataLength: number): string[] => {
-
-//   let colorPalette = [];
-
-//   // If we need more colors than in our base palette,
-//   // we'll cycle through with different opacities
-//   const cycles = Math.ceil((dataLength - colorPalette.length) / baseColors.length);
-
-//   for (let cycle = 0; cycle < cycles; cycle++) {
-//     // For each cycle, adjust opacity slightly
-//     const opacity = 0.6 - (cycle * 0.1);
-
-//     for (let i = 0; i < baseColors.length; i++) {
-//       if (colorPalette.length >= dataLength) break;
-
-//       // Create a new color with adjusted opacity
-//       const baseColor = baseColors[i];
-//       const rgbPart = baseColor.substring(0, baseColor.lastIndexOf(','));
-//       const newColor = `${rgbPart}, ${opacity})`;
-
-//       colorPalette.push(newColor);
-//     }
-//   }
-
-//   return colorPalette;
-// };
-
-// const ensureColorPalette = (data: [string, number][]): string[] => {
-//   return generateColorPalette(data.length);
-// };
 
 const maxLength = 14; 
 
@@ -193,17 +160,113 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
   };
 }
 
+const histSpec = (data: any, median: number = 0, xlab: string = '', ylab: string = '', height: number = 250, color = 0, angle = true) => {
+  return {
+    $schema: "https://vega.github.io/schema/vega-lite/v6.json",
+    data: {values: data.map((x: string[]) => ({
+      label: x[0],
+      value: x[1]
+    }))},
+    layer: [
+      {
+        mark: {type: "bar", cornerRadiusTopLeft: 1.5, cornerRadiusTopRight: 1.5},
+        encoding: {
+          x: {
+            field: "label",
+            type: "quantitative",
+            title: xlab,
+            axis: {
+              labelAngle: angle ? 33 : 90,
+              labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`
+            },
+            sort: null,
+            scale: {padding: 0}
+          },
+          y: {
+            field: "value",
+            type: "quantitative",
+            title: ylab,
+            sort: null
+          },
+          color: {
+            value: baseColors[color],
+          },
+          opacity: {value: 0.75},
+          tooltip: [
+            {field: "label", type: "quantitative", title: xlab},
+            {field: "value", type: "quantitative", title: ylab}
+          ]
+        },
+      },
+      {
+        mark: {type: 'rule', color: 'black'},
+        encoding: {
+          x: {datum: median}
+        }
+      },
+      {
+        mark: {
+          type: 'text', 
+          dy: -20
+          // align: 'center',
+          // baseline: 'bottom',
+          // fontSize: 12,
+          // color: 'black',
+          // fontWeight: 'normal',
+          // font: 'Arial, sans-serif'
+        },
+        encoding: {
+          x: {datum: median},
+          y: {value: 0},
+          text: {value: ['Median', '(' + median + ')']}
+        }
+      }
+      // {
+      //   mark: {type: "text", dy: -7, fontSize: 8.5},
+      //   encoding: {
+      //     text: {
+      //       field: "value",
+      //       type: "quantitative",
+      //       sort: null
+      //     },
+      //     x: {
+      //       field: "label",
+      //       type: "quantitative",
+      //       sort: null
+      //     },
+      //     y: {
+      //       field: "value",
+      //       type: "quantitative",
+      //       sort: null
+      //     },
+      //     opacity: {value: 0.75},
+      //   },
+      // }
+    ],
+    width: "container",
+    height: height,
+    config: {
+      view: {
+        cursor: "inherit"
+      }
+    }
+  };
+}
+
 export const MetricPlot = (props: Props) => {
-  const { type, data, xlab, ylab, height, color } = props;
+  const { type, data, median, xlab, ylab, height, color, angle, action } = props;
 
   const plotRef = useRef<HTMLDivElement>(null);
-  const spec = type == 'bar' ? barSpec(data, xlab, ylab, height, color) : pieSpec(data, xlab, ylab, height)
+  const spec = 
+  type == 'bar' ? barSpec(data, xlab, ylab, height, color, angle) : 
+  type == 'pie' ? pieSpec(data, xlab, ylab, height) : histSpec(data, median, xlab, ylab, height, color, angle)
+  
 
   useEffect(() => {
     if (plotRef.current && spec) {   
       try {
         // @ts-ignore vega lite spec is fine
-        embed(plotRef.current, spec)
+        embed(plotRef.current, spec, {"actions": action})
         .catch(error => {
           console.error('Embed error after parsing:', error);
         });
