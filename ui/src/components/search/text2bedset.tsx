@@ -15,8 +15,8 @@ export const Text2BedSet = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
-  const [genome, setGenome] = useState<string | undefined>(searchParams.get('genome') || undefined);
-  const [assay, setAssay] = useState<string | undefined>(searchParams.get('assay') || undefined);
+  const [genome, setGenome] = useState<string | ''>(searchParams.get('genome') || '');
+  const [assay, setAssay] = useState<string | ''>(searchParams.get('assay') || '');
 
   const {
     isFetching: isSearching,

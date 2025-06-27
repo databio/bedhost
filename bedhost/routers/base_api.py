@@ -87,6 +87,24 @@ async def get_bedbase_db_stats():
 
 
 @router.get(
+    "/assays",
+    summary="Get available assays",
+    response_model=BaseListResponse,
+)
+async def get_bedbase_db_stats():
+    """
+    Returns statistics
+    """
+    genomes = bbagent.get_list_assays()
+    return BaseListResponse(
+        count=len(genomes),
+        limit=100,
+        offset=0,
+        results=genomes,
+    )
+
+
+@router.get(
     "/service-info", summary="GA4GH service info", response_model=ServiceInfoResponse
 )
 async def service_info():

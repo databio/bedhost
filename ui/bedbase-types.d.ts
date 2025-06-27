@@ -1402,6 +1402,10 @@ export interface components {
         };
         /** FileStats */
         FileStats: {
+            /** Bed Comments */
+            bed_comments: {
+                [key: string]: number;
+            };
             /** Bed Compliance */
             bed_compliance: {
                 [key: string]: number;
@@ -1416,6 +1420,41 @@ export interface components {
             };
             /** File Organism */
             file_organism: {
+                [key: string]: number;
+            };
+            /** File Size */
+            file_size: {
+                [key: string]: number;
+            };
+            /** GEO Status */
+            geo_status: {
+                [key: string]: number;
+            };
+            /** Mean Region Width */
+            mean_region_width: {
+                [key: string]: number;
+            };
+            /** Number of Regions */
+            number_of_regions: {
+                [key: string]: number;
+            };
+        };
+        /** UsageStats */
+        UsageStats: {
+            /** Bed Metadata */
+            bed_metadata: {
+                [key: string]: number;
+            };
+            /** Bedset Metadata */
+            bedset_metadata: {
+                [key: string]: number;
+            };
+            /** Bed Search Terms */
+            bed_search_terms: {
+                [key: string]: number;
+            };
+            /** Bedset Search Terms */
+            bedset_search_terms: {
                 [key: string]: number;
             };
         };

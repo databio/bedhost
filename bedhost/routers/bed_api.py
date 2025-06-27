@@ -1,10 +1,10 @@
 import subprocess
 
 try:
-    from typing import Annotated, Any, Dict, List, Optional
+    from typing import Annotated, Any, Dict, List, Optional, Union
 except ImportError:
     from typing_extensions import Annotated
-    from typing import Dict, Optional, List, Any
+    from typing import Dict, Optional, List, Any, Union
 
 import os
 import shutil
@@ -356,7 +356,11 @@ def get_regions_for_bedfile(
 )
 @count_requests(usage_data, event="bed_search")
 async def text_to_bed_search(
-    query: str, genome: Optional[str] = "hg38", limit: int = 10, offset: int = 0
+    query: str,
+    genome: Optional[Union[str, None]] = None,
+    assay: Optional[Union[str, None]] = None,
+    limit: int = 10,
+    offset: int = 0,
 ):
     """
     Search for a BedFile by a text query.
@@ -368,63 +372,88 @@ async def text_to_bed_search(
     _LOGGER.info(
         f"Searching for: '{query}' with limit='{limit}' and offset='{offset}' and genome='{genome}'"
     )
-
-    # results_sql = bbagent.bed.sql_search(
-    #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
-    # )
     #
-    # if results_sql.count > results_sql.offset:
-    #     qdrant_offset = offset - results_sql.offset
+    # # results_sql = bbagent.bed.sql_search(
+    # #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
+    # # )
+    # #
+    # # if results_sql.count > results_sql.offset:
+    # #     qdrant_offset = offset - results_sql.offset
+    # # else:
+    # #     qdrant_offset = offset - results_sql.count
+    # #
+    # # results_qdr = bbagent.bed.text_to_bed_search(
+    # #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
+    # # )
+    # #
+    # # results = BedListSearchResult(
+    # #     count=results_qdr.count,
+    # #     limit=limit,
+    # #     offset=offset,
+    # #     results=(results_sql.results + results_qdr.results)[0:limit],
+    # # )
+    # query = query.strip()
+    #
+    # if not genome or genome == "hg38":
+    #     spaceless_query = query.replace(" ", "")
+    #     if len(spaceless_query) == 32 and spaceless_query == query:
+    #         try:
+    #             similar_results = bbagent.bed.get_neighbours(
+    #                 query, limit=limit, offset=offset
+    #             )
+    #
+    #             if similar_results.results and offset == 0:
+    #
+    #                 result = QdrantSearchResult(
+    #                     id=query,
+    #                     payload={},
+    #                     score=1.0,
+    #                     metadata=bbagent.bed.get(query),
+    #                 )
+    #
+    #                 similar_results.results.insert(0, result)
+    #             return similar_results
+    #         except Exception as _:
+    #             pass
+
+    results = bbagent.bed.comp_search(
+        query,
+        genome_alias=genome,
+        assay=assay,
+        limit=limit,
+        offset=offset,
+    )
     # else:
-    #     qdrant_offset = offset - results_sql.count
-    #
-    # results_qdr = bbagent.bed.text_to_bed_search(
-    #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
-    # )
-    #
-    # results = BedListSearchResult(
-    #     count=results_qdr.count,
-    #     limit=limit,
-    #     offset=offset,
-    #     results=(results_sql.results + results_qdr.results)[0:limit],
-    # )
-    query = query.strip()
-
-    if not genome or genome == "hg38":
-        spaceless_query = query.replace(" ", "")
-        if len(spaceless_query) == 32 and spaceless_query == query:
-            try:
-                similar_results = bbagent.bed.get_neighbours(
-                    query, limit=limit, offset=offset
-                )
-
-                if similar_results.results and offset == 0:
-
-                    result = QdrantSearchResult(
-                        id=query,
-                        payload={},
-                        score=1.0,
-                        metadata=bbagent.bed.get(query),
-                    )
-
-                    similar_results.results.insert(0, result)
-                return similar_results
-            except Exception as _:
-                pass
-
-        results = bbagent.bed.text_to_bed_search(
-            query,
-            limit=limit,
-            offset=offset,
-        )
-    else:
-        results = bbagent.bed.sql_search(
-            query, limit=limit, offset=offset, genome=genome
-        )
+    #     results = bbagent.bed.sql_search(
+    #         query, limit=limit, offset=offset, genome=genome
+    #     )
 
     if results:
         return results
     raise HTTPException(status_code=404, detail="No records found")
+
+
+@router.post(
+    "/search/exact",
+    summary="Search for exact match of metadata in bed files",
+    tags=["search"],
+    response_model=BedListSearchResult,
+    response_model_by_alias=False,
+)
+async def text_to_bed_search(
+    query: str,
+    genome: Optional[Union[str, None]] = None,
+    assay: Optional[Union[str, None]] = None,
+    limit: int = 10,
+    offset: int = 0,
+):
+    return bbagent.bed.sql_search(
+        query=query,
+        genome=genome,
+        assay=assay,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.post(
