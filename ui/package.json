@@ -29,12 +29,14 @@
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
+    "react-force-graph-3d": "^1.27.0",
     "react-helmet-async": "^2.0.4",
     "react-hot-toast": "^2.4.1",
     "react-markdown": "^9.0.1",
     "react-router-dom": "^7.5.2",
+    "vega-embed": "^7.0.2",
     "rehype-highlight": "^7.0.0",
-    "vega-embed": "^7.0.2"
+    "three": "^0.177.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
