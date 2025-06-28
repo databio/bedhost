@@ -26,7 +26,7 @@ const baseColors = [
   'rgba(114,117,69,0.6)',// light sage
   'rgba(152,119,89,0.6)',
   'rgb(48,89,63)',  // pale moss
-  'rgb(86,145,78)',  // misty mint-grey
+  'rgb(78,136,70)',  // misty mint-grey
 
 ];
 
