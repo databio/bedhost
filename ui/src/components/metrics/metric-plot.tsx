@@ -30,7 +30,7 @@ const baseColors = [
 
 ];
 
-const maxLength = 14;
+const maxLength = 40;
 
 const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250, color = 0, angle = true) => {
   return {
@@ -50,7 +50,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
             type: 'nominal',
             title: xlab,
             axis: {
-              labelAngle: angle ? 33 : 90,
+              labelAngle: angle ? -33 : 90,
               labelExpr: `length(datum.value) > ${maxLength} ? substring(datum.value, 0, ${maxLength}) + '...' : datum.value`,
             },
             sort: null,
@@ -112,6 +112,10 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
         value: x[1],
       })),
     },
+    transform: [
+      { window: [{ op: 'sum', field: 'value', as: 'total' }] },
+      { calculate: 'datum.value / datum.total', as: 'percent' },
+    ],
     encoding: {
       theta: {
         field: 'value',
@@ -147,9 +151,12 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
         mark: { type: 'text', fontSize: 8.5, radius: height / 3 },
         encoding: {
           text: {
-            field: 'value',
-            type: 'quantitative',
-            sort: null,
+            condition: {
+              test: 'datum.percent >= 0.02',
+              field: 'value',
+              type: 'quantitative',
+            },
+            value: '',
           },
           order: { field: 'value', type: 'quantitative' },
           opacity: { value: 0.75 },
