@@ -12,12 +12,12 @@ import { SearchError } from '../search-error';
 import { AxiosError } from 'axios';
 
 export const Text2Bed = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [limit, setLimit] = useState(20);
-  const [offset, setOffset] = useState(0);
   const [genome, setGenome] = useState(searchParams.get('genome') || '');
   const [assay, setAssay] = useState(searchParams.get('assay') || '');
+  const [limit, setLimit] = useState(20);
+  const [offset, setOffset] = useState(0);
 
   const {
     isFetching: isSearching,
@@ -34,10 +34,18 @@ export const Text2Bed = () => {
   });
 
   useEffect(() => {
-    if (searchTerm) {
+    const params = new URLSearchParams();
+    if (searchTerm) params.set('q', searchTerm);
+    if (genome) params.set('genome', genome);
+    if (assay) params.set('assay', assay);
+    setSearchParams(params);
+  }, [searchTerm, genome, assay]);
+
+  useEffect(() => {
+    if (searchTerm || genome || assay) {
       onSearch();
     }
-  }, [limit, offset, onSearch]);
+  }, [limit, offset, genome, assay, onSearch]);
 
   if (error) {
     if (error) {

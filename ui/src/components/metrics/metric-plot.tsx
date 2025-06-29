@@ -148,7 +148,7 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
         },
       },
       {
-        mark: { type: 'text', fontSize: 8.5, radius: height / 3 },
+        mark: { type: 'text', fontSize: 8.5, radius: height / 3, font: 'Arial'},
         encoding: {
           text: {
             condition: {
@@ -227,8 +227,8 @@ const histSpec = (data: any, median: number = 0, xlab: string = '', ylab: string
           // baseline: 'bottom',
           // fontSize: 12,
           // color: 'black',
-          // fontWeight: 'normal',
-          // font: 'Arial, sans-serif'
+          fontWeight: 'bold',
+          font: 'Trebuchet MS'
         },
         encoding: {
           x: { datum: median },
