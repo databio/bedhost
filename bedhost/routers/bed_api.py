@@ -395,26 +395,33 @@ async def text_to_bed_search(
     # query = query.strip()
     #
     # if not genome or genome == "hg38":
-    #     spaceless_query = query.replace(" ", "")
-    #     if len(spaceless_query) == 32 and spaceless_query == query:
-    #         try:
-    #             similar_results = bbagent.bed.get_neighbours(
-    #                 query, limit=limit, offset=offset
-    #             )
-    #
-    #             if similar_results.results and offset == 0:
-    #
-    #                 result = QdrantSearchResult(
-    #                     id=query,
-    #                     payload={},
-    #                     score=1.0,
-    #                     metadata=bbagent.bed.get(query),
-    #                 )
-    #
-    #                 similar_results.results.insert(0, result)
-    #             return similar_results
-    #         except Exception as _:
-    #             pass
+
+    spaceless_query = query.replace(" ", "")
+    if len(spaceless_query) == 32 and spaceless_query == query:
+        try:
+            result = QdrantSearchResult(
+                id=query,
+                payload={},
+                score=1.0,
+                metadata=bbagent.bed.get(query),
+            )
+            try:
+                similar_results = bbagent.bed.get_neighbours(
+                    query, limit=limit, offset=offset
+                )
+                if similar_results.results and offset == 0:
+                    similar_results.results.insert(0, result)
+            except Exception as _:
+                similar_results = BedListSearchResult(
+                    count=1,
+                    limit=100,
+                    offset=0,
+                    results=[result],
+                )
+
+            return similar_results
+        except Exception as _:
+            pass
 
     results = bbagent.bed.comp_search(
         query,
