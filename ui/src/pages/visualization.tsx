@@ -31,11 +31,12 @@ export const UMAPGraph: React.FC = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const initialSearchId = queryParams.get('searchId');
-    if (initialSearchId) {
+        if (initialSearchId) {
       setSearchId(initialSearchId);
-      if (umap_data) {
+      const timer = setTimeout(() => {
         handleSearch();
-      }
+      }, 1000); // Give time for the graph to initialize
+      return () => clearTimeout(timer);
     }
   }, [location.search, umap_data]);
 
