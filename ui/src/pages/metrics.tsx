@@ -25,9 +25,9 @@ interface MetricModalProps {
   angle?: boolean;
 }
 
-const transformHistogramData = (bins: number[], counts: number[]): [string, number][] => {
+const transformHistogramData = (bins: (string | number)[], counts: number[]): [string, number][] => {
   return counts.map((count, index) => {
-    const binLabel = bins[index] !== undefined ? String(bins[index]) : '';
+    const binLabel = typeof bins[index] === 'number' ? String(bins[index]) : '';
     return [binLabel, Number(count)];
   });
 };
@@ -71,9 +71,9 @@ export const Metrics = () => {
 
   const { data: bedbaseStats } = useStats();
   const { data: detailedStats, isLoading: statsIsLoading } = useDetailedStats();
-  const { data: usageStats, isLoading: usageIsLoading} = useDetailedUsage();
+  const { data: usageStats, isLoading: usageIsLoading } = useDetailedUsage();
 
-  console.log(detailedStats)
+  console.log(detailedStats);
 
   if (statsIsLoading || usageIsLoading) {
     return (
@@ -123,7 +123,7 @@ export const Metrics = () => {
         </Row>
 
         <Row className="mt-3">
-          <h5 className="fw-semibold">BEDbase File Statistics</h5>
+          <h4 className="fw-semibold">BEDbase File Statistics</h4>
           <Col sm={12} md={12}>
             <ul className="list-group w-100 shadow-sm">
               <li className="list-group-item d-flex justify-content-between align-items-center">
@@ -156,7 +156,7 @@ export const Metrics = () => {
                   data: Object.entries(detailedStats?.file_genome || {}),
                   xlab: 'Reference Genome',
                   ylab: 'Number of BED Files',
-                  color: 0
+                  color: 0,
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Genome</h6>
@@ -177,7 +177,7 @@ export const Metrics = () => {
                   data: Object.entries(detailedStats?.bed_compliance || {}),
                   xlab: 'Compliance Type',
                   ylab: 'Number of BED Files',
-                  color: 2
+                  color: 2,
                 })}
               >
                 <h6 className="fw-semibold">BED Files by BED Compliance</h6>
@@ -198,7 +198,7 @@ export const Metrics = () => {
                   data: Object.entries(detailedStats?.bed_comments || {}),
                   xlab: 'Comment Type',
                   ylab: 'Number of BED Files',
-                  color: 4
+                  color: 4,
                 })}
               >
                 <h6 className="fw-semibold">BED Files by BED Comments</h6>
@@ -217,26 +217,26 @@ export const Metrics = () => {
                   title: 'BED File Size Histogram',
                   type: 'hist',
                   data: transformHistogramData(
-                          Array.isArray(detailedStats?.file_size?.bins) ? detailedStats.file_size.bins : [],
-                          Array.isArray(detailedStats?.file_size?.counts) ? detailedStats.file_size.counts : []
-                        ),
-                  median: detailedStats?.file_size?.meadian,
-                  xlab: 'File Size',
+                    Array.isArray(detailedStats?.file_size?.bins) ? detailedStats.file_size.bins : [],
+                    Array.isArray(detailedStats?.file_size?.counts) ? detailedStats.file_size.counts : [],
+                  ),
+                  median: detailedStats?.file_size?.median,
+                  xlab: 'File Size (MB)',
                   ylab: 'Counts',
                   color: 6,
-                  angle: false
+                  angle: false,
                 })}
               >
                 <h6 className="fw-semibold">BED File Size Histogram</h6>
                 <MetricPlot
                   type="hist"
                   data={transformHistogramData(
-                          Array.isArray(detailedStats?.file_size?.bins) ? detailedStats.file_size.bins : [],
-                          Array.isArray(detailedStats?.file_size?.counts) ? detailedStats.file_size.counts : []
-                        )}
-                  median={detailedStats?.file_size?.meadian}
-                  xlab='File Size'
-                  ylab='Counts'
+                    Array.isArray(detailedStats?.file_size?.bins) ? detailedStats.file_size.bins : [],
+                    Array.isArray(detailedStats?.file_size?.counts) ? detailedStats.file_size.counts : [],
+                  )}
+                  median={detailedStats?.file_size?.median}
+                  xlab="File Size (MB)"
+                  ylab="Counts"
                   color={6}
                   angle={false}
                   action={false}
@@ -249,26 +249,26 @@ export const Metrics = () => {
                   title: 'BED Mean Region Width Histogram',
                   type: 'hist',
                   data: transformHistogramData(
-                          Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
-                          Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : []
-                        ),
-                  median: detailedStats?.mean_region_width?.meadian,
+                    Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
+                    Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : [],
+                  ),
+                  median: detailedStats?.mean_region_width?.median,
                   xlab: 'Mean Region Width',
                   ylab: 'Counts',
                   color: 8,
-                  angle: false
+                  angle: false,
                 })}
               >
                 <h6 className="fw-semibold">BED Mean Region Width Histogram</h6>
                 <MetricPlot
                   type="hist"
                   data={transformHistogramData(
-                          Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
-                          Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : []
-                        )}
-                  median={detailedStats?.mean_region_width?.meadian}
-                  xlab='Mean Region Width'
-                  ylab='Counts'
+                    Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
+                    Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : [],
+                  )}
+                  median={detailedStats?.mean_region_width?.median}
+                  xlab="Mean Region Width"
+                  ylab="Counts"
                   color={8}
                   angle={false}
                   action={false}
@@ -308,35 +308,35 @@ export const Metrics = () => {
                   data: Object.entries(detailedStats?.file_organism || {}),
                   xlab: 'Organism',
                   ylab: 'Number of BED Files',
-                  color: 3
+                  color: 3,
                 })}
               >
                 <h6 className="fw-semibold">BED Files by Organism</h6>
-                  <MetricPlot
-                    type="bar"
-                    data={Object.entries(detailedStats?.file_organism || {})}
-                    xlab="Organism"
-                    ylab="Number of BED Files"
-                    color={3}
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(detailedStats?.file_organism || {})}
+                  xlab="Organism"
+                  ylab="Number of BED Files"
+                  color={3}
                   action={false}
-                  />
+                />
               </div>
               <div
                 className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
                 onClick={() => setMetricModalProps({
-                  title: 'BED GEO Status',
+                  title: 'BED GEO processing status',
                   type: 'bar',
                   data: Object.entries(detailedStats?.geo_status || {}),
-                  xlab: 'GEO Status',
+                  xlab: 'BED GEO processing status',
                   ylab: 'Number of BED Files',
-                  color: 5
+                  color: 5,
                 })}
               >
-                <h6 className="fw-semibold">BED Files by GEO Status</h6>
+                <h6 className="fw-semibold">BED GEO processing status</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(detailedStats?.geo_status || {})}
-                  xlab="GEO Status"
+                  xlab="BED GEO processing status"
                   ylab="Number of BED Files"
                   color={5}
                   action={false}
@@ -348,50 +348,139 @@ export const Metrics = () => {
                   title: 'BED Number of Regions Histogram',
                   type: 'hist',
                   data: transformHistogramData(
-                          Array.isArray(detailedStats?.number_of_regions?.bins) ? detailedStats.number_of_regions.bins : [],
-                          Array.isArray(detailedStats?.number_of_regions?.counts) ? detailedStats.number_of_regions.counts : []
-                        ),
-                  median: detailedStats?.number_of_regions?.meadian,
+                    Array.isArray(detailedStats?.number_of_regions?.bins) ? detailedStats.number_of_regions.bins : [],
+                    Array.isArray(detailedStats?.number_of_regions?.counts) ? detailedStats.number_of_regions.counts : [],
+                  ),
+                  median: detailedStats?.number_of_regions?.median,
                   xlab: 'Number of Regions',
                   ylab: 'Counts',
                   color: 7,
-                  angle: false
+                  angle: false,
                 })}
               >
                 <h6 className="fw-semibold">BED Number of Regions Histogram</h6>
                 <MetricPlot
                   type="hist"
                   data={transformHistogramData(
-                          Array.isArray(detailedStats?.number_of_regions?.bins) ? detailedStats.number_of_regions.bins : [],
-                          Array.isArray(detailedStats?.number_of_regions?.counts) ? detailedStats.number_of_regions.counts : []
-                        )}
-                  median={detailedStats?.number_of_regions?.meadian}
-                  xlab='Number of Regions'
-                  ylab='Counts'
+                    Array.isArray(detailedStats?.number_of_regions?.bins) ? detailedStats.number_of_regions.bins : [],
+                    Array.isArray(detailedStats?.number_of_regions?.counts) ? detailedStats.number_of_regions.counts : [],
+                  )}
+                  median={detailedStats?.number_of_regions?.median}
+                  xlab="Number of Regions"
+                  ylab="Counts"
                   color={7}
                   angle={false}
                   action={false}
                 />
               </div>
             </Col>
+            <Col sm={12} md={12} className="mt-2 text-s">
+              <i className="text-primary bi bi-info-circle-fill "></i>
+              <i> Data Format and BED compliance are calculated based on BED classification pipeline.
+                <br />BED compliance refers to the representation of a BED file as `bedn+m`.
+                <br />Data Format is assignment of region set files to one of the formats: `bed`, `narrow_peak`,
+                `broadpeak
+                and others`.
+                <br />More information: <a href={'https://docs.bedbase.org/bedbase/user/bed_classification/'}> BEDbase
+                  Docs </a>
+              </i>
+            </Col>
+            <hr />
+            <h4 className="fw-semibold mb-0">GEO statistics</h4>
+
+            <Col sm={12} md={6} className="d-flex flex-column gap-2">
+
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                onClick={() => setMetricModalProps({
+                  title: 'Cumulative number of bed files in GEO',
+                  type: 'bar',
+                  data: Object.entries(detailedStats?.geo?.cumulative_number_of_files || {}),
+                  xlab: 'Year',
+                  ylab: 'Number of BED Files',
+                  color: 4,
+                })}
+              >
+                <h6 className="fw-semibold">Cumulative number of bed files in GEO</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(detailedStats?.geo?.cumulative_number_of_files || {})}
+                  xlab="Year"
+                  ylab="Number of BED Files"
+                  color={4}
+                  action={false}
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                onClick={() => setMetricModalProps({
+                  title: 'BED file size in GEO',
+                  type: 'hist',
+                  data: transformHistogramData(
+                    Array.isArray(detailedStats?.geo?.file_sizes?.bins) ? detailedStats?.geo?.file_sizes?.bins : [],
+                    Array.isArray(detailedStats?.geo?.file_sizes?.counts) ? detailedStats?.geo?.file_sizes?.counts : [],
+                  ),
+                  // median: detailedStats?.geo?.file_sizes?.median, // median is too big
+                  xlab: 'File Size (MB)',
+                  ylab: 'Counts',
+                  color: 8,
+                  angle: false,
+                })}
+              >
+                <h6 className="fw-semibold">BED File size in GEO</h6>
+                <MetricPlot
+                  type="hist"
+                  data={transformHistogramData(
+                    Array.isArray(detailedStats?.geo?.file_sizes?.bins) ? detailedStats?.geo?.file_sizes?.bins : [],
+                    Array.isArray(detailedStats?.geo?.file_sizes?.counts) ? detailedStats?.geo?.file_sizes?.counts : [],
+                  )}
+                  // median={detailedStats?.geo?.file_sizes?.median} // median is too big
+                  xlab="File Size (MB)"
+                  ylab="Counts"
+                  color={8}
+                  angle={false}
+                  action={false}
+                />
+              </div>
+
+            </Col>
+            <Col sm={12} md={6} className="d-flex flex-column gap-2">
+
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                onClick={() => setMetricModalProps({
+                  title: 'Number of bed files in GEO',
+                  type: 'bar',
+                  data: Object.entries(detailedStats?.geo?.number_of_files || {}),
+                  xlab: 'Year',
+                  ylab: 'Number of BED Files',
+                  color: 1,
+                })}
+              >
+                <h6 className="fw-semibold">Number of bed files in GEO</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(detailedStats?.geo?.number_of_files || {})}
+                  xlab="Year"
+                  ylab="Number of BED Files"
+                  color={1}
+                  action={false}
+                />
+              </div>
+            </Col>
+            <Col sm={12} md={12} className="mt-2 text-s">
+              <i className="text-primary bi bi-info-circle-fill "></i>
+              <i> Some small inconsistencies in GEO data may occur due to the way BEDbase is processing GEO data.
+              </i>
+            </Col>
           </Row>
+
         )}
-
-        <Col sm={12} md={12} className="mt-2 text-xs">
-          <i className="text-primary bi bi-info-circle-fill "></i>
-          <i> Data Format and BED compliance are calculated based on BED classification pipeline.
-            <br />BED compliance refers to the representation of a BED file as `bedn+m`.
-            <br />Data Format is assignment of region set files to one of the formats: `bed`, `narrow_peak`, `broadpeak
-            and others`.
-            <br />More information: <a href={'https://docs.bedbase.org/bedbase/user/bed_classification/'}> BEDbase
-              Docs </a>
-          </i>
-
-        </Col>
 
         {usageStats && (
           <Row className="h-100 mt-4 pt-2 g-2 mb-5">
-            <h5 className="fw-semibold mb-0">BEDbase Usage Statistics</h5>
+            <hr />
+            <h4 className="fw-semibold mb-0">BEDbase Usage Statistics</h4>
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
               <div
                 className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
@@ -401,16 +490,16 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bed_metadata || {}),
                   xlab: 'BED ID',
                   ylab: 'Times Accessed',
-                  color: 6
+                  color: 3,
                 })}
               >
                 <h6 className="fw-semibold">BED File Popularity</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(usageStats?.bed_metadata || {})}
-                  xlab='BED ID'
+                  xlab="BED ID"
                   ylab="Times Accessed"
-                  color={6}
+                  color={3}
                   action={false}
                 />
               </div>
@@ -422,16 +511,37 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bed_search_terms || {}),
                   xlab: 'BED Search Query',
                   ylab: 'Number of BED Files',
-                  color: 8
+                  color: 8,
                 })}
               >
                 <h6 className="fw-semibold">BED Search Terms</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(usageStats?.bed_search_terms || {})}
-                  xlab='BED Search Query'
+                  xlab="BED Search Query"
                   ylab="Number of Searches"
                   color={8}
+                  action={false}
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                onClick={() => setMetricModalProps({
+                  title: 'BED file downloads',
+                  type: 'bar',
+                  data: Object.entries(usageStats?.bed_downloads || {}),
+                  xlab: 'BED file id',
+                  ylab: 'Number of Downloads',
+                  color: 2,
+                })}
+              >
+                <h6 className="fw-semibold">BED file downloads</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(usageStats?.bed_downloads || {})}
+                  xlab="BED file id"
+                  ylab="Number of Downloads"
+                  color={2}
                   action={false}
                 />
               </div>
@@ -446,14 +556,14 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bedset_metadata || {}),
                   xlab: 'BEDset ID',
                   ylab: 'Number of BED Files',
-                  color: 7
+                  color: 7,
                 })}
               >
                 <h6 className="fw-semibold">BEDset Popularity</h6>
                 <MetricPlot
                   type="bar"
                   data={Object.entries(usageStats?.bedset_metadata || {})}
-                  xlab='BEDset ID'
+                  xlab="BEDset ID"
                   ylab="Times Accessed"
                   color={7}
                   action={false}
@@ -468,18 +578,18 @@ export const Metrics = () => {
                   data: Object.entries(usageStats?.bedset_search_terms || {}),
                   xlab: 'BEDset Search Query',
                   ylab: 'Number of BED Files',
-                  color: 9
+                  color: 9,
                 })}
               >
                 <h6 className="fw-semibold">BEDset Search Terms</h6>
-                  <MetricPlot
-                    type="bar"
-                    data={Object.entries(usageStats?.bedset_search_terms || {})}
-                    xlab='BEDset Search Query'
-                    ylab="Number of Searches"
-                    color={9}
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(usageStats?.bedset_search_terms || {})}
+                  xlab="BEDset Search Query"
+                  ylab="Number of Searches"
+                  color={9}
                   action={false}
-                  />
+                />
               </div>
             </Col>
           </Row>
