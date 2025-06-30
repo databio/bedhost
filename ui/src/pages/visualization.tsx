@@ -31,7 +31,7 @@ export const UMAPGraph: React.FC = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const initialSearchId = queryParams.get('searchId');
-        if (initialSearchId) {
+    if (initialSearchId) {
       setSearchId(initialSearchId);
       const timer = setTimeout(() => {
         handleSearch();
