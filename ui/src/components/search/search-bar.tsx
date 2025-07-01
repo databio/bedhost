@@ -104,7 +104,7 @@ export const SearchBar = (props: Props) => {
               <h6 className="mb-0 fw-semibold ms-auto">Genome:</h6>
               <select className="form-select w-auto ms-1 border-0" value={genome}
                       onChange={(e) => setGenome(String(e.target.value))}>
-                <option value={''}>None</option>
+                <option value={''}>All</option>
                 {genomes?.results.map((genomeItem, index) => (
                   <option key={index} value={String(genomeItem)}>
                     {String(genomeItem)}
@@ -115,7 +115,7 @@ export const SearchBar = (props: Props) => {
               <h6 className="mb-0 fw-semibold ms-4">Assay:</h6>
               <select className="form-select w-auto ms-1 border-0" value={assay}
                       onChange={(e) => setAssay(String(e.target.value))}>
-                <option value={''}>None</option>
+                <option value={''}>All</option>
                 {assays?.results.map((assayItem, index) => (
                   <option key={index} value={String(assayItem)}>
                     {String(assayItem)}
