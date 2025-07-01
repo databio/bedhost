@@ -423,6 +423,38 @@ async def text_to_bed_search(
         except Exception as _:
             pass
 
+    spaceless_query_lower = spaceless_query.lower()
+    if any(
+        [
+            spaceless_query_lower.startswith("gsm"),
+            spaceless_query_lower.startswith("encff"),
+            spaceless_query_lower.startswith("gse"),
+            spaceless_query_lower.startswith("geo:"),
+            spaceless_query_lower.startswith("encode:"),
+        ]
+    ):
+        _LOGGER.info("Searching for GSM or ENCODE accession")
+
+        spaceless_query_lower = spaceless_query_lower.replace("geo:", "").replace(
+            "encode:", ""
+        )
+
+        if spaceless_query_lower.startswith("gsm") or spaceless_query_lower.startswith(
+            "gse"
+        ):
+            result = bbagent.bed.search_external_file(
+                source="geo", accession=spaceless_query_lower
+            )
+            if result.count != 0:
+                return result
+
+        elif spaceless_query_lower.startswith("encff"):
+            result = bbagent.bed.search_external_file(
+                source="encode", accession=spaceless_query_lower.upper()
+            )
+            if result.count != 0:
+                return result
+
     results = bbagent.bed.comp_search(
         query,
         genome_alias=genome,
