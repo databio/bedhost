@@ -6,6 +6,7 @@ type SearchResponse = components['schemas']['BedListSearchResult'];
 type SearchQuery = {
   q: string;
   genome?: string;
+  assay?: string;
   limit?: number;
   offset?: number;
   autoRun?: boolean;
@@ -15,16 +16,16 @@ export const useText2BedSearch = (query: SearchQuery) => {
 
   const { api } = useBedbaseApi();
 
-  const { q, limit, offset, autoRun, genome } = query;
+  const { q, limit, offset, autoRun, genome, assay } = query;
   let enabled = false;
   if (autoRun !== undefined && autoRun === true && !!q) {
     enabled = true;
   }
-
+  console.log(assay)
   return useQuery({
-    queryKey: ['search', q, limit, offset, genome],
+    queryKey: ['search', q, limit, offset, genome, assay],
     queryFn: async () => {
-      const { data } = await api.post<SearchResponse>(`/bed/search/text?query=${q}&limit=${limit}&offset=${offset}&genome=${genome}`);
+      const { data } = await api.post<SearchResponse>(`/bed/search/text?query=${q}&limit=${limit}&offset=${offset}&genome=${genome}&assay=${assay}`);
       return data;
     },
     enabled: enabled,

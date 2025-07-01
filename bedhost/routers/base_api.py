@@ -20,6 +20,7 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
+from ..dependencies import fetch_detailed_stats
 from ..helpers import get_openapi_version, count_requests
 from ..main import app, bbagent, usage_data
 
@@ -52,7 +53,7 @@ async def get_detailed_stats(
     """
     Returns detailed statistics
     """
-    return bbagent.get_detailed_stats(concise=concise)
+    return fetch_detailed_stats(concise=concise)
 
 
 @router.get(
@@ -77,6 +78,24 @@ async def get_bedbase_db_stats():
     Returns statistics
     """
     genomes = bbagent.get_list_genomes()
+    return BaseListResponse(
+        count=len(genomes),
+        limit=100,
+        offset=0,
+        results=genomes,
+    )
+
+
+@router.get(
+    "/assays",
+    summary="Get available assays",
+    response_model=BaseListResponse,
+)
+async def get_bedbase_db_stats():
+    """
+    Returns statistics
+    """
+    genomes = bbagent.get_list_assays()
     return BaseListResponse(
         count=len(genomes),
         limit=100,
