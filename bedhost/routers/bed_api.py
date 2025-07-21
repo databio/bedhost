@@ -347,7 +347,7 @@ def get_regions_for_bedfile(
         )
 
 
-@router.post(
+@router.get(
     "/search/text",
     summary="Search for a BedFile",
     tags=["search"],
@@ -455,31 +455,27 @@ async def text_to_bed_search(
             if result.count != 0:
                 return result
 
-    results = bbagent.bed.comp_search(
+    results = bbagent.bed.semantic_search(
         query,
         genome_alias=genome,
         assay=assay,
         limit=limit,
         offset=offset,
     )
-    # else:
-    #     results = bbagent.bed.sql_search(
-    #         query, limit=limit, offset=offset, genome=genome
-    #     )
 
     if results:
         return results
     raise HTTPException(status_code=404, detail="No records found")
 
 
-@router.post(
+@router.get(
     "/search/exact",
     summary="Search for exact match of metadata in bed files",
     tags=["search"],
     response_model=BedListSearchResult,
     response_model_by_alias=False,
 )
-async def text_to_bed_search(
+async def exact_search(
     query: str,
     genome: Optional[Union[str, None]] = None,
     assay: Optional[Union[str, None]] = None,
@@ -519,7 +515,12 @@ async def bed_to_bed_search(
             results = bbagent.bed.bed_to_bed_search(
                 region_set, limit=limit, offset=offset
             )
-    return results
+        return results
+
+    return HTTPException(
+        status_code=404,
+        detail="Error occurred, please make sure file is correct and if issue persists, contact support.",
+    )
 
 
 @router.get(
