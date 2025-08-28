@@ -1,5 +1,6 @@
 import { Modal } from 'react-bootstrap';
 import { components } from '../../../bedbase-types';
+import { Link } from 'react-router-dom';
 
 type BedGenomeStats = components['schemas']['RefGenValidReturnModel'];
 
@@ -56,85 +57,93 @@ export const RefGenomeModal = (props: Props) => {
 
         {genomeStats?.compared_genome?.sort((a, b) => a.tier_ranking - b.tier_ranking)
           .map(genome => (
-            <div
-              className="card mb-2 shadow-sm genome-card"
-              style={{ backgroundColor: (genome.tier_ranking == 1 ? '#C8EFB3A0' : (genome.tier_ranking == 2 ? '#FFF7BAA0' : (genome.tier_ranking == 3 ? '#F9D39DA0' : '#FCB6B6A0'))) }}
+            <Link
+              to={`https://api.refgenie.org/v4/page/genome/${genome.genome_digest}`}
               key={genome.compared_genome}
+              className="text-decoration-none"
+              target="_blank"
+              rel="noopener noreferrer"
             >
-              <div className="card-body">
+              <div
+                className="card mb-2 shadow-sm genome-card"
+                style={{ backgroundColor: (genome.tier_ranking == 1 ? '#C8EFB3A0' : (genome.tier_ranking == 2 ? '#FFF7BAA0' : (genome.tier_ranking == 3 ? '#F9D39DA0' : '#FCB6B6A0'))) }}
+                key={genome.compared_genome}
+              >
+                <div className="card-body">
 
-                <div className="row">
-                  <div className="col-12">
-                    <div className="d-flex align-items-center gap-2">
-                      <p className="mb-1 fw-semibold" style={{ width: '33%' }}>{genome.compared_genome}</p>
+                  <div className="row">
+                    <div className="col-12">
+                      <div className="d-flex align-items-center gap-2">
+                        <p className="mb-1 fw-semibold" style={{ width: '33%' }}>{genome.compared_genome}</p>
 
-                      <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
-                        {genome.xs ?
-                          <>
+                        <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
+                          {genome.xs ?
+                            <>
                             <span
                               className={`text-xs position-absolute start-50 top-50 translate-middle ${(genome.xs || 0) * 100 > 30 ? 'text-white' : 'text-dark'}`}>
                               {((genome.xs || 0) * 100).toFixed(2) + '%'}
                             </span>
-                            <div className="rounded-1 bg-primary"
-                                 style={{ height: '16px', width: `${(genome.xs || 0) * 100}%` }} />
-                          </>
-                          :
-                          <>
+                              <div className="rounded-1 bg-primary"
+                                   style={{ height: '16px', width: `${(genome.xs || 0) * 100}%` }} />
+                            </>
+                            :
+                            <>
                             <span className="text-xs position-absolute start-50 top-50 translate-middle text-dark">
                               N/A
                             </span>
-                            <div className="rounded-1 bg-primary" style={{ height: '16px', width: '0' }} />
-                          </>
-                        }
-                      </div>
+                              <div className="rounded-1 bg-primary" style={{ height: '16px', width: '0' }} />
+                            </>
+                          }
+                        </div>
 
-                      <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
-                        {genome.oobr ?
-                          <>
+                        <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
+                          {genome.oobr ?
+                            <>
                             <span
                               className={`text-xs position-absolute start-50 top-50 translate-middle ${(genome.oobr || 0) * 100 > 30 ? 'text-white' : 'text-dark'}`}>
                               {((genome.oobr || 0) * 100).toFixed(2) + '%'}
                             </span>
-                            <div className="rounded-1 bg-primary"
-                                 style={{ height: '16px', width: `${(genome.oobr || 0) * 100}%` }} />
-                          </>
-                          :
-                          <>
+                              <div className="rounded-1 bg-primary"
+                                   style={{ height: '16px', width: `${(genome.oobr || 0) * 100}%` }} />
+                            </>
+                            :
+                            <>
                             <span className="text-xs position-absolute start-50 top-50 translate-middle text-dark">
                               N/A
                             </span>
-                            <div className="rounded-1 bg-primary" style={{ height: '16px', width: '0' }} />
-                          </>
-                        }
-                      </div>
+                              <div className="rounded-1 bg-primary" style={{ height: '16px', width: '0' }} />
+                            </>
+                          }
+                        </div>
 
-                      <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
-                        {genome.sequence_fit ?
-                          <>
+                        <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
+                          {genome.sequence_fit ?
+                            <>
                             <span
                               className={`text-xs position-absolute start-50 top-50 translate-middle ${(genome.sequence_fit || 0) * 100 > 30 ? 'text-white' : 'text-dark'}`}>
                               {((genome.sequence_fit || 0) * 100).toFixed(2) + '%'}
                             </span>
-                            <div className="rounded-1 bg-primary"
-                                 style={{ height: '16px', width: `${(genome.sequence_fit || 0) * 100}%` }} />
-                          </>
-                          :
-                          <>
+                              <div className="rounded-1 bg-primary"
+                                   style={{ height: '16px', width: `${(genome.sequence_fit || 0) * 100}%` }} />
+                            </>
+                            :
+                            <>
                             <span className="text-xs position-absolute start-50 top-50 translate-middle text-dark">
                               N/A
                             </span>
-                            <div className="rounded-1 bg-primary" style={{ height: '16px', width: '0' }} />
-                          </>
-                        }
-                      </div>
+                              <div className="rounded-1 bg-primary" style={{ height: '16px', width: '0' }} />
+                            </>
+                          }
+                        </div>
 
-                      <p className="mb-1 fw-medium ms-auto">Tier {genome.tier_ranking}</p>
+                        <p className="mb-1 fw-medium ms-auto">Tier {genome.tier_ranking}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
+                </div>
               </div>
-            </div>
+            </Link>
           ))}
       </Modal.Body>
     </Modal>
