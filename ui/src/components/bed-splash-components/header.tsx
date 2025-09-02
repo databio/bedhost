@@ -15,7 +15,7 @@ type BedGenomeStats = components['schemas']['RefGenValidReturnModel'];
 type Props = {
   metadata: BedMetadata;
   record_identifier: string | undefined;
-  genomeStats: BedGenomeStats;
+  genomeStats: BedGenomeStats | undefined;
 };
 
 export const BedSplashHeader = (props: Props) => {
@@ -349,13 +349,15 @@ export const BedSplashHeader = (props: Props) => {
           </div>
         </div>
       </div>
-      <RefGenomeModal
-        show={showRefGenomeModal}
-        onHide={() => {
-          setShowRefGenomeModal(false);
-        }}
-        genomeStats={genomeStats}
-      />
+      {genomeStats?.compared_genome &&
+        <RefGenomeModal
+          show={showRefGenomeModal}
+          onHide={() => {
+            setShowRefGenomeModal(false);
+          }}
+          genomeStats={genomeStats}
+        />
+      }
     </div>
   );
 };

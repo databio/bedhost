@@ -138,7 +138,7 @@ export const BedSplash = () => {
         <Container className="my-2">
           <Row className="mb-2">
             <Col sm={12} md={12}>
-              {metadata !== undefined && genomeStats !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
+              {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
             </Col>
           </Row>
           <Row className="mb-2 g-3">
