@@ -13,6 +13,8 @@ type Props = {
 export const RefGenomeModal = (props: Props) => {
   const { show, onHide, genomeStats } = props;
 
+  console.log(genomeStats?.compared_genome)
+
   return (
     <Modal
       animation={false}
@@ -55,7 +57,12 @@ export const RefGenomeModal = (props: Props) => {
           </div>
         </div>
 
-        {genomeStats?.compared_genome?.sort((a, b) => a.tier_ranking - b.tier_ranking)
+        {genomeStats?.compared_genome?.sort((a, b) => 
+          (a.tier_ranking - b.tier_ranking) ||
+          (b.xs - a.xs) ||
+          ((b.oobr ?? 0) - (a.oobr ?? 0)) ||
+          ((b.sequence_fit ?? 0) - (a.sequence_fit ?? 0))
+        )
           .map(genome => (
             <Link
               to={`https://api.refgenie.org/v4/page/genome/${genome.genome_digest}`}
