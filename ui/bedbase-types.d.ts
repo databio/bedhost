@@ -1547,6 +1547,7 @@ export interface components {
             /** Provided Genome */
             provided_genome: string;
             /** Compared Genome */
+            genome_digest: string;
             compared_genome: string;
             /**
              * Xs
