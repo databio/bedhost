@@ -521,19 +521,19 @@ async def bed_to_bed_search(
             except Exception as e:
                 _LOGGER.error(f"Error reading bed file: {e}")
                 raise HTTPException(
-                    status_code=400,
+                    status_code=415,
                     detail="Error reading bed file. Please make sure the file is a valid BED file.",
                 )
 
             if region_set.mean_region_width() < MIN_REGION_WIDTH:
                 raise HTTPException(
-                    status_code=400,
+                    status_code=415,
                     detail="Mean region width is too small. Please provide a BED file with mean region width greater than 10.",
                 )
 
             if len(region_set) > MAX_REGION_NUMBER:
                 raise HTTPException(
-                    status_code=400,
+                    status_code=415,
                     detail="Too many regions in the BED file. Please provide a BED file with less than 1,000,000 regions.",
                 )
 
