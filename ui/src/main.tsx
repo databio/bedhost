@@ -31,7 +31,7 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
-    onError: (error) => {
+    onError: (error: any) => {
       if (error.response && error.response.status === 413) {
         toast.error(`${error.response.data.detail}`);
       return;}

@@ -18,7 +18,6 @@ export const Bed2Bed = () => {
     isFetching: isSearching,
     data: results,
     refetch: onSearch,
-    error: searchError,
   } = useBed2BedSearch({
     q: file,
     autoRun: false,
