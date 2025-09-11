@@ -35,7 +35,7 @@ from fastapi.responses import PlainTextResponse
 from gtars.models import RegionSet
 
 from .. import _LOGGER
-from ..const import EXAMPLE_BED
+from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WIDTH
 from ..data_models import CROM_NUMBERS, BaseListResponse, BedDigest
 from ..main import bbagent, usage_data
 from ..helpers import count_requests
@@ -502,7 +502,8 @@ async def bed_to_bed_search(
     file: UploadFile = File(None), limit: int = 10, offset: int = 0
 ):
     _LOGGER.info("Searching for bedfiles...")
-    if file.size > 20 * 1024 * 1024: # 20MB
+    print("file size {}", file.size)
+    if file.size > MAX_FILE_SIZE:
         raise HTTPException(
             status_code=413,
             detail="File too large. Maximum file size is 20MB.",
@@ -515,7 +516,26 @@ async def bed_to_bed_search(
             with open(file_path, "wb") as bed_file:
                 shutil.copyfileobj(file.file, bed_file)
 
-            region_set = RegionSet(file_path)
+            try:
+                region_set = RegionSet(file_path)
+            except Exception as e:
+                _LOGGER.error(f"Error reading bed file: {e}")
+                raise HTTPException(
+                    status_code=400,
+                    detail="Error reading bed file. Please make sure the file is a valid BED file.",
+                )
+
+            if region_set.mean_region_width() < MIN_REGION_WIDTH:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Mean region width is too small. Please provide a BED file with mean region width greater than 10.",
+                )
+
+            if len(region_set) > MAX_REGION_NUMBER:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Too many regions in the BED file. Please provide a BED file with less than 1,000,000 regions.",
+                )
 
             results = bbagent.bed.bed_to_bed_search(
                 region_set, limit=limit, offset=offset
