@@ -502,6 +502,11 @@ async def bed_to_bed_search(
     file: UploadFile = File(None), limit: int = 10, offset: int = 0
 ):
     _LOGGER.info("Searching for bedfiles...")
+    if file.size > 20 * 1024 * 1024: # 20MB
+        raise HTTPException(
+            status_code=413,
+            detail="File too large. Maximum file size is 20MB.",
+        )
 
     if file is not None:
         with tempfile.TemporaryDirectory() as dirpath:
