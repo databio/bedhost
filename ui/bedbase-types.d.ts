@@ -1488,6 +1488,10 @@ export interface components {
             file_organism: {
                 [key: string]: number;
             };
+            /** File Assay */
+            file_assay: {
+                [key: string]: number;
+            };
             /** Geo Status */
             geo_status: {
                 [key: string]: number;

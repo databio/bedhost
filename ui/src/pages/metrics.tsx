@@ -193,6 +193,27 @@ export const Metrics = () => {
               <div
                 className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
                 onClick={() => setMetricModalProps({
+                  title: 'BED Files by Assay Type',
+                  type: 'bar',
+                  data: Object.entries(detailedStats?.file_assay || {}),
+                  xlab: 'Assay Type',
+                  ylab: 'Number of BED Files',
+                  color: 3,
+                })}
+              >
+                <h6 className="fw-semibold">BED Files by Assay Type</h6>
+                <MetricPlot
+                  type="bar"
+                  data={Object.entries(detailedStats?.file_assay || {})}
+                  xlab="Assay Type"
+                  ylab="Number of BED Files"
+                  color={6}
+                  action={false}
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                onClick={() => setMetricModalProps({
                   title: 'BED Comments',
                   type: 'bar',
                   data: Object.entries(detailedStats?.bed_comments || {}),
@@ -243,37 +264,6 @@ export const Metrics = () => {
                 />
               </div>
 
-              <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
-                onClick={() => setMetricModalProps({
-                  title: 'BED Mean Region Width Histogram',
-                  type: 'hist',
-                  data: transformHistogramData(
-                    Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
-                    Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : [],
-                  ),
-                  median: detailedStats?.mean_region_width?.median,
-                  xlab: 'Mean Region Width',
-                  ylab: 'Counts',
-                  color: 8,
-                  angle: false,
-                })}
-              >
-                <h6 className="fw-semibold">BED Mean Region Width Histogram</h6>
-                <MetricPlot
-                  type="hist"
-                  data={transformHistogramData(
-                    Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
-                    Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : [],
-                  )}
-                  median={detailedStats?.mean_region_width?.median}
-                  xlab="Mean Region Width"
-                  ylab="Counts"
-                  color={8}
-                  angle={false}
-                  action={false}
-                />
-              </div>
             </Col>
 
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
@@ -369,6 +359,37 @@ export const Metrics = () => {
                   xlab="Number of Regions"
                   ylab="Counts"
                   color={7}
+                  angle={false}
+                  action={false}
+                />
+              </div>
+              <div
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                onClick={() => setMetricModalProps({
+                  title: 'BED Mean Region Width Histogram',
+                  type: 'hist',
+                  data: transformHistogramData(
+                    Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
+                    Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : [],
+                  ),
+                  median: detailedStats?.mean_region_width?.median,
+                  xlab: 'Mean Region Width',
+                  ylab: 'Counts',
+                  color: 8,
+                  angle: false,
+                })}
+              >
+                <h6 className="fw-semibold">BED Mean Region Width Histogram</h6>
+                <MetricPlot
+                  type="hist"
+                  data={transformHistogramData(
+                    Array.isArray(detailedStats?.mean_region_width?.bins) ? detailedStats.mean_region_width.bins : [],
+                    Array.isArray(detailedStats?.mean_region_width?.counts) ? detailedStats.mean_region_width.counts : [],
+                  )}
+                  median={detailedStats?.mean_region_width?.median}
+                  xlab="Mean Region Width"
+                  ylab="Counts"
+                  color={8}
                   angle={false}
                   action={false}
                 />
