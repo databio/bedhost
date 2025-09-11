@@ -1,10 +1,10 @@
 import subprocess
 
 try:
-    from typing import Annotated, Any, Dict, List, Optional
+    from typing import Annotated, Any, Dict, List, Optional, Union
 except ImportError:
     from typing_extensions import Annotated
-    from typing import Dict, Optional, List, Any
+    from typing import Dict, Optional, List, Any, Union
 
 import os
 import shutil
@@ -35,7 +35,7 @@ from fastapi.responses import PlainTextResponse
 from gtars.models import RegionSet
 
 from .. import _LOGGER
-from ..const import EXAMPLE_BED
+from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WIDTH
 from ..data_models import CROM_NUMBERS, BaseListResponse, BedDigest
 from ..main import bbagent, usage_data
 from ..helpers import count_requests
@@ -347,7 +347,7 @@ def get_regions_for_bedfile(
         )
 
 
-@router.post(
+@router.get(
     "/search/text",
     summary="Search for a BedFile",
     tags=["search"],
@@ -356,7 +356,11 @@ def get_regions_for_bedfile(
 )
 @count_requests(usage_data, event="bed_search")
 async def text_to_bed_search(
-    query: str, genome: Optional[str] = "hg38", limit: int = 10, offset: int = 0
+    query: str,
+    genome: Optional[Union[str, None]] = None,
+    assay: Optional[Union[str, None]] = None,
+    limit: int = 10,
+    offset: int = 0,
 ):
     """
     Search for a BedFile by a text query.
@@ -368,63 +372,123 @@ async def text_to_bed_search(
     _LOGGER.info(
         f"Searching for: '{query}' with limit='{limit}' and offset='{offset}' and genome='{genome}'"
     )
+    #
+    # # results_sql = bbagent.bed.sql_search(
+    # #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
+    # # )
+    # #
+    # # if results_sql.count > results_sql.offset:
+    # #     qdrant_offset = offset - results_sql.offset
+    # # else:
+    # #     qdrant_offset = offset - results_sql.count
+    # #
+    # # results_qdr = bbagent.bed.text_to_bed_search(
+    # #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
+    # # )
+    # #
+    # # results = BedListSearchResult(
+    # #     count=results_qdr.count,
+    # #     limit=limit,
+    # #     offset=offset,
+    # #     results=(results_sql.results + results_qdr.results)[0:limit],
+    # # )
+    # query = query.strip()
+    #
+    # if not genome or genome == "hg38":
 
-    # results_sql = bbagent.bed.sql_search(
-    #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
-    # )
-    #
-    # if results_sql.count > results_sql.offset:
-    #     qdrant_offset = offset - results_sql.offset
-    # else:
-    #     qdrant_offset = offset - results_sql.count
-    #
-    # results_qdr = bbagent.bed.text_to_bed_search(
-    #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
-    # )
-    #
-    # results = BedListSearchResult(
-    #     count=results_qdr.count,
-    #     limit=limit,
-    #     offset=offset,
-    #     results=(results_sql.results + results_qdr.results)[0:limit],
-    # )
-    query = query.strip()
-
-    if not genome or genome == "hg38":
-        spaceless_query = query.replace(" ", "")
-        if len(spaceless_query) == 32 and spaceless_query == query:
+    spaceless_query = query.replace(" ", "")
+    if len(spaceless_query) == 32 and spaceless_query == query:
+        try:
+            result = QdrantSearchResult(
+                id=query,
+                payload={},
+                score=1.0,
+                metadata=bbagent.bed.get(query),
+            )
             try:
                 similar_results = bbagent.bed.get_neighbours(
                     query, limit=limit, offset=offset
                 )
-
                 if similar_results.results and offset == 0:
-
-                    result = QdrantSearchResult(
-                        id=query,
-                        payload={},
-                        score=1.0,
-                        metadata=bbagent.bed.get(query),
-                    )
-
                     similar_results.results.insert(0, result)
-                return similar_results
             except Exception as _:
-                pass
+                similar_results = BedListSearchResult(
+                    count=1,
+                    limit=100,
+                    offset=0,
+                    results=[result],
+                )
 
-        results = bbagent.bed.text_to_bed_search(
-            query,
-            limit=limit,
-            offset=offset,
+            return similar_results
+        except Exception as _:
+            pass
+
+    spaceless_query_lower = spaceless_query.lower()
+    if any(
+        [
+            spaceless_query_lower.startswith("gsm"),
+            spaceless_query_lower.startswith("encff"),
+            spaceless_query_lower.startswith("gse"),
+            spaceless_query_lower.startswith("geo:"),
+            spaceless_query_lower.startswith("encode:"),
+        ]
+    ):
+        _LOGGER.info("Searching for GSM or ENCODE accession")
+
+        spaceless_query_lower = spaceless_query_lower.replace("geo:", "").replace(
+            "encode:", ""
         )
-    else:
-        results = bbagent.bed.sql_search(
-            query, limit=limit, offset=offset, genome=genome
-        )
+
+        if spaceless_query_lower.startswith("gsm") or spaceless_query_lower.startswith(
+            "gse"
+        ):
+            result = bbagent.bed.search_external_file(
+                source="geo", accession=spaceless_query_lower
+            )
+            if result.count != 0:
+                return result
+
+        elif spaceless_query_lower.startswith("encff"):
+            result = bbagent.bed.search_external_file(
+                source="encode", accession=spaceless_query_lower.upper()
+            )
+            if result.count != 0:
+                return result
+
+    results = bbagent.bed.semantic_search(
+        query,
+        genome_alias=genome,
+        assay=assay,
+        limit=limit,
+        offset=offset,
+    )
 
     if results:
         return results
     raise HTTPException(status_code=404, detail="No records found")
+
+
+@router.get(
+    "/search/exact",
+    summary="Search for exact match of metadata in bed files",
+    tags=["search"],
+    response_model=BedListSearchResult,
+    response_model_by_alias=False,
+)
+async def exact_search(
+    query: str,
+    genome: Optional[Union[str, None]] = None,
+    assay: Optional[Union[str, None]] = None,
+    limit: int = 10,
+    offset: int = 0,
+):
+    return bbagent.bed.sql_search(
+        query=query,
+        genome=genome,
+        assay=assay,
+        limit=limit,
+        offset=offset,
+    )
 
 
 @router.post(
@@ -438,6 +502,12 @@ async def bed_to_bed_search(
     file: UploadFile = File(None), limit: int = 10, offset: int = 0
 ):
     _LOGGER.info("Searching for bedfiles...")
+    print("file size {}", file.size)
+    if file.size > MAX_FILE_SIZE:
+        raise HTTPException(
+            status_code=413,
+            detail="File too large. Maximum file size is 20MB.",
+        )
 
     if file is not None:
         with tempfile.TemporaryDirectory() as dirpath:
@@ -446,12 +516,36 @@ async def bed_to_bed_search(
             with open(file_path, "wb") as bed_file:
                 shutil.copyfileobj(file.file, bed_file)
 
-            region_set = RegionSet(file_path)
+            try:
+                region_set = RegionSet(file_path)
+            except Exception as e:
+                _LOGGER.error(f"Error reading bed file: {e}")
+                raise HTTPException(
+                    status_code=415,
+                    detail="Error reading bed file. Please make sure the file is a valid BED file.",
+                )
+
+            if region_set.mean_region_width() < MIN_REGION_WIDTH:
+                raise HTTPException(
+                    status_code=415,
+                    detail="Mean region width is too small. Please provide a BED file with mean region width greater than 10.",
+                )
+
+            if len(region_set) > MAX_REGION_NUMBER:
+                raise HTTPException(
+                    status_code=415,
+                    detail="Too many regions in the BED file. Please provide a BED file with less than 1,000,000 regions.",
+                )
 
             results = bbagent.bed.bed_to_bed_search(
                 region_set, limit=limit, offset=offset
             )
-    return results
+        return results
+
+    return HTTPException(
+        status_code=404,
+        detail="Error occurred, please make sure file is correct and if issue persists, contact support.",
+    )
 
 
 @router.get(

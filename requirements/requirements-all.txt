@@ -1,5 +1,5 @@
-# bbconf @ git+https://github.com/databio/bbconf.git@dev#egg=bbconf
-bbconf>=0.11.4
+# bbconf @ git+https://github.com/databio/bbconf.git@comp_search#egg=bbconf
+bbconf>=0.12.0
 fastapi>=0.103.0
 logmuse>=0.2.7
 markdown
@@ -11,3 +11,5 @@ pephubclient>=0.4.1
 psycopg[binary,pool]
 python-multipart>=0.0.9
 APScheduler>=3.11.0
+cachetools>=4.2.4
+

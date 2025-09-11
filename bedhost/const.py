@@ -13,3 +13,8 @@ EXAMPLE_BEDSET = "gse218680"
 USAGE_SAVE_HOURS = 1
 # For how many days record usage data (every month this will be reset)
 USAGE_RECORD_DAYS = 30
+
+
+MAX_FILE_SIZE = 1024 * 1024 * 2
+MAX_REGION_NUMBER = 5000000
+MIN_REGION_WIDTH = 10

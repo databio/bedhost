@@ -2,12 +2,13 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AxiosProvider } from './contexts/api-context.tsx';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BedCartProvider } from './contexts/bedcart-context.tsx';
-import { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
 import { Metrics } from './pages/metrics.tsx';
+import { UMAPGraph } from './pages/visualization.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 
 // css stuff
@@ -29,6 +30,19 @@ const queryClient = new QueryClient({
       retry: false,
     },
   },
+  queryCache: new QueryCache({
+    onError: (error: any) => {
+      if (error.response && error.response.status === 413) {
+        toast.error(`${error.response.data.detail}`);
+      return;}
+      if (error.response && error.response.status === 415) {
+        toast.error(`${error.response.data.detail}`);
+      return;}
+      //
+      // console.error(error);
+      // toast.error(`Something went wrong: ${error.message}`);
+    }
+  }),
 });
 
 // create the router
@@ -60,6 +74,10 @@ const router = createBrowserRouter([
   {
     path: '*',
     element: <div>Not Found</div>,
+  },
+  {
+    path: '/umap',
+    element: <UMAPGraph />,
   },
 ]);
 

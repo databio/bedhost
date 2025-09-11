@@ -15,7 +15,7 @@ type BedGenomeStats = components['schemas']['RefGenValidReturnModel'];
 type Props = {
   metadata: BedMetadata;
   record_identifier: string | undefined;
-  genomeStats: BedGenomeStats;
+  genomeStats: BedGenomeStats | undefined;
 };
 
 export const BedSplashHeader = (props: Props) => {
@@ -72,6 +72,15 @@ export const BedSplashHeader = (props: Props) => {
         )}
 
         <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
+
+          {(metadata?.processed && metadata?.genome_alias == 'hg38') &&
+            <a href={`/umap?searchId=${record_identifier}`}>
+              <button className="btn btn-outline-primary btn-sm">
+                <i className="bi bi-globe2 me-1" />
+                Visualize
+              </button>
+            </a>
+          }
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-info-circle me-1" />
@@ -105,7 +114,7 @@ export const BedSplashHeader = (props: Props) => {
                   );
                   return;
                 }
-                
+
                 // Create the bed item object with all required fields
                 const bedItem = {
                   id: record_identifier,
@@ -117,7 +126,7 @@ export const BedSplashHeader = (props: Props) => {
                   description: metadata.description || '',
                   assay: metadata.annotation?.assay || 'N/A',
                 };
-                
+
                 addBedToCart(bedItem);
                 setAddedToCart(true);
                 setTimeout(() => {
@@ -340,13 +349,15 @@ export const BedSplashHeader = (props: Props) => {
           </div>
         </div>
       </div>
-      <RefGenomeModal
-        show={showRefGenomeModal}
-        onHide={() => {
-          setShowRefGenomeModal(false);
-        }}
-        genomeStats={genomeStats}
-      />
+      {genomeStats?.compared_genome &&
+        <RefGenomeModal
+          show={showRefGenomeModal}
+          onHide={() => {
+            setShowRefGenomeModal(false);
+          }}
+          genomeStats={genomeStats}
+        />
+      }
     </div>
   );
 };

@@ -62,7 +62,7 @@ export const BedsetSplash = () => {
       </Layout>
     );
   } else if (error) {
-    if ((error as AxiosError)?.response?.status === 404) {
+    if ((error as AxiosError)?.response?.status || 200 in [404, 422]) {
       return (
         <Layout title={`BEDbase | ${bedsetId}`} footer>
           <div

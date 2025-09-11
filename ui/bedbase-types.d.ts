@@ -98,6 +98,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/detailed-usage": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get detailed usage statistics for BEDbase platform
+         * @description Returns detailed usage statistics
+         */
+        get: operations["get_detailed_usage_v1_detailed_usage_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/genomes": {
         parameters: {
             query?: never;
@@ -110,6 +130,26 @@ export interface paths {
          * @description Returns statistics
          */
         get: operations["get_bedbase_db_stats_v1_genomes_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/assays": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get available assays
+         * @description Returns statistics
+         */
+        get: operations["get_bedbase_db_stats_v1_assays_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -436,9 +476,28 @@ export interface paths {
         /**
          * Search for a BedFile
          * @description Search for a BedFile by a text query.
+         *
+         *     By default, it searches in the 'hg38' genome. To search in a different genome, specify the `genome` parameter. eg. mm10
          *     Example: query="cancer"
          */
         post: operations["text_to_bed_search_v1_bed_search_text_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/bed/search/exact": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Search for exact match of metadata in bed files */
+        post: operations["text_to_bed_search_v1_bed_search_exact_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1317,6 +1376,17 @@ export interface components {
             /** Promoterprox Percentage */
             promoterprox_percentage?: number | null;
         };
+        /** BinValues */
+        BinValues: {
+            /** Bins */
+            bins: (number | string)[];
+            /** Counts */
+            counts: number[];
+            /** Mean */
+            mean: number;
+            /** Median */
+            median: number;
+        };
         /** Body_bed_to_bed_search_v1_bed_search_bed_post */
         Body_bed_to_bed_search_v1_bed_search_bed_post: {
             /**
@@ -1418,6 +1488,37 @@ export interface components {
             file_organism: {
                 [key: string]: number;
             };
+            /** File Assay */
+            file_assay: {
+                [key: string]: number;
+            };
+            /** Geo Status */
+            geo_status: {
+                [key: string]: number;
+            };
+            /** Bed Comments */
+            bed_comments: {
+                [key: string]: number;
+            };
+            mean_region_width: components["schemas"]["BinValues"];
+            file_size: components["schemas"]["BinValues"];
+            number_of_regions: components["schemas"]["BinValues"];
+            geo: components["schemas"]["GEOStatistics"];
+        };
+        /**
+         * GEOStatistics
+         * @description GEO statistics for files.
+         */
+        GEOStatistics: {
+            /** Number Of Files */
+            number_of_files: {
+                [key: string]: number;
+            };
+            /** Cumulative Number Of Files */
+            cumulative_number_of_files: {
+                [key: string]: number;
+            };
+            file_sizes: components["schemas"]["BinValues"];
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -1446,6 +1547,7 @@ export interface components {
             /** Provided Genome */
             provided_genome: string;
             /** Compared Genome */
+            genome_digest: string;
             compared_genome: string;
             /**
              * Xs
@@ -1647,6 +1749,29 @@ export interface components {
             /** Bedset Id */
             bedset_id?: string | null;
         };
+        /** UsageStats */
+        UsageStats: {
+            /** Bed Metadata */
+            bed_metadata: {
+                [key: string]: number;
+            };
+            /** Bedset Metadata */
+            bedset_metadata: {
+                [key: string]: number;
+            };
+            /** Bed Search Terms */
+            bed_search_terms: {
+                [key: string]: number;
+            };
+            /** Bedset Search Terms */
+            bedset_search_terms: {
+                [key: string]: number;
+            };
+            /** Bed Downloads */
+            bed_downloads: {
+                [key: string]: number;
+            };
+        };
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1747,7 +1872,9 @@ export interface operations {
     };
     get_detailed_stats_v1_detailed_stats_get: {
         parameters: {
-            query?: never;
+            query?: {
+                concise?: boolean;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -1763,9 +1890,58 @@ export interface operations {
                     "application/json": components["schemas"]["FileStats"];
                 };
             };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_detailed_usage_v1_detailed_usage_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UsageStats"];
+                };
+            };
         };
     };
     get_bedbase_db_stats_v1_genomes_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BaseListResponse"];
+                };
+            };
+        };
+    };
+    get_bedbase_db_stats_v1_assays_get: {
         parameters: {
             query?: never;
             header?: never;
@@ -2264,6 +2440,43 @@ export interface operations {
         parameters: {
             query: {
                 query: string;
+                genome?: string | null;
+                assay?: string | null;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BedListSearchResult"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    text_to_bed_search_v1_bed_search_exact_post: {
+        parameters: {
+            query: {
+                query: string;
+                genome?: string | null;
+                assay?: string | null;
                 limit?: number;
                 offset?: number;
             };
