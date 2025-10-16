@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Layout } from '../components/layout.tsx';
-import { RegionSet } from 'gtars-js';
+import { RegionSet } from '@databio/gtars';
 import { handleBedFileInput, type BedEntry } from '../utils.ts';
 
 export const BEDAnalytics = () => {
