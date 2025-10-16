@@ -9,6 +9,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
 import { Metrics } from './pages/metrics.tsx';
 import { UMAPGraph } from './pages/visualization.tsx';
+import { BEDAnalytics } from './pages/bed-analytics.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 
 // css stuff
@@ -78,6 +79,10 @@ const router = createBrowserRouter([
   {
     path: '/umap',
     element: <UMAPGraph />,
+  },
+  {
+    path: '/qc',
+    element: <BEDAnalytics />,
   },
 ]);
 
