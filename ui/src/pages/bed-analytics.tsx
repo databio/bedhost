@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
 import { Layout } from '../components/layout.tsx';
-import { RegionSet } from '@databio/gtars';
+import { RegionSet, ChromosomeStats } from '@databio/gtars';
 import { handleBedFileInput, type BedEntry } from '../utils.ts';
+import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
 
 export const BEDAnalytics = () => {
   const [regionsetRegions, setregionsetRegions] = useState<BedEntry[] | null>(null);
@@ -10,6 +11,15 @@ export const BEDAnalytics = () => {
   const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
   const [totalProcessingTime, setTotalProcessingTime] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  };
 
   const initializeRegionSet = async () => {
     if (selectedFile) {
@@ -34,7 +44,7 @@ export const BEDAnalytics = () => {
             const endTime = performance.now();
             const totalTimeMs = endTime - startTime;
 
-            console.log(rs.digest());
+            console.log(rs.digest);
             setRs(rs);
             setTotalProcessingTime(totalTimeMs);
             setLoadingRS(false);
@@ -65,19 +75,22 @@ export const BEDAnalytics = () => {
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) {
+                // unload any previous results when a new file is selected
+                setRs(null);
+                setregionsetRegions(null);
+                setTotalProcessingTime(null);
                 setSelectedFile(file);
               }
             }}
           />
           {selectedFile && (
-            <p className="text-muted small mx-1">
-              Selected file: {selectedFile.name}
-            </p>
-          )}
-          {regionsetRegions && (
-            <p className="text-muted small mx-1">
-              {regionsetRegions.length} regions loaded from BED file
-            </p>
+            <div className="text-muted small mx-1">
+              <div>Selected file: {selectedFile.name}</div>
+              <div>File size: {formatFileSize(selectedFile.size)}</div>
+              {Rs && totalProcessingTime !== null && (
+                <div>Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s</div>
+              )}
+            </div>
           )}
         </div>
 
@@ -140,32 +153,33 @@ export const BEDAnalytics = () => {
           <div className="mt-3">
             {Rs && (
               <div>
-                <table className="table table-sm mb-0">
-                  <tbody>
-                  <tr>
-                    <th scope="row">Mean region width</th>
-                    <td>{Rs.mean_region_width}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Total number of regions</th>
-                    <td>{Rs.number_of_regions}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Total number of nucleotides</th>
-                    <td>{Rs.total_nucleotides}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Identifier</th>
-                    <td>{Rs.digest()}</td>
-                  </tr>
-                  {totalProcessingTime !== null && (
+                <div className="mt-3 p-3 border rounded shadow-sm bg-white">
+                  <table className="table table-sm mb-0">
+                    <tbody>
                     <tr>
-                      <th scope="row">Total processing time</th>
-                      <td>{(totalProcessingTime / 1000).toFixed(3)} seconds</td>
+                      <th scope="row">Identifier</th>
+                      <td>{Rs.digest}</td>
                     </tr>
-                  )}
-                  </tbody>
-                </table>
+                    <tr>
+                      <th scope="row">Mean region width</th>
+                      <td>{Rs.mean_region_width}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Total number of regions</th>
+                      <td>{Rs.number_of_regions}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">Total number of nucleotides</th>
+                      <td>{Rs.total_nucleotides}</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div className="mt-5">
+                  <h3>Interval chromosome length statistics</h3>
+
+                  {Rs.calculate_statistics && <ChromosomeStatsPanel Rs={Rs} selectedFile={selectedFile} />}
+                </div>
               </div>
             )}
           </div>
