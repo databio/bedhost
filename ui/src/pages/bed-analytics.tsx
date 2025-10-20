@@ -11,7 +11,8 @@ export const BEDAnalytics = () => {
   const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
   const [totalProcessingTime, setTotalProcessingTime] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const [inputMode, setInputMode] = useState<'file' | 'url'>('file');
+  const [bedUrl, setBedUrl] = useState<string>('');
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 B';
@@ -21,24 +22,44 @@ export const BEDAnalytics = () => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const fetchBedFromUrl = async (url: string): Promise<File> => {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch BED file: ${response.statusText}`);
+    }
+    const blob = await response.blob();
+    const fileName = url.split('/').pop() || 'remote-bed-file.bed';
+    return new File([blob], fileName, { type: 'text/plain' });
+  };
+
   const initializeRegionSet = async () => {
-    if (selectedFile) {
+    let fileToProcess: File | null = null;
+
+    if (inputMode === 'file' && selectedFile) {
+      fileToProcess = selectedFile;
+    } else if (inputMode === 'url' && bedUrl.trim()) {
+      try {
+        fileToProcess = await fetchBedFromUrl(bedUrl.trim());
+      } catch (error) {
+        console.error('Error fetching URL:', error);
+        return;
+      }
+    }
+
+    if (fileToProcess) {
       setLoadingRS(true);
       setTotalProcessingTime(null);
 
       try {
-        // Start timing from the beginning of file loading
         const startTime = performance.now();
 
-        // Create a synthetic event for handleBedFileInput
         const syntheticEvent = {
-          target: { files: [selectedFile] },
+          target: { files: [fileToProcess] },
         } as unknown as Event;
 
         await handleBedFileInput(syntheticEvent, (entries) => {
           setregionsetRegions(entries);
 
-          // Process the RegionSet immediately after loading
           setTimeout(() => {
             const rs = new RegionSet(entries);
             const endTime = performance.now();
@@ -57,64 +78,118 @@ export const BEDAnalytics = () => {
     }
   };
 
+  const clearAll = () => {
+    setRs(null);
+    setregionsetRegions(null);
+    setTotalProcessingTime(null);
+    setSelectedFile(null);
+    setBedUrl('');
+    if (regionsetFileInputRef.current) {
+      regionsetFileInputRef.current.value = '';
+    }
+  };
+
   return (
     <Layout footer title="BEDbase" fullHeight>
       <h1 className="text-center mt-4">BED analyzer</h1>
       <div className="container-fluid d-flex flex-column p-3">
-        <div className="d-flex flex-column gap-1">
-          <label className="fw-bold">Provide BED file</label>
-          <input
-            ref={regionsetFileInputRef}
-            className="form-control p-3 border-2 border-dashed rounded shadow-sm"
-            style={{
-              borderColor: '#d1d5db',
-              cursor: 'pointer',
-              transition: 'border-color 0.2s',
-            }}
-            type="file"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) {
-                // unload any previous results when a new file is selected
-                setRs(null);
-                setregionsetRegions(null);
-                setTotalProcessingTime(null);
-                setSelectedFile(file);
-              }
-            }}
-          />
-          {selectedFile && (
-            <div className="text-muted small mx-1">
-              <div>Selected file: {selectedFile.name}</div>
-              <div>File size: {formatFileSize(selectedFile.size)}</div>
-              {Rs && totalProcessingTime !== null && (
-                <div>Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s</div>
+        <div className="d-flex flex-column gap-3">
+          <div className="d-flex gap-3">
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="inputMode"
+                id="fileMode"
+                checked={inputMode === 'file'}
+                onChange={() => setInputMode('file')}
+              />
+              <label className="form-check-label" htmlFor="fileMode">
+                Upload file
+              </label>
+            </div>
+            <div className="form-check">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="inputMode"
+                id="urlMode"
+                checked={inputMode === 'url'}
+                onChange={() => setInputMode('url')}
+              />
+              <label className="form-check-label" htmlFor="urlMode">
+                From URL
+              </label>
+            </div>
+          </div>
+
+          {inputMode === 'file' ? (
+            <div className="d-flex flex-column gap-1">
+              <label className="fw-bold">Provide BED file</label>
+              <input
+                ref={regionsetFileInputRef}
+                className="form-control p-3 border-2 border-dashed rounded shadow-sm"
+                type="file"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    clearAll();
+                    setSelectedFile(file);
+                  }
+                }}
+              />
+              {selectedFile && (
+                <div className="text-muted small mx-1">
+                  <div>Selected file: {selectedFile.name}</div>
+                  <div>File size: {formatFileSize(selectedFile.size)}</div>
+                </div>
               )}
+            </div>
+          ) : (
+            <div className="d-flex flex-column gap-1">
+              <label className="fw-bold">BED file URL</label>
+              <input
+                type="url"
+                className="form-control"
+                placeholder="https://example.com/file.bed"
+                value={bedUrl}
+                onChange={(e) => {
+                  setBedUrl(e.target.value);
+                  if (Rs) clearAll();
+                }}
+              />
+              {bedUrl && (
+                <div className="text-muted small mx-1">
+                  URL: {bedUrl}
+                </div>
+              )}
+            </div>
+          )}
+
+          {Rs && totalProcessingTime !== null && (
+            <div className="text-muted small mx-1">
+              Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s
             </div>
           )}
         </div>
 
-        <div className="d-flex flex-row align-items-center justify-content-end gap-2 mt-1">
+        <div className="d-flex flex-row align-items-center justify-content-end gap-2 mt-3">
           <button
-            disabled={selectedFile === null || Rs !== null || loadingRS}
+            disabled={
+              (inputMode === 'file' && !selectedFile) ||
+              (inputMode === 'url' && !bedUrl.trim()) ||
+              Rs !== null ||
+              loadingRS
+            }
             className="btn btn-primary"
             onClick={initializeRegionSet}
           >
             Analyze RegionSet
           </button>
           <button
-            disabled={Rs === null && selectedFile === null}
-            className="btn btn-danger"
-            style={{ width: '150px' }}
-            onClick={() => {
-              setRs(null);
-              setregionsetRegions(null);
-              setTotalProcessingTime(null);
-              setSelectedFile(null);
-              if (regionsetFileInputRef.current) {
-                regionsetFileInputRef.current.value = '';
-              }
-            }}
+            disabled={Rs === null && selectedFile === null && !bedUrl.trim()}
+            className="btn btn-danger w-25"
+            onClick={clearAll}
           >
             Unload
           </button>
@@ -124,11 +199,7 @@ export const BEDAnalytics = () => {
           {loadingRS && (
             <div
               className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill">
-              <div
-                className="spinner-border spinner-border-sm text-success"
-                role="status"
-                style={{ width: '12px', height: '12px' }}
-              >
+              <div className="spinner-border spinner-border-sm text-success">
                 <span className="visually-hidden">Loading...</span>
               </div>
               <span className="small text-success fw-medium">
@@ -140,10 +211,7 @@ export const BEDAnalytics = () => {
           {Rs && !loadingRS && (
             <div
               className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill">
-              <div
-                className="bg-primary rounded-circle"
-                style={{ width: '8px', height: '8px' }}
-              />
+              <div className="bg-primary rounded-circle p-1" />
               <span className="small text-primary fw-medium">
                 Results ready
               </span>
@@ -166,7 +234,7 @@ export const BEDAnalytics = () => {
                     </tr>
                     <tr>
                       <th scope="row">Total number of regions</th>
-                      <td>{Rs.number_of_regions}</td>
+                      <td>{Rs.total_nucleotides}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of nucleotides</th>
@@ -177,8 +245,9 @@ export const BEDAnalytics = () => {
                 </div>
                 <div className="mt-5">
                   <h3>Interval chromosome length statistics</h3>
-
-                  {Rs.calculate_statistics && <ChromosomeStatsPanel Rs={Rs} selectedFile={selectedFile} />}
+                  {Rs.calculate_statistics && (
+                    <ChromosomeStatsPanel Rs={Rs} selectedFile={selectedFile} />
+                  )}
                 </div>
               </div>
             )}
