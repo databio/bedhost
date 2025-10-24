@@ -118,6 +118,14 @@ export const snakeToTitleCase = (str: string) => {
     .join(' ');
 };
 
+export const toTitleCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
+
 export const convertStatusCodeToMessage = (statusCode: number | undefined) => {
   if (statusCode === undefined) {
     return 'Unknown Error';

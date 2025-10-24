@@ -35,7 +35,6 @@ export const BedSplashHeader = (props: Props) => {
       <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-1">
         <div className="d-flex align-items-center overflow-x-auto w-100">
           <h4 className="fw-bold d-flex align-items-center flex-nowrap">
-            <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
             <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
             <button
               className="btn btn-link text-primary mb-1"
@@ -188,8 +187,8 @@ export const BedSplashHeader = (props: Props) => {
         </div>
       </div>
       <div>
-        <h5 className="fw-semibold mb-1">{metadata.name}</h5>
-        <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
+        <h5 className="mb-1">{metadata.name}</h5>
+        <p className="text-muted fst-italic text-sm">{metadata?.description || 'No description available'}</p>
       </div>
       <div
         className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">

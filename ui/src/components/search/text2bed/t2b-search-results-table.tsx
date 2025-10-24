@@ -52,7 +52,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
     <div className="table-responsive">
       <table className="table text-sm table-hover">
         <thead>
-        <tr>
+        <tr className='text-nowrap'>
           <th scope="col">Name</th>
           <th scope="col">Genome</th>
           <th scope="col">Tissue</th>

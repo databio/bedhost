@@ -6,28 +6,27 @@ export const NavDesktop = () => {
   const { cart } = useBedCart();
   return (
       <ul className="mb-2 ms-auto d-flex flex-row align-items-center gap-2 list-none mx-5">
-          <li className="text-body mx-2 my-0 nav-item h5 pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
               <a className="nav-link" href="https://github.com/databio/bedhost" target="_blank">
-                  <i className="me-1 bi bi-github text-base"></i>
                   GitHub
               </a>
           </li>
-          <li className="text-body mx-2 my-0 nav-item h5 pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
               <a className="nav-link" href="https://docs.bedbase.org/bedbase/" target="_blank">
-                  <i className="bi bi-file-earmark-text me-1 text-base"></i>Docs
+                  Docs
               </a>
           </li>
-          <li className="text-body mx-2 my-0 nav-item h5 pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
               <a className="nav-link" href={`${API_BASE}`} target="_blank">
-                  <i className="bi bi-info-circle me-1 text-base"></i>API docs
+                  API
               </a>
           </li>
-          <li className="text-body mx-2 my-0 nav-item h5 pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
               <a className="nav-link" href="/search">
-                  <i className="bi bi-search me-1 text-base"></i>Search
+                  Search
               </a>
           </li>
-          <li className="text-body mx-2 my-0 nav-item h5 pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 pt-1">
               <a className="nav-link position-relative" href="/cart">
                   <i className="bi bi-cart-fill"></i>
                   {Object.keys(cart).length > 0 && (

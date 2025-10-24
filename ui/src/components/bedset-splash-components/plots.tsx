@@ -31,14 +31,14 @@ const Plot = (props: PlotProps) => {
       }}
       className="h-100 border rounded p-1 shadow-sm hover-border-primary transition-all"
     >
-      <div className="px-1 d-flex flex-row justify-content-between w-100 mb-1">
-        <span className="fw-bold text-sm text-center w-100 mb-1">{title}</span>
+      <div className="p-1 text-center">
+        <span className="fw-medium text-xs mb-2">{title}</span>
         {/* <button onClick={() => setShow(true)} className="btn btn-sm btn-outline-primary text-xs">
           <i className="bi bi-eye" />
         </button> */}
       </div>
-      <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-        <Image height="300px" src={src} alt={alt} />
+      <div className="text-center">
+        <Image height="250px" src={src} alt={alt} />
       </div>
       <FigureModal
         show={show}
@@ -58,7 +58,7 @@ export const Plots = (props: PlotsProps) => {
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
     <Fragment>
-      <Row className="mb-2 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
+      <Row className="row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
             <Fragment key={idx}>

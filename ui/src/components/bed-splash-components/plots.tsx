@@ -30,16 +30,16 @@ const Plot = (props: PlotProps) => {
           setShow(true);
         }
       }}
-      className="h-100 border rounded p-1 shadow-sm hover-border-primary transition-all"
+      className="h-100 border rounded p-2 shadow-sm hover-border-primary transition-all"
     >
-      <div className="px-1 text-center">
-        <span className="fw-bold text-sm mb-1">{title}</span>
+      <div className="p-1 text-center">
+        <p className="fw-medium text-xs mb-2">{title}</p>
         {/* <button onClick={() => setShow(true)} className="btn btn-sm btn-outline-primary text-xs">
           <i className="bi bi-eye" />
         </button> */}
       </div>
       <div className="text-center">
-        <Image height="300px" src={src} alt={alt} />
+        <Image height="250px" src={src} alt={alt} />
       </div>
       <FigureModal
         show={show}
@@ -58,10 +58,11 @@ const Plot = (props: PlotProps) => {
 export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
 
-  const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
+  // comment out partitions because we already have it in statistics section
+  const plotNames = metadata.plots ? Object.keys(metadata.plots).filter((name: string) => name != 'partitions') : []; 
   return (
     <Fragment>
-      <Row className="mb-2 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
+      <Row className="row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
             <Fragment key={idx}>

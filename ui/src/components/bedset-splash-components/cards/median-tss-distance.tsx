@@ -15,11 +15,8 @@ export const MedianTssDistCard = (props: Props) => {
       tooltip="The median distance of the regions to the nearest transcription start site."
     >
       <div className="text-primary w-100">
-        <h2 className="fw-bolder text-center w-100 text-3xl mb-0">
-          {formatNumberWithCommas(Math.round(metadata?.statistics?.mean?.median_tss_dist || 0))} bp
-        </h2>
-        {/* plus minus */}
-        <h4 className="text-xl">
+        <h4 className="text-primary fw-bolder w-100 mb-0">
+          {formatNumberWithCommas(Math.round(metadata?.statistics?.mean?.median_tss_dist || 0))} {' '}
           ± {formatNumberWithCommas(Math.round(metadata?.statistics?.sd?.median_tss_dist || 0))} bp
         </h4>
       </div>
