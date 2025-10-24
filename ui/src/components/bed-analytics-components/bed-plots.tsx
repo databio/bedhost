@@ -25,12 +25,25 @@ const distributionSpec = (data: any, props: Props = {}) => {
 
   return {
     $schema: 'https://vega-github.io/schema/vega-lite/v6.json',
+    title: {
+      text: 'Region Distribution Plot',
+      fontSize: 24,
+      fontWeight: 'bold',
+      anchor: 'middle',
+      offset: 10,
+    },
     config: {
       axis: {
         grid: false,
       },
       facet: {
         spacing: -1,
+        labelFontSize: 12,
+        titleFontSize: 12,
+      },
+      header: {
+        labelFontSize: 12,
+        titleFontSize: 16,
       },
       view: {
         continuousHeight: 300,
@@ -54,11 +67,11 @@ const distributionSpec = (data: any, props: Props = {}) => {
           labelOrient: 'right',
           labelPadding: 5,
         },
-        // sort: [
-        //   'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
-        //   'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20',
-        //   'chr21', 'chr22', 'chrX', 'chrY', 'chrM',
-        // ],
+        sort: [
+          'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
+          'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20',
+          'chr21', 'chr22', 'chrX', 'chrY', 'chrM',
+        ],
         title: 'Number of Regions',
         type: 'ordinal',
       },

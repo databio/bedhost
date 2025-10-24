@@ -244,7 +244,6 @@ export const BEDAnalytics = () => {
                   )}
                 </div>
                 <div className="mt-5">
-                  {/*<h3>Region Distribution Plot (DATA)</h3>*/}
                   {/*{rs && (*/}
                   {/*  <div className="mb-3">*/}
                   {/*    <pre className="bg-light p-3 border rounded">*/}
