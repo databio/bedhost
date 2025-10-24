@@ -4,7 +4,7 @@ import { RegionSet } from '@databio/gtars';
 import { handleBedFileInput } from '../utils.ts';
 import { bytesToSize } from '../utils.ts';
 import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
-import ChromosomeBarPlot from '../components/bed-analytics-components/bed-plots.tsx';
+import RegionDistributionPlot from '../components/bed-analytics-components/bed-plots.tsx';
 
 export const BEDAnalytics = () => {
 
@@ -244,11 +244,18 @@ export const BEDAnalytics = () => {
                   )}
                 </div>
                 <div className="mt-5">
-                  <h3>Region Distribution Plot (DATA)</h3>
-                    {rs && (
+                  {/*<h3>Region Distribution Plot (DATA)</h3>*/}
+                  {/*{rs && (*/}
+                  {/*  <div className="mb-3">*/}
+                  {/*    <pre className="bg-light p-3 border rounded">*/}
+                  {/*      {JSON.stringify(rs.calculate_region_distribution(), null, 2)}*/}
+                  {/*    </pre>*/}
+                  {/*  </div>*/}
+                  {/*)}*/}
+                  {rs && (
                       <div className="mb-3">
-                        <ChromosomeBarPlot
-                          data={rs.calculate_region_distribution()}
+                        <RegionDistributionPlot
+                          data={rs.calculate_region_distribution(300)}
                           xlab={`Chromosome`}
                           ylab={`Regions`}
                           height={300}

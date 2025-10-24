@@ -38,6 +38,9 @@ const distributionSpec = (data: any, props: Props = {}) => {
         strokeWidth: 0,
         cursor: 'inherit',
       },
+      bar: {
+        continuousBandSize: 2.5, // This controls the bar width without spacing
+      },
     },
     data: {
       values: transformedData,
@@ -51,17 +54,17 @@ const distributionSpec = (data: any, props: Props = {}) => {
           labelOrient: 'right',
           labelPadding: 5,
         },
-        sort: [
-          'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
-          'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20',
-          'chr21', 'chr22', 'chrX', 'chrY', 'chrM',
-        ],
+        // sort: [
+        //   'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
+        //   'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20',
+        //   'chr21', 'chr22', 'chrX', 'chrY', 'chrM',
+        // ],
         title: 'Number of Regions',
         type: 'ordinal',
       },
       x: {
         axis: {
-          // labelExpr: 'datum.value == 0 ? \'start\' : datum.value == 183 ? \'end\' : \'\'',
+          labelExpr: 'datum.value == 0 ? \'start\' : datum.value == 183 ? \'end\' : \'\'',
           values: [0, 300.0],
         },
         field: 'withinGroupID',
@@ -73,7 +76,7 @@ const distributionSpec = (data: any, props: Props = {}) => {
       },
       y: {
         axis: {
-          values: [10.0, 20.0, 30.0],
+          values: [10.0],
         },
         field: 'N',
         title: '',
@@ -82,15 +85,15 @@ const distributionSpec = (data: any, props: Props = {}) => {
     },
     height: 25,
     mark: {
-      cornerRadiusEnd: 0.5,
+      cornerRadiusEnd: -0.5,
       type: 'bar',
       width: 2.5,
     },
-    width: 750,
+    width: 'container',
   };
 };
 
-export const ChromosomeBarPlot = (props: Props) => {
+export const RegionDistributionPlot = (props: Props) => {
   const { data, xlab, ylab, height, color, action } = props;
 
   const plotRef = useRef<HTMLDivElement>(null);
@@ -120,4 +123,4 @@ export const ChromosomeBarPlot = (props: Props) => {
   );
 };
 
-export default ChromosomeBarPlot;
+export default RegionDistributionPlot;
