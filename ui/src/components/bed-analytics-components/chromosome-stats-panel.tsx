@@ -6,8 +6,8 @@ interface Props {
   selectedFile: File | null;
 }
 
-const ChromosomeStatsPanel: React.FC<Props> = ({ Rs, selectedFile }) => {
-  const calc = Rs.calculate_statistics?.();
+const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
+  const calc = rs.calculate_statistics?.();
   if (!calc) return null;
 
   const statsEntries = Array.from(calc.entries())

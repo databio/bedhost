@@ -1,26 +1,22 @@
 import { useState, useRef } from 'react';
 import { Layout } from '../components/layout.tsx';
-import { RegionSet, ChromosomeStats } from '@databio/gtars';
-import { handleBedFileInput, type BedEntry } from '../utils.ts';
+import { RegionSet } from '@databio/gtars';
+import { handleBedFileInput } from '../utils.ts';
+import { bytesToSize } from '../utils.ts';
 import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
+import ChromosomeBarPlot from '../components/bed-analytics-components/bed-plots.tsx';
 
 export const BEDAnalytics = () => {
-  const [regionsetRegions, setregionsetRegions] = useState<BedEntry[] | null>(null);
-  const [Rs, setRs] = useState<RegionSet | null>(null);
+
+  const [rs, setRs] = useState<RegionSet | null>(null);
   const [loadingRS, setLoadingRS] = useState(false);
-  const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
   const [totalProcessingTime, setTotalProcessingTime] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<'file' | 'url'>('file');
   const [bedUrl, setBedUrl] = useState<string>('');
 
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 B';
-    const k = 1024;
-    const sizes = ['B', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
+  const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
+
 
   const fetchBedFromUrl = async (url: string): Promise<File> => {
     const response = await fetch(url);
@@ -58,7 +54,6 @@ export const BEDAnalytics = () => {
         } as unknown as Event;
 
         await handleBedFileInput(syntheticEvent, (entries) => {
-          setregionsetRegions(entries);
 
           setTimeout(() => {
             const rs = new RegionSet(entries);
@@ -78,9 +73,8 @@ export const BEDAnalytics = () => {
     }
   };
 
-  const clearAll = () => {
+  const unloadFile = () => {
     setRs(null);
-    setregionsetRegions(null);
     setTotalProcessingTime(null);
     setSelectedFile(null);
     setBedUrl('');
@@ -133,7 +127,7 @@ export const BEDAnalytics = () => {
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    clearAll();
+                    unloadFile();
                     setSelectedFile(file);
                   }
                 }}
@@ -141,7 +135,7 @@ export const BEDAnalytics = () => {
               {selectedFile && (
                 <div className="text-muted small mx-1">
                   <div>Selected file: {selectedFile.name}</div>
-                  <div>File size: {formatFileSize(selectedFile.size)}</div>
+                  <div>File size: {bytesToSize(selectedFile.size)}</div>
                 </div>
               )}
             </div>
@@ -155,7 +149,7 @@ export const BEDAnalytics = () => {
                 value={bedUrl}
                 onChange={(e) => {
                   setBedUrl(e.target.value);
-                  if (Rs) clearAll();
+                  if (rs) unloadFile();
                 }}
               />
               {bedUrl && (
@@ -166,7 +160,7 @@ export const BEDAnalytics = () => {
             </div>
           )}
 
-          {Rs && totalProcessingTime !== null && (
+          {rs && totalProcessingTime !== null && (
             <div className="text-muted small mx-1">
               Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s
             </div>
@@ -178,7 +172,7 @@ export const BEDAnalytics = () => {
             disabled={
               (inputMode === 'file' && !selectedFile) ||
               (inputMode === 'url' && !bedUrl.trim()) ||
-              Rs !== null ||
+              rs !== null ||
               loadingRS
             }
             className="btn btn-primary"
@@ -187,9 +181,9 @@ export const BEDAnalytics = () => {
             Analyze RegionSet
           </button>
           <button
-            disabled={Rs === null && selectedFile === null && !bedUrl.trim()}
+            disabled={rs === null && selectedFile === null && !bedUrl.trim()}
             className="btn btn-danger w-25"
-            onClick={clearAll}
+            onClick={unloadFile}
           >
             Unload
           </button>
@@ -208,7 +202,7 @@ export const BEDAnalytics = () => {
             </div>
           )}
 
-          {Rs && !loadingRS && (
+          {rs && !loadingRS && (
             <div
               className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill">
               <div className="bg-primary rounded-circle p-1" />
@@ -219,35 +213,52 @@ export const BEDAnalytics = () => {
           )}
 
           <div className="mt-3">
-            {Rs && (
+            {rs && (
               <div>
                 <div className="mt-3 p-3 border rounded shadow-sm bg-white">
                   <table className="table table-sm mb-0">
                     <tbody>
                     <tr>
                       <th scope="row">Identifier</th>
-                      <td>{Rs.digest}</td>
+                      <td>{rs.digest}</td>
                     </tr>
                     <tr>
                       <th scope="row">Mean region width</th>
-                      <td>{Rs.mean_region_width}</td>
+                      <td>{rs.mean_region_width}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of regions</th>
-                      <td>{Rs.total_nucleotides}</td>
+                      <td>{rs.total_nucleotides}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of nucleotides</th>
-                      <td>{Rs.total_nucleotides}</td>
+                      <td>{rs.total_nucleotides}</td>
                     </tr>
                     </tbody>
                   </table>
                 </div>
                 <div className="mt-5">
                   <h3>Interval chromosome length statistics</h3>
-                  {Rs.calculate_statistics && (
-                    <ChromosomeStatsPanel Rs={Rs} selectedFile={selectedFile} />
+                  {rs && (
+                    <ChromosomeStatsPanel rs={rs} selectedFile={selectedFile} />
                   )}
+                </div>
+                <div className="mt-5">
+                  <h3>Region Distribution Plot (DATA)</h3>
+                    {rs && (
+                      <div className="mb-3">
+                        <ChromosomeBarPlot
+                          data={rs.calculate_region_distribution()}
+                          xlab={`Chromosome`}
+                          ylab={`Regions`}
+                          height={300}
+                          color="steelblue"
+                          action={(d) => {
+                            console.log('Chromosome bar clicked:', d);
+                          }}
+                        />
+                      </div>
+                    )}
                 </div>
               </div>
             )}

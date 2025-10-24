@@ -81,7 +81,7 @@ const router = createBrowserRouter([
     element: <UMAPGraph />,
   },
   {
-    path: '/qc',
+    path: '/analyze',
     element: <BEDAnalytics />,
   },
 ]);
