@@ -17,6 +17,7 @@ import { snakeToTitleCase } from '../utils';
 import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table';
 import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
+import { BEDAtlas } from '../components/bed-splash-components/bed-atlas.tsx';
 
 // Use the response type to properly type the metadata
 type BedMetadata = components['schemas']['BedMetadataAll'];
@@ -269,6 +270,8 @@ export const BedSplash = () => {
               <Plots metadata={metadata!} />
             </Col>
           </Row>
+
+          {bedId && <BEDAtlas bedId={bedId}/>}          
 
           {neighbours && (
             <Row className="mb-4 mx-0">

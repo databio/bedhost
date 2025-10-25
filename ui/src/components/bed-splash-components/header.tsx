@@ -152,12 +152,12 @@ export const BedSplashHeader = (props: Props) => {
                 <Dropdown.Menu className="border border-light-subtle shadow-sm">
                   {metadata.files?.bed_file && (
                     <Fragment>
-                      {(metadata.files?.bed_file?.access_methods || []).map((method) => {
+                      {(metadata.files?.bed_file?.access_methods || []).map((method, index) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BED file' : 'No download link available'} (
                             <span className="fw-bold">{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
                           </Dropdown.Item>
@@ -167,12 +167,12 @@ export const BedSplashHeader = (props: Props) => {
                   )}
                   {metadata.files?.bigbed_file && (
                     <Fragment>
-                      {(metadata.files?.bigbed_file?.access_methods || []).map((method) => {
+                      {(metadata.files?.bigbed_file?.access_methods || []).map((method, index) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BigBED file' : 'No download link available'} (
                             <span className="fw-bold">{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
                           </Dropdown.Item>

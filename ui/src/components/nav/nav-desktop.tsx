@@ -6,22 +6,22 @@ export const NavDesktop = () => {
   const { cart } = useBedCart();
   return (
       <ul className="mb-2 ms-auto d-flex flex-row align-items-center gap-2 list-none mx-5">
-          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 pt-1">
               <a className="nav-link" href="https://github.com/databio/bedhost" target="_blank">
                   GitHub
               </a>
           </li>
-          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 pt-1">
               <a className="nav-link" href="https://docs.bedbase.org/bedbase/" target="_blank">
                   Docs
               </a>
           </li>
-          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 pt-1">
               <a className="nav-link" href={`${API_BASE}`} target="_blank">
                   API
               </a>
           </li>
-          <li className="link-primary mx-2 my-0 nav-item fs-5 fw-light pt-1">
+          <li className="link-primary mx-2 my-0 nav-item fs-5 pt-1">
               <a className="nav-link" href="/search">
                   Search
               </a>
