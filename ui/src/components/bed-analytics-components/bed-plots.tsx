@@ -108,8 +108,8 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
     width: 'container',
     autosize: {
       type: 'fit',
-      contains: 'padding'
-    }
+      contains: 'padding',
+    },
   };
 };
 
@@ -125,7 +125,7 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         embed(element, spec as any, {
-          actions: false,
+          actions: { export: true, source: false, compiled: false },
           renderer: 'svg',
         })
           .catch(error => {
@@ -144,7 +144,7 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
   }, [spec]);
 
   return (
-    <div className='d-flex w-100'>
+    <div className="d-flex w-100" style={{ overflow: 'auto', maxHeight: '600px' }}>
       <div className="mx-auto chrom-dist-plot-container" ref={plotRef} />
     </div>
   );
