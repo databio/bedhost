@@ -39,38 +39,93 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
 
   return (
     <div>
-      <div className="mb-3 w-100 overflow-auto">
+      {/*This section is AI rendered. It provides statistics on number of regions per chromosome.*/}
+      <div className="mb-3 w-100">
         <h5>Number of regions per chromosome: </h5>
-        <div className="d-inline-block">
+        <div className="border rounded p-2 bg-light" style={{ overflowX: 'auto'}}>
           <svg
-            width="100%"
-            height="160"
-            viewBox={`0 0 ${Math.max(300, statsEntries.length * 60)} 160`}
+            width={Math.max(400, statsEntries.length * 70)}
+            height="180"
+            viewBox={`0 0 ${Math.max(400, statsEntries.length * 70)} 180`}
             preserveAspectRatio="xMidYMid meet"
+            style={{ minWidth: '400px' }}
           >
             {(() => {
-              const barWidth = 36;
-              const gap = 24;
+              const barWidth = 40;
+              const gap = 30;
               const maxCount = Math.max(...statsEntries.map(s => s.count), 1);
-              const chartHeight = 100;
-              return statsEntries.map((s, i) => {
-                const x = i * (barWidth + gap) + 16;
-                const barH = Math.round((s.count / maxCount) * chartHeight);
-                const y = 20 + (chartHeight - barH);
-                return (
-                  <g key={s.chromosome}>
-                    <rect x={x} y={y} width={barWidth} height={barH} rx={4} fill="#0d6efd" />
-                    <text x={x + barWidth / 2} y={y - 6} textAnchor="middle" fontSize="10" fill="#000">
-                      {s.count}
-                    </text>
-                    <text x={x + barWidth / 2} y={140} textAnchor="middle" fontSize="10" fill="#333">
-                      {s.chromosome}
-                    </text>
-                  </g>
-                );
-              });
+              const chartHeight = 120;
+              const chartTop = 30;
+
+              return (
+                <g>
+                  {/* Grid lines */}
+                  {[0, 0.25, 0.5, 0.75, 1].map(ratio => (
+                    <g key={ratio}>
+                      <line
+                        x1="15"
+                        y1={chartTop + (1 - ratio) * chartHeight}
+                        x2={Math.max(400, statsEntries.length * 70) - 15}
+                        y2={chartTop + (1 - ratio) * chartHeight}
+                        stroke="#e9ecef"
+                        strokeDasharray={ratio === 0 ? 'none' : '2,2'}
+                      />
+                      <text
+                        x="10"
+                        y={chartTop + (1 - ratio) * chartHeight + 3}
+                        textAnchor="end"
+                        fontSize="9"
+                        fill="#666"
+                      >
+                        {Math.round(maxCount * ratio)}
+                      </text>
+                    </g>
+                  ))}
+
+                  {/* Bars */}
+                  {statsEntries.map((s, i) => {
+                    const x = i * (barWidth + gap) + 40;
+                    const barH = Math.max(2, Math.round((s.count / maxCount) * chartHeight));
+                    const y = chartTop + (chartHeight - barH);
+
+                    return (
+                      <g key={s.chromosome}>
+                        <rect
+                          x={x}
+                          y={y}
+                          width={barWidth}
+                          height={barH}
+                          rx={3}
+                          fill="#0d6efd"
+                          stroke="#0856d1"
+                          strokeWidth="0.5"
+                        />
+                        <text
+                          x={x + barWidth / 2}
+                          y={y - 8}
+                          textAnchor="middle"
+                          fontSize="10"
+                          fill="#000"
+                          fontWeight="500"
+                        >
+                          {s.count}
+                        </text>
+                        <text
+                          x={x + barWidth / 2}
+                          y={chartTop + chartHeight + 20}
+                          textAnchor="middle"
+                          fontSize="11"
+                          fill="#333"
+                          fontWeight="500"
+                        >
+                          {s.chromosome}
+                        </text>
+                      </g>
+                    );
+                  })}
+                </g>
+              );
             })()}
-            <line x1="8" y1="20" x2={Math.max(300, statsEntries.length * 60) - 8} y2="20" stroke="#e9ecef" />
           </svg>
         </div>
       </div>

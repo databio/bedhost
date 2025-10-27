@@ -1,18 +1,18 @@
 import { useEffect, useRef } from 'react';
 import embed from 'vega-embed';
 
-
 interface Props {
+  data?: any;
   xlab?: string;
   ylab?: string;
   height?: number;
-  color?: number;
-  angle?: boolean;
-  maxLength?: number;
+  color?: any;
+  maxLength?: any;
+  action?: boolean;
 }
 
 const distributionSpec = (data: any, props: Props = {}) => {
-  const { xlab = 'Label', ylab = 'Value', height = 300, color = 0, angle = false, maxLength = 15 } = props;
+  const { xlab = 'Label', ylab = 'Value', height = 1000, color = 'rgba(0, 128, 128, 0.6)', maxLength = 'container' } = props;
 
   // Transform data to match the new schema requirements
   const transformedData = data.map((item: any, index: number) => ({
@@ -46,13 +46,13 @@ const distributionSpec = (data: any, props: Props = {}) => {
         titleFontSize: 16,
       },
       view: {
-        continuousHeight: 300,
+        continuousHeight: height,
         continuousWidth: 300,
         strokeWidth: 0,
         cursor: 'inherit',
       },
       bar: {
-        continuousBandSize: 2.5, // This controls the bar width without spacing
+        continuousBandSize: 2.5,
       },
     },
     data: {
@@ -62,10 +62,10 @@ const distributionSpec = (data: any, props: Props = {}) => {
       row: {
         field: 'chr',
         header: {
-          labelAlign: 'right',
+          labelAlign: 'left',
           labelAngle: 0,
-          labelOrient: 'right',
-          labelPadding: 5,
+          labelOrient: 'left',
+          labelPadding: 10,
         },
         sort: [
           'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
@@ -74,6 +74,9 @@ const distributionSpec = (data: any, props: Props = {}) => {
         ],
         title: 'Number of Regions',
         type: 'ordinal',
+        color: {
+          value: color,
+        },
       },
       x: {
         axis: {
@@ -88,9 +91,7 @@ const distributionSpec = (data: any, props: Props = {}) => {
         type: 'quantitative',
       },
       y: {
-        axis: {
-          values: [10.0],
-        },
+        axis: null,
         field: 'N',
         title: '',
         type: 'quantitative',
@@ -101,21 +102,27 @@ const distributionSpec = (data: any, props: Props = {}) => {
       cornerRadiusEnd: -0.5,
       type: 'bar',
       width: 2.5,
+      color: color,
     },
-    width: 'container',
+    width: maxLength,
+    autosize: {
+      type: 'fit',
+      contains: 'padding'
+    }
   };
 };
 
 export const RegionDistributionPlot = (props: Props) => {
-  const { data, xlab, ylab, height, color, action } = props;
+  const { data, xlab, ylab, height = 1000, color, action } = props;
 
   const plotRef = useRef<HTMLDivElement>(null);
   const spec = distributionSpec(data, { xlab, ylab, height, color });
 
   useEffect(() => {
-    if (plotRef.current && spec) {
+    const element = plotRef.current;
+    if (element && spec) {
       try {
-        embed(plotRef.current as HTMLDivElement, spec as any, { 'actions': action })
+        embed(element, spec as any, { 'actions': action })
           .catch(error => {
             console.error('Embed error after parsing:', error);
           });
@@ -125,8 +132,8 @@ export const RegionDistributionPlot = (props: Props) => {
     }
 
     return () => {
-      if (plotRef.current) {
-        plotRef.current.innerHTML = '';
+      if (element) {
+        element.innerHTML = '';
       }
     };
   }, [spec, action]);

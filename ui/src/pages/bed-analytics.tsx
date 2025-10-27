@@ -228,7 +228,7 @@ export const BEDAnalytics = () => {
                     </tr>
                     <tr>
                       <th scope="row">Total number of regions</th>
-                      <td>{rs.total_nucleotides}</td>
+                      <td>{rs.number_of_regions}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of nucleotides</th>
