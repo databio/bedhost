@@ -255,13 +255,6 @@ export const BEDAnalytics = () => {
                       <div className="mb-3">
                         <RegionDistributionPlot
                           data={rs.calculate_region_distribution(300)}
-                          xlab={`Chromosome`}
-                          ylab={`Regions`}
-                          height={300}
-                          color="steelblue"
-                          action={(d) => {
-                            console.log('Chromosome bar clicked:', d);
-                          }}
                         />
                       </div>
                     )}

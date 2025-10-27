@@ -2,7 +2,7 @@ import React from 'react';
 import { ChromosomeStats, RegionSet } from '@databio/gtars';
 
 interface Props {
-  Rs: RegionSet;
+  rs: RegionSet;
   selectedFile: File | null;
 }
 

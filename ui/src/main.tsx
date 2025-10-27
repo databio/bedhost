@@ -32,6 +32,7 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       if (error.response && error.response.status === 413) {
         toast.error(`${error.response.data.detail}`);

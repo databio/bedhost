@@ -1,21 +1,24 @@
 import { useEffect, useRef } from 'react';
 import embed from 'vega-embed';
 
-interface Props {
-  data?: any;
-  xlab?: string;
-  ylab?: string;
-  height?: number;
-  color?: any;
-  maxLength?: any;
-  action?: boolean;
+const COLOR = 'rgba(0, 128, 128, 0.6)';
+
+type DistributionSpecDataPoint = {
+  chr: string;
+  start: number;
+  end: number;
+  n: number;
+  rid: number;
 }
 
-const distributionSpec = (data: any, props: Props = {}) => {
-  const { xlab = 'Label', ylab = 'Value', height = 1000, color = 'rgba(0, 128, 128, 0.6)', maxLength = 'container' } = props;
+interface BedPlotsProps {
+  data: DistributionSpecDataPoint[];
+}
+
+const distributionSpec = (data: DistributionSpecDataPoint[]) => {
 
   // Transform data to match the new schema requirements
-  const transformedData = data.map((item: any, index: number) => ({
+  const transformedData = data.map((item: DistributionSpecDataPoint) => ({
     chr: item.chr,
     withinGroupID: item.rid,
     N: item.n,
@@ -46,8 +49,6 @@ const distributionSpec = (data: any, props: Props = {}) => {
         titleFontSize: 16,
       },
       view: {
-        continuousHeight: height,
-        continuousWidth: 300,
         strokeWidth: 0,
         cursor: 'inherit',
       },
@@ -60,6 +61,7 @@ const distributionSpec = (data: any, props: Props = {}) => {
     },
     encoding: {
       row: {
+        title: null,
         field: 'chr',
         header: {
           labelAlign: 'left',
@@ -72,10 +74,9 @@ const distributionSpec = (data: any, props: Props = {}) => {
           'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20',
           'chr21', 'chr22', 'chrX', 'chrY', 'chrM',
         ],
-        title: 'Number of Regions',
         type: 'ordinal',
         color: {
-          value: color,
+          value: COLOR,
         },
       },
       x: {
@@ -93,7 +94,7 @@ const distributionSpec = (data: any, props: Props = {}) => {
       y: {
         axis: null,
         field: 'N',
-        title: '',
+        title: 'Chromosome',
         type: 'quantitative',
       },
     },
@@ -102,9 +103,9 @@ const distributionSpec = (data: any, props: Props = {}) => {
       cornerRadiusEnd: -0.5,
       type: 'bar',
       width: 2.5,
-      color: color,
+      color: COLOR,
     },
-    width: maxLength,
+    width: 'container',
     autosize: {
       type: 'fit',
       contains: 'padding'
@@ -112,17 +113,21 @@ const distributionSpec = (data: any, props: Props = {}) => {
   };
 };
 
-export const RegionDistributionPlot = (props: Props) => {
-  const { data, xlab, ylab, height = 1000, color, action } = props;
+export const RegionDistributionPlot = (props: BedPlotsProps) => {
+  const { data } = props;
 
   const plotRef = useRef<HTMLDivElement>(null);
-  const spec = distributionSpec(data, { xlab, ylab, height, color });
+  const spec = distributionSpec(data);
 
   useEffect(() => {
     const element = plotRef.current;
     if (element && spec) {
       try {
-        embed(element, spec as any, { 'actions': action })
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        embed(element, spec as any, {
+          actions: false,
+          renderer: 'svg',
+        })
           .catch(error => {
             console.error('Embed error after parsing:', error);
           });
@@ -136,10 +141,12 @@ export const RegionDistributionPlot = (props: Props) => {
         element.innerHTML = '';
       }
     };
-  }, [spec, action]);
+  }, [spec]);
 
   return (
-    <div className="w-100" ref={plotRef} />
+    <div className='d-flex w-100'>
+      <div className="mx-auto chrom-dist-plot-container" ref={plotRef} />
+    </div>
   );
 };
 
