@@ -1,7 +1,8 @@
-import { DataPointID, EmbeddingViewMosaic } from 'embedding-atlas/react';
+import { EmbeddingViewMosaic } from 'embedding-atlas/react';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import * as vg from '@uwdata/vgplot'
 import { tableau20 } from '../../utils';
+import { eq } from '@uwdata/mosaic-sql';
 
 type Props = {
   bedId: string;
@@ -10,7 +11,7 @@ type Props = {
 
 export const BADAtlas = (props: Props) => {
   const { bedId } = props;
-
+  
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [containerWidth, setContainerWidth] = useState(900);
@@ -19,15 +20,33 @@ export const BADAtlas = (props: Props) => {
 
   const coordinator = useMemo(() => new vg.Coordinator(vg.wasmConnector()), []);
 
+  // Point selection (for clicks)
+  const selection = useMemo(() => {
+    const sel = vg.Selection.intersect();
+    sel.addEventListener('value', (value) => {
+      console.log('Point selection updated:', value);
+    });
+    return sel;
+  }, []);
+
+  // Range selection (for rectangle/lasso)
+  const rangeSelection = useMemo(() => {
+    const sel = vg.Selection.intersect();
+    sel.addEventListener('value', (value) => {
+      console.log('Range selection updated:', value);
+    });
+    return sel;
+  }, []);
+
   const initializeData = async (coordinator: any) => {
     const url = 'https://raw.githubusercontent.com/databio/bedbase-loader/master/umap/hg38_umap.json';
     await coordinator.exec([
-      vg.sql`CREATE OR REPLACE TABLE data AS 
-            SELECT 
+      vg.sql`CREATE OR REPLACE TABLE data AS
+            SELECT
               unnest(nodes, recursive := true)
             FROM read_json_auto('${url}')`,
       vg.sql`CREATE OR REPLACE TABLE data AS
-            SELECT 
+            SELECT
               *,
               (DENSE_RANK() OVER (ORDER BY assay) - 1)::INTEGER AS assay_category,
               (DENSE_RANK() OVER (ORDER BY cell_line) - 1)::INTEGER AS cell_line_category
@@ -42,8 +61,17 @@ export const BADAtlas = (props: Props) => {
   }, [isReady]);
 
   useEffect(() => {
-    initializeData(coordinator).then(() => setIsReady(true));
+    initializeData(coordinator).then(() => {
+      // Preselect the bedId
+      selection.update({
+        source: {},
+        predicate: eq('id', bedId),
+        value: bedId
+      });
+      setIsReady(true);
+    });
   }, []);
+
 
   return (
     <>
@@ -68,7 +96,18 @@ export const BADAtlas = (props: Props) => {
                   config={{
                     autoLabelEnabled: false,
                   }}
-                  selection={[bedId] as DataPointID[]}
+                  theme={{
+                    statusBar: true,
+                  }}
+                  tooltip={bedId}
+                  selection={selection}
+                  rangeSelection={rangeSelection}
+                  // onSelection={(dataPoints) => {
+                  //   console.log('User clicked:', dataPoints);
+                  // }}
+                  // onRangeSelection={(value) => {
+                  //   console.log('User drew rectangle/lasso:', value);
+                  // }}
                 />
               </div>
             </div>

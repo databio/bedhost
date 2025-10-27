@@ -143,7 +143,7 @@ export const BedSplash = () => {
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
             </Col>
           </Row>
-          <Row className="mt-3 mb-4 g-3">
+          <Row className="mt-3 mb-4 g-2">
             <Col sm={12} md={6} className='mt-0'>
               <h5 className="fw-bold">Overview</h5>
               <div className="border rounded px-0 pt-1 shadow-sm">
@@ -275,7 +275,7 @@ export const BedSplash = () => {
           {bedId && (
             <>
               <BADAtlas bedId={bedId}/>
-              <BEDAtlas bedId={bedId}/>
+              {/* <BEDAtlas bedId={bedId}/> */}
             </>
           )}
 
