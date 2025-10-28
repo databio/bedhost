@@ -15,7 +15,7 @@ from ..const import EXAMPLE_BEDSET, PKG_NAME
 from ..main import bbagent, usage_data
 from ..data_models import CreateBEDsetRequest
 from ..utils import zip_pep
-from ..helpers import count_requests
+from ..helpers import count_requests, test_query_parameter
 
 router = APIRouter(prefix="/v1/bedset", tags=["bedset"])
 
@@ -46,6 +46,7 @@ async def list_bedsets(
     query: str = None,
     limit: int = 1000,
     offset: int = 0,
+    test_request: bool = test_query_parameter,
 ):
     """
     Returns a list of BEDset records in the database with optional filters and search.
@@ -64,6 +65,7 @@ async def list_bedsets(
 async def get_bedset_metadata(
     bedset_id: str,
     full: bool = True,
+    test_request: bool = test_query_parameter,
 ):
     # TODO: fix error with not found
     try:

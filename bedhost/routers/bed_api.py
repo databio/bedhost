@@ -38,7 +38,7 @@ from .. import _LOGGER
 from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WIDTH
 from ..data_models import CROM_NUMBERS, BaseListResponse, BedDigest
 from ..main import bbagent, usage_data
-from ..helpers import count_requests
+from ..helpers import count_requests, test_query_parameter
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
@@ -95,6 +95,7 @@ async def get_bed_metadata(
     full: Optional[bool] = Query(
         False, description="Return full record with stats, plots, files and metadata"
     ),
+    test_request: bool = test_query_parameter,
 ):
     """
     Returns metadata for a single BED record. if full=True, returns full record with stats, plots, files and metadata.
@@ -361,6 +362,7 @@ async def text_to_bed_search(
     assay: Optional[Union[str, None]] = None,
     limit: int = 10,
     offset: int = 0,
+    test_request: bool = test_query_parameter,
 ):
     """
     Search for a BedFile by a text query.

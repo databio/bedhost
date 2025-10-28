@@ -6,6 +6,7 @@ import datetime
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import UsageModel
 from starlette.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi import Query
 
 from . import _LOGGER
 from .exceptions import BedHostException
@@ -80,6 +81,15 @@ def drs_response(status_code, msg):
     return JSONResponse(status_code=status_code, content=content)
 
 
+test_query_parameter = (
+    Query(
+        False,
+        description="Internal parameter for testing purposes. If true, the request will not be counted.",
+        include_in_schema=False,
+    ),
+)
+
+
 def count_requests(
     usage_data: UsageModel,
     event: Literal["bed_search", "bedset_search", "bed_meta", "bedset_meta", "files"],
@@ -96,7 +106,11 @@ def count_requests(
         async def wrapper(*args, **kwargs):
 
             function_result = await func(*args, **kwargs)
-
+            if "test_request" in kwargs and kwargs["test_request"]:
+                _LOGGER.info(
+                    f"Test request was executed. For '{event}' event with: {args}, {kwargs}. No results saved."
+                )
+                return function_result
             if event == "files":
                 file_path = kwargs.get("file_path")
                 if "bed" in file_path or "bigbed" in file_path.lower():
