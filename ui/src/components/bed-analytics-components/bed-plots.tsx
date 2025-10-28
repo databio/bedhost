@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import embed from 'vega-embed';
 
-const COLOR = 'rgba(0, 128, 128, 0.6)';
+const COLOR = 'rgba(0, 128, 128, 1)';
 
 type DistributionSpecDataPoint = {
   chr: string;
@@ -37,7 +37,7 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
     },
     config: {
       axis: {
-        grid: false,
+        grid: true,
       },
       facet: {
         spacing: -1,
@@ -61,12 +61,12 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
     },
     encoding: {
       row: {
-        title: null,
+        title: "Chromosome",
         field: 'chr',
         header: {
-          labelAlign: 'left',
+          labelAlign: 'right',
           labelAngle: 0,
-          labelOrient: 'left',
+          labelOrient: 'right',
           labelPadding: 10,
         },
         sort: [
@@ -108,8 +108,8 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
     width: 'container',
     autosize: {
       type: 'fit',
-      contains: 'padding'
-    }
+      contains: 'padding',
+    },
   };
 };
 
@@ -125,7 +125,7 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
       try {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         embed(element, spec as any, {
-          actions: false,
+          actions: { export: true, source: false, compiled: false },
           renderer: 'svg',
         })
           .catch(error => {
@@ -144,8 +144,8 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
   }, [spec]);
 
   return (
-    <div className='d-flex w-100'>
-      <div className="mx-auto chrom-dist-plot-container" ref={plotRef} />
+    <div className="d-flex w-100 border border-primary" style={{ overflow: 'auto', maxHeight: '800px' }}>
+      <div className="mx-auto chrom-dist-plot-container pt-5" ref={plotRef} />
     </div>
   );
 };

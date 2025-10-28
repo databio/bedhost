@@ -15,13 +15,13 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
       const cs = stats as ChromosomeStats;
       const row = {
         chromosome: String(chrom),
-        count: cs.count,
-        minimum: cs.minimum,
-        maximum: cs.maximum,
-        mean: cs.mean.toFixed(2),
-        median: cs.median.toFixed(2),
-        start: cs.start,
-        end: cs.end,
+        count: cs.number_of_regions,
+        minimum: cs.minimum_region_length,
+        maximum: cs.maximum_region_length,
+        mean: cs.mean_region_length.toFixed(2),
+        median: cs.median_region_length.toFixed(2),
+        start: cs.start_nucleotide_position,
+        end: cs.end_nucleotide_position,
       };
       try {
         (cs as unknown as { free?: () => void }).free?.();
@@ -138,7 +138,7 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
               <button
                 className="btn btn-sm btn-outline-primary"
                 onClick={() => {
-                  const headers = ['chromosome', 'count', 'start', 'end', 'min', 'max', 'mean', 'median'];
+                  const headers = ['Chromosome name', 'number of regions', 'start position', 'end position', 'min region width', 'max region width', 'mean region width', 'median region width'];
                   const rows = statsEntries.map(s => [
                     s.chromosome,
                     String(s.count),
@@ -169,14 +169,14 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
           <table className="table table-sm small mb-0">
             <thead>
             <tr>
-              <th>Chromosome</th>
-              <th>Count</th>
-              <th>Start</th>
-              <th>End</th>
-              <th>Min</th>
-              <th>Max</th>
-              <th>Mean</th>
-              <th>Median</th>
+              <th>Chromosome name</th>
+              <th>Number of regions</th>
+              <th>Start position</th>
+              <th>End position</th>
+              <th>Min length</th>
+              <th>Max length</th>
+              <th>Mean length</th>
+              <th>Median length</th>
             </tr>
             </thead>
             <tbody>

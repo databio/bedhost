@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout.tsx';
 import { RegionSet } from '@databio/gtars';
 import { handleBedFileInput } from '../utils.ts';
@@ -7,16 +8,24 @@ import ChromosomeStatsPanel from '../components/bed-analytics-components/chromos
 import RegionDistributionPlot from '../components/bed-analytics-components/bed-plots.tsx';
 
 export const BEDAnalytics = () => {
-
   const [rs, setRs] = useState<RegionSet | null>(null);
   const [loadingRS, setLoadingRS] = useState(false);
   const [totalProcessingTime, setTotalProcessingTime] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<'file' | 'url'>('file');
   const [bedUrl, setBedUrl] = useState<string>('');
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const urlParam = searchParams.get('bedUrl');
+    if (urlParam) {
+      setInputMode('url');
+      setBedUrl(urlParam);
+    }
+  }, [searchParams]);
 
   const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
-
 
   const fetchBedFromUrl = async (url: string): Promise<File> => {
     const response = await fetch(url);
@@ -54,7 +63,6 @@ export const BEDAnalytics = () => {
         } as unknown as Event;
 
         await handleBedFileInput(syntheticEvent, (entries) => {
-
           setTimeout(() => {
             const rs = new RegionSet(entries);
             const endTime = performance.now();
@@ -148,8 +156,18 @@ export const BEDAnalytics = () => {
                 placeholder="https://example.com/file.bed"
                 value={bedUrl}
                 onChange={(e) => {
-                  setBedUrl(e.target.value);
+                  const newUrl = e.target.value;
+                  setBedUrl(newUrl);
                   if (rs) unloadFile();
+
+                  // Update the URL query parameter
+                  const params = new URLSearchParams(searchParams);
+                  if (newUrl.trim()) {
+                    params.set('bedUrl', newUrl);
+                  } else {
+                    params.delete('bedUrl');
+                  }
+                  navigate(`?${params.toString()}`);
                 }}
               />
               {bedUrl && (
@@ -159,6 +177,28 @@ export const BEDAnalytics = () => {
               )}
             </div>
           )}
+          {inputMode === 'file' && !selectedFile && (
+            <div className="text-muted small mx-1">
+              No file selected. Use this example {' '}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const exampleUrl = 'https://api.bedbase.org/v1/files/files/d/c/dcc005e8761ad5599545cc538f6a2a4d.bed.gz';
+                  setInputMode('url');
+                  setBedUrl(exampleUrl);
+
+                  // Update the URL query parameter
+                  const params = new URLSearchParams(searchParams);
+                  params.set('bedUrl', exampleUrl);
+                  navigate(`?${params.toString()}`);
+                }}
+              >
+                example file
+              </a>.
+            </div>
+          )}
+
 
           {rs && totalProcessingTime !== null && (
             <div className="text-muted small mx-1">
@@ -244,20 +284,13 @@ export const BEDAnalytics = () => {
                   )}
                 </div>
                 <div className="mt-5">
-                  {/*{rs && (*/}
-                  {/*  <div className="mb-3">*/}
-                  {/*    <pre className="bg-light p-3 border rounded">*/}
-                  {/*      {JSON.stringify(rs.calculate_region_distribution(), null, 2)}*/}
-                  {/*    </pre>*/}
-                  {/*  </div>*/}
-                  {/*)}*/}
                   {rs && (
-                      <div className="mb-3">
-                        <RegionDistributionPlot
-                          data={rs.calculate_region_distribution(300)}
-                        />
-                      </div>
-                    )}
+                    <div className="mb-3">
+                      <RegionDistributionPlot
+                        data={rs.calculate_region_distribution(300)}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
             )}
