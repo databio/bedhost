@@ -17,7 +17,7 @@ import { snakeToTitleCase } from '../utils';
 import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table';
 import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
-import { BEDAtlas } from '../components/bed-splash-components/bed-atlas.tsx';
+// import { BEDAtlas } from '../components/bed-splash-components/bed-atlas.tsx';
 import { BADAtlas } from '../components/bed-splash-components/bad-atlas.tsx';
 
 // Use the response type to properly type the metadata
@@ -272,7 +272,7 @@ export const BedSplash = () => {
             </Col>
           </Row>
 
-          {bedId && (
+          {bedId && metadata?.name?.includes('encode') && (
             <>
               <BADAtlas bedId={bedId}/>
               {/* <BEDAtlas bedId={bedId}/> */}
