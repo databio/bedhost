@@ -19,6 +19,7 @@ import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
 // import { BEDAtlas } from '../components/bed-splash-components/bed-atlas.tsx';
 import { BADAtlas } from '../components/bed-splash-components/bad-atlas.tsx';
+import { useState } from 'react';
 
 // Use the response type to properly type the metadata
 type BedMetadata = components['schemas']['BedMetadataAll'];
@@ -26,6 +27,8 @@ type BedMetadata = components['schemas']['BedMetadataAll'];
 export const BedSplash = () => {
   const params = useParams();
   const bedId = params.id;
+
+  const [showNeighbors, setShowNeighbors] = useState(true);
 
   const {
     isLoading,
@@ -274,14 +277,31 @@ export const BedSplash = () => {
 
           {bedId && metadata?.name?.includes('encode') && (
             <>
-              <BADAtlas bedId={bedId}/>
+              <BADAtlas bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors}/>
               {/* <BEDAtlas bedId={bedId}/> */}
             </>
           )}
 
           {neighbours && (
             <Row className="mb-4 mx-0">
-              <h5 className="fw-bold px-0">Similar BED Files</h5>
+              <div className='d-flex justify-content-between align-items-center px-0'>
+                <h5 className="fw-bold px-0">Similar BED Files</h5>
+                <div className='form-check form-switch form-switch-sm'>
+                  <input 
+                    className='form-check-input'
+                    type='checkbox'
+                    checked={showNeighbors}
+                    id='showNeighbors'
+                    onChange={() => setShowNeighbors(!showNeighbors)}
+                  />
+                  <label 
+                    className='form-check-label fw-medium text-sm'
+                    htmlFor='showNeighbors'
+                  >
+                    Show in Atlas
+                  </label>
+                </div>
+              </div>
               <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
                 <Text2BedSearchResultsTable results={neighbours} />
               </Col>

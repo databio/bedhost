@@ -4,16 +4,20 @@ import * as vg from '@uwdata/vgplot'
 
 import { isPointInPolygon, tableau20 } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
+import { components } from '../../../bedbase-types';
+
+type SearchResponse = components['schemas']['BedListSearchResult'];
 
 type Props = {
   bedId: string;
-  neighbors?: any;
+  neighbors?: SearchResponse;
+  showNeighbors?: boolean;
 }
 
 export const BADAtlas = (props: Props) => {
-  const { bedId } = props;
+  const { bedId, neighbors, showNeighbors } = props;
   const { addBedToCart } = useBedCart();
-  
+
   const containerRef = useRef<HTMLDivElement>(null);
 
   const [containerWidth, setContainerWidth] = useState(900);
@@ -25,13 +29,15 @@ export const BADAtlas = (props: Props) => {
   const [legendItems, setLegendItems] = useState<string[]>([]);
   const [filterSelection, setFilterSelection] = useState<any>(null);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [tooltipPoint, setTooltipPoint] = useState<any>(null);
 
   const coordinator = useMemo(() => new vg.Coordinator(vg.wasmConnector()), []);
   const filter = useMemo(() => vg.Selection.intersect(), []);
-  // Create a stable source object for legend filter updates
   const legendFilterSource = useMemo(() => ({}), []);
+  const neighborIDs = useMemo(() => neighbors?.results?.map(result => result.id), [neighbors]);
 
   const centerOnPoint = (point: any, scale: number = 1) => {
+    setTooltipPoint(point);
     setViewportState({
       x: point.x,
       y: point.y,
@@ -39,18 +45,34 @@ export const BADAtlas = (props: Props) => {
     });
   };
 
+  const getSortedSelectedPoints = () => {
+    if (!selectedPoints || selectedPoints.length === 0) return [];
+
+    const currentBed = selectedPoints.find((p: any) => p.identifier === bedId);
+    const others = selectedPoints.filter((p: any) => p.identifier !== bedId);
+
+    if (neighbors?.results && neighbors.results.length > 0) {
+      const scoreMap = new Map(neighbors.results.map(n => [n.id, n.score]));
+      others.sort((a: any, b: any) => {
+        const scoreA = scoreMap.get(a.identifier) || 0;
+        const scoreB = scoreMap.get(b.identifier) || 0;
+        return scoreB - scoreA; // Descending order
+      });
+    }
+
+    return currentBed ? [currentBed, ...others] : others;
+  };
+
   const handleLegendClick = (item: any) => {
     if (filterSelection?.category === item.category) {
       setFilterSelection(null);
-      // Clear the filter by updating with null predicate using the same source
       filter.update({
-        source: legendFilterSource,
+        source: legendFilterSource, // memoized so that mosaic can keep track of source and clear previous selection
         value: null,
         predicate: null
       });
     } else {
       setFilterSelection(item);
-      // Update with new filter - will replace previous clause from same source
       filter.update({
         source: legendFilterSource,
         value: item.category,
@@ -62,17 +84,32 @@ export const BADAtlas = (props: Props) => {
   const handlePointSelection = (dataPoints: any[] | null) => {
     // console.log('Selection changed via onSelection callback:', dataPoints);
     const points = dataPoints || [];
+    const hasInitialPoint = points.some(p => p.identifier === initialPoint?.identifier);
+    let finalPoints = hasInitialPoint ? points : (initialPoint ? [initialPoint, ...points] : points);
 
-    if (initialPoint) {
-      const hasInitialPoint = points.some(p => p.identifier === initialPoint.identifier);
-      if (!hasInitialPoint) {
-        setSelectedPoints([initialPoint, ...points]);
-      } else {
-        setSelectedPoints(points);
+    if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
+      const selectedIds = new Set(finalPoints.map((p: any) => p.identifier));
+      const missingNeighborIds = neighborIDs.filter(id => !selectedIds.has(id));
+
+      if (missingNeighborIds.length > 0) {
+        coordinator.query(
+          `SELECT
+            x, y,
+            ${colorGrouping} as category,
+            name as text,
+            id as identifier,
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+           FROM data
+           WHERE id IN (${missingNeighborIds.map(id => `'${id}'`).join(',')})`,
+          { type: 'json' }
+        ).then((neighborPoints: any) => {
+          setSelectedPoints([...finalPoints, ...neighborPoints]);
+        });
+        return;
       }
-    } else {
-      setSelectedPoints(points);
     }
+
+    setSelectedPoints(finalPoints);
   };
 
   // Range selection (for rectangle/lasso)
@@ -140,16 +177,31 @@ export const BADAtlas = (props: Props) => {
     }
 
     if (result && result.length > 0) {
-      if (initialPoint) {
-        const hasInitialPoint = result.some((p: any) => p.identifier === initialPoint.identifier);
-        if (!hasInitialPoint) {
-          setSelectedPoints([initialPoint, ...result]);
-        } else {
-          setSelectedPoints(result);
+      // Always ensure initialPoint is included
+      const hasInitialPoint = result.some((p: any) => p.identifier === initialPoint?.identifier);
+      let finalPoints = hasInitialPoint ? result : (initialPoint ? [initialPoint, ...result] : result);
+
+      if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
+        const selectedIds = new Set(finalPoints.map((p: any) => p.identifier));
+        const missingNeighborIds = neighborIDs.filter(id => !selectedIds.has(id));
+
+        if (missingNeighborIds.length > 0) { // fetch missing neighbor points
+          const neighborPoints = await coordinator.query(
+            `SELECT
+              x, y,
+              ${colorGrouping} as category,
+              name as text,
+              id as identifier,
+              {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+             FROM data
+             WHERE id IN (${missingNeighborIds.map(id => `'${id}'`).join(',')})`,
+            { type: 'json' }
+          ) as any[];
+          finalPoints = [...finalPoints, ...neighborPoints];
         }
-      } else {
-        setSelectedPoints(result);
       }
+
+      setSelectedPoints(finalPoints);
     }
   };
 
@@ -202,10 +254,10 @@ export const BADAtlas = (props: Props) => {
     }
   }, [isReady, colorGrouping])
 
-  useEffect(() => { // fetch initial bed id
+  useEffect(() => { // fetch initial bed id and neighbors
     if (isReady) {
       setTimeout(async () => {
-        const points: any = await coordinator.query(
+        const currentBed: any = await coordinator.query(
           `SELECT
             x, y,
             ${colorGrouping} as category,
@@ -216,14 +268,29 @@ export const BADAtlas = (props: Props) => {
            WHERE id = '${bedId}'`,
           { type: 'json' }
         );
+        if (!currentBed || currentBed.length === 0) return;
+        setInitialPoint(currentBed[0]);
+        setTooltipPoint(currentBed[0]);
 
-        if (points && points.length > 0) {
-          setInitialPoint(points[0]);
-          setSelectedPoints([points[0]]);
+        if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
+          const neighborPoints: any = await coordinator.query(
+            `SELECT
+              x, y,
+              ${colorGrouping} as category,
+              name as text,
+              id as identifier,
+              {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+             FROM data
+             WHERE id IN (${neighborIDs.map(id => `'${id}'`).join(',')})`,
+            { type: 'json' }
+          );
+          setSelectedPoints([currentBed[0], ...neighborPoints]);
+        } else {
+          setSelectedPoints([currentBed[0]]);
         }
       }, 200);
     }
-  }, [isReady, bedId, coordinator, colorGrouping]);
+  }, [isReady, bedId, coordinator, colorGrouping, showNeighbors, neighborIDs]);
 
 
   return (
@@ -237,6 +304,7 @@ export const BADAtlas = (props: Props) => {
             <div className='border rounded shadow-sm overflow-hidden'>
               <div className='w-100' ref={containerRef}>
                 <EmbeddingViewMosaic
+                  // key={`${showNeighbors}-${neighborIDs?.length || 0}`}
                   coordinator={coordinator}
                   table='data'
                   x='x'
@@ -254,6 +322,7 @@ export const BADAtlas = (props: Props) => {
                   filter={filter}
                   viewportState={viewportState}
                   onViewportState={setViewportState}
+                  tooltip={tooltipPoint}
                   selection={selectedPoints}
                   onSelection={handlePointSelection}
                   onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
@@ -358,7 +427,7 @@ export const BADAtlas = (props: Props) => {
                     </tr>
                   </thead>
                   <tbody>
-                    {selectedPoints?.map((point: any, index: number) => (
+                    {getSortedSelectedPoints().map((point: any, index: number) => (
                       <tr className='text-nowrap cursor-pointer' onClick={() => centerOnPoint(point, 0.3)} key={index}>
                         <td>{point.text}</td>
                         <td>{point.fields.Assay}</td>
