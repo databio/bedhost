@@ -28,7 +28,7 @@ export const BedSplash = () => {
   const params = useParams();
   const bedId = params.id;
 
-  const [showNeighbors, setShowNeighbors] = useState(true);
+  const [showNeighbors, setShowNeighbors] = useState(false);
 
   const {
     isLoading,

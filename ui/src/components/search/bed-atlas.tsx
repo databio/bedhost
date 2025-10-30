@@ -1,7 +1,6 @@
 import { EmbeddingAtlas } from 'embedding-atlas/react';
-import { useEffect, useState, useMemo } from 'react';
-import * as vg from '@uwdata/vgplot'
-
+import { useEffect, useState } from 'react';
+import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 type Props = {
   bedId?: string;
   neighbors?: any;
@@ -11,38 +10,26 @@ export const BEDAtlas = (props: Props) => {
   const {} = props;
 
   const [isReady, setIsReady] = useState(false);
-
-  const coordinator = useMemo(() => new vg.Coordinator(vg.wasmConnector()), []);
-  const initializeData = async (coordinator: any) => {
-    const url = 'https://raw.githubusercontent.com/databio/bedbase-loader/master/umap/hg38_umap.json';
-    await coordinator.exec([
-      vg.sql`CREATE OR REPLACE TABLE data AS 
-            SELECT 
-              unnest(nodes, recursive := true)
-            FROM read_json_auto('${url}')`
-    ]);
-  }
+  const { coordinator, initializeData } = useMosaicCoordinator();
 
   useEffect(() => {
-    initializeData(coordinator).then(() => setIsReady(true));
+    initializeData().then(() => setIsReady(true));
   }, []);
 
   return (
     <>
-      {isReady && (
+      {isReady ? (
         <div className='row mb-4'>
           <div className='col-12'>
-            <h5 className='fw-bold'>
-              Embedding Atlas
-            </h5>
             <div className='border rounded shadow-sm overflow-hidden'>
-              <div className='w-100' style={{height: '555px'}}>
+              <div className='w-100' style={{height: '690px'}}>
                 <EmbeddingAtlas
                   coordinator={coordinator}
                   data={{
                     table: 'data',
                     id: 'id',
                     projection: { x: 'x', y: 'y' },
+                    text: 'description'
                   }}
                   embeddingViewConfig={{
                     autoLabelEnabled: false
@@ -50,6 +37,12 @@ export const BEDAtlas = (props: Props) => {
                 />
               </div>
             </div>
+          </div>
+        </div>
+      ) : (
+        <div className="row mb-4">
+          <div className='col-12'>
+            <span>Loading...</span>
           </div>
         </div>
       )}

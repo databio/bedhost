@@ -10,6 +10,7 @@ import { Home } from './pages/home.tsx';
 import { Metrics } from './pages/metrics.tsx';
 import { UMAPGraph } from './pages/visualization.tsx';
 import { HelmetProvider } from 'react-helmet-async';
+import { MosaicCoordinatorProvider } from './contexts/mosaic-coordinator-context.tsx';
 
 // css stuff
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -88,8 +89,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <AxiosProvider>
         <QueryClientProvider client={queryClient}>
           <BedCartProvider>
-            <RouterProvider router={router} />
-            <Toaster position="top-right" />
+            <MosaicCoordinatorProvider>
+              <RouterProvider router={router} />
+              <Toaster position="top-right" />
+            </MosaicCoordinatorProvider>
           </BedCartProvider>
           <ReactQueryDevtools initialIsOpen={true} />
         </QueryClientProvider>

@@ -5,6 +5,8 @@ import * as vg from '@uwdata/vgplot'
 import { isPointInPolygon, tableau20 } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
+import { AtlasTooltip } from './atlas-tooltip';
+import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
@@ -16,6 +18,7 @@ type Props = {
 
 export const BADAtlas = (props: Props) => {
   const { bedId, neighbors, showNeighbors } = props;
+  const { coordinator, initializeData } = useMosaicCoordinator();
   const { addBedToCart } = useBedCart();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -31,7 +34,6 @@ export const BADAtlas = (props: Props) => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [tooltipPoint, setTooltipPoint] = useState<any>(null);
 
-  const coordinator = useMemo(() => new vg.Coordinator(vg.wasmConnector()), []);
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
   const neighborIDs = useMemo(() => neighbors?.results?.map(result => result.id), [neighbors]);
@@ -109,6 +111,7 @@ export const BADAtlas = (props: Props) => {
       }
     }
 
+    // setTooltipPoint(finalPoints.slice(-1)[0])
     setSelectedPoints(finalPoints);
   };
 
@@ -205,22 +208,6 @@ export const BADAtlas = (props: Props) => {
     }
   };
 
-  const initializeData = async (coordinator: any) => {
-    const url = 'https://raw.githubusercontent.com/databio/bedbase-loader/master/umap/hg38_umap.json';
-    await coordinator.exec([
-      vg.sql`CREATE OR REPLACE TABLE data AS
-            SELECT
-              unnest(nodes, recursive := true)
-            FROM read_json_auto('${url}')`,
-      vg.sql`CREATE OR REPLACE TABLE data AS
-            SELECT
-              *,
-              (DENSE_RANK() OVER (ORDER BY assay) - 1)::INTEGER AS assay_category,
-              (DENSE_RANK() OVER (ORDER BY cell_line) - 1)::INTEGER AS cell_line_category
-            FROM data`
-    ]);
-  }
-
   const fetchLegendItems = async (coordinator: any) => {
     const result = await coordinator.query(
       `SELECT DISTINCT
@@ -235,7 +222,7 @@ export const BADAtlas = (props: Props) => {
   }
 
   useEffect(() => { // initialize data
-    initializeData(coordinator).then(() => {
+    initializeData().then(() => {
       setIsReady(true);
     });
   }, []);
@@ -292,19 +279,19 @@ export const BADAtlas = (props: Props) => {
     }
   }, [isReady, bedId, coordinator, colorGrouping, showNeighbors, neighborIDs]);
 
-
   return (
     <>
-      {isReady && (
-      <div className="row mb-4 g-2">
-          <div className="d-flex justify-content-between align-items-center mb-2">
-            <h5 className="fw-bold mb-0">BED Embedding Atlas</h5>
-          </div>
-          <div className='col-sm-9 mt-0'>
+      <div className="row">
+        <div className="col-12">
+          <h5 className="fw-bold">BED Embedding Atlas</h5>
+        </div>
+      </div>
+      {isReady ? (
+        <div className="row mb-4 g-2">
+          <div className='col-sm-9'>
             <div className='border rounded shadow-sm overflow-hidden'>
               <div className='w-100' ref={containerRef}>
                 <EmbeddingViewMosaic
-                  // key={`${showNeighbors}-${neighborIDs?.length || 0}`}
                   coordinator={coordinator}
                   table='data'
                   x='x'
@@ -323,6 +310,10 @@ export const BADAtlas = (props: Props) => {
                   viewportState={viewportState}
                   onViewportState={setViewportState}
                   tooltip={tooltipPoint}
+                  customTooltip={{
+                    class: AtlasTooltip,
+                    props: {}
+                  }}
                   selection={selectedPoints}
                   onSelection={handlePointSelection}
                   onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
@@ -330,8 +321,8 @@ export const BADAtlas = (props: Props) => {
               </div>
             </div>
           </div>
-          <div className='col-sm-3 mt-0'>
-            <div className='card shadow-sm mb-2 border overflow-hidden' style={{height: 'calc(300px - 0.375rem)'}}>
+          <div className='col-sm-3'>
+            <div className='card shadow-sm mb-2 border overflow-hidden' style={{height: 'calc(300px - 0.1875rem)'}}>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
                 <span>Legend</span>
                 <div className='btn-group btn-group-xs' role='group'>
@@ -378,9 +369,16 @@ export const BADAtlas = (props: Props) => {
                         onClick={() => handleLegendClick(item)}
                         key={item.category}
                       >
-                        <td>
-                          <i className='bi bi-square-fill me-3' style={{color: tableau20[item.category]}} />
-                          {item.name}
+                        <td className='d-flex justify-content-between align-items-center' style={{height: '30px'}}>
+                          <span>
+                            <i className='bi bi-square-fill me-3' style={{color: tableau20[item.category]}} />
+                            {item.name}
+                          </span>
+                          {(filterSelection?.category === item.category) && (
+                            <button className='btn btn-danger btn-xs'>
+                              Clear
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
@@ -389,11 +387,12 @@ export const BADAtlas = (props: Props) => {
               </div>
             </div>
 
-            <div className='card shadow-sm border overflow-hidden' style={{height: '200px'}}>
+            <div className='card shadow-sm border overflow-hidden' style={{height: 'calc(200px - 0.1875rem)'}}>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
-                <span>Selected Points</span>
+                <span>Selection</span>
+                {/* <i className='bi bi-window ms-1' /> */}
                 <button 
-                  className='btn btn-primary btn-xs' 
+                  className='btn btn-primary btn-xs ms-auto' 
                   onClick={() => selectedPoints.map((point: any) => {
                     const bedItem = {
                       id: point.identifier,
@@ -415,6 +414,8 @@ export const BADAtlas = (props: Props) => {
                 >
                   {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
                 </button>
+                {/* <button className='btn btn-secondary btn-xs ms-1'>
+                </button> */}
               </div>
               <div className='card-body table-responsive p-0'>
                 <table className='table table-striped table-hover text-xs'>
@@ -439,6 +440,12 @@ export const BADAtlas = (props: Props) => {
                 </table>
               </div>
             </div>
+          </div>
+        </div>
+      ) : (
+        <div className="row mb-4">
+          <div className='col-12'>
+            <span>Loading...</span>
           </div>
         </div>
       )}
