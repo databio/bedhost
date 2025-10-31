@@ -28,12 +28,17 @@ export const BEDAnalytics = () => {
   const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fetchBedFromUrl = async (url: string): Promise<File> => {
-    const response = await fetch(url);
+    console.log(`${url[0]}, ${url[1]}, ${url}`);
+    const fetchUrl = url.length === 32 && !url.startsWith('http')
+      ? `https://api.bedbase.org/v1/files/files/${url[0]}/${url[1]}/${url}.bed.gz`
+      : url;
+    console.log(`${fetchUrl}`);
+    const response = await fetch(fetchUrl);
     if (!response.ok) {
       throw new Error(`Failed to fetch BED file: ${response.statusText}`);
     }
     const blob = await response.blob();
-    const fileName = url.split('/').pop() || 'remote-bed-file.bed';
+    const fileName = fetchUrl.split('/').pop() || 'remote-bed-file.bed';
     return new File([blob], fileName, { type: 'text/plain' });
   };
 
@@ -154,7 +159,7 @@ export const BEDAnalytics = () => {
                 type="url"
                 className="form-control"
                 placeholder="https://example.com/file.bed"
-                value={bedUrl}
+                value={bedUrl || ''}
                 onChange={(e) => {
                   const newUrl = e.target.value;
                   setBedUrl(newUrl);
