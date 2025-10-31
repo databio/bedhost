@@ -73,7 +73,6 @@ export const BEDAnalytics = () => {
             const endTime = performance.now();
             const totalTimeMs = endTime - startTime;
 
-            console.log(rs.digest);
             setRs(rs);
             setTotalProcessingTime(totalTimeMs);
             setLoadingRS(false);
@@ -265,19 +264,19 @@ export const BEDAnalytics = () => {
                     <tbody>
                     <tr>
                       <th scope="row">Identifier</th>
-                      <td>{rs.digest}</td>
+                      <td>{rs.identifier}</td>
                     </tr>
                     <tr>
                       <th scope="row">Mean region width</th>
-                      <td>{rs.mean_region_width}</td>
+                      <td>{rs.meanRegionWidth}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of regions</th>
-                      <td>{rs.number_of_regions}</td>
+                      <td>{rs.numberOfRegions}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of nucleotides</th>
-                      <td>{rs.total_nucleotides}</td>
+                      <td>{rs.nucleotidesLength}</td>
                     </tr>
                     </tbody>
                   </table>
@@ -290,9 +289,16 @@ export const BEDAnalytics = () => {
                 </div>
                 <div className="mt-5">
                   {rs && (
+                    // <div className="mt-3 p-3 border rounded shadow-sm bg-light">
+                    //   <h5>Region Distribution Data</h5>
+                    //   <pre className="bg-white p-3 rounded border"
+                    //        style={{ fontSize: '0.875rem', maxHeight: '400px', overflow: 'auto' }}>
+                    //     {JSON.stringify(rs.calculateRegionDistribution(300), null, 2)}
+                    //   </pre>
+                    // </div>
                     <div className="mb-3">
                       <RegionDistributionPlot
-                        data={rs.calculate_region_distribution(300)}
+                        data={rs.regionDistribution(300)}
                       />
                     </div>
                   )}

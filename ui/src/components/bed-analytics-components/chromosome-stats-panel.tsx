@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChromosomeStats, RegionSet } from '@databio/gtars';
+import { ChromosomeStatistics, RegionSet } from '@databio/gtars';
 
 interface Props {
   rs: RegionSet;
@@ -7,12 +7,12 @@ interface Props {
 }
 
 const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
-  const calc = rs.calculate_statistics?.();
+  const calc = rs.chromosomeStatistics();
   if (!calc) return null;
 
   const statsEntries = Array.from(calc.entries())
-    .map(([chrom, stats]: [unknown, ChromosomeStats]) => {
-      const cs = stats as ChromosomeStats;
+    .map(([chrom, stats]: [unknown, ChromosomeStatistics]) => {
+      const cs = stats as ChromosomeStatistics;
       const row = {
         chromosome: String(chrom),
         count: cs.number_of_regions,

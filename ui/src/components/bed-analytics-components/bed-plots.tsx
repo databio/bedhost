@@ -8,6 +8,7 @@ type DistributionSpecDataPoint = {
   start: number;
   end: number;
   n: number;
+  rid: number;
   
 }
 
@@ -20,7 +21,7 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
   // Transform data to match the new schema requirements
   const transformedData = data.map((item: DistributionSpecDataPoint, i: number) => ({
     chr: item.chr,
-    withinGroupID: i,
+    withinGroupID: item.rid,
     N: item.n,
     start: item.start,
     end: item.end,
