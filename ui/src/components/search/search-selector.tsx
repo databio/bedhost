@@ -1,7 +1,7 @@
 import Nav from 'react-bootstrap/Nav';
 import { useSearchParams } from 'react-router-dom';
 
-type SearchView = 't2b' | 'b2b' | 't2bs' | 'embedding';
+type SearchView = 't2b' | 'b2b' | 't2bs';
 
 type Props = {
   view: SearchView;
@@ -44,16 +44,6 @@ export const SearchSelector = (props: Props) => {
             }}
           >
             <Nav.Link eventKey="t2bs">Text-to-BEDset</Nav.Link>
-          </Nav.Item>
-          <Nav.Item
-            onClick={() => {
-              params.set('view', 'embedding');
-              params.delete('q');
-              setParams(params);
-              setView('embedding');
-            }}
-          >
-            <Nav.Link eventKey="embedding">Embedding Atlas</Nav.Link>
           </Nav.Item>
         </Nav>
       </div>

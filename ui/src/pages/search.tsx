@@ -7,11 +7,10 @@ import { SearchSelector } from '../components/search/search-selector';
 import { Text2Bed } from '../components/search/text2bed/text2bed';
 import { Bed2Bed } from '../components/search/bed2bed/bed2bed';
 import { Text2BedSet } from '../components/search/text2bedset';
-import { BEDAtlas } from '../components/search/bed-atlas.tsx';
 
 import { SearchViewProvider } from '../contexts/search-view-context.tsx';
 
-type SearchView = 't2b' | 'b2b' | 't2bs' | 'embedding';
+type SearchView = 't2b' | 'b2b' | 't2bs';
 
 export const SearchPage = () => {
   const [searchParams] = useSearchParams();
@@ -32,8 +31,6 @@ export const SearchPage = () => {
           <Bed2Bed />
         ) : searchView === 't2bs' ? (
           <Text2BedSet />
-        ) : searchView === 'embedding' ? (
-          <BEDAtlas />
         ) : (
           <div>Unknown searchView selected.</div>
         )}

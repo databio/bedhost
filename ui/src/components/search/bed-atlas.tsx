@@ -1,6 +1,7 @@
 import { EmbeddingAtlas } from 'embedding-atlas/react';
 import { useEffect, useState } from 'react';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
+
 type Props = {
   bedId?: string;
   neighbors?: any;

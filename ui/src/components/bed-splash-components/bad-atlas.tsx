@@ -125,6 +125,11 @@ export const BADAtlas = (props: Props) => {
 
     let result;
 
+    // Build filter clause if a legend filter is active
+    const filterClause = filterSelection
+      ? ` AND ${colorGrouping} = '${filterSelection.category}'`
+      : '';
+
     // Check if rectangle selection (bounding box)
     if (typeof value === 'object' && 'xMin' in value) {
       result = await coordinator.query(
@@ -135,7 +140,7 @@ export const BADAtlas = (props: Props) => {
           id as identifier,
           {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
          FROM data
-         WHERE x >= ${value.xMin} AND x <= ${value.xMax} AND y >= ${value.yMin} AND y <= ${value.yMax}`,
+         WHERE x >= ${value.xMin} AND x <= ${value.xMax} AND y >= ${value.yMin} AND y <= ${value.yMax}${filterClause}`,
         { type: 'json' }
       ) as any[];
     }
@@ -152,7 +157,7 @@ export const BADAtlas = (props: Props) => {
       // Only fetch x, y, identifier for filtering, then get full data for matches
       const candidates: any = await coordinator.query(
         `SELECT x, y, id as identifier FROM data
-         WHERE x >= ${xMin} AND x <= ${xMax} AND y >= ${yMin} AND y <= ${yMax}`,
+         WHERE x >= ${xMin} AND x <= ${xMax} AND y >= ${yMin} AND y <= ${yMax}${filterClause}`,
         { type: 'json' }
       );
 
@@ -171,7 +176,7 @@ export const BADAtlas = (props: Props) => {
             id as identifier,
             {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
            FROM data
-           WHERE id IN (${filteredIds})`,
+           WHERE id IN (${filteredIds})${filterClause}`,
           { type: 'json' }
         ) as any[];
       } else {
@@ -179,33 +184,31 @@ export const BADAtlas = (props: Props) => {
       }
     }
 
-    if (result && result.length > 0) {
-      // Always ensure initialPoint is included
-      const hasInitialPoint = result.some((p: any) => p.identifier === initialPoint?.identifier);
-      let finalPoints = hasInitialPoint ? result : (initialPoint ? [initialPoint, ...result] : result);
+    const resultArray = result || [];
+    const hasInitialPoint = resultArray.length > 0 && resultArray.some((p: any) => p.identifier === initialPoint?.identifier);
+    let finalPoints = hasInitialPoint ? resultArray : (initialPoint ? [initialPoint, ...resultArray] : resultArray);
 
-      if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
-        const selectedIds = new Set(finalPoints.map((p: any) => p.identifier));
-        const missingNeighborIds = neighborIDs.filter(id => !selectedIds.has(id));
+    if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
+      const selectedIds = new Set(finalPoints.map((p: any) => p.identifier));
+      const missingNeighborIds = neighborIDs.filter(id => !selectedIds.has(id));
 
-        if (missingNeighborIds.length > 0) { // fetch missing neighbor points
-          const neighborPoints = await coordinator.query(
-            `SELECT
-              x, y,
-              ${colorGrouping} as category,
-              name as text,
-              id as identifier,
-              {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
-             FROM data
-             WHERE id IN (${missingNeighborIds.map(id => `'${id}'`).join(',')})`,
-            { type: 'json' }
-          ) as any[];
-          finalPoints = [...finalPoints, ...neighborPoints];
-        }
+      if (missingNeighborIds.length > 0) { // fetch missing neighbor points
+        const neighborPoints = await coordinator.query(
+          `SELECT
+            x, y,
+            ${colorGrouping} as category,
+            name as text,
+            id as identifier,
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+           FROM data
+           WHERE id IN (${missingNeighborIds.map(id => `'${id}'`).join(',')})`,
+          { type: 'json' }
+        ) as any[];
+        finalPoints = [...finalPoints, ...neighborPoints];
       }
-
-      setSelectedPoints(finalPoints);
     }
+
+    setSelectedPoints(finalPoints);
   };
 
   const fetchLegendItems = async (coordinator: any) => {
