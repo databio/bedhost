@@ -9,7 +9,7 @@ type DistributionSpecDataPoint = {
   end: number;
   n: number;
   rid: number;
-  
+
 }
 
 interface BedPlotsProps {
@@ -19,14 +19,13 @@ interface BedPlotsProps {
 const distributionSpec = (data: DistributionSpecDataPoint[]) => {
 
   // Transform data to match the new schema requirements
-  const transformedData = data.map((item: DistributionSpecDataPoint, i: number) => ({
+  const transformedData = data.map((item: DistributionSpecDataPoint) => ({
     chr: item.chr,
     withinGroupID: item.rid,
     N: item.n,
     start: item.start,
     end: item.end,
   }));
-
   return {
     $schema: 'https://vega-github.io/schema/vega-lite/v6.json',
     title: {
@@ -62,7 +61,7 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
     },
     encoding: {
       row: {
-        title: "Chromosome",
+        title: 'Chromosome',
         field: 'chr',
         header: {
           labelAlign: 'right',

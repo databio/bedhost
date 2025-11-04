@@ -11,7 +11,8 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
   if (!calc) return null;
 
   const statsEntries = Array.from(calc.entries())
-    .map(([chrom, stats]: [unknown, ChromosomeStatistics]) => {
+    .map((entry) => {
+      const [chrom, stats] = entry as [unknown, ChromosomeStatistics];
       const cs = stats as ChromosomeStatistics;
       const row = {
         chromosome: String(chrom),
@@ -29,20 +30,14 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
         /* ignore */
       }
       return row;
-    })
-    .sort((a, b) =>
-      a.chromosome.localeCompare(b.chromosome, undefined, {
-        numeric: true,
-        sensitivity: 'base',
-      }),
-    );
+    });
 
   return (
     <div>
       {/*This section is AI rendered. It provides statistics on number of regions per chromosome.*/}
       <div className="mb-3 w-100">
         <h5>Number of regions per chromosome: </h5>
-        <div className="border rounded p-2 bg-light" style={{ overflowX: 'auto'}}>
+        <div className="border rounded p-2 bg-light" style={{ overflowX: 'auto' }}>
           <svg
             width={Math.max(400, statsEntries.length * 70)}
             height="180"
