@@ -10,7 +10,7 @@ import { Home } from './pages/home.tsx';
 import { Metrics } from './pages/metrics.tsx';
 import { UMAPGraph } from './pages/visualization.tsx';
 import { BEDAnalytics } from './pages/bed-analytics.tsx';
-import { init } from '@databio/gtars'
+import init from '@databio/gtars';
 import { HelmetProvider } from 'react-helmet-async';
 
 // css stuff
@@ -37,14 +37,16 @@ const queryClient = new QueryClient({
     onError: (error: any) => {
       if (error.response && error.response.status === 413) {
         toast.error(`${error.response.data.detail}`);
-      return;}
+        return;
+      }
       if (error.response && error.response.status === 415) {
         toast.error(`${error.response.data.detail}`);
-      return;}
+        return;
+      }
       //
       // console.error(error);
       // toast.error(`Something went wrong: ${error.message}`);
-    }
+    },
   }),
 });
 
