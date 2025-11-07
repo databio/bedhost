@@ -5,7 +5,7 @@ import * as vg from '@uwdata/vgplot'
 import { isPointInPolygon, tableau20 } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
-import { AtlasTooltip } from './atlas-tooltip';
+import { AtlasTooltip } from '../bed-splash-components/atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
@@ -16,7 +16,7 @@ type Props = {
   showNeighbors?: boolean;
 }
 
-export const BADAtlas = (props: Props) => {
+export const BEDEmbeddingView = (props: Props) => {
   const { bedId, neighbors, showNeighbors } = props;
   const { coordinator, initializeData } = useMosaicCoordinator();
   const { addBedToCart } = useBedCart();
@@ -125,7 +125,7 @@ export const BADAtlas = (props: Props) => {
 
     let result;
 
-    // Build filter clause if a legend filter is active
+    // filter clause prevents selecting points that are not within a selected legend category
     const filterClause = filterSelection
       ? ` AND ${colorGrouping} = '${filterSelection.category}'`
       : '';
