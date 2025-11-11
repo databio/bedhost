@@ -261,6 +261,31 @@ async def embed_bed_file(
             embedding = bbagent.bed._embed_file(region_set)
     return embedding.tolist()[0]
 
+@router.post(
+    "/umap",
+    summary="Get embeddings for a bed file.",
+    response_model=List[float],
+)
+async def embed_bed_file(
+    file: UploadFile = File(None),
+):
+    """
+    Create embedding for bed file
+    """
+    _LOGGER.info("Embedding file..")
+
+    if file is not None:
+        with tempfile.TemporaryDirectory() as dirpath:
+            file_path = os.path.join(dirpath, file.filename)
+
+            with open(file_path, "wb") as bed_file:
+                shutil.copyfileobj(file.file, bed_file)
+
+            region_set = RegionSet(file_path)
+
+            embedding = bbagent.bed._get_umap_file(region_set)
+    return embedding.tolist()[0]
+
 
 @router.get(
     "/missing_plots",
