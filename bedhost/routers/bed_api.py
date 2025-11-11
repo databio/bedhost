@@ -261,6 +261,7 @@ async def embed_bed_file(
             embedding = bbagent.bed._embed_file(region_set)
     return embedding.tolist()[0]
 
+
 @router.post(
     "/umap",
     summary="Get embeddings for a bed file.",
