@@ -81,12 +81,10 @@ def drs_response(status_code, msg):
     return JSONResponse(status_code=status_code, content=content)
 
 
-test_query_parameter = (
-    Query(
-        False,
-        description="Internal parameter for testing purposes. If true, the request will not be counted.",
-        include_in_schema=False,
-    ),
+test_query_parameter = Query(
+    False,
+    description="Internal parameter for testing purposes. If true, the request will not be counted.",
+    include_in_schema=False,
 )
 
 
