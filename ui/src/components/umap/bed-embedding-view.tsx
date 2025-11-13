@@ -5,8 +5,9 @@ import * as vg from '@uwdata/vgplot'
 import { isPointInPolygon, tableau20 } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
-import { AtlasTooltip } from '../bed-splash-components/atlas-tooltip';
+import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
+import { useBedUmap } from '../../queries/useBedUmap';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
@@ -14,14 +15,19 @@ type Props = {
   bedId: string;
   neighbors?: SearchResponse;
   showNeighbors?: boolean;
+  enableUpload?: boolean;
 }
 
 export const BEDEmbeddingView = (props: Props) => {
   const { bedId, neighbors, showNeighbors } = props;
-  const { coordinator, initializeData } = useMosaicCoordinator();
+  const { coordinator, initializeData, addCustomPoint, deleteCustomPoint } = useMosaicCoordinator();
   const { addBedToCart } = useBedCart();
+  const { mutateAsync: getUmapCoordinates } = useBedUmap();
+
+  const enableUpload = true;
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [containerWidth, setContainerWidth] = useState(900);
   const [isReady, setIsReady] = useState(false);
@@ -33,6 +39,8 @@ export const BEDEmbeddingView = (props: Props) => {
   const [filterSelection, setFilterSelection] = useState<any>(null);
   const [addedToCart, setAddedToCart] = useState(false);
   const [tooltipPoint, setTooltipPoint] = useState<any>(null);
+  const [uploadedFilename, setUploadedFilename] = useState('');
+  const [dataVersion, setDataVersion] = useState(0);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -113,6 +121,47 @@ export const BEDEmbeddingView = (props: Props) => {
 
     // setTooltipPoint(finalPoints.slice(-1)[0])
     setSelectedPoints(finalPoints);
+  };
+
+  const handleFileRemove = async () => {
+    try {
+      await deleteCustomPoint();
+      setUploadedFilename('')
+
+      coordinator.clear();
+      const updatedLegend = await fetchLegendItems(coordinator);
+      setLegendItems(updatedLegend);
+      setDataVersion(v => v + 1);
+    } catch (error) {
+      console.error('Error deleting file');
+    }
+  }
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const coordinates = await getUmapCoordinates(file);
+
+      if (coordinates.length >= 2) {
+        await addCustomPoint(coordinates[0], coordinates[1]);
+        setUploadedFilename(file.name)
+
+        // Clear coordinator cache and refresh legend
+        coordinator.clear();
+        const updatedLegend = await fetchLegendItems(coordinator);
+        setLegendItems(updatedLegend);
+        setDataVersion(v => v + 1);
+        centerOnPoint({x: coordinates[0], y: coordinates[1]}, 0.3)
+      }
+    } catch (error) {
+      console.error('Error getting UMAP coordinates:', error);
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   // Range selection (for rectangle/lasso)
@@ -212,14 +261,15 @@ export const BEDEmbeddingView = (props: Props) => {
   };
 
   const fetchLegendItems = async (coordinator: any) => {
-    const result = await coordinator.query(
-      `SELECT DISTINCT
+    const query = `SELECT DISTINCT
         ${colorGrouping.replace('_category', '')} as name,
         ${colorGrouping} as category
         FROM data
-        ORDER BY ${colorGrouping}`,
-      { type: 'json' }
-    ) as any[];
+        ORDER BY ${colorGrouping}`;
+
+    console.log('Legend query:', query);
+    const result = await coordinator.query(query, { type: 'json' }) as any[];
+    console.log('Legend results:', result);
 
     return result
   }
@@ -229,6 +279,11 @@ export const BEDEmbeddingView = (props: Props) => {
       setIsReady(true);
     });
   }, []);
+
+  // useEffect(() => { // add point
+  //   addPoint(20, 20).then(() => {
+  //   });
+  // }, []);
 
   useEffect(() => { // resize width of view
     if (containerRef.current) {
@@ -285,9 +340,41 @@ export const BEDEmbeddingView = (props: Props) => {
   return (
     <>
       <div className="row">
-        <div className="col-12">
-          <h5 className="fw-bold">BED Embedding Atlas</h5>
-        </div>
+        {
+          enableUpload ? (
+            <div className="col-12">
+              <div className='d-flex align-items-start justify-content-between'>
+                <h5 className="fw-bold">BED Embedding Atlas</h5>
+                <button
+                  className='btn btn-secondary btn-sm ms-auto mb-auto text-xs'
+                  onClick={handleUploadClick}
+                >
+                  Upload BED
+                </button>
+                <input
+                  ref={fileInputRef}
+                  className="d-none"
+                  type="file"
+                  accept=".bed,.bed.gz"
+                  onChange={handleFileUpload}
+                />
+                {!!uploadedFilename && (
+                  <span
+                    className='btn btn-outline-secondary btn-sm ms-1 mb-auto text-xs'
+                    onClick={handleFileRemove}
+                  >
+                    {uploadedFilename}
+                    <i className='bi bi-trash3-fill text-danger ms-1 cursor-pointer' />
+                  </span>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="col-12">
+              <h5 className="fw-bold">BED Embedding Atlas</h5>
+            </div>
+          )
+        }
       </div>
       {isReady ? (
         <div className="row mb-4 g-2">
@@ -295,6 +382,7 @@ export const BEDEmbeddingView = (props: Props) => {
             <div className='border rounded shadow-sm overflow-hidden'>
               <div className='w-100' ref={containerRef}>
                 <EmbeddingViewMosaic
+                  key={`embedding-${dataVersion}`}
                   coordinator={coordinator}
                   table='data'
                   x='x'
@@ -432,7 +520,7 @@ export const BEDEmbeddingView = (props: Props) => {
                   </thead>
                   <tbody>
                     {getSortedSelectedPoints().map((point: any, index: number) => (
-                      <tr className='text-nowrap cursor-pointer' onClick={() => centerOnPoint(point, 0.3)} key={index}>
+                      <tr className='text-nowrap cursor-pointer' onClick={() => centerOnPoint(point, 0.3)} key={point.identifier + '_' + index}>
                         <td>{point.text}</td>
                         <td>{point.fields.Assay}</td>
                         <td>{point.fields['Cell Line']}</td>
