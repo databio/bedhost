@@ -38,7 +38,7 @@ from .. import _LOGGER
 from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WIDTH
 from ..data_models import CROM_NUMBERS, BaseListResponse, BedDigest
 from ..main import bbagent, usage_data
-from ..helpers import count_requests
+from ..helpers import count_requests, test_query_parameter
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
 
@@ -95,6 +95,7 @@ async def get_bed_metadata(
     full: Optional[bool] = Query(
         False, description="Return full record with stats, plots, files and metadata"
     ),
+    test_request: bool = test_query_parameter,
 ):
     """
     Returns metadata for a single BED record. if full=True, returns full record with stats, plots, files and metadata.
@@ -261,6 +262,32 @@ async def embed_bed_file(
     return embedding.tolist()[0]
 
 
+@router.post(
+    "/umap",
+    summary="Get embeddings for a bed file.",
+    response_model=List[float],
+)
+async def embed_bed_file(
+    file: UploadFile = File(None),
+):
+    """
+    Create embedding for bed file
+    """
+    _LOGGER.info("Embedding file..")
+
+    if file is not None:
+        with tempfile.TemporaryDirectory() as dirpath:
+            file_path = os.path.join(dirpath, file.filename)
+
+            with open(file_path, "wb") as bed_file:
+                shutil.copyfileobj(file.file, bed_file)
+
+            region_set = RegionSet(file_path)
+
+            embedding = bbagent.bed._get_umap_file(region_set)
+    return embedding.tolist()[0]
+
+
 @router.get(
     "/missing_plots",
     summary="Get missing plots for a bed file.",
@@ -361,6 +388,7 @@ async def text_to_bed_search(
     assay: Optional[Union[str, None]] = None,
     limit: int = 10,
     offset: int = 0,
+    test_request: bool = test_query_parameter,
 ):
     """
     Search for a BedFile by a text query.

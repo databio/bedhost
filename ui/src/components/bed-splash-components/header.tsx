@@ -80,6 +80,12 @@ export const BedSplashHeader = (props: Props) => {
               </button>
             </a>
           }
+          <a href={`/analyze?bedUrl=${record_identifier}`}>
+            <button className="btn btn-outline-primary btn-sm">
+              <i className="bi bi-bar-chart-steps me-1" />
+              Analyze
+            </button>
+          </a>
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className="btn btn-outline-primary btn-sm">
               <i className="bi bi-info-circle me-1" />

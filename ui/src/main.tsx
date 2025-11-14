@@ -9,6 +9,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
 import { Metrics } from './pages/metrics.tsx';
 import { BEDUmap } from './pages/bed-umap.tsx';
+import { BEDAnalytics } from './pages/bed-analytics.tsx';
+import init from '@databio/gtars';
 import { HelmetProvider } from 'react-helmet-async';
 import { MosaicCoordinatorProvider } from './contexts/mosaic-coordinator-context.tsx';
 
@@ -32,17 +34,20 @@ const queryClient = new QueryClient({
     },
   },
   queryCache: new QueryCache({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       if (error.response && error.response.status === 413) {
         toast.error(`${error.response.data.detail}`);
-      return;}
+        return;
+      }
       if (error.response && error.response.status === 415) {
         toast.error(`${error.response.data.detail}`);
-      return;}
+        return;
+      }
       //
       // console.error(error);
       // toast.error(`Something went wrong: ${error.message}`);
-    }
+    },
   }),
 });
 
@@ -80,7 +85,14 @@ const router = createBrowserRouter([
     path: '/umap',
     element: <BEDUmap />,
   },
+  {
+    path: '/analyze',
+    element: <BEDAnalytics />,
+  },
 ]);
+
+// initialize gtars:
+init();
 
 // entry point
 ReactDOM.createRoot(document.getElementById('root')!).render(
