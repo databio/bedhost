@@ -19,12 +19,10 @@ type Props = {
 }
 
 export const BEDEmbeddingView = (props: Props) => {
-  const { bedId, neighbors, showNeighbors } = props;
+  const { bedId, neighbors, showNeighbors, enableUpload } = props;
   const { coordinator, initializeData, addCustomPoint, deleteCustomPoint } = useMosaicCoordinator();
   const { addBedToCart } = useBedCart();
   const { mutateAsync: getUmapCoordinates } = useBedUmap();
-
-  const enableUpload = true;
 
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -41,6 +39,7 @@ export const BEDEmbeddingView = (props: Props) => {
   const [tooltipPoint, setTooltipPoint] = useState<any>(null);
   const [uploadedFilename, setUploadedFilename] = useState('');
   const [dataVersion, setDataVersion] = useState(0);
+  const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -53,6 +52,82 @@ export const BEDEmbeddingView = (props: Props) => {
       y: point.y,
       scale: scale
     });
+  };
+
+  const handleFileRemove = async () => {
+    try {
+      await deleteCustomPoint();
+      setUploadedFilename('')
+
+      coordinator.clear();
+      const updatedLegend = await fetchLegendItems(coordinator);
+      setLegendItems(updatedLegend);
+
+      // Prepare selection without custom point
+      const newSelection = selectedPoints.filter((p: any) => p.identifier !== 'custom_point');
+      setPendingSelection(newSelection);
+
+      // Force remount to remove point from map
+      setDataVersion(v => v + 1);
+    } catch (error) {
+      console.error('Error deleting file');
+    }
+  }
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const coordinates = await getUmapCoordinates(file);
+
+      if (coordinates.length >= 2) {
+        await addCustomPoint(coordinates[0], coordinates[1]);
+        setUploadedFilename(file.name)
+
+        // Clear coordinator cache and refresh legend
+        coordinator.clear();
+        const updatedLegend = await fetchLegendItems(coordinator);
+        setLegendItems(updatedLegend);
+
+        // await new Promise(resolve => setTimeout(resolve, 150));
+
+        // Query the uploaded point
+        const customPoint: any = await coordinator.query(
+          `SELECT
+            x, y,
+            ${colorGrouping} as category,
+            name as text,
+            id as identifier,
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            FROM data
+            WHERE id = 'custom_point'`,
+          { type: 'json' }
+        );
+
+        if (customPoint && customPoint.length > 0) {
+          // console.log('Custom point queried:', customPoint[0]);
+
+          // Prepare selection to apply after remount
+          const newSelection = selectedPoints.filter((p: any) => p.identifier !== 'custom_point');
+          newSelection.push(customPoint[0]);
+          setPendingSelection(newSelection);          
+
+          // Force remount to show new point
+          setDataVersion(v => v + 1);
+        }
+      }
+    } catch (error) {
+      console.error('Error getting UMAP coordinates:', error);
+    } finally {
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
   };
 
   const getSortedSelectedPoints = () => {
@@ -121,47 +196,6 @@ export const BEDEmbeddingView = (props: Props) => {
 
     // setTooltipPoint(finalPoints.slice(-1)[0])
     setSelectedPoints(finalPoints);
-  };
-
-  const handleFileRemove = async () => {
-    try {
-      await deleteCustomPoint();
-      setUploadedFilename('')
-
-      coordinator.clear();
-      const updatedLegend = await fetchLegendItems(coordinator);
-      setLegendItems(updatedLegend);
-      setDataVersion(v => v + 1);
-    } catch (error) {
-      console.error('Error deleting file');
-    }
-  }
-
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    try {
-      const coordinates = await getUmapCoordinates(file);
-
-      if (coordinates.length >= 2) {
-        await addCustomPoint(coordinates[0], coordinates[1]);
-        setUploadedFilename(file.name)
-
-        // Clear coordinator cache and refresh legend
-        coordinator.clear();
-        const updatedLegend = await fetchLegendItems(coordinator);
-        setLegendItems(updatedLegend);
-        setDataVersion(v => v + 1);
-        centerOnPoint({x: coordinates[0], y: coordinates[1]}, 0.3)
-      }
-    } catch (error) {
-      console.error('Error getting UMAP coordinates:', error);
-    }
-  };
-
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
   };
 
   // Range selection (for rectangle/lasso)
@@ -267,10 +301,7 @@ export const BEDEmbeddingView = (props: Props) => {
         FROM data
         ORDER BY ${colorGrouping}`;
 
-    console.log('Legend query:', query);
     const result = await coordinator.query(query, { type: 'json' }) as any[];
-    console.log('Legend results:', result);
-
     return result
   }
 
@@ -279,11 +310,6 @@ export const BEDEmbeddingView = (props: Props) => {
       setIsReady(true);
     });
   }, []);
-
-  // useEffect(() => { // add point
-  //   addPoint(20, 20).then(() => {
-  //   });
-  // }, []);
 
   useEffect(() => { // resize width of view
     if (containerRef.current) {
@@ -298,6 +324,22 @@ export const BEDEmbeddingView = (props: Props) => {
       })
     }
   }, [isReady, colorGrouping])
+
+  useEffect(() => { // apply pending selection after dataVersion change
+    if (pendingSelection !== null) {
+      setTimeout(() => {
+        setSelectedPoints(pendingSelection);
+        // If there's an uploaded file, center on it and set tooltip
+        if (uploadedFilename) {
+          const uploadedPoint = pendingSelection.find((point: any) => point.identifier === 'custom_point');
+          if (uploadedPoint) {
+            centerOnPoint(uploadedPoint, 0.3);
+          }
+        }
+        setPendingSelection(null);
+      }, 200);
+    }
+  }, [dataVersion, pendingSelection])
 
   useEffect(() => { // fetch initial bed id and neighbors
     if (isReady) {
@@ -330,6 +372,8 @@ export const BEDEmbeddingView = (props: Props) => {
             { type: 'json' }
           );
           setSelectedPoints([currentBed[0], ...neighborPoints]);
+        } else if (showNeighbors && enableUpload) {
+          setSelectedPoints([currentBed[0]]);
         } else {
           setSelectedPoints([currentBed[0]]);
         }
@@ -355,7 +399,7 @@ export const BEDEmbeddingView = (props: Props) => {
                   ref={fileInputRef}
                   className="d-none"
                   type="file"
-                  accept=".bed,.bed.gz"
+                  accept=".bed,.gz,application/gzip,application/x-gzip"
                   onChange={handleFileUpload}
                 />
                 {!!uploadedFilename && (
@@ -484,7 +528,7 @@ export const BEDEmbeddingView = (props: Props) => {
                 {/* <i className='bi bi-window ms-1' /> */}
                 <button 
                   className='btn btn-primary btn-xs ms-auto' 
-                  onClick={() => selectedPoints.map((point: any) => {
+                  onClick={() => selectedPoints.filter((point: any) => point.identifier !== 'custom_point').map((point: any) => {
                     const bedItem = {
                       id: point.identifier,
                       name: point.text || 'No name',

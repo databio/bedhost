@@ -276,7 +276,7 @@ export const BedSplash = () => {
 
           {bedId && metadata?.name?.includes('encode') && (
             <>
-              <BEDEmbeddingView bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors}/>
+              <BEDEmbeddingView bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors} enableUpload={true}/>
             </>
           )}
 
