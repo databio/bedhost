@@ -2,14 +2,14 @@
 @import 'bootstrap/scss/variables';
 
 $primary: #008080;
-$secondary: #f97316;
+// $secondary: #f97316;
 
 // merge with existing $theme-colors map
 $theme-colors: map-merge(
   $theme-colors,
   (
     'primary': $primary,
-    'secondary': $secondary,
+    // 'secondary': $secondary,
   )
 );
 
@@ -98,15 +98,15 @@ a {
 }
 
 .bed-splash-genomic-feature-bar-height {
-  height: 27rem;
+  height: 26.375rem;
 }
 
 .bedset-splash-stat-card-height {
-  min-height: 7rem;
+  min-height: 9rem;
 }
 
 .bedset-splash-genomic-feature-bar-height {
-  height: 24rem;
+  height: 24.875rem;
 }
 
 .min-h-screen {
@@ -341,6 +341,25 @@ td {
 
 .metric-plot-height {
   height: 450px;
+}
+
+.btn-xs {
+  padding: 0.125rem 0.6rem !important;
+  font-size: 0.7rem !important;
+  line-height: 1.2 !important;
+  border-radius: 0.25rem !important;
+}
+
+.btn-xs > .bi {
+  font-size: 0.7rem;
+  vertical-align: -0.125em;
+}
+
+.btn-group-xs > .btn {
+  padding: 0.125rem 0.6rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  border-radius: 0.25rem;
 }
 
 .chrom-dist-plot-container {

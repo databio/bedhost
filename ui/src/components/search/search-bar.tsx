@@ -74,7 +74,7 @@ export const SearchBar = (props: Props) => {
         </select>
         {searchView === 't2b' && (
           <button
-            className="btn btn-warning"
+            className="btn btn-secondary"
             onClick={() => setShowOptions(!showOptions)}
           >
             Options

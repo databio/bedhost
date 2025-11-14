@@ -73,8 +73,6 @@ export const Metrics = () => {
   const { data: detailedStats, isLoading: statsIsLoading } = useDetailedStats();
   const { data: usageStats, isLoading: usageIsLoading } = useDetailedUsage();
 
-  console.log(detailedStats);
-
   if (statsIsLoading || usageIsLoading) {
     return (
       <Layout title="BEDbase" footer>

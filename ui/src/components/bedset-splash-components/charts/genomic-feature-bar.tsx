@@ -33,6 +33,11 @@ const chartOptions = {
       display: false,
     },
   },
+  layout: {
+    padding: {
+      bottom: 25
+    }
+  }
 };
 
 export const GenomicFeatureBar = (props: Props) => {
@@ -188,7 +193,7 @@ export const GenomicFeatureBar = (props: Props) => {
   }
 
   return (
-    <div className="border rounded p-2 shadow-sm" style={{ height: 'calc(100% - 0.5rem - 2px)' }}>
+    <div className="border rounded p-2 shadow-sm">
       <div className="d-flex flex-column align-items-center justify-content-between h-100">
         <div className="d-flex position-relative flex-row align-items-center w-100">
           <h4 className="fw-bold text-base text-center w-100">Genomic Features</h4>
@@ -234,9 +239,6 @@ export const GenomicFeatureBar = (props: Props) => {
               ],
             }}
           />
-        </div>
-        <div className="text-end">
-          <p className="text-center mb-0 text-sm text-primary">Learn more</p>
         </div>
       </div>
     </div>

@@ -35,7 +35,6 @@ export const BedSplashHeader = (props: Props) => {
       <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-1">
         <div className="d-flex align-items-center overflow-x-auto w-100">
           <h4 className="fw-bold d-flex align-items-center flex-nowrap">
-            <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
             <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
             <button
               className="btn btn-link text-primary mb-1"
@@ -159,12 +158,12 @@ export const BedSplashHeader = (props: Props) => {
                 <Dropdown.Menu className="border border-light-subtle shadow-sm">
                   {metadata.files?.bed_file && (
                     <Fragment>
-                      {(metadata.files?.bed_file?.access_methods || []).map((method) => {
+                      {(metadata.files?.bed_file?.access_methods || []).map((method, index) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BED file' : 'No download link available'} (
                             <span className="fw-bold">{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
                           </Dropdown.Item>
@@ -174,12 +173,12 @@ export const BedSplashHeader = (props: Props) => {
                   )}
                   {metadata.files?.bigbed_file && (
                     <Fragment>
-                      {(metadata.files?.bigbed_file?.access_methods || []).map((method) => {
+                      {(metadata.files?.bigbed_file?.access_methods || []).map((method, index) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                          <Dropdown.Item className="text-primary" href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BigBED file' : 'No download link available'} (
                             <span className="fw-bold">{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
                           </Dropdown.Item>
@@ -194,8 +193,8 @@ export const BedSplashHeader = (props: Props) => {
         </div>
       </div>
       <div>
-        <h5 className="fw-semibold mb-1">{metadata.name}</h5>
-        <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
+        <h5 className="mb-1">{metadata.name}</h5>
+        <p className="text-muted fst-italic text-sm">{metadata?.description || 'No description available'}</p>
       </div>
       <div
         className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">

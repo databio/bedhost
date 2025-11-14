@@ -71,10 +71,10 @@ export const BedsetSplash = () => {
           >
             <h1 className="fw-bold text-center mb-3">Oh no!</h1>
             <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h4 className="text-2xl text-center">
+              <h5 className="text-2xl text-center">
                 We could not find BEDset with record identifier: <br />
                 <span className="fw-bold">{bedsetId}</span>
-              </h4>
+              </h5>
             </div>
             <div className="w-50">
               <p className="fst-italic text-center mt-3">
@@ -108,29 +108,29 @@ export const BedsetSplash = () => {
             <Col sm={12}>{(metadata !== undefined) && bedfiles ? <BedsetSplashHeader metadata={metadata} beds={bedfiles.results} /> : null}</Col>
           </Row>
 
-          <Row className="mb-2 g-2">
-            <h4 className="fw-bold">Statistics</h4>
+          <Row className="mt-3 mb-4 g-2">
+            <h5 className="fw-bold mt-0">Statistics</h5>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column mt-0 gap-2">
+              <Col sm={12} md={3} className="d-flex flex-column mt-0 gap-2">
                 <MeanRegionWidthCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
               </Col>
             )}
-            <Col sm={12} md={8} className="h-100 align-items-stretch mt-2 mt-md-0">
+            <Col sm={12} md={9} className="h-100 align-items-stretch mt-2 mt-md-0">
               <GenomicFeatureBar metadata={metadata!} />
             </Col>
           </Row>
 
-          <Row className="mb-2">
+          <Row className="mb-4">
             <Col sm={12}>
-              <h4 className="fw-bold">Plots</h4>
+              <h5 className="fw-bold">Plots</h5>
               <Plots metadata={metadata!} />
             </Col>
           </Row>
 
-          <Row className="mb-2">
-            <h4 className="fw-bold">Constituent BED Files</h4>
+          <Row className="mb-4">
+            <h5 className="fw-bold">Constituent BED Files</h5>
             <Col sm={12}>
               {isLoadingBedfiles ? (
                 <div className="mt-2 mb-5">

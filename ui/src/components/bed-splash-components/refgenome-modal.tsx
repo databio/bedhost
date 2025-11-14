@@ -13,8 +13,6 @@ type Props = {
 export const RefGenomeModal = (props: Props) => {
   const { show, onHide, genomeStats } = props;
 
-  console.log(genomeStats?.compared_genome)
-
   return (
     <Modal
       animation={false}
@@ -65,7 +63,7 @@ export const RefGenomeModal = (props: Props) => {
         )
           .map(genome => (
             <Link
-              to={`https://api.refgenie.org/v4/page/genome/${genome.genome_digest}`}
+              to={`https://ui.refgenie.org/genomes/${genome.genome_digest}`}
               key={genome.compared_genome}
               className="text-decoration-none"
               target="_blank"

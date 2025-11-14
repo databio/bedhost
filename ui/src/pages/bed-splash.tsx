@@ -17,6 +17,8 @@ import { snakeToTitleCase } from '../utils';
 import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table';
 import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
+import { BEDEmbeddingView } from '../components/umap/bed-embedding-view.tsx';
+import { useState } from 'react';
 
 // Use the response type to properly type the metadata
 type BedMetadata = components['schemas']['BedMetadataAll'];
@@ -24,6 +26,8 @@ type BedMetadata = components['schemas']['BedMetadataAll'];
 export const BedSplash = () => {
   const params = useParams();
   const bedId = params.id;
+
+  const [showNeighbors, setShowNeighbors] = useState(false);
 
   const {
     isLoading,
@@ -101,10 +105,10 @@ export const BedSplash = () => {
           >
             <h1 className="fw-bold text-center mb-3">Oh no!</h1>
             <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h4 className="text-2xl text-center">
+              <h5 className="text-2xl text-center">
                 We could not find BED with record identifier: <br />
                 <span className="fw-bold">{bedId}</span>
-              </h4>
+              </h5>
             </div>
             <div className="w-50">
               <p className="fst-italic text-center mt-3">
@@ -141,9 +145,9 @@ export const BedSplash = () => {
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
             </Col>
           </Row>
-          <Row className="mb-2 g-3">
-            <Col sm={12} md={6}>
-              <h4 className="fw-bold">Overview</h4>
+          <Row className="mt-3 mb-4 g-2">
+            <Col sm={12} md={6} className='mt-0'>
+              <h5 className="fw-bold">Overview</h5>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <div className="table-responsive">
                   <table className="table table-sm table-striped text-truncate text-sm">
@@ -199,8 +203,8 @@ export const BedSplash = () => {
                 </div>
               </div>
             </Col>
-            <Col sm={12} md={6} className='mt-2 mt-md-3'>
-              <h4 className="fw-bold">BEDsets</h4>
+            <Col sm={12} md={6} className='mt-2 mt-md-0'>
+              <h5 className="fw-bold">BEDsets</h5>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <div className="table-responsive">
                   <table className="table table-sm table-striped text-truncate text-sm">
@@ -248,31 +252,54 @@ export const BedSplash = () => {
             </Col>
           </Row>
 
-          <Row className="mb-2 g-2">
-            <h4 className="fw-bold">Statistics</h4>
+          <Row className="mb-4 g-2">
+            <h5 className="fw-bold">Statistics</h5>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column mt-0 gap-2">
+              <Col sm={12} md={3} className="d-flex flex-column mt-0 gap-2">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
               </Col>
             )}
-            <Col sm={12} md={8} className="d-flex flex-column mt-2 mt-md-0">
+            <Col sm={12} md={9} className="d-flex flex-column mt-2 mt-md-0">
               <GenomicFeatureBar metadata={metadata!} />
             </Col>
           </Row>
 
-          <Row className="mb-2">
-            <h4 className="fw-bold">Plots</h4>
+          <Row className="mb-4">
+            <h5 className="fw-bold">Plots</h5>
             <Col sm={12}>
               <Plots metadata={metadata!} />
             </Col>
           </Row>
 
+          {bedId && metadata?.name?.includes('encode') && (
+            <>
+              <BEDEmbeddingView bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors} enableUpload={true}/>
+            </>
+          )}
+
           {neighbours && (
-            <Row className="mb-2 mx-0">
-              <h4 className="fw-bold px-0">Similar BED Files</h4>
+            <Row className="mb-4 mx-0">
+              <div className='d-flex justify-content-between align-items-center px-0'>
+                <h5 className="fw-bold px-0">Similar BED Files</h5>
+                <div className='form-check form-switch form-switch-sm'>
+                  <input 
+                    className='form-check-input'
+                    type='checkbox'
+                    checked={showNeighbors}
+                    id='showNeighbors'
+                    onChange={() => setShowNeighbors(!showNeighbors)}
+                  />
+                  <label 
+                    className='form-check-label fw-medium text-sm'
+                    htmlFor='showNeighbors'
+                  >
+                    Show in Atlas
+                  </label>
+                </div>
+              </div>
               <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
                 <Text2BedSearchResultsTable results={neighbours} />
               </Col>

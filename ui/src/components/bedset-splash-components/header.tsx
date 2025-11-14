@@ -30,7 +30,6 @@ export const BedsetSplashHeader = (props: Props) => {
       <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-0">
         <div className="d-flex align-items-center">
           <h4 className="fw-bold mb-2">
-            <i className="bi bi-journal-text me-2" />
             {metadata?.id || 'No name available'}
             <button
               className="btn btn-link text-primary mb-1"
@@ -129,21 +128,21 @@ export const BedsetSplashHeader = (props: Props) => {
         </div>
       </div>
       <div className="text-body-secondary fst-italic">
-        <p>{metadata?.description || 'No description available'}</p>
+        <p className='mb-0 text-sm'>{metadata?.description || 'No description available'}</p>
         <p className="mb-0 text-sm">Author: {metadata?.author || 'None'}</p>
-        <p className="mb-0 text-sm">Source: {metadata?.source || 'None'}</p>
+        <p className="text-sm">Source: {metadata?.source || 'None'}</p>
       </div>
-      <div className="d-flex flex-column flex-md-row align-items-start justify-content-between mt-2">
-        <div className="d-flex flex-column flex-md-row gap-1">
+      <div className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">
+        <div className="d-flex flex-column flex-md-row gap-1 text-lg">
           <p className="mb-0">
-            <div className="badge bg-primary text-wrap">
+            <div className="badge bg-primary">
               <i className="bi bi-hash me-1" />
               {metadata.md5sum}
             </div>
           </p>
           {metadata.bed_ids && (
             <p className="mb-0">
-              <div className="badge bg-primary text-wrap">
+              <div className="badge bg-primary">
                 <i className="bi bi-file-earmark-text me-1" />
                 {metadata.bed_ids?.length} BED files
               </div>
@@ -152,7 +151,7 @@ export const BedsetSplashHeader = (props: Props) => {
         </div>
 
         <div
-          className="d-flex flex-column flex-lg-row justify-content-md-between align-items-start align-items-md-end text-sm mt-2 mt-md-0">
+          className="d-flex flex-column flex-md-row justify-content-xl-between align-items-start align-items-xl-end text-sm">
           <div className="d-flex flex-row text-muted">
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">

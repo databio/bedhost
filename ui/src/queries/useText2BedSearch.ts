@@ -21,7 +21,6 @@ export const useText2BedSearch = (query: SearchQuery) => {
   if (autoRun !== undefined && autoRun === true && !!q) {
     enabled = true;
   }
-  console.log(assay)
   return useQuery({
     queryKey: ['search', q, limit, offset, genome, assay],
     queryFn: async () => {

@@ -166,7 +166,7 @@ export const BedsTable = (props: Props) => {
         />
       </div>
       <div className="table-responsive">
-        <table className="table mb-2 table-hover table">
+        <table className="table text-sm mb-2 table-hover table">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
