@@ -12,9 +12,11 @@
     "generate-types-local": "npx openapi-typescript http://localhost:8000/openapi.json -o bedbase-types.d.ts"
   },
   "dependencies": {
+    "@databio/gtars": "^0.5.2",
     "@tanstack/react-query": "^5.28.0",
     "@tanstack/react-query-devtools": "^5.28.0",
     "@tanstack/react-table": "^8.15.3",
+    "@types/pako": "^2.0.4",
     "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.12.0",
     "bootstrap": "^5.3.3",
@@ -24,6 +26,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "framer-motion": "^11.0.20",
     "js-yaml": "^4.1.0",
+    "pako": "^2.1.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.1",
     "react-chartjs-2": "^5.2.0",
@@ -35,8 +38,10 @@
     "react-markdown": "^9.0.1",
     "react-router-dom": "^7.5.2",
     "rehype-highlight": "^7.0.0",
+    "three": "^0.177.0",
     "vega-embed": "^7.0.2",
-    "three": "^0.177.0"
+    "vite-plugin-top-level-await": "^1.6.0",
+    "vite-plugin-wasm": "^3.5.0"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
