@@ -18,8 +18,6 @@ interface TooltipProps {
 const TooltipContent = ({ tooltip }: { tooltip: TooltipProps['tooltip'] }) => {
   if (!tooltip) return null;
 
-  console.log(tooltip)
-
   return (
     <div
       className='border rounded shadow-sm p-2 text-xs'
