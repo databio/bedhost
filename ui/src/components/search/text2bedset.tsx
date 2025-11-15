@@ -66,7 +66,7 @@ export const Text2BedSet = () => {
         ) : (
           <div className="my-2">
             {results ? (
-              <div className="p-0 pt-1 pb-3 border rounded shadow-sm">
+              <div className="p-0 pt-1 pb-3 border rounded shadow-sm bg-white">
                 <div className="px-2 pt-2">
                   <TableToolbar showTotalResults limit={limit} setLimit={setLimit} total={results.count} />
                 </div>

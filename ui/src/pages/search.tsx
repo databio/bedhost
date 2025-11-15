@@ -1,7 +1,7 @@
 import { Layout } from '../components/layout';
 
 import { useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 
 import { SearchSelector } from '../components/search/search-selector';
 import { Text2Bed } from '../components/search/text2bed/text2bed';
@@ -14,7 +14,10 @@ type SearchView = 't2b' | 'b2b' | 't2bs';
 
 export const SearchPage = () => {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const [searchView, setSearchView] = useState<SearchView>((searchParams.get('view') as SearchView) || 't2b');
+
+  const uploadedFile = location.state?.file as File | undefined;
 
   return (
     <Layout title="BEDbase | Search" footer fullHeight>
@@ -28,7 +31,7 @@ export const SearchPage = () => {
         {searchView === 't2b' ? (
           <Text2Bed />
         ) : searchView === 'b2b' ? (
-          <Bed2Bed />
+          <Bed2Bed uploadedFile={uploadedFile} />
         ) : searchView === 't2bs' ? (
           <Text2BedSet />
         ) : (

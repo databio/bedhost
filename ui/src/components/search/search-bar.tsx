@@ -39,47 +39,57 @@ export const SearchBar = (props: Props) => {
   const placeholder = useMemo(() => placeholders[Math.floor(Math.random() * placeholders.length)], []);
   return (
     <>
-      <div className="d-flex flex-row align-items-center gap-1">
-        <input
-          value={value}
-          onChange={(e) => {
-            if (e.target.value === '') {
-              setSearchParams({});
-            } else {
-              setSearchParams({ q: e.target.value });
-            }
-            onChange(e.target.value);
-          }}
-          className="form-control"
-          type="text"
-          placeholder={placeholder}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              if (value === '') {
-                toast.error('Please enter a search term', {
-                  position: 'top-center',
-                });
-                return;
+      <div className="d-flex flex-row align-items-center gap-2">
+        <div className='input-group bg-white'>
+          <input
+            value={value}
+            onChange={(e) => {
+              if (e.target.value === '') {
+                setSearchParams({});
+              } else {
+                setSearchParams({ q: e.target.value });
               }
-              onSearch();
-            }
-          }}
-        />
+              onChange(e.target.value);
+            }}
+            className="form-control"
+            type="text"
+            placeholder={placeholder}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (value === '') {
+                  toast.error('Please enter a search term', {
+                    position: 'top-center',
+                  });
+                  return;
+                }
+                onSearch();
+              }
+            }}
+          />
 
-        <select className="form-select w-auto" value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
-          <option value={10}>Limit 10</option>
-          <option value={20}>Limit 20</option>
-          <option value={50}>Limit 50</option>
-          <option value={100}>Limit 100</option>
-        </select>
-        {searchView === 't2b' && (
-          <button
-            className="btn btn-secondary"
-            onClick={() => setShowOptions(!showOptions)}
+          <select 
+            className="form-select w-auto" 
+            style={{ maxWidth: '140px' }} 
+            value={limit} 
+            onChange={(e) => setLimit(Number(e.target.value))}
           >
-            Options
-          </button>
-        )}
+            <option value={10}>Limit 10</option>
+            <option value={20}>Limit 20</option>
+            <option value={50}>Limit 50</option>
+            <option value={100}>Limit 100</option>
+          </select>
+
+          {searchView === 't2b' && (
+            <button
+              className="btn btn-outline-secondary border"
+              onClick={() => setShowOptions(!showOptions)}
+            >
+              <i className='bi bi-sliders' />
+            </button>
+          )}
+        </div>
+        
+        
         <button
           className="btn btn-primary"
           onClick={() => {
@@ -92,7 +102,7 @@ export const SearchBar = (props: Props) => {
             onSearch();
           }}
         >
-          Search
+          <i className='bi bi-search' />
         </button>
       </div>
       {showOptions && (

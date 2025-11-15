@@ -156,7 +156,7 @@ export const BedsTable = (props: Props) => {
   });
 
   return (
-    <div className="rounded border shadow-sm mb-2 p-0">
+    <div className="rounded border shadow-sm mb-2 p-0 bg-white">
       <div className="d-flex flex-row mt-2">
         <input
           className="form-control mx-3 my-2"

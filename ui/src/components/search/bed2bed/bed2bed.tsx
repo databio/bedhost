@@ -4,8 +4,13 @@ import { SearchingJumper } from '../searching-jumper';
 import { useBed2BedSearch } from '../../../queries/useBed2BedSearch';
 import { Bed2BedSearchResultsTable } from './b2b-search-results-table';
 
-export const Bed2Bed = () => {
-  const [file, setFile] = useState<File | null>(null);
+type Props = {
+  uploadedFile?: File;
+};
+
+export const Bed2Bed = (props: Props) => {
+  const { uploadedFile } = props;
+  const [file, setFile] = useState<File | null>(uploadedFile || null);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const onDrop = useCallback((acceptedFiles: File[]) => {

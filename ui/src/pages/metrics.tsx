@@ -146,7 +146,7 @@ export const Metrics = () => {
           <Row className="h-100 mt-1 g-2">
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Genome',
                   type: 'bar',
@@ -167,7 +167,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by BED Compliance',
                   type: 'bar',
@@ -188,7 +188,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Assay Type',
                   type: 'bar',
@@ -209,7 +209,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Comments',
                   type: 'bar',
@@ -230,7 +230,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED File Size Histogram',
                   type: 'hist',
@@ -265,7 +265,7 @@ export const Metrics = () => {
 
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Data Format',
                   type: 'pie',
@@ -288,7 +288,7 @@ export const Metrics = () => {
               </div>
 
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Files by Organism',
                   type: 'bar',
@@ -309,7 +309,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED GEO processing status',
                   type: 'bar',
@@ -330,7 +330,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Number of Regions Histogram',
                   type: 'hist',
@@ -361,7 +361,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Mean Region Width Histogram',
                   type: 'hist',
@@ -409,7 +409,7 @@ export const Metrics = () => {
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
 
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'Cumulative number of bed files in GEO',
                   type: 'bar',
@@ -430,7 +430,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED file size in GEO',
                   type: 'hist',
@@ -465,7 +465,7 @@ export const Metrics = () => {
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
 
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'Number of bed files in GEO',
                   type: 'bar',
@@ -501,7 +501,7 @@ export const Metrics = () => {
             <h4 className="fw-semibold mb-0">BEDbase Usage Statistics</h4>
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Files Popularity',
                   type: 'bar',
@@ -522,7 +522,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED Search Terms',
                   type: 'bar',
@@ -543,7 +543,7 @@ export const Metrics = () => {
                 />
               </div>
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BED file downloads',
                   type: 'bar',
@@ -567,7 +567,7 @@ export const Metrics = () => {
 
             <Col sm={12} md={6} className="d-flex flex-column gap-2">
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BEDset Popularity',
                   type: 'bar',
@@ -589,7 +589,7 @@ export const Metrics = () => {
               </div>
 
               <div
-                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height"
+                className="border rounded genome-card cursor-pointer p-3 shadow-sm metric-plot-height bg-white"
                 onClick={() => setMetricModalProps({
                   title: 'BEDset Search Term',
                   type: 'bar',

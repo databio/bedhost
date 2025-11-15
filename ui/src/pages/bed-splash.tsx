@@ -68,28 +68,28 @@ export const BedSplash = () => {
   if (isLoading) {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer>
-        <div className="my-2">
+        <div className='my-2'>
           <Row>
             <Col sm={12} md={12}>
-              <div className="mb-2">
-                <CardSkeleton height="100px" />
+              <div className='mb-2'>
+                <CardSkeleton height='100px' />
               </div>
             </Col>
           </Row>
           <Row>
             <Col sm={5} md={5}>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
             </Col>
             <Col sm={7} md={7}>
-              <CardSkeleton height="100%" />
+              <CardSkeleton height='100%' />
             </Col>
           </Row>
         </div>
@@ -100,32 +100,32 @@ export const BedSplash = () => {
       return (
         <Layout title={`BEDbase | ${bedId}`}>
           <div
-            className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
+            className='mt-5 w-100 d-flex flex-column align-items-center justify-content-center'
             style={{ height: '50vh' }}
           >
-            <h1 className="fw-bold text-center mb-3">Oh no!</h1>
-            <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h5 className="text-2xl text-center">
+            <h1 className='fw-bold text-center mb-3'>Oh no!</h1>
+            <div className='d-flex flex-row align-items-center w-100 justify-content-center'>
+              <h5 className='text-2xl text-center'>
                 We could not find BED with record identifier: <br />
-                <span className="fw-bold">{bedId}</span>
+                <span className='fw-bold'>{bedId}</span>
               </h5>
             </div>
-            <div className="w-50">
-              <p className="fst-italic text-center mt-3">
+            <div className='w-50'>
+              <p className='fst-italic text-center mt-3'>
                 Are you sure you have the correct record identifier? If you believe this is an error, please open an
-                issue: <a href="https://github.com/databio/bedhost/issues">on GitHub</a>
+                issue: <a href='https://github.com/databio/bedhost/issues'>on GitHub</a>
               </p>
             </div>
-            <div className="d-flex flex-row align-items-center justify-content-center">
-              <a href="/">
-                <button className="btn btn-primary">
-                  <i className="bi bi-house me-1"></i>
+            <div className='d-flex flex-row align-items-center justify-content-center'>
+              <a href='/'>
+                <button className='btn btn-primary'>
+                  <i className='bi bi-house me-1'></i>
                   Home
                 </button>
               </a>
-              <a href="https://github.com/databio/bedhost/issues">
-                <button className="btn btn-primary ms-2">
-                  <i className="bi bi-exclamation-triangle me-1"></i>
+              <a href='https://github.com/databio/bedhost/issues'>
+                <button className='btn btn-primary ms-2'>
+                  <i className='bi bi-exclamation-triangle me-1'></i>
                   Report issue
                 </button>
               </a>
@@ -139,25 +139,25 @@ export const BedSplash = () => {
   } else {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
-        <Container className="my-2">
-          <Row className="mb-2">
+        <Container className='my-2'>
+          <Row className='mb-2'>
             <Col sm={12} md={12}>
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
             </Col>
           </Row>
-          <Row className="mt-3 mb-4 g-2">
+          <Row className='mt-3 mb-4 g-2'>
             <Col sm={12} md={6} className='mt-0'>
-              <h5 className="fw-bold">Overview</h5>
-              <div className="border rounded px-0 pt-1 shadow-sm">
-                <div className="table-responsive">
-                  <table className="table table-sm table-striped text-truncate text-sm">
+              <h5 className='fw-bold'>Overview</h5>
+              <div className='border rounded px-0 pt-1 shadow-sm bg-white'>
+                <div className='table-responsive'>
+                  <table className='table table-sm table-striped text-truncate text-sm'>
                     <thead>
                       <tr>
-                        <th scope="col">Key</th>
-                        <th scope="col">Value</th>
+                        <th scope='col'>Key</th>
+                        <th scope='col'>Value</th>
                       </tr>
                     </thead>
-                    <tbody className="text-sm">
+                    <tbody className='text-sm'>
                       {Object.keys(metadata?.annotation || {}).map((k) => {
                         if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
                           return null;
@@ -170,10 +170,10 @@ export const BedSplash = () => {
 
                         return (
                           <tr key={k}>
-                            <td style={{ maxWidth: '50px' }} className="fst-italic">
+                            <td style={{ maxWidth: '50px' }} className='fst-italic'>
                               {snakeToTitleCase(k)}
                             </td>
-                            <td style={{ maxWidth: '120px' }} className="truncate">
+                            <td style={{ maxWidth: '120px' }} className='truncate'>
                               { k === 'global_sample_id' ?
                               (Array.isArray(value) && value.length > 0)
                               ? value.map((v, i) => (
@@ -204,29 +204,29 @@ export const BedSplash = () => {
               </div>
             </Col>
             <Col sm={12} md={6} className='mt-2 mt-md-0'>
-              <h5 className="fw-bold">BEDsets</h5>
-              <div className="border rounded px-0 pt-1 shadow-sm">
-                <div className="table-responsive">
-                  <table className="table table-sm table-striped text-truncate text-sm">
+              <h5 className='fw-bold'>BEDsets</h5>
+              <div className='border rounded px-0 pt-1 shadow-sm bg-white'>
+                <div className='table-responsive'>
+                  <table className='table table-sm table-striped text-truncate text-sm'>
                     <thead>
                     <tr>
-                      <th scope="col">BEDset ID</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Description</th>
-                      <th scope="col">View</th>
+                      <th scope='col'>BEDset ID</th>
+                      <th scope='col'>Name</th>
+                      <th scope='col'>Description</th>
+                      <th scope='col'>View</th>
                     </tr>
                     </thead>
                     <tbody>
                     {[
                       ...(metadata?.bedsets || []).map((bedset) => (
-                        <tr key={bedset.id} className="truncate">
-                          <td className="truncate" style={{ maxWidth: '150px' }}>
+                        <tr key={bedset.id} className='truncate'>
+                          <td className='truncate' style={{ maxWidth: '150px' }}>
                             {bedset.id}
                           </td>
-                          <td className="truncate" style={{ maxWidth: '100px' }}>
+                          <td className='truncate' style={{ maxWidth: '100px' }}>
                             {bedset.name || 'No name'}
                           </td>
-                          <td className="truncate" style={{ maxWidth: '300px' }}>
+                          <td className='truncate' style={{ maxWidth: '300px' }}>
                             {bedset.description || 'No description'}
                           </td>
                           <td>
@@ -252,23 +252,23 @@ export const BedSplash = () => {
             </Col>
           </Row>
 
-          <Row className="mb-4 g-2">
-            <h5 className="fw-bold">Statistics</h5>
+          <Row className='mb-4 g-2'>
+            <h5 className='fw-bold'>Statistics</h5>
             {metadata && (
-              <Col sm={12} md={3} className="d-flex flex-column mt-0 gap-2">
+              <Col sm={12} md={3} className='d-flex flex-column mt-0 gap-2'>
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
               </Col>
             )}
-            <Col sm={12} md={9} className="d-flex flex-column mt-2 mt-md-0">
+            <Col sm={12} md={9} className='d-flex flex-column mt-2 mt-md-0'>
               <GenomicFeatureBar metadata={metadata!} />
             </Col>
           </Row>
 
-          <Row className="mb-4">
-            <h5 className="fw-bold">Plots</h5>
+          <Row className='mb-4'>
+            <h5 className='fw-bold'>Plots</h5>
             <Col sm={12}>
               <Plots metadata={metadata!} />
             </Col>
@@ -281,9 +281,9 @@ export const BedSplash = () => {
           )}
 
           {neighbours && (
-            <Row className="mb-4 mx-0">
+            <Row className='mb-4 mx-0'>
               <div className='d-flex justify-content-between align-items-center px-0'>
-                <h5 className="fw-bold px-0">Similar BED Files</h5>
+                <h5 className='fw-bold px-0'>Similar BED Files</h5>
                 <div className='form-check form-switch form-switch-sm'>
                   <input 
                     className='form-check-input'
@@ -300,7 +300,7 @@ export const BedSplash = () => {
                   </label>
                 </div>
               </div>
-              <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
+              <Col sm={12} className='d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0 bg-white'>
                 <Text2BedSearchResultsTable results={neighbours} />
               </Col>
             </Row>
