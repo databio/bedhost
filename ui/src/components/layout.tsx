@@ -18,7 +18,7 @@ type LayoutProps = {
 const Footer = () => {
   const { data, isLoading, isFetching } = useServiceInfo();
   return (
-    <div className="container">
+    <div className="container bg-body-tertiary bg-opacity-75">
       <footer className="flex-wrap py-3 my-4 align-top d-flex justify-content-between align-items-center border-top">
         <div className="d-flex flex-column">
           <div>
@@ -74,13 +74,13 @@ export const Layout = (props: LayoutProps) => {
     return (
       <Fragment>
         <SEO title={title} description={description} image={image} />
-        <div className='d-flex flex-column vh-100'>
+        <div className='d-flex flex-column vh-100 bg-body-tertiary bg-opacity-75'>
           <header>
             <Nav />
           </header>
           <main className='flex-fill container-fluid' style={{ minHeight: 0 }}>{children}</main>
+          {!!footer && <Footer />}
         </div>
-        {!!footer && <Footer />}
       </Fragment>
     );
   }
@@ -89,11 +89,13 @@ export const Layout = (props: LayoutProps) => {
   return (
     <Fragment>
       <SEO title={title} description={description} image={image} />
-      <header>
-        <Nav />
-      </header>
-      <main className={`${fullHeight ? fluidContainer + ' min-h-screen' : fluidContainer}`}>{children}</main>
-      {!!footer && <Footer />}
+      <div className='min-vh-100 bg-body-tertiary bg-opacity-75 d-flex flex-column'>
+        <header>
+          <Nav />
+        </header>
+        <main className={`${fullHeight ? fluidContainer + ' min-h-screen flex-grow-1' : fluidContainer + ' flex-grow-1'}`}>{children}</main>
+        {!!footer && <Footer />}
+      </div>
     </Fragment>
   );
 };

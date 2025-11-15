@@ -14,7 +14,7 @@ export const Home = () => {
 
   const [copiedAPI, setCopiedAPI] = useState(false);
   const [copiedClient, setCopiedClient] = useState(false);
-  const [searchOptions, setSearchOptions] = useState(false);
+  // const [searchOptions, setSearchOptions] = useState(false);
   const [activeApiTab, setActiveApiTab] = useState(CODE_SNIPPETS[0].language);
   const [activeClientTab, setActiveClientTab] = useState(BBCONF_SNIPPETS[0].language);
   const navigate = useNavigate();
@@ -73,11 +73,11 @@ export const Home = () => {
           </button>
         </div>
 
-        {searchOptions && (
+        {/* {searchOptions && (
           <div>
             test
           </div>
-        )}
+        )} */}
 
         <div className='d-flex flex-row align-items-center col-12 col-lg-10 mt-2 border rounded overflow-hidden'>
           <BEDEmbeddingPlot bedId={exampleBedId} height={330}/>
@@ -89,15 +89,15 @@ export const Home = () => {
 
         <div className='d-flex flex-row gap-4 justify-content-center mb-5 text-muted'>
           <span>
-            <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || '-').toLocaleString()}</strong> BED files
+            <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
           </span>
           <span>•</span>
           <span>
-            <strong className='text-success'>{(bedbaseStats?.bedsets_number || '-').toLocaleString()}</strong> BEDsets
+            <strong className='text-success'>{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</strong> BEDsets
           </span>
           <span>•</span>
           <span>
-            <strong className='text-info'>{(bedbaseStats?.genomes_number || '-').toLocaleString()}</strong> genomes
+            <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
           </span>
           <span>•</span>
           <a className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover' href={`/metrics`}>

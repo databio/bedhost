@@ -9,9 +9,8 @@ export const Nav = () => {
   return (
     <Fragment>
       <nav
-        className="d-flex flex-row align-items-center justify-content-between w-100 py-3 border-bottom"
+        className="d-flex flex-row align-items-center justify-content-between w-100 py-3 border-bottom bg-white"
         aria-label="navbar"
-        style={{ backgroundColor: '#EFF3F6' }}
       >
         <div className="d-flex flex-row align-items-center px-4">
           <NavLogo />

@@ -25,6 +25,10 @@ $theme-colors: map-merge(
 // set changes
 @import 'bootstrap';
 
+body {
+  background-color: var(--bs-body-tertiary-bg) !important;
+}
+
 a {
   color: $primary;
 }

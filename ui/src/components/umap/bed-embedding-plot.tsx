@@ -96,7 +96,7 @@ export const BEDEmbeddingPlot = (props: Props) => {
           />
         </div>
       ) : (
-        <div className='w-100 d-flex align-items-center justify-content-center' style={{height: height || 500}} ref={containerRef}>
+        <div className='w-100 d-flex align-items-center justify-content-center bg-white' style={{height: height || 500}} ref={containerRef}>
           <span className='text-muted text-sm'>Loading...</span>
         </div>
       )}
