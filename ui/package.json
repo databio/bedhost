@@ -23,7 +23,7 @@
     "chartjs-chart-error-bars": "^4.4.0",
     "chartjs-plugin-datalabels": "^2.2.0",
     "framer-motion": "^11.0.20",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "react": "^18.2.0",
     "react-bootstrap": "^2.10.1",
     "react-chartjs-2": "^5.2.0",
