@@ -13,11 +13,12 @@ interface TooltipProps {
     x?: number;
     y?: number;
   };
+  showLink?: boolean;
 }
 
-const TooltipContent = ({ tooltip }: { tooltip: TooltipProps['tooltip'] }) => {
+const TooltipContent = ({ tooltip, showLink }: { tooltip: TooltipProps['tooltip'], showLink?: boolean }) => {
   if (!tooltip) return null;
-
+  console.log(tooltip)
   return (
     <div
       className='border rounded shadow-sm p-2 text-xs'
@@ -34,7 +35,7 @@ const TooltipContent = ({ tooltip }: { tooltip: TooltipProps['tooltip'] }) => {
           <p className='text-muted fst-italic mb-2'>
             {tooltip.fields.Description || 'No description available'}
           </p>
-          <div className='d-flex flex-wrap gap-1'>
+          <div className={`d-flex flex-wrap gap-1 ${showLink && 'mb-2'}`}>
             <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
               <span className='text-body-tertiary'>cell_line:</span>{' '}{tooltip.fields['Cell Line'] || 'N/A'}
             </span>
@@ -51,6 +52,15 @@ const TooltipContent = ({ tooltip }: { tooltip: TooltipProps['tooltip'] }) => {
               <span className='text-body-tertiary'>y:</span>{' '}{tooltip.y ? tooltip.y.toFixed(6) : 'N/A'}
             </span>
           </div>
+          {showLink && (
+            <a
+              href={`/bed/${tooltip.identifier}`}
+              className='btn btn-xs btn-primary'
+              style={{ pointerEvents: 'auto' }}
+            >
+              Go!
+            </a>
+          )}
         </>
       )}
     </div>
@@ -59,16 +69,18 @@ const TooltipContent = ({ tooltip }: { tooltip: TooltipProps['tooltip'] }) => {
 
 export class AtlasTooltip {
   private root: Root;
+  private showLink: boolean;
 
   constructor(target: HTMLElement, props: TooltipProps) {
     // Create a React root and render your component
     this.root = createRoot(target);
+    this.showLink = props.showLink || false;
     this.update(props);
   }
 
   update(props: TooltipProps) {
     // Re-render with new props
-    this.root.render(<TooltipContent tooltip={props.tooltip} />);
+    this.root.render(<TooltipContent tooltip={props.tooltip} showLink={this.showLink} />);
   }
 
   destroy() {

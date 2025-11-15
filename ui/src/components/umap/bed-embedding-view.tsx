@@ -12,7 +12,7 @@ import { useBedUmap } from '../../queries/useBedUmap';
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
 type Props = {
-  bedId: string;
+  bedId?: string;
   neighbors?: SearchResponse;
   showNeighbors?: boolean;
   enableUpload?: boolean;
@@ -342,7 +342,7 @@ export const BEDEmbeddingView = (props: Props) => {
   }, [dataVersion, pendingSelection])
 
   useEffect(() => { // fetch initial bed id and neighbors
-    if (isReady) {
+    if (isReady && !!bedId) {
       setTimeout(async () => {
         const currentBed: any = await coordinator.query(
           `SELECT
