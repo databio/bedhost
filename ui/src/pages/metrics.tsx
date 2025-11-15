@@ -101,7 +101,6 @@ export const Metrics = () => {
       </Layout>
     );
   }
-  ;
 
   return (
     <Layout footer title="BEDbase" fullHeight>

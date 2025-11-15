@@ -21,7 +21,7 @@ from ..data_models import (
     Type,
 )
 from ..dependencies import fetch_detailed_stats
-from ..helpers import get_openapi_version, count_requests
+from ..helpers import get_openapi_version, count_requests, test_query_parameter
 from ..main import app, bbagent, usage_data
 
 router = APIRouter(prefix="/v1", tags=["base"])
@@ -144,6 +144,8 @@ async def service_info():
 
 @router.get("/files/{file_path:path}")
 @count_requests(usage_data, event="files")
-async def redirect_to_download(file_path: str, request: Request):
+async def redirect_to_download(
+    file_path: str, request: Request, test_request: bool = test_query_parameter
+):
     download_url = f"https://data2.bedbase.org/{file_path}"
     return RedirectResponse(url=download_url)
