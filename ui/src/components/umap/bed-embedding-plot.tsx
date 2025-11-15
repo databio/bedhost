@@ -1,5 +1,5 @@
 import { EmbeddingViewMosaic } from 'embedding-atlas/react';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
 import * as vg from '@uwdata/vgplot'
 
 import { tableau20 } from '../../utils';
@@ -7,12 +7,16 @@ import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
 type Props = {
-  bedId?: string,
+  bedIds?: string[],
   height?: number;
 }
 
-export const BEDEmbeddingPlot = (props: Props) => {
-  const { bedId, height } = props;
+export interface BEDEmbeddingPlotRef {
+  centerOnBedId: (bedId: string, scale?: number) => Promise<void>;
+}
+
+export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, ref) => {
+  const { bedIds, height } = props;
   const { coordinator, initializeData } = useMosaicCoordinator();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,6 +30,40 @@ export const BEDEmbeddingPlot = (props: Props) => {
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
 
+  const centerOnPoint = (point: any, scale: number = 1) => {
+    setTooltipPoint(point);
+    setViewportState({
+      x: point.x,
+      y: point.y,
+      scale: scale
+    });
+  };
+
+  const centerOnBedId = async (bedId: string, scale: number = 1) => {
+    if (!isReady) return;
+
+    const bedData: any = await coordinator.query(
+      `SELECT
+        x, y,
+        ${colorGrouping} as category,
+        name as text,
+        id as identifier,
+        {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+       FROM data
+       WHERE id = '${bedId}'`,
+      { type: 'json' }
+    );
+
+    if (bedData && bedData.length > 0) {
+      centerOnPoint(bedData[0], scale);
+      // setSelectedPoints([bedData[0]]);
+    }
+  };
+
+  useImperativeHandle(ref, () => ({
+    centerOnBedId
+  }));
+
   useEffect(() => { // initialize data
     initializeData().then(() => {
       setIsReady(true);
@@ -38,8 +76,8 @@ export const BEDEmbeddingPlot = (props: Props) => {
     }
   }, [isReady]);
 
-    useEffect(() => { // fetch initial bed id and neighbors
-    if (isReady && !!bedId) {
+    useEffect(() => { // fetch provided bed ids
+    if (isReady && bedIds && bedIds.length > 0) {
       setTimeout(async () => {
         const currentBed: any = await coordinator.query(
           `SELECT
@@ -49,15 +87,15 @@ export const BEDEmbeddingPlot = (props: Props) => {
             id as identifier,
             {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
            FROM data
-           WHERE id = '${bedId}'`,
+           WHERE id IN ('${bedIds.join("','")}')`,
           { type: 'json' }
         );
         if (!currentBed || currentBed.length === 0) return;
         setTooltipPoint(currentBed[0]);
-        setSelectedPoints([currentBed[0]]);
+        setSelectedPoints(currentBed);
       }, 200);
     }
-  }, [isReady, bedId, coordinator]);
+  }, [isReady, bedIds, coordinator, colorGrouping]);
 
   return (
     <>
@@ -102,4 +140,4 @@ export const BEDEmbeddingPlot = (props: Props) => {
       )}
     </>
   );
-}
+});

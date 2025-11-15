@@ -137,7 +137,7 @@ export const Home = () => {
         </div>
 
         <div className='d-flex flex-row align-items-center col-12 col-lg-10 mt-2 border rounded overflow-hidden'>
-          <BEDEmbeddingPlot bedId={exampleBedId} height={330}/>
+          <BEDEmbeddingPlot bedIds={[exampleBedId]} height={330}/>
         </div>
         <div className='text-xs text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
           <span>explore the BED file region embedding space above, or visit a <a href={`/bed/${exampleBedId}`}>random BED file</a></span>

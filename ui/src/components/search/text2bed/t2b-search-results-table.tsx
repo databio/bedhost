@@ -1,10 +1,11 @@
-import { ProgressBar } from 'react-bootstrap';
+// import { ProgressBar } from 'react-bootstrap';
 import { components } from '../../../../bedbase-types';
 import { roundToTwoDecimals } from '../../../utils';
 import { useBedCart } from '../../../contexts/bedcart-context';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import YAML from 'js-yaml';
+import { useNavigate } from 'react-router-dom';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 // type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
@@ -12,122 +13,116 @@ type SearchResponse = components['schemas']['BedListSearchResult'];
 type Props = {
   results: SearchResponse;
   search_query?: string | undefined;
+  onCardClick?: (bedId: string) => void;
 };
 
-const IsUnique = (name: string, found_id: string, search_id: string) => {
+const IsUnique = (found_id: string, search_id: string) => {
   if (found_id === search_id) {
     return (
-      <div className="d-flex">
-        {name} &nbsp;
+      <div className='d-flex'>
         <OverlayTrigger
-          placement="top"
+          placement='top'
           overlay={
-            <div className="tooltip">
-              <div className="tooltip-arrow" />
-              <div className="tooltip-inner">Exact match</div>
+            <div className='tooltip'>
+              <div className='tooltip-inner'>Perfect match</div>
             </div>
           }
         >
-          <div className="bi bi-patch-check-fill text-success">
-          </div>
+          <i className='bi bi-check-all text-primary' />
         </OverlayTrigger>
       </div>
     );
   } else {
-    return name;
+    return;
   }
 };
 
 export const Text2BedSearchResultsTable = (props: Props) => {
-  const { results, search_query } = props;
+  const { results, search_query, onCardClick } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
-
-  const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
-    if (!(e.target as HTMLElement).closest('button')) {
-      window.location.href = `/bed/${id}`;
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <div className="table-responsive">
-      <table className="table text-sm table-hover">
-        <thead>
-        <tr className='text-nowrap'>
-          <th scope="col">Name</th>
-          <th scope="col">Genome</th>
-          <th scope="col">Tissue</th>
-          <th scope="col">Cell Line</th>
-          <th scope="col">Cell Type</th>
-          <th scope="col">Description</th>
-          <th scope="col">Assay</th>
-          <th scope="col">Info</th>
-          <th scope="col">
-            <OverlayTrigger
-              placement="left"
-              overlay={
-                <Tooltip id={`tooltip-info}`} className="moreinfo-tooltip">
-                    <pre className="text-start">
-                      Cosine similarity between search term and bedfile.
-                      Score is between 0 an 100, where 100 is a perfect match.
-                    </pre>
-                </Tooltip>
-              }
+    <>
+      {results.results?.map((result) => (
+        <div className='card bg-white border mb-2 overflow-hidden' key={result.id}>
+          <div className='d-flex'>
+            <div
+              className='card-body position-relative cursor-pointer flex-1'
+              onClick={() => onCardClick?.(result.metadata?.id || '')}
             >
-                <span>
-                  Score*
+              <div className='d-flex justify-content-between align-items-center mb-2'>
+                <div className='d-flex gap-0 align-items-center'>
+                  <p className='fs-6 fw-semibold mb-0 flex-grow-1 pe-2'>
+                    {result?.metadata?.name || 'No name'}
+                  </p>
+                  <OverlayTrigger
+                    placement='left'
+                    overlay={
+                      <Tooltip id={`tooltip-${result.id}`} className='moreinfo-tooltip'>
+                        <pre className='text-start m-0' style={{ fontSize: '11px' }}>
+                          {YAML.dump(result?.metadata, {
+                            indent: 2,
+                            noRefs: true,
+                          }) || 'No metadata'}
+                        </pre>
+                      </Tooltip>
+                    }
+                  >
+                    <i className='bi bi-three-dots cursor-pointer' onClick={(e) => e.stopPropagation()}></i>
+                  </OverlayTrigger>
+                </div>
+                
+                <div className='d-flex gap-1 align-items-center'>
+                  {IsUnique(result.id, search_query || '')}
+                  <OverlayTrigger
+                    placement='top'
+                    overlay={
+                      <div className='tooltip'>
+                        <div className='tooltip-inner'>Match score</div>
+                      </div>
+                    }
+                  >
+                    <span className='badge bg-primary' style={{ fontSize: '10px' }}>
+                      {roundToTwoDecimals((result.score ?? 0) * 100)}%
+                    </span>
+                  </OverlayTrigger>
+                </div>
+              </div>
+              <p className='text-xs text-muted fst-italic'>
+                {result?.metadata?.description || 'No description'}
+              </p>
+
+              <div className={`d-flex flex-wrap gap-1`}>
+                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                  <span className='text-body-tertiary'>genome:</span>{' '}{result?.metadata?.genome_alias || 'N/A'}
                 </span>
-            </OverlayTrigger>
-          </th>
-          <th scope="col" style={{ minWidth: '110px' }}>
-            Actions
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        {results.results?.map((result) => (
-          <tr
-            key={result.id}
-            onClick={handleRowClick(result.metadata?.id)}
-            className="cursor-pointer position-relative"
-          >
-            <td>{IsUnique(result?.metadata?.name || 'No name', result.id, search_query || '') || 'No name'}</td>
-            <td>
-              <span className="badge text-bg-primary">{result?.metadata?.genome_alias || 'N/A'}</span>
-            </td>
-            <td>{result?.metadata?.annotation?.tissue || 'N/A'}</td>
-            <td>{result?.metadata?.annotation?.cell_line || 'N/A'}</td>
-            <td>{result?.metadata?.annotation?.cell_type || 'N/A'}</td>
-            <td>{result?.metadata?.description || ''}</td>
-            <td>{result?.metadata?.annotation?.assay || 'N/A'}</td>
-            <td className="text-start">
-              <OverlayTrigger
-                placement="left"
-                overlay={
-                  <Tooltip id={`tooltip-${result.id}`} className="moreinfo-tooltip">
-                    <pre className="text-start">
-                      {YAML.dump(result?.metadata, {
-                        indent: 2,
-                        noRefs: true,
-                      }) || 'No description'}
-                    </pre>
-                  </Tooltip>
-                }
+                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                  <span className='text-body-tertiary'>tissue:</span>{' '}{result?.metadata?.annotation?.tissue || 'N/A'}
+                </span>
+                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                  <span className='text-body-tertiary'>cell_line:</span>{' '}{result?.metadata?.annotation?.cell_line || 'N/A'}
+                </span>
+                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                  <span className='text-body-tertiary'>cell_type:</span>{' '}{result?.metadata?.annotation?.cell_type || 'N/A'}
+                </span>
+                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                  <span className='text-body-tertiary'>assay:</span>{' '}{result?.metadata?.annotation?.assay || 'N/A'}
+                </span>
+              </div>
+            </div>
+
+            <div className='d-flex flex-column border-start' style={{ width: '42px' }}>
+              <button
+                className='btn btn-outline-primary rounded-0 border-0 border-bottom flex-fill'
+                onClick={() => navigate(`/bed/${result.metadata?.id}`)}
+                style={{ borderBottom: '1px solid white' }}
               >
-                <span className="bi bi-info-circle position-relative" style={{ zIndex: 2 }}></span>
-              </OverlayTrigger>
-            </td>
-            <td>
-              <ProgressBar
-                min={5}
-                now={(result.score ?? 0) * 100}
-                label={`${roundToTwoDecimals((result.score ?? 0) * 100)}`}
-                variant="primary"
-              />
-            </td>
-            <td>
+                <i className='bi bi-chevron-right'></i>
+              </button>
               {cart[result?.metadata?.id || ''] ? (
                 <button
-                  className="btn btn-sm btn-outline-danger"
+                  className='btn btn-danger rounded-0 border-0 flex-fill'
                   onClick={(e) => {
                     e.stopPropagation();
                     if (result.metadata?.id === undefined) {
@@ -137,20 +132,17 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                     removeBedFromCart(result.metadata?.id);
                   }}
                 >
-                  Remove
-                  <i className="bi bi-cart-dash ms-1"></i>
+                  <i className='bi bi-cart-dash'></i>
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary small-font"
+                  className='btn btn-primary rounded-0 border-0 flex-fill'
                   onClick={(e) => {
                     e.stopPropagation();
                     if (result.metadata?.id === undefined) {
                       toast.error('No bed ID found', { position: 'top-center' });
                       return;
                     }
-                    
-                    // Create the simplified bed item object
                     const bedItem = {
                       id: result.metadata.id,
                       name: result.metadata.name || 'No name',
@@ -161,19 +153,16 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                       description: result.metadata.description || '',
                       assay: result.metadata.annotation?.assay || 'N/A',
                     };
-                    
                     addBedToCart(bedItem);
                   }}
                 >
-                  Add
-                  <i className="bi bi-cart-plus ms-1"></i>
+                  <i className='bi bi-cart-plus'></i>
                 </button>
               )}
-            </td>
-          </tr>
-        ))}
-        </tbody>
-      </table>
-    </div>
+            </div>
+          </div>
+        </div>
+      ))}
+    </>
   );
 };

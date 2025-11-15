@@ -4,12 +4,13 @@ import { SearchBar } from '../search-bar';
 import { Text2BedSearchResultsTable } from './t2b-search-results-table';
 import { SearchingJumper } from '../searching-jumper';
 import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useText2BedSearch } from '../../../queries/useText2BedSearch';
 import { TableToolbar } from '../table-toolbar';
 import { PaginationBar } from '../pagination-bar';
 import { SearchError } from '../search-error';
 import { AxiosError } from 'axios';
+import { BEDEmbeddingPlot, BEDEmbeddingPlotRef } from '../../../components/umap/bed-embedding-plot.tsx';
 
 export const Text2Bed = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,6 +19,9 @@ export const Text2Bed = () => {
   const [assay, setAssay] = useState(searchParams.get('assay') || '');
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(660);
+  const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     isFetching: isSearching,
@@ -33,6 +37,8 @@ export const Text2Bed = () => {
     autoRun: false,
   });
 
+  console.log(results)
+
   useEffect(() => {
     const params = new URLSearchParams();
     if (searchTerm) params.set('q', searchTerm);
@@ -46,6 +52,20 @@ export const Text2Bed = () => {
       onSearch();
     }
   }, [limit, offset, genome, assay, onSearch]);
+
+  useEffect(() => {
+    const calculateHeight = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const availableHeight = window.innerHeight - rect.top; // 40px margin from bottom
+        setContainerHeight(Math.max(400, Math.min(availableHeight, 800))); // min 400px, max 800px
+      }
+    };
+
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+    return () => window.removeEventListener('resize', calculateHeight);
+  }, []);
 
   if (error) {
     if (error) {
@@ -79,12 +99,31 @@ export const Text2Bed = () => {
         {isSearching ? (
           <SearchingJumper />
         ) : (
-          <div className="my-2">
+          <div className="my-2" ref={containerRef}>
             {results ? (
-              <div className="p-0 pt-1 pb-3 border rounded rounded-2 shadow-sm bg-white">
-                <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
-                <Text2BedSearchResultsTable results={results || []} search_query={searchTerm} />{' '}
-                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
+              <div className='row gx-2'>
+                <div className='col-6' style={{height: `${containerHeight}px`}}>
+                  <div className='d-flex border rounded overflow-hidden'>
+                    <BEDEmbeddingPlot
+                      ref={embeddingPlotRef}
+                      bedIds={results?.results?.map((result: any) => result.id)}
+                      height={containerHeight}
+                    />
+                  </div>
+                </div>
+                <div className='col-6 d-flex flex-column overflow-hidden' style={{height: `${containerHeight}px`}}>
+                  <div className="overflow-y-auto overflow-x-hidden flex-grow-1">
+                    <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
+                    <Text2BedSearchResultsTable
+                      results={results || []}
+                      search_query={searchTerm}
+                      onCardClick={(bedId) => {
+                        embeddingPlotRef.current?.centerOnBedId(bedId);
+                      }}
+                    />{' '}
+                    <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
+                  </div>
+                </div>
               </div>
             ) : (
               <div className="d-flex flex-column align-items-center justify-content-center mt-5 fst-italic">

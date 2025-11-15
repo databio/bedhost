@@ -109,10 +109,10 @@ export const SearchBar = (props: Props) => {
         <div className="mt-2">
           {searchView === 't2b' &&
             <div className="d-flex align-items-center">
-              <h6 className="mb-0 fw-bold">Search Options</h6>
+              <h6 className="mb-0 fw-semibold">Search Options</h6>
 
               <h6 className="mb-0 fw-semibold ms-auto">Genome:</h6>
-              <select className="form-select w-auto ms-1 border-0" value={genome}
+              <select className="form-select w-auto ms-1 border" value={genome}
                       onChange={(e) => setGenome(String(e.target.value))}>
                 <option value={''}>All</option>
                 {genomes?.results.map((genomeItem, index) => (
@@ -123,7 +123,7 @@ export const SearchBar = (props: Props) => {
               </select>
 
               <h6 className="mb-0 fw-semibold ms-4">Assay:</h6>
-              <select className="form-select w-auto ms-1 border-0" value={assay}
+              <select className="form-select w-auto ms-1 border" value={assay}
                       onChange={(e) => setAssay(String(e.target.value))}>
                 <option value={''}>All</option>
                 {assays?.results.map((assayItem, index) => (
