@@ -1,9 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Col, Row } from 'react-bootstrap';
-import { SearchBar } from '../search-bar';
 import { Text2BedSearchResultsTable } from './t2b-search-results-table';
 import { SearchingJumper } from '../searching-jumper';
-import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from 'react';
 import { useText2BedSearch } from '../../../queries/useText2BedSearch';
 import { TableToolbar } from '../table-toolbar';
@@ -12,15 +9,21 @@ import { SearchError } from '../search-error';
 import { AxiosError } from 'axios';
 import { BEDEmbeddingPlot, BEDEmbeddingPlotRef } from '../../../components/umap/bed-embedding-plot.tsx';
 
-export const Text2Bed = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [genome, setGenome] = useState(searchParams.get('genome') || '');
-  const [assay, setAssay] = useState(searchParams.get('assay') || '');
-  const [limit, setLimit] = useState(20);
-  const [offset, setOffset] = useState(0);
+type Props = {
+  searchTerm: string;
+  genome: string;
+  assay: string;
+  limit: number;
+  setLimit: (limit: number) => void;
+  offset: number;
+  setOffset: (offset: number) => void;
+  layout: string;
+  triggerSearch: number;
+};
+
+export const Text2Bed = (props: Props) => {
+  const { searchTerm, genome, assay, limit, setLimit, offset, setOffset, layout, triggerSearch } = props;
   const [containerHeight, setContainerHeight] = useState(660);
-  const [layout, setLayout] = useState('split');
 
   const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -34,20 +37,16 @@ export const Text2Bed = () => {
     q: searchTerm,
     genome: genome,
     assay: assay,
-    limit: limit, // TODO: make this a variable
+    limit: limit,
     offset: offset,
     autoRun: false,
   });
 
-  console.log(results)
-
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchTerm) params.set('q', searchTerm);
-    if (genome) params.set('genome', genome);
-    if (assay) params.set('assay', assay);
-    setSearchParams(params);
-  }, [searchTerm, genome, assay]);
+    if (triggerSearch > 0) {
+      onSearch();
+    }
+  }, [triggerSearch, onSearch]);
 
   useEffect(() => {
     if (searchTerm || genome || assay) {
@@ -59,8 +58,8 @@ export const Text2Bed = () => {
     const calculateHeight = () => {
       if (containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
-        const availableHeight = window.innerHeight - rect.top; // 40px margin from bottom
-        setContainerHeight(Math.max(400, Math.min(availableHeight, 800))); // min 400px, max 800px
+        const availableHeight = window.innerHeight - rect.top;
+        setContainerHeight(Math.max(400, Math.min(availableHeight, 800)));
       }
     };
 
@@ -71,39 +70,17 @@ export const Text2Bed = () => {
 
   if (error) {
     if (error) {
-      return <SearchError title="BEDbase | Search" error={error as AxiosError} />;
+      return <SearchError title='BEDbase | Search' error={error as AxiosError} />;
     }
   }
 
   return (
-    <div className="my-2">
-      <Row>
-        <Col sm={12} md={12}>
-          <SearchBar
-            limit={limit}
-            setLimit={setLimit}
-            value={searchTerm}
-            onChange={setSearchTerm}
-            genome={genome}
-            setGenome={setGenome}
-            assay={assay}
-            setAssay={setAssay}
-            onSearch={() => {
-              setOffset(0);
-              setTimeout(() => {
-                onSearch();
-              }, 100);
-            }}
-            layout={layout}
-            setLayout={setLayout}
-          />
-        </Col>
-      </Row>
+    <div className='my-2'>
       <div>
         {isSearching ? (
           <SearchingJumper />
         ) : (
-          <div className="my-2" ref={containerRef}>
+          <div className='my-2' ref={containerRef}>
             {results ? (
               <div className='row gx-2'>
                 {(layout === 'split') && (
@@ -113,6 +90,7 @@ export const Text2Bed = () => {
                         ref={embeddingPlotRef}
                         bedIds={results?.results?.map((result: any) => result.id)}
                         height={containerHeight}
+                        preselectPoint={false}
                       />
                     </div>
                   </div>
@@ -134,7 +112,7 @@ export const Text2Bed = () => {
                 </div>
               </div>
             ) : (
-              <div className="d-flex flex-column align-items-center justify-content-center mt-5 fst-italic">
+              <div className='d-flex flex-column align-items-center justify-content-center mt-5 fst-italic'>
                 Try searching for some BED files! e.g. K562
               </div>
             )}

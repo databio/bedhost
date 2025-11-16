@@ -1,23 +1,21 @@
-import { useRef, useCallback, Fragment, useEffect, useState } from 'react';
-import { useDropzone } from 'react-dropzone';
+import { useEffect, useState, useRef } from 'react';
 import { SearchingJumper } from '../searching-jumper';
 import { useBed2BedSearch } from '../../../queries/useBed2BedSearch';
-import { Bed2BedSearchResultsTable } from './b2b-search-results-table';
+// import { Bed2BedSearchResultsTable } from './b2b-search-results-table';
+import { BEDEmbeddingPlot, BEDEmbeddingPlotRef } from '../../../components/umap/bed-embedding-plot.tsx';
+import { Bed2BedSearchResultsCards } from './b2b-search-results-cards.tsx';
 
 type Props = {
-  uploadedFile?: File;
+  file: File | null;
+  layout: string;
 };
 
 export const Bed2Bed = (props: Props) => {
-  const { uploadedFile } = props;
-  const [file, setFile] = useState<File | null>(uploadedFile || null);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    setFile(acceptedFiles[0]);
-  }, []);
-
-  const { isDragActive, getRootProps, getInputProps } = useDropzone({ onDrop });
+  const { file, layout } = props;
+  const [containerHeight, setContainerHeight] = useState(660);
+  
+  const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     isFetching: isSearching,
@@ -27,6 +25,8 @@ export const Bed2Bed = (props: Props) => {
     q: file,
     autoRun: false,
   });
+
+  console.log(results)
 
   useEffect(() => {
     if (file) {
@@ -39,59 +39,56 @@ export const Bed2Bed = (props: Props) => {
     }
   }, [file, onSearch]);
 
+  useEffect(() => {
+    const calculateHeight = () => {
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const availableHeight = window.innerHeight - rect.top;
+        setContainerHeight(Math.max(400, Math.min(availableHeight, 800)));
+      }
+    };
+
+    calculateHeight();
+    window.addEventListener('resize', calculateHeight);
+    return () => window.removeEventListener('resize', calculateHeight);
+  }, []);
+
   return (
-    <div className="d-flex flex-column align-items-center">
-      <div
-        {...getRootProps()}
-        onClick={() => {
-          if (inputRef.current) {
-            inputRef.current.click();
-          }
-        }}
-        className={
-          isDragActive
-            ? 'w-100 rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all border-primary'
-            : 'w-100 rounded border p-3 shadow-sm border-dashed b2b-drop-zone transition-all'
-        }
-      >
-        {file ? (
-          <Fragment>
-            <p className="text-center">
-              <span className="fw-bold me-1">Selected file:</span>
-              {file.name}
-            </p>
-            <button
-              className="btn btn-sm btn-outline-danger d-block mx-auto"
-              onClick={(e) => {
-                e.stopPropagation();
-                setFile(null);
-                if (inputRef.current) {
-                  inputRef.current.value = '';
-                }
-              }}
-            >
-              Remove
-            </button>
-          </Fragment>
-        ) : (
-          <Fragment>
-            <p className="text-center fst-italic">Select a file or drag and drop one</p>
-            <p className="text-center fst-italic">
-              *Provided file should be aligned to hg38 assembly.
-            </p>
-            <i className="bi bi-arrow-up-circle-fill d-block text-center text-primary fs-1 mt-3 opacity-75"></i>
-          </Fragment>
-        )
-        }
-      </div>
-      <input {...getInputProps()} ref={inputRef} className="d-none" type="file" id="file" accept=".bed,.bed.gz" />
-      <div className="w-100 my-2">
-        {isSearching ? (
-          <SearchingJumper />
-        ) : (
-          <div className="my-2">{results ? <Bed2BedSearchResultsTable beds={results.results || []} /> : null}</div>
-        )}
-      </div>
+    <div className='my-2'>
+      {isSearching ? (
+        <SearchingJumper />
+      ) : (
+        <div className='my-2' ref={containerRef}>
+          {results ? (
+            <div className='row gx-2'>
+              {(layout === 'split') && (
+                <div className='col-6' style={{height: `${containerHeight}px`}}>
+                  <div className='d-flex border rounded overflow-hidden'>
+                    <BEDEmbeddingPlot
+                      ref={embeddingPlotRef}
+                      bedIds={results?.results?.map((result: any) => result.payload.id)}
+                      height={containerHeight}
+                      preselectPoint={false}
+                    />
+                  </div>
+                </div>
+              )}
+              
+              <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column ${layout === 'split' ? 'overflow-hidden' : ''}`} style={layout === 'split' ? {height: `${containerHeight}px`} : {}}>
+                <div className={`${layout === 'split' ? 'overflow-y-auto overflow-x-hidden flex-grow-1' : ''}`}>
+                  <Bed2BedSearchResultsCards results={results.results || []} />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className='d-flex flex-column align-items-center justify-content-center mt-5 fst-italic text-muted'>
+              <p className='mb-0'>Try uploading a BED file above to find similar files!</p>
+              <p><strong>Note: </strong>provided file should be aligned to hg38 assembly.</p>
+            </div>
+          )}
+        </div>
+
+      )}
     </div>
   );
 };

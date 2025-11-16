@@ -9,6 +9,7 @@ import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context'
 type Props = {
   bedIds?: string[],
   height?: number;
+  preselectPoint?: boolean;
 }
 
 export interface BEDEmbeddingPlotRef {
@@ -16,7 +17,7 @@ export interface BEDEmbeddingPlotRef {
 }
 
 export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, ref) => {
-  const { bedIds, height } = props;
+  const { bedIds, height, preselectPoint } = props;
   const { coordinator, initializeData } = useMosaicCoordinator();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -91,7 +92,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
           { type: 'json' }
         );
         if (!currentBed || currentBed.length === 0) return;
-        setTooltipPoint(currentBed[0]);
+        if (preselectPoint) setTooltipPoint(currentBed[0]);
         setSelectedPoints(currentBed);
       }, 200);
     }

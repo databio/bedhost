@@ -18,10 +18,9 @@ interface TooltipProps {
 
 const TooltipContent = ({ tooltip, showLink }: { tooltip: TooltipProps['tooltip'], showLink?: boolean }) => {
   if (!tooltip) return null;
-  console.log(tooltip)
   return (
     <div
-      className='border rounded shadow-sm p-2 text-xs'
+      className='border rounded shadow-sm text-xs overflow-hidden'
       style={{
         maxWidth: '300px',
         pointerEvents: 'none',
@@ -29,40 +28,42 @@ const TooltipContent = ({ tooltip, showLink }: { tooltip: TooltipProps['tooltip'
         backgroundColor: '#ffffff88'
       }}
     >
-      <div className='fw-bold mb-1'>{tooltip.text || 'Unnamed BED'}</div>
-      {tooltip.fields && (
-        <>
-          <p className='text-muted fst-italic mb-2'>
-            {tooltip.fields.Description || 'No description available'}
-          </p>
-          <div className={`d-flex flex-wrap gap-1 ${showLink && 'mb-2'}`}>
-            <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-              <span className='text-body-tertiary'>cell_line:</span>{' '}{tooltip.fields['Cell Line'] || 'N/A'}
-            </span>
-            <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-              <span className='text-body-tertiary'>assay:</span>{' '}{tooltip.fields.Assay || 'N/A'}
-            </span>
-            <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-              <span className='text-body-tertiary'>id:</span>{' '}{tooltip.identifier || 'N/A'}
-            </span>
-            <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-              <span className='text-body-tertiary'>x:</span>{' '}{tooltip.x ? tooltip.x.toFixed(6) : 'N/A'}
-            </span>
-            <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-              <span className='text-body-tertiary'>y:</span>{' '}{tooltip.y ? tooltip.y.toFixed(6) : 'N/A'}
-            </span>
-          </div>
-          {showLink && (
-            <a
-              href={`/bed/${tooltip.identifier}`}
-              className='btn btn-xs btn-primary'
-              style={{ pointerEvents: 'auto' }}
-            >
-              Go!
-            </a>
-          )}
-        </>
-      )}
+      <div className='p-2'>
+        <div className='fw-bold mb-1'>{tooltip.text || 'Unnamed BED'}</div>
+        {tooltip.fields && (
+          <>
+            <p className='text-muted fst-italic mb-2'>
+              {tooltip.fields.Description || 'No description available'}
+            </p>
+            <div className='d-flex flex-wrap gap-1'>
+              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-body-tertiary'>cell_line:</span>{' '}{tooltip.fields['Cell Line'] || 'N/A'}
+              </span>
+              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-body-tertiary'>assay:</span>{' '}{tooltip.fields.Assay || 'N/A'}
+              </span>
+              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-body-tertiary'>id:</span>{' '}{tooltip.identifier || 'N/A'}
+              </span>
+              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-body-tertiary'>x:</span>{' '}{tooltip.x ? tooltip.x.toFixed(6) : 'N/A'}
+              </span>
+              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-body-tertiary'>y:</span>{' '}{tooltip.y ? tooltip.y.toFixed(6) : 'N/A'}
+              </span>
+            </div>
+          </>
+        )}
+        {showLink && (
+          <a
+            href={`/bed/${tooltip.identifier}`}
+            className='btn btn-xs btn-primary mt-2'
+            style={{ pointerEvents: 'auto' }}
+          >
+            Go!
+          </a>
+        )}
+      </div>
     </div>
   );
 };

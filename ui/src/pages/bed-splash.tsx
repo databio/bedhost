@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import { useBedMetadata } from '../queries/useBedMetadata';
 import { useBedGenomeStats } from '../queries/useBedGenomeStats';
 import { Layout } from '../components/layout';
-import { Col, Container, Row } from 'react-bootstrap';
 import { BedSplashHeader } from '../components/bed-splash-components/header';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { ErrorPage } from '../components/common/error-page';
@@ -69,15 +68,15 @@ export const BedSplash = () => {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer>
         <div className='my-2'>
-          <Row>
-            <Col sm={12} md={12}>
+          <div className='row'>
+            <div className='col-sm-12 col-md-12'>
               <div className='mb-2'>
                 <CardSkeleton height='100px' />
               </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={5} md={5}>
+            </div>
+          </div>
+          <div className='row'>
+            <div className='col-sm-5 col-md-5'>
               <div className='mb-2'>
                 <CardSkeleton height='300px' />
               </div>
@@ -87,11 +86,11 @@ export const BedSplash = () => {
               <div className='mb-2'>
                 <CardSkeleton height='300px' />
               </div>
-            </Col>
-            <Col sm={7} md={7}>
+            </div>
+            <div className='col-sm-7 col-md-7'>
               <CardSkeleton height='100%' />
-            </Col>
-          </Row>
+            </div>
+          </div>
         </div>
       </Layout>
     );
@@ -139,14 +138,14 @@ export const BedSplash = () => {
   } else {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
-        <Container className='my-2'>
-          <Row className='mb-2'>
-            <Col sm={12} md={12}>
+        <div className='container my-2'>
+          <div className='row mb-2'>
+            <div className='col-sm-12 col-md-12'>
               {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
-            </Col>
-          </Row>
-          <Row className='mt-3 mb-4 g-2'>
-            <Col sm={12} md={6} className='mt-0'>
+            </div>
+          </div>
+          <div className='row mt-3 mb-4 g-2'>
+            <div className='col-sm-12 col-md-6 mt-0'>
               <h5 className='fw-bold'>Overview</h5>
               <div className='border rounded px-0 pt-1 shadow-sm bg-white'>
                 <div className='table-responsive'>
@@ -202,8 +201,8 @@ export const BedSplash = () => {
                   </table>
                 </div>
               </div>
-            </Col>
-            <Col sm={12} md={6} className='mt-2 mt-md-0'>
+            </div>
+            <div className='col-sm-12 col-md-6 mt-2 mt-md-0'>
               <h5 className='fw-bold'>BEDsets</h5>
               <div className='border rounded px-0 pt-1 shadow-sm bg-white'>
                 <div className='table-responsive'>
@@ -249,30 +248,30 @@ export const BedSplash = () => {
                   </table>
                 </div>
               </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row className='mb-4 g-2'>
+          <div className='row mb-4 g-2'>
             <h5 className='fw-bold'>Statistics</h5>
             {metadata && (
-              <Col sm={12} md={3} className='d-flex flex-column mt-0 gap-2'>
+              <div className='col-sm-12 col-md-3 d-flex flex-column mt-0 gap-2'>
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
-              </Col>
+              </div>
             )}
-            <Col sm={12} md={9} className='d-flex flex-column mt-2 mt-md-0'>
+            <div className='col-sm-12 col-md-9 d-flex flex-column mt-2 mt-md-0'>
               <GenomicFeatureBar metadata={metadata!} />
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row className='mb-4'>
+          <div className='row mb-4'>
             <h5 className='fw-bold'>Plots</h5>
-            <Col sm={12}>
+            <div className='col-sm-12'>
               <Plots metadata={metadata!} />
-            </Col>
-          </Row>
+            </div>
+          </div>
 
           {bedId && metadata?.name?.includes('encode') && (
             <>
@@ -281,31 +280,31 @@ export const BedSplash = () => {
           )}
 
           {neighbours && (
-            <Row className='mb-4 mx-0'>
-              <div className='d-flex justify-content-between align-items-center px-0'>
-                <h5 className='fw-bold px-0'>Similar BED Files</h5>
-                <div className='form-check form-switch form-switch-sm'>
-                  <input 
-                    className='form-check-input'
-                    type='checkbox'
-                    checked={showNeighbors}
-                    id='showNeighbors'
-                    onChange={() => setShowNeighbors(!showNeighbors)}
-                  />
-                  <label 
-                    className='form-check-label fw-medium text-sm'
-                    htmlFor='showNeighbors'
-                  >
-                    Show in Atlas
-                  </label>
+            <div className='row mb-4'>
+              <div className='col-12'>
+                <div className='d-flex justify-content-between align-items-center px-0'>
+                  <h5 className='fw-bold px-0'>Similar BED Files</h5>
+                  <div className='form-check form-switch form-switch-sm'>
+                    <input
+                      className='form-check-input'
+                      type='checkbox'
+                      checked={showNeighbors}
+                      id='showNeighbors'
+                      onChange={() => setShowNeighbors(!showNeighbors)}
+                    />
+                    <label
+                      className='form-check-label fw-medium text-sm'
+                      htmlFor='showNeighbors'
+                    >
+                      Show in Atlas
+                    </label>
+                  </div>
                 </div>
-              </div>
-              <Col sm={12} className='d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0 bg-white'>
                 <Text2BedSearchResultsTable results={neighbours} />
-              </Col>
-            </Row>
+              </div>
+            </div>
           )}
-        </Container>
+        </div>
       </Layout>
     );
   }

@@ -1,6 +1,6 @@
 import toast from 'react-hot-toast';
-import { useSearchParams } from 'react-router-dom';
-import { useMemo, useState } from 'react';
+// import { useSearchParams } from 'react-router-dom';
+import { useMemo, useState, useRef } from 'react';
 import { useSearchView } from '../../contexts/search-view-context.tsx';
 import { useAvailableGenomes } from '../../queries/useAvailableGenomes.ts';
 import { useAvailableAssays } from '../../queries/useAvailableAssays.ts';
@@ -17,6 +17,8 @@ type Props = {
   onChange: (value: string) => void;
   onSearch: () => void;
   setLayout?: (layout: string) => void;
+  file: File | null;
+  setFile: (file: File | null) => void;
 };
 
 const placeholders = [
@@ -29,49 +31,102 @@ const placeholders = [
 ];
 
 export const SearchBar = (props: Props) => {
-  const { value, onChange, onSearch, limit, setLimit, genome, setGenome, assay, setAssay, layout, setLayout } = props;
-  const [, setSearchParams] = useSearchParams();
+  const { value, onChange, onSearch, limit, setLimit, genome, setGenome, assay, setAssay, layout, setLayout, file, setFile } = props;
+  // const [, setSearchParams] = useSearchParams();
   const { searchView } = useSearchView();
   const { data: genomes } = useAvailableGenomes();
   const { data: assays } = useAvailableAssays();
 
   const [showOptions, setShowOptions] = useState(false);
-  // const assays = ['ATAC-seq', 'ChIP-Seq'];
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const placeholder = useMemo(() => placeholders[Math.floor(Math.random() * placeholders.length)], []);
   return (
     <>
-      <div className="d-flex flex-row align-items-center gap-2">
+      <div className='d-flex flex-row align-items-center gap-2'>
         <div className='input-group bg-white'>
-          <input
-            value={value}
-            onChange={(e) => {
-              if (e.target.value === '') {
-                setSearchParams({});
-              } else {
-                setSearchParams({ q: e.target.value });
-              }
-              onChange(e.target.value);
-            }}
-            className="form-control"
-            type="text"
-            placeholder={placeholder}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                if (value === '') {
-                  toast.error('Please enter a search term', {
-                    position: 'top-center',
-                  });
-                  return;
+          {searchView === 'b2b' ? (
+            <>
+              {file ? (
+                <>
+                  <input
+                    className='form-control border cursor-pointer'
+                    type='text'
+                    value={file.name}
+                    onClick={() => fileInputRef.current?.click()}
+                    readOnly
+                  />
+                  <input
+                    ref={fileInputRef}
+                    className='d-none'
+                    type='file'
+                    accept='.bed,.gz,application/gzip,application/x-gzip'
+                    onChange={(e) => {
+                      const selectedFile = e.target.files?.[0];
+                      if (selectedFile) {
+                        setFile(selectedFile);
+                      }
+                    }}
+                  />
+                  <button
+                    className='btn btn-outline-secondary border'
+                    onClick={() => {
+                      setFile(null);
+                      if (fileInputRef.current) {
+                        fileInputRef.current.value = '';
+                      }
+                    }}
+                    title='Remove file'
+                  >
+                    <i className='bi bi-x-circle' />
+                  </button>
+                </>
+              ) : (
+                <input
+                  ref={fileInputRef}
+                  className='form-control border'
+                  type='file'
+                  accept='.bed,.gz,application/gzip,application/x-gzip'
+                  onChange={(e) => {
+                    const selectedFile = e.target.files?.[0];
+                    if (selectedFile) {
+                      setFile(selectedFile);
+                    }
+                  }}
+                />
+              )}
+            </>
+          ) : (
+            <input
+              className='form-control border'
+              type='text'
+              value={value}
+              onChange={(e) => {
+                // if (e.target.value === '') {
+                //   setSearchParams({});
+                // } else {
+                //   setSearchParams({ q: e.target.value });
+                // }
+                onChange(e.target.value);
+              }}
+              placeholder={placeholder}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  if (value === '') {
+                    toast.error('Please enter a search term', {
+                      position: 'top-center',
+                    });
+                    return;
+                  }
+                  onSearch();
                 }
-                onSearch();
-              }
-            }}
-          />
+              }}
+            />
+          )}
 
           <select 
-            className="form-select w-auto" 
-            style={{ maxWidth: '140px' }} 
+            className='form-select w-auto' 
+            style={{ maxWidth: '130px' }} 
             value={limit} 
             onChange={(e) => setLimit(Number(e.target.value))}
           >
@@ -83,7 +138,7 @@ export const SearchBar = (props: Props) => {
 
           {searchView === 't2b' && (
             <button
-              className="btn btn-outline-secondary border"
+              className='btn btn-outline-secondary border'
               onClick={() => setShowOptions(!showOptions)}
             >
               <i className='bi bi-sliders' />
@@ -91,62 +146,37 @@ export const SearchBar = (props: Props) => {
           )}
         </div>
         
-        
-        <button
-          className="btn btn-primary"
-          onClick={() => {
-            if (value === '') {
-              toast.error('Please enter a search term', {
-                position: 'top-center',
-              });
-              return;
-            }
-            onSearch();
-          }}
-        >
-          <i className='bi bi-search' />
-        </button>
+        {searchView !== 'b2b' && (
+          <button
+            className='btn btn-primary'
+            onClick={() => {
+              if (value === '') {
+                toast.error('Please enter a search term', {
+                  position: 'top-center',
+                });
+                return;
+              }
+              onSearch();
+            }}
+          >
+            <i className='bi bi-search' />
+          </button>
+        )}
       </div>
+      
       {showOptions && (
-        <div className="mt-2">
+        <div className='mt-2'>
           {(searchView === 't2b') && !!layout && !!setLayout &&
-            <div className="d-flex align-items-center">
-              <h6 className="mb-0 fw-semibold text-sm">Layout:</h6>
-              <div className='btn-group ms-1' role='group'>
-                <input
-                  type='radio'
-                  className='btn-check'
-                  name='layout'
-                  id='split'
-                  autoComplete='off'
-                  checked={layout === 'split'}
-                  onChange={() => setLayout('split')}
-                />
-                <label
-                  className='btn btn-sm btn-outline-secondary rounded-start-2'
-                  htmlFor='split'
-                >
-                  <i className='bi bi-layout-split' />
-                </label>
-                <input
-                  type='radio'
-                  className='btn-check'
-                  name='layout'
-                  id='table'
-                  autoComplete='off'
-                  checked={layout === 'table'}
-                  onChange={() => setLayout('table')}
-                />
-                <label
-                  className='btn btn-sm btn-outline-secondary rounded-end-2'
-                  htmlFor='table'
-                >
-                  <i className='bi bi-layout-text-sidebar-reverse' />
-                </label>
-              </div>
+            <div className='d-flex align-items-center'>
+              <h6 className='mb-0 fw-semibold text-sm'>Layout:</h6>
+              <select className='form-select form-select-sm w-auto ms-1 border rounded-2' value={layout}
+                      onChange={(e) => setLayout(e.target.value)}>
+                <option value={'split'}>Show Embeddings</option>
+                <option value={'table'}>Hide Embeddings</option>
+              </select>
 
-              <h6 className="mb-0 fw-semibold ms-auto text-sm">Genome:</h6>
-              <select className="form-select form-select-sm w-auto ms-1 border rounded-2" value={genome}
+              <h6 className='mb-0 fw-semibold ms-auto text-sm'>Genome:</h6>
+              <select className='form-select form-select-sm w-auto ms-1 border rounded-2' value={genome}
                       onChange={(e) => setGenome(String(e.target.value))}>
                 <option value={''}>All</option>
                 {genomes?.results.map((genomeItem, index) => (
@@ -156,8 +186,8 @@ export const SearchBar = (props: Props) => {
                 ))}
               </select>
 
-              <h6 className="mb-0 fw-semibold ms-4 text-sm">Assay:</h6>
-              <select className="form-select form-select-sm w-auto ms-1 border rounded-2" value={assay}
+              <h6 className='mb-0 fw-semibold ms-4 text-sm'>Assay:</h6>
+              <select className='form-select form-select-sm w-auto ms-1 border rounded-2' value={assay}
                       onChange={(e) => setAssay(String(e.target.value))}>
                 <option value={''}>All</option>
                 {assays?.results.map((assayItem, index) => (

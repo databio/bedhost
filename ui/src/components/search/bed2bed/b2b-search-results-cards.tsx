@@ -1,51 +1,54 @@
-// import { ProgressBar } from 'react-bootstrap';
-import { components } from '../../../../bedbase-types';
-import { roundToTwoDecimals } from '../../../utils';
-import { useBedCart } from '../../../contexts/bedcart-context';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import toast from 'react-hot-toast';
-import YAML from 'js-yaml';
+// import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type SearchResponse = components['schemas']['BedListSearchResult'];
-// type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
+import { components } from '../../../../bedbase-types';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { roundToTwoDecimals } from '../../../utils';
+import YAML from 'js-yaml';
+import { useBedCart } from '../../../contexts/bedcart-context';
+import toast from 'react-hot-toast';
+
+type Bed = components['schemas']['QdrantSearchResult'];
 
 type Props = {
-  results: SearchResponse;
-  search_query?: string | undefined;
+  results: Bed[];
   layout?: string;
   onCardClick?: (bedId: string) => void;
 };
 
-const IsUnique = (found_id: string, search_id: string) => {
-  if (found_id === search_id) {
-    return (
-      <div className='d-flex'>
-        <OverlayTrigger
-          placement='top'
-          overlay={
-            <div className='tooltip'>
-              <div className='tooltip-inner'>Perfect match</div>
-            </div>
-          }
-        >
-          <i className='bi bi-check-all text-primary' />
-        </OverlayTrigger>
-      </div>
-    );
-  } else {
-    return;
-  }
-};
+// const scoreTooltip = (
+//   <OverlayTrigger
+//     placement='left'
+//     overlay={
+//       <Tooltip id={`tooltip-info}`} className='moreinfo-tooltip'>
+//           <pre className='text-start'>
+//             Cosine similarity between files.
+//             Score is between 0 an 100, where 100 is a perfect match.
+//           </pre>
+//       </Tooltip>
+//     }
+//   >
+//       <span>
+//         Score*
+//       </span>
 
-export const Text2BedSearchResultsTable = (props: Props) => {
-  const { results, search_query, layout, onCardClick } = props;
+//   </OverlayTrigger>
+// );
+
+export const Bed2BedSearchResultsCards = (props: Props) => {
+  const { results, layout, onCardClick } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   const navigate = useNavigate();
 
+  // const [sorting, setSorting] = useState<SortingState>([]);
+  // const [pagination, setPagination] = useState<PaginationState>({
+  //   pageIndex: 0,
+  //   pageSize: 20,
+  // });
+
   return (
     <>
-      {results.results?.map((result) => (
+      {results?.map((result) => (
         <div className='card bg-white border mb-2 overflow-hidden' key={result.id}>
           <div className='d-flex'>
             <div
@@ -79,7 +82,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 </div>
                 
                 <div className='d-flex gap-1 align-items-center'>
-                  {IsUnique(result.id, search_query || '')}
+                  {/* {IsUnique(result.id, search_query || '')} */}
                   <OverlayTrigger
                     placement='top'
                     overlay={
