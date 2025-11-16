@@ -11,7 +11,6 @@ import { BEDEmbeddingPlot } from '../components/umap/bed-embedding-plot.tsx';
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const [copiedAPI, setCopiedAPI] = useState(false);
   const [copiedClient, setCopiedClient] = useState(false);
@@ -27,13 +26,8 @@ export const Home = () => {
   const { data: bedbaseStats } = useStats();
 
   const handleSearch = () => {
-    if (searchType === 'b2b') {
-      if (!uploadedFile) return;
-      navigate(`/search?view=${searchType}`, { state: { file: uploadedFile } });
-    } else {
-      if (!searchTerm) return;
-      navigate(`/search?q=${searchTerm}&view=${searchType}`);
-    }
+    if (!searchTerm) return;
+    navigate(`/search?q=${searchTerm}&view=${searchType}`);
   };
 
   return (
@@ -94,18 +88,20 @@ export const Home = () => {
           <div className='input-group bg-white'>
             {searchType === 'b2b' ? (
               <input
+                key='file-input'
                 className='form-control border'
                 type='file'
                 accept='.bed,.gz,application/gzip,application/x-gzip'
                 onChange={(e) => {
                   const file = e.target.files?.[0];
                   if (file) {
-                    setUploadedFile(file);
+                    navigate(`/search?view=b2b`, { state: { file: file } });
                   }
                 }}
               />
             ) : (
               <input
+                key='text-input'
                 className='form-control border'
                 type='text'
                 placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}

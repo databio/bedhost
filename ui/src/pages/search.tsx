@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 
 import { SearchSelector } from '../components/search/search-selector';
@@ -8,11 +8,14 @@ import { Bed2Bed } from '../components/search/bed2bed/bed2bed';
 import { Text2BedSet } from '../components/search/text2bedset';
 import { Layout } from '../components/layout';
 import { SearchViewProvider } from '../contexts/search-view-context.tsx';
+import { useBedUmap } from '../queries/useBedUmap.ts';
+import { BEDEmbeddingPlotRef } from '../components/umap/bed-embedding-plot.tsx';
 
 type SearchView = 't2b' | 'b2b' | 't2bs';
 
 export const SearchPage = () => {
   const location = useLocation();
+  const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
   const uploadedFile = location.state?.file as File | undefined;
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -25,20 +28,35 @@ export const SearchPage = () => {
   const [layout, setLayout] = useState('split');
   const [triggerSearch, setTriggerSearch] = useState(0);
   const [file, setFile] = useState<File | null>(uploadedFile || null);
+  const [customCoordinates, setCustomCoordinates] = useState<number[] | null>(null);
 
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchView) params.set('view', searchView);
-    if (searchTerm) params.set('q', searchTerm);
-    if (genome) params.set('genome', genome);
-    if (assay) params.set('assay', assay);
-    setSearchParams(params);
-  }, [searchTerm, genome, assay, searchView, setSearchParams]);
+  const { mutateAsync: getUmapCoordinates } = useBedUmap();
 
   const handleSearch = () => {
     setOffset(0);
     setTriggerSearch(prev => prev + 1);
   };
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (searchView) params.set('view', searchView);
+    if (searchView !== 'b2b') {
+      if (searchTerm) params.set('q', searchTerm);
+    }
+    if (searchView === 't2b') {
+      if (genome) params.set('genome', genome);
+      if (assay) params.set('assay', assay);
+    }
+    setSearchParams(params);
+  }, [searchTerm, genome, assay, searchView, setSearchParams]);
+
+  useEffect(() => {
+    if (!file) return;
+    (async () => {
+      const coordinates = await getUmapCoordinates(file);
+      setCustomCoordinates(coordinates);
+    })();
+  }, [file])
 
   return (
     <Layout title='BEDbase | Search' footer fullHeight>
@@ -63,6 +81,7 @@ export const SearchPage = () => {
           onSearch={handleSearch}
           file={file}
           setFile={setFile}
+          embeddingPlotRef={embeddingPlotRef}
         />
         {searchView === 't2b' ? (
           <Text2Bed
@@ -77,7 +96,12 @@ export const SearchPage = () => {
             triggerSearch={triggerSearch}
           />
         ) : searchView === 'b2b' ? (
-          <Bed2Bed file={file} layout={layout} />
+          <Bed2Bed
+            file={file}
+            layout={layout}
+            customCoordinates={customCoordinates}
+            embeddingPlotRef={embeddingPlotRef}
+          />
         ) : searchView === 't2bs' ? (
           <Text2BedSet
             searchTerm={searchTerm}

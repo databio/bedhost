@@ -16,25 +16,6 @@ type Props = {
   onCardClick?: (bedId: string) => void;
 };
 
-// const scoreTooltip = (
-//   <OverlayTrigger
-//     placement='left'
-//     overlay={
-//       <Tooltip id={`tooltip-info}`} className='moreinfo-tooltip'>
-//           <pre className='text-start'>
-//             Cosine similarity between files.
-//             Score is between 0 an 100, where 100 is a perfect match.
-//           </pre>
-//       </Tooltip>
-//     }
-//   >
-//       <span>
-//         Score*
-//       </span>
-
-//   </OverlayTrigger>
-// );
-
 export const Bed2BedSearchResultsCards = (props: Props) => {
   const { results, layout, onCardClick } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
@@ -52,14 +33,14 @@ export const Bed2BedSearchResultsCards = (props: Props) => {
         <div className='card bg-white border mb-2 overflow-hidden' key={result.id}>
           <div className='d-flex'>
             <div
-              className={`card-body position-relative flex-1 mt-1 pt-2 mb-0 ${(layout === 'split') && 'cursor-pointer'}`}
+              className={`card-body position-relative flex-1 pt-2 mb-0 ${(layout === 'split') && 'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
               onClick={() => {
                 if (layout === 'split') {
                   onCardClick?.(result.metadata?.id || '')
                 }
               }}
             >
-              <div className='d-flex justify-content-between align-items-center mb-2'>
+              <div className='d-flex justify-content-between align-items-center mb-2 pt-1'>
                 <div className='d-flex gap-2 align-items-center'>
                   <p className='fw-semibold mb-0 flex-grow-1'>
                     {result?.metadata?.name || 'No name'}
@@ -82,13 +63,14 @@ export const Bed2BedSearchResultsCards = (props: Props) => {
                 </div>
                 
                 <div className='d-flex gap-1 align-items-center'>
-                  {/* {IsUnique(result.id, search_query || '')} */}
                   <OverlayTrigger
                     placement='top'
                     overlay={
-                      <div className='tooltip'>
-                        <div className='tooltip-inner'>Match score</div>
-                      </div>
+                      <Tooltip id={`tooltip-${result.score}`} className='moreinfo-tooltip text-xs'>
+                        <pre className='mb-0'>Cosine similarity between files.</pre>
+                        <pre className='mb-0'>Score is between 0 and 100,</pre>
+                        <pre className='mb-0'>where 100 is a perfect match.</pre>
+                      </Tooltip>
                     }
                   >
                     <span className={`badge ${(result.score ?? 0) > 0.5 ? 'bg-primary' : 'bg-secondary'}`} style={{ fontSize: '10px' }}>
@@ -97,11 +79,11 @@ export const Bed2BedSearchResultsCards = (props: Props) => {
                   </OverlayTrigger>
                 </div>
               </div>
-              <p className='text-xs text-muted fst-italic mb-2 pb-1'>
+              <p className='text-xs text-muted fst-italic mb-2 pb-1 text-start'>
                 {result?.metadata?.description || 'No description'}
               </p>
 
-              <div className={`d-flex flex-wrap gap-1`}>
+              <div className='d-flex flex-wrap gap-1'>
                 <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
                   <span className='text-body-tertiary'>genome:</span>{' '}{result?.metadata?.genome_alias || 'N/A'}
                 </span>

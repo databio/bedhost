@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, RefObject } from 'react';
 import { SearchingJumper } from '../searching-jumper';
 import { useBed2BedSearch } from '../../../queries/useBed2BedSearch';
 // import { Bed2BedSearchResultsTable } from './b2b-search-results-table';
@@ -8,14 +8,14 @@ import { Bed2BedSearchResultsCards } from './b2b-search-results-cards.tsx';
 type Props = {
   file: File | null;
   layout: string;
+  customCoordinates: number[] | null;
+  embeddingPlotRef: RefObject<BEDEmbeddingPlotRef>;
 };
 
 export const Bed2Bed = (props: Props) => {
-  const { file, layout } = props;
-  const [containerHeight, setContainerHeight] = useState(660);
-  
-  const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
+  const { file, layout, customCoordinates, embeddingPlotRef } = props;
   const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState(660);
 
   const {
     isFetching: isSearching,
@@ -25,8 +25,6 @@ export const Bed2Bed = (props: Props) => {
     q: file,
     autoRun: false,
   });
-
-  console.log(results)
 
   useEffect(() => {
     if (file) {
@@ -68,7 +66,8 @@ export const Bed2Bed = (props: Props) => {
                       ref={embeddingPlotRef}
                       bedIds={results?.results?.map((result: any) => result.payload.id)}
                       height={containerHeight}
-                      preselectPoint={false}
+                      preselectPoint={true}
+                      customCoordinates={customCoordinates}
                     />
                   </div>
                 </div>
@@ -76,7 +75,13 @@ export const Bed2Bed = (props: Props) => {
               
               <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column ${layout === 'split' ? 'overflow-hidden' : ''}`} style={layout === 'split' ? {height: `${containerHeight}px`} : {}}>
                 <div className={`${layout === 'split' ? 'overflow-y-auto overflow-x-hidden flex-grow-1' : ''}`}>
-                  <Bed2BedSearchResultsCards results={results.results || []} />
+                  <Bed2BedSearchResultsCards
+                    results={results.results || []}
+                    layout={'split'}
+                    onCardClick={(bedId) => {
+                      embeddingPlotRef.current?.centerOnBedId(bedId);
+                    }}
+                  />
                 </div>
               </div>
             </div>

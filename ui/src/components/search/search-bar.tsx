@@ -1,9 +1,10 @@
 import toast from 'react-hot-toast';
 // import { useSearchParams } from 'react-router-dom';
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, RefObject } from 'react';
 import { useSearchView } from '../../contexts/search-view-context.tsx';
 import { useAvailableGenomes } from '../../queries/useAvailableGenomes.ts';
 import { useAvailableAssays } from '../../queries/useAvailableAssays.ts';
+import { BEDEmbeddingPlotRef } from '../umap/bed-embedding-plot.tsx';
 
 type Props = {
   value: string;
@@ -19,6 +20,7 @@ type Props = {
   setLayout?: (layout: string) => void;
   file: File | null;
   setFile: (file: File | null) => void;
+  embeddingPlotRef: RefObject<BEDEmbeddingPlotRef>;
 };
 
 const placeholders = [
@@ -31,7 +33,7 @@ const placeholders = [
 ];
 
 export const SearchBar = (props: Props) => {
-  const { value, onChange, onSearch, limit, setLimit, genome, setGenome, assay, setAssay, layout, setLayout, file, setFile } = props;
+  const { value, onChange, onSearch, limit, setLimit, genome, setGenome, assay, setAssay, layout, setLayout, file, setFile, embeddingPlotRef } = props;
   // const [, setSearchParams] = useSearchParams();
   const { searchView } = useSearchView();
   const { data: genomes } = useAvailableGenomes();
@@ -75,11 +77,27 @@ export const SearchBar = (props: Props) => {
                       if (fileInputRef.current) {
                         fileInputRef.current.value = '';
                       }
+                      if (typeof embeddingPlotRef.current?.handleFileRemove === 'function') {
+                        embeddingPlotRef.current.handleFileRemove();
+                      }
                     }}
                     title='Remove file'
                   >
                     <i className='bi bi-x-circle' />
                   </button>
+                  {(layout === 'split') && 
+                    <button
+                      className='btn btn-outline-secondary border'
+                      onClick={() => {
+                        if (typeof embeddingPlotRef.current?.centerOnBedId === 'function') {
+                          embeddingPlotRef.current.centerOnBedId('custom_point');
+                        }
+                      }}
+                      title='Locate in embeddings'
+                    >
+                      <i className='bi bi-pin-map' />
+                    </button>
+                  }
                 </>
               ) : (
                 <input
@@ -124,6 +142,15 @@ export const SearchBar = (props: Props) => {
             />
           )}
 
+          {searchView === 't2b' && (
+            <button
+              className='btn btn-outline-secondary border'
+              onClick={() => setShowOptions(!showOptions)}
+            >
+              <i className='bi bi-sliders' />
+            </button>
+          )}
+          
           <select 
             className='form-select w-auto' 
             style={{ maxWidth: '130px' }} 
@@ -135,15 +162,6 @@ export const SearchBar = (props: Props) => {
             <option value={50}>Limit 50</option>
             <option value={100}>Limit 100</option>
           </select>
-
-          {searchView === 't2b' && (
-            <button
-              className='btn btn-outline-secondary border'
-              onClick={() => setShowOptions(!showOptions)}
-            >
-              <i className='bi bi-sliders' />
-            </button>
-          )}
         </div>
         
         {searchView !== 'b2b' && (

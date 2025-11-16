@@ -10,15 +10,17 @@ type Props = {
   bedIds?: string[],
   height?: number;
   preselectPoint?: boolean;
+  customCoordinates?: number[] | null;
 }
 
 export interface BEDEmbeddingPlotRef {
   centerOnBedId: (bedId: string, scale?: number) => Promise<void>;
+  handleFileRemove: () => Promise<void>;
 }
 
 export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, ref) => {
-  const { bedIds, height, preselectPoint } = props;
-  const { coordinator, initializeData } = useMosaicCoordinator();
+  const { bedIds, height, preselectPoint, customCoordinates } = props;
+  const { coordinator, initializeData, addCustomPoint, deleteCustomPoint } = useMosaicCoordinator();
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -57,16 +59,29 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
 
     if (bedData && bedData.length > 0) {
       centerOnPoint(bedData[0], scale);
-      // setSelectedPoints([bedData[0]]);
+      setSelectedPoints([bedData[0]]);
     }
   };
 
+  const handleFileRemove = async () => {
+    try {
+      await deleteCustomPoint();
+      coordinator.clear();
+    } catch (error) {
+      console.error('Error removing file');
+    }
+  }
+
   useImperativeHandle(ref, () => ({
-    centerOnBedId
+    centerOnBedId,
+    handleFileRemove,
   }));
 
   useEffect(() => { // initialize data
     initializeData().then(() => {
+      if (!!customCoordinates) {
+        addCustomPoint(customCoordinates[0], customCoordinates[1]);
+      }
       setIsReady(true);
     });
   }, []);
@@ -80,6 +95,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
     useEffect(() => { // fetch provided bed ids
     if (isReady && bedIds && bedIds.length > 0) {
       setTimeout(async () => {
+        const idsToQuery = customCoordinates ? ['custom_point', ...bedIds] : bedIds;
         const currentBed: any = await coordinator.query(
           `SELECT
             x, y,
@@ -88,15 +104,24 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
             id as identifier,
             {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
            FROM data
-           WHERE id IN ('${bedIds.join("','")}')`,
+           WHERE id IN ('${idsToQuery.join("','")}')`,
           { type: 'json' }
         );
         if (!currentBed || currentBed.length === 0) return;
-        if (preselectPoint) setTooltipPoint(currentBed[0]);
+        if (preselectPoint) {
+          const pointToSelect = customCoordinates
+            ? currentBed.find((bed: any) => bed.identifier === 'custom_point') || currentBed[0]
+            : currentBed[0];
+          if (!!customCoordinates) {
+            centerOnPoint(pointToSelect);
+          } else {
+            setTooltipPoint(pointToSelect);
+          }
+        }
         setSelectedPoints(currentBed);
       }, 200);
     }
-  }, [isReady, bedIds, coordinator, colorGrouping]);
+  }, [isReady, bedIds, coordinator, colorGrouping, customCoordinates]);
 
   return (
     <>

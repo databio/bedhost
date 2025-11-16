@@ -36,15 +36,19 @@ const TooltipContent = ({ tooltip, showLink }: { tooltip: TooltipProps['tooltip'
               {tooltip.fields.Description || 'No description available'}
             </p>
             <div className='d-flex flex-wrap gap-1'>
-              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-                <span className='text-body-tertiary'>cell_line:</span>{' '}{tooltip.fields['Cell Line'] || 'N/A'}
-              </span>
-              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-                <span className='text-body-tertiary'>assay:</span>{' '}{tooltip.fields.Assay || 'N/A'}
-              </span>
-              <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
-                <span className='text-body-tertiary'>id:</span>{' '}{tooltip.identifier || 'N/A'}
-              </span>
+              {(tooltip.identifier !== 'custom_point') && (
+                <>
+                  <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                    <span className='text-body-tertiary'>cell_line:</span>{' '}{tooltip.fields['Cell Line'] || 'N/A'}
+                  </span>
+                  <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                    <span className='text-body-tertiary'>assay:</span>{' '}{tooltip.fields.Assay || 'N/A'}
+                  </span>
+                  <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                    <span className='text-body-tertiary'>id:</span>{' '}{tooltip.identifier || 'N/A'}
+                  </span>
+                </>
+              )}
               <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
                 <span className='text-body-tertiary'>x:</span>{' '}{tooltip.x ? tooltip.x.toFixed(6) : 'N/A'}
               </span>
@@ -54,7 +58,7 @@ const TooltipContent = ({ tooltip, showLink }: { tooltip: TooltipProps['tooltip'
             </div>
           </>
         )}
-        {showLink && (
+        {showLink && (tooltip.identifier !== 'custom_point') && (
           <a
             href={`/bed/${tooltip.identifier}`}
             className='btn btn-xs btn-primary mt-2'
