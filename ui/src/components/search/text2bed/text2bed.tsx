@@ -20,6 +20,8 @@ export const Text2Bed = () => {
   const [limit, setLimit] = useState(20);
   const [offset, setOffset] = useState(0);
   const [containerHeight, setContainerHeight] = useState(660);
+  const [layout, setLayout] = useState('split');
+
   const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -92,6 +94,8 @@ export const Text2Bed = () => {
                 onSearch();
               }, 100);
             }}
+            layout={layout}
+            setLayout={setLayout}
           />
         </Col>
       </Row>
@@ -102,21 +106,25 @@ export const Text2Bed = () => {
           <div className="my-2" ref={containerRef}>
             {results ? (
               <div className='row gx-2'>
-                <div className='col-6' style={{height: `${containerHeight}px`}}>
-                  <div className='d-flex border rounded overflow-hidden'>
-                    <BEDEmbeddingPlot
-                      ref={embeddingPlotRef}
-                      bedIds={results?.results?.map((result: any) => result.id)}
-                      height={containerHeight}
-                    />
+                {(layout === 'split') && (
+                  <div className='col-6' style={{height: `${containerHeight}px`}}>
+                    <div className='d-flex border rounded overflow-hidden'>
+                      <BEDEmbeddingPlot
+                        ref={embeddingPlotRef}
+                        bedIds={results?.results?.map((result: any) => result.id)}
+                        height={containerHeight}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className='col-6 d-flex flex-column overflow-hidden' style={{height: `${containerHeight}px`}}>
-                  <div className="overflow-y-auto overflow-x-hidden flex-grow-1">
+                )}
+                
+                <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column ${layout === 'split' ? 'overflow-hidden' : ''}`} style={layout === 'split' ? {height: `${containerHeight}px`} : {}}>
+                  <div className={`${layout === 'split' ? 'overflow-y-auto overflow-x-hidden flex-grow-1' : ''}`}>
                     <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
                     <Text2BedSearchResultsTable
                       results={results || []}
                       search_query={searchTerm}
+                      layout={layout}
                       onCardClick={(bedId) => {
                         embeddingPlotRef.current?.centerOnBedId(bedId);
                       }}

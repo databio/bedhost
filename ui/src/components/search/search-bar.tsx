@@ -11,10 +11,12 @@ type Props = {
   setLimit: (limit: number) => void;
   genome: string;
   assay: string;
+  layout?: string;
   setGenome: (assay: string) => void;
   setAssay: (assay: string) => void;
   onChange: (value: string) => void;
   onSearch: () => void;
+  setLayout?: (layout: string) => void;
 };
 
 const placeholders = [
@@ -27,7 +29,7 @@ const placeholders = [
 ];
 
 export const SearchBar = (props: Props) => {
-  const { value, onChange, onSearch, limit, setLimit, genome, setGenome, assay, setAssay } = props;
+  const { value, onChange, onSearch, limit, setLimit, genome, setGenome, assay, setAssay, layout, setLayout } = props;
   const [, setSearchParams] = useSearchParams();
   const { searchView } = useSearchView();
   const { data: genomes } = useAvailableGenomes();
@@ -107,12 +109,44 @@ export const SearchBar = (props: Props) => {
       </div>
       {showOptions && (
         <div className="mt-2">
-          {searchView === 't2b' &&
+          {(searchView === 't2b') && !!layout && !!setLayout &&
             <div className="d-flex align-items-center">
-              <h6 className="mb-0 fw-semibold">Search Options</h6>
+              <h6 className="mb-0 fw-semibold text-sm">Layout:</h6>
+              <div className='btn-group ms-1' role='group'>
+                <input
+                  type='radio'
+                  className='btn-check'
+                  name='layout'
+                  id='split'
+                  autoComplete='off'
+                  checked={layout === 'split'}
+                  onChange={() => setLayout('split')}
+                />
+                <label
+                  className='btn btn-sm btn-outline-secondary rounded-start-2'
+                  htmlFor='split'
+                >
+                  <i className='bi bi-layout-split' />
+                </label>
+                <input
+                  type='radio'
+                  className='btn-check'
+                  name='layout'
+                  id='table'
+                  autoComplete='off'
+                  checked={layout === 'table'}
+                  onChange={() => setLayout('table')}
+                />
+                <label
+                  className='btn btn-sm btn-outline-secondary rounded-end-2'
+                  htmlFor='table'
+                >
+                  <i className='bi bi-layout-text-sidebar-reverse' />
+                </label>
+              </div>
 
-              <h6 className="mb-0 fw-semibold ms-auto">Genome:</h6>
-              <select className="form-select w-auto ms-1 border" value={genome}
+              <h6 className="mb-0 fw-semibold ms-auto text-sm">Genome:</h6>
+              <select className="form-select form-select-sm w-auto ms-1 border rounded-2" value={genome}
                       onChange={(e) => setGenome(String(e.target.value))}>
                 <option value={''}>All</option>
                 {genomes?.results.map((genomeItem, index) => (
@@ -122,8 +156,8 @@ export const SearchBar = (props: Props) => {
                 ))}
               </select>
 
-              <h6 className="mb-0 fw-semibold ms-4">Assay:</h6>
-              <select className="form-select w-auto ms-1 border" value={assay}
+              <h6 className="mb-0 fw-semibold ms-4 text-sm">Assay:</h6>
+              <select className="form-select form-select-sm w-auto ms-1 border rounded-2" value={assay}
                       onChange={(e) => setAssay(String(e.target.value))}>
                 <option value={''}>All</option>
                 {assays?.results.map((assayItem, index) => (

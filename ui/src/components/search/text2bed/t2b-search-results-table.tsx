@@ -13,6 +13,7 @@ type SearchResponse = components['schemas']['BedListSearchResult'];
 type Props = {
   results: SearchResponse;
   search_query?: string | undefined;
+  layout?: string;
   onCardClick?: (bedId: string) => void;
 };
 
@@ -38,7 +39,7 @@ const IsUnique = (found_id: string, search_id: string) => {
 };
 
 export const Text2BedSearchResultsTable = (props: Props) => {
-  const { results, search_query, onCardClick } = props;
+  const { results, search_query, layout, onCardClick } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   const navigate = useNavigate();
 
@@ -48,8 +49,12 @@ export const Text2BedSearchResultsTable = (props: Props) => {
         <div className='card bg-white border mb-2 overflow-hidden' key={result.id}>
           <div className='d-flex'>
             <div
-              className='card-body position-relative cursor-pointer flex-1'
-              onClick={() => onCardClick?.(result.metadata?.id || '')}
+              className={`card-body position-relative flex-1 ${(layout === 'split') && 'cursor-pointer'}`}
+              onClick={() => {
+                if (layout === 'split') {
+                  onCardClick?.(result.metadata?.id || '')
+                }
+              }}
             >
               <div className='d-flex justify-content-between align-items-center mb-2'>
                 <div className='d-flex gap-0 align-items-center'>
@@ -57,7 +62,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                     {result?.metadata?.name || 'No name'}
                   </p>
                   <OverlayTrigger
-                    placement='left'
+                    placement={layout === 'split' ? 'left' : 'right'}
                     overlay={
                       <Tooltip id={`tooltip-${result.id}`} className='moreinfo-tooltip'>
                         <pre className='text-start m-0' style={{ fontSize: '11px' }}>
@@ -83,7 +88,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                       </div>
                     }
                   >
-                    <span className='badge bg-primary' style={{ fontSize: '10px' }}>
+                    <span className={`badge ${(result.score ?? 0) > 0.5 ? 'bg-primary' : 'bg-warning'}`} style={{ fontSize: '10px' }}>
                       {roundToTwoDecimals((result.score ?? 0) * 100)}%
                     </span>
                   </OverlayTrigger>
