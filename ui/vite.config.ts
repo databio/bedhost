@@ -13,5 +13,13 @@ export default defineConfig({
     fs: {
       allow: ['..'], // Allow serving files from one level up to the project root
     },
+    proxy: {
+      '/api': {
+        target: 'https://api-dev.bedbase.org/v1',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+        secure: false,
+      },
+    },
   },
 })

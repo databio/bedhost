@@ -9,7 +9,9 @@ interface TooltipProps {
       'Cell Line': string;
       Description: string;
     };
-    category?: string;
+    category?: number;
+    x?: number;
+    y?: number;
   };
 }
 
@@ -41,6 +43,12 @@ const TooltipContent = ({ tooltip }: { tooltip: TooltipProps['tooltip'] }) => {
             </span>
             <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
               <span className='text-body-tertiary'>id:</span>{' '}{tooltip.identifier || 'N/A'}
+            </span>
+            <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+              <span className='text-body-tertiary'>x:</span>{' '}{tooltip.x ? tooltip.x.toFixed(6) : 'N/A'}
+            </span>
+            <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+              <span className='text-body-tertiary'>y:</span>{' '}{tooltip.y ? tooltip.y.toFixed(6) : 'N/A'}
             </span>
           </div>
         </>
