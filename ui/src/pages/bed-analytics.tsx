@@ -25,7 +25,7 @@ export const BEDAnalytics = () => {
   const { data: umapCoordinates, isLoading: isLoadingUmap, error: umapError } = useBedUmap({
     bedFile: umapFile,
     autoRun: true,
-  });
+  }) as { data: number[] | null; isLoading: boolean; error: Error | null };
 
   useEffect(() => {
     const urlParam = searchParams.get('bedUrl');
@@ -358,17 +358,20 @@ export const BEDAnalytics = () => {
             )}
             {userPoint && umapCoordinates && (
               <div className="mb-3">
-                {/*<div className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill">*/}
-                {/*  <div className="bg-success rounded-circle p-1" />*/}
-                {/*  <span className="small text-success fw-medium">*/}
-                {/*    UMAP coordinates: ({umapCoordinates.map(v => v.toFixed(4)).join(', ')})*/}
-                {/*    {umapCoordinates.length > 2 && <span className="ms-1 text-muted">(using first 2 for visualization)</span>}*/}
-                {/*  </span>*/}
-                {/*</div>*/}
-                UMAP coordinates: ({umapCoordinates.map(v => v.toFixed(4)).join(', ')})
+                <BEDAtlas userPoint={userPoint} />
+
+                <div className="d-flex flex-column gap-2">
+                  <div>
+                    UMAP coordinates: ({umapCoordinates.map((v: number) => v.toFixed(4)).join(', ')})
+                  </div>
+                  <div className="alert alert-warning small">
+                    <strong>Note:</strong> UMAP visualizations may have compatibility issues with some browsers.
+                    For best results, use Firefox. If you experience rendering problems, try to use a different browser.
+                  </div>
+                </div>
               </div>
             )}
-            <BEDAtlas userPoint={userPoint} />
+
           </div>
         )}
       </div>
