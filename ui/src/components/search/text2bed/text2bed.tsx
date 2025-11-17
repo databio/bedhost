@@ -91,6 +91,7 @@ export const Text2Bed = (props: Props) => {
                         bedIds={results?.results?.map((result: any) => result.id)}
                         height={containerHeight}
                         preselectPoint={false}
+                        stickyBaseline={true}
                       />
                     </div>
                   </div>

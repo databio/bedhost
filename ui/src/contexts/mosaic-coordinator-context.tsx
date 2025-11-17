@@ -4,7 +4,7 @@ import * as vg from '@uwdata/vgplot';
 interface MosaicCoordinatorContextType {
   getCoordinator: () => vg.Coordinator;
   initializeData: () => Promise<void>;
-  addCustomPoint: (x: number, y: number) => Promise<void>;
+  addCustomPoint: (x: number, y: number, description?: string) => Promise<void>;
   deleteCustomPoint: () => Promise<void>;
 }
 
@@ -53,7 +53,7 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
     ]);
   }
 
-  const addCustomPoint = async (x: number, y: number) => {
+  const addCustomPoint = async (x: number, y: number, description: string = 'User uploaded BED file') => {
     const coordinator = getCoordinator();
 
     await coordinator.exec([
@@ -79,7 +79,7 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
         0,
         'custom_point',
         'Your uploaded file',
-        'User uploaded BED file',
+        '${description}',
         'Uploaded BED',
         'Uploaded BED',
         ${assayCategory},

@@ -1,5 +1,6 @@
 import { EmbeddingViewMosaic } from 'embedding-atlas/react';
 import { useEffect, useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
+import toast from 'react-hot-toast';
 import * as vg from '@uwdata/vgplot'
 
 import { tableau20 } from '../../utils';
@@ -10,7 +11,9 @@ type Props = {
   bedIds?: string[],
   height?: number;
   preselectPoint?: boolean;
+  stickyBaseline?: boolean;
   customCoordinates?: number[] | null;
+  customFilename?: string;
 }
 
 export interface BEDEmbeddingPlotRef {
@@ -19,10 +22,11 @@ export interface BEDEmbeddingPlotRef {
 }
 
 export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, ref) => {
-  const { bedIds, height, preselectPoint, customCoordinates } = props;
+  const { bedIds, height, preselectPoint, stickyBaseline, customCoordinates, customFilename } = props;
   const { coordinator, initializeData, addCustomPoint, deleteCustomPoint } = useMosaicCoordinator();
 
   const containerRef = useRef<HTMLDivElement>(null);
+  const baselinePointsRef = useRef<any[]>([]);
 
   const [containerWidth, setContainerWidth] = useState(900);
   const [isReady, setIsReady] = useState(false);
@@ -60,6 +64,8 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
     if (bedData && bedData.length > 0) {
       centerOnPoint(bedData[0], scale);
       setSelectedPoints([bedData[0]]);
+    } else {
+      toast.error('Error: BED file not present in embeddings.');
     }
   };
 
@@ -78,9 +84,10 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
   }));
 
   useEffect(() => { // initialize data
-    initializeData().then(() => {
+    initializeData().then(async () => {
       if (!!customCoordinates) {
-        addCustomPoint(customCoordinates[0], customCoordinates[1]);
+        await addCustomPoint(customCoordinates[0], customCoordinates[1], customFilename);
+        coordinator.clear();
       }
       setIsReady(true);
     });
@@ -92,8 +99,8 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
     }
   }, [isReady]);
 
-    useEffect(() => { // fetch provided bed ids
-    if (isReady && bedIds && bedIds.length > 0) {
+  useEffect(() => { // fetch provided bed ids
+    if (isReady && bedIds && (bedIds.length > 0)) {
       setTimeout(async () => {
         const idsToQuery = customCoordinates ? ['custom_point', ...bedIds] : bedIds;
         const currentBed: any = await coordinator.query(
@@ -118,6 +125,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
             setTooltipPoint(pointToSelect);
           }
         }
+        baselinePointsRef.current = currentBed;
         setSelectedPoints(currentBed);
       }, 200);
     }
@@ -154,6 +162,17 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
               }
             }}
             selection={selectedPoints}
+            onSelection={(dataPoints) => {
+              if (!dataPoints || dataPoints.length === 0 && stickyBaseline) {
+                setTimeout(() => {
+                  if (baselinePointsRef.current.length > 0) {
+                    setSelectedPoints([...baselinePointsRef.current]);
+                  }
+                }, 0);
+                return;
+              }
+              setSelectedPoints(dataPoints);
+            }}
             theme={{
               statusBar: false
             }}

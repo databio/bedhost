@@ -67,7 +67,9 @@ export const Bed2Bed = (props: Props) => {
                       bedIds={results?.results?.map((result: any) => result.payload.id)}
                       height={containerHeight}
                       preselectPoint={true}
+                      stickyBaseline={true}
                       customCoordinates={customCoordinates}
+                      customFilename={file?.name || undefined}
                     />
                   </div>
                 </div>
