@@ -146,7 +146,7 @@ export const BedSplash = () => {
                 <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats} /> : null}
             </Col>
           </Row>
-          <Row className="mt-3 mb-4 g-2">
+          <Row className="mb-2 g-3">
             <Col sm={12} md={6} className="mt-0">
               <h5 className="fw-bold">Overview</h5>
               <div className="border rounded px-0 pt-1 shadow-sm">
@@ -259,7 +259,7 @@ export const BedSplash = () => {
           <Row className="mb-4 g-2">
             <h5 className="fw-bold">Statistics</h5>
             {metadata && (
-              <Col sm={12} md={3} className="d-flex flex-column mt-0 gap-2">
+              <Col sm={12} md={4} className="d-flex flex-column mt-0 gap-2">
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />

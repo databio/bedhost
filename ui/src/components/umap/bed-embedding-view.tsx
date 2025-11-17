@@ -11,7 +11,7 @@ type Props = {
   userPoint?: { x: number; y: number } | null;
 }
 
-export const BADAtlas = (props: Props) => {
+export const BEDAtlas = (props: Props) => {
   const { userPoint } = props;
   const { coordinator, initializeData } = useMosaicCoordinator();
   const { addBedToCart } = useBedCart();

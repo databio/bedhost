@@ -11,7 +11,7 @@ import { Metrics } from './pages/metrics.tsx';
 // import { UMAPGraph } from './pages/visualization.tsx';
 import { BEDAnalytics } from './pages/bed-analytics.tsx';
 import init from '@databio/gtars';
-import { BEDAtlasFull } from './pages/bed-atlas-full.tsx';
+import { BEDUmap } from './pages/bed-umap.tsx';
 import { HelmetProvider } from 'react-helmet-async';
 import { MosaicCoordinatorProvider } from './contexts/mosaic-coordinator-context.tsx';
 
@@ -81,7 +81,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/umap',
-    element: <BEDAtlasFull />,
+    element: <BEDUmap />,
   },
   {
     path: '/analyze',

@@ -6,7 +6,7 @@ import { handleBedFileInput } from '../utils.ts';
 import { bytesToSize } from '../utils.ts';
 import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
 import RegionDistributionPlot from '../components/bed-analytics-components/bed-plots.tsx';
-import { BADAtlas } from '../components/bed-splash-components/bad-atlas.tsx';
+import { BEDAtlas } from '../components/umap/bed-embedding-view.tsx';
 import { useBedUmap } from '../queries/useBedUmap.ts';
 
 export const BEDAnalytics = () => {
@@ -368,7 +368,7 @@ export const BEDAnalytics = () => {
                 UMAP coordinates: ({umapCoordinates.map(v => v.toFixed(4)).join(', ')})
               </div>
             )}
-            <BADAtlas userPoint={userPoint} />
+            <BEDAtlas userPoint={userPoint} />
           </div>
         )}
       </div>
