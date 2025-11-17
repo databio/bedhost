@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { useBedbaseApi } from '../contexts/api-context';
 import axios from 'axios';
 
 type UmapResponse = number[];
@@ -10,6 +11,7 @@ type UmapQuery = {
 
 export const useBedUmap = (query: UmapQuery) => {
   const { bedFile, autoRun } = query;
+  const { api } = useBedbaseApi();
 
   let enabled = false;
   if (autoRun !== undefined && autoRun === true && !!bedFile) {
@@ -27,15 +29,11 @@ export const useBedUmap = (query: UmapQuery) => {
         const formData = new FormData();
         formData.append('file', bedFile);
 
-        const { data } = await axios.post<UmapResponse>(
-          'https://api-dev.bedbase.org/v1/bed/umap',
-          formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
+        const { data } = await api.post<UmapResponse>('/bed/umap', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
           },
-        );
+        });
 
         console.log('UMAP response:', data, `(${data?.length} values)`);
         return data;
