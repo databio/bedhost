@@ -6,6 +6,8 @@ import { handleBedFileInput } from '../utils.ts';
 import { bytesToSize } from '../utils.ts';
 import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
 import RegionDistributionPlot from '../components/bed-analytics-components/bed-plots.tsx';
+import { BADAtlas } from '../components/bed-splash-components/bad-atlas.tsx';
+import { useBedUmap } from '../queries/useBedUmap.ts';
 
 export const BEDAnalytics = () => {
   const [rs, setRs] = useState<RegionSet | null>(null);
@@ -16,6 +18,14 @@ export const BEDAnalytics = () => {
   const [bedUrl, setBedUrl] = useState<string>('');
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const [userPoint, setUserPoint] = useState<{ x: number; y: number } | null>(null);
+  const [umapFile, setUmapFile] = useState<File | null>(null);
+
+  // Use the UMAP query hook
+  const { data: umapCoordinates, isLoading: isLoadingUmap, error: umapError } = useBedUmap({
+    bedFile: umapFile,
+    autoRun: true,
+  });
 
   useEffect(() => {
     const urlParam = searchParams.get('bedUrl');
@@ -24,6 +34,14 @@ export const BEDAnalytics = () => {
       setBedUrl(urlParam);
     }
   }, [searchParams]);
+
+  // Update userPoint when UMAP coordinates are received
+  useEffect(() => {
+    if (umapCoordinates && Array.isArray(umapCoordinates) && umapCoordinates.length >= 2) {
+      // Use first two values as x, y coordinates (endpoint returns 2 or 3 values)
+      setUserPoint({ x: umapCoordinates[0], y: umapCoordinates[1] });
+    }
+  }, [umapCoordinates]);
 
   const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -60,6 +78,9 @@ export const BEDAnalytics = () => {
       setLoadingRS(true);
       setTotalProcessingTime(null);
 
+      // Set the file for UMAP calculation
+      setUmapFile(fileToProcess);
+
       try {
         const startTime = performance.now();
 
@@ -90,6 +111,8 @@ export const BEDAnalytics = () => {
     setTotalProcessingTime(null);
     setSelectedFile(null);
     setBedUrl('');
+    setUmapFile(null);
+    setUserPoint(null);
     if (regionsetFileInputRef.current) {
       regionsetFileInputRef.current.value = '';
     }
@@ -307,6 +330,47 @@ export const BEDAnalytics = () => {
             )}
           </div>
         </div>
+
+        {umapFile && (
+          <div className="mt-5">
+
+            {isLoadingUmap && (
+              <div className="mb-3">
+                <div
+                  className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-info bg-opacity-10 border border-info border-opacity-25 rounded-pill">
+                  <div className="spinner-border spinner-border-sm text-info">
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                  <span className="small text-info fw-medium">
+                    Calculating UMAP coordinates...
+                  </span>
+                </div>
+              </div>
+            )}
+            {umapError && (
+              <div className="mb-3">
+                <div className="alert alert-danger">
+                  <strong>Error calculating UMAP
+                    coordinates:</strong> {umapError instanceof Error ? umapError.message : 'Unknown error occurred'}
+                  <div className="small mt-2">Check the browser console for more details.</div>
+                </div>
+              </div>
+            )}
+            {userPoint && umapCoordinates && (
+              <div className="mb-3">
+                {/*<div className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill">*/}
+                {/*  <div className="bg-success rounded-circle p-1" />*/}
+                {/*  <span className="small text-success fw-medium">*/}
+                {/*    UMAP coordinates: ({umapCoordinates.map(v => v.toFixed(4)).join(', ')})*/}
+                {/*    {umapCoordinates.length > 2 && <span className="ms-1 text-muted">(using first 2 for visualization)</span>}*/}
+                {/*  </span>*/}
+                {/*</div>*/}
+                UMAP coordinates: ({umapCoordinates.map(v => v.toFixed(4)).join(', ')})
+              </div>
+            )}
+            <BADAtlas userPoint={userPoint} />
+          </div>
+        )}
       </div>
     </Layout>
   );

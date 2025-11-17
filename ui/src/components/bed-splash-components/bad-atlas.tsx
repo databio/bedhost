@@ -4,20 +4,15 @@ import * as vg from '@uwdata/vgplot'
 
 import { isPointInPolygon, tableau20 } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
-import { components } from '../../../bedbase-types';
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
-type SearchResponse = components['schemas']['BedListSearchResult'];
-
 type Props = {
-  bedId: string;
-  neighbors?: SearchResponse;
-  showNeighbors?: boolean;
+  userPoint?: { x: number; y: number } | null;
 }
 
 export const BADAtlas = (props: Props) => {
-  const { bedId, neighbors, showNeighbors } = props;
+  const { userPoint } = props;
   const { coordinator, initializeData } = useMosaicCoordinator();
   const { addBedToCart } = useBedCart();
 
@@ -36,7 +31,6 @@ export const BADAtlas = (props: Props) => {
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
-  const neighborIDs = useMemo(() => neighbors?.results?.map(result => result.id), [neighbors]);
 
   const centerOnPoint = (point: any, scale: number = 1) => {
     setTooltipPoint(point);
@@ -49,20 +43,7 @@ export const BADAtlas = (props: Props) => {
 
   const getSortedSelectedPoints = () => {
     if (!selectedPoints || selectedPoints.length === 0) return [];
-
-    const currentBed = selectedPoints.find((p: any) => p.identifier === bedId);
-    const others = selectedPoints.filter((p: any) => p.identifier !== bedId);
-
-    if (neighbors?.results && neighbors.results.length > 0) {
-      const scoreMap = new Map(neighbors.results.map(n => [n.id, n.score]));
-      others.sort((a: any, b: any) => {
-        const scoreA = scoreMap.get(a.identifier) || 0;
-        const scoreB = scoreMap.get(b.identifier) || 0;
-        return scoreB - scoreA; // Descending order
-      });
-    }
-
-    return currentBed ? [currentBed, ...others] : others;
+    return selectedPoints;
   };
 
   const handleLegendClick = (item: any) => {
@@ -89,29 +70,6 @@ export const BADAtlas = (props: Props) => {
     const hasInitialPoint = points.some(p => p.identifier === initialPoint?.identifier);
     let finalPoints = hasInitialPoint ? points : (initialPoint ? [initialPoint, ...points] : points);
 
-    if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
-      const selectedIds = new Set(finalPoints.map((p: any) => p.identifier));
-      const missingNeighborIds = neighborIDs.filter(id => !selectedIds.has(id));
-
-      if (missingNeighborIds.length > 0) {
-        coordinator.query(
-          `SELECT
-            x, y,
-            ${colorGrouping} as category,
-            name as text,
-            id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
-           FROM data
-           WHERE id IN (${missingNeighborIds.map(id => `'${id}'`).join(',')})`,
-          { type: 'json' }
-        ).then((neighborPoints: any) => {
-          setSelectedPoints([...finalPoints, ...neighborPoints]);
-        });
-        return;
-      }
-    }
-
-    // setTooltipPoint(finalPoints.slice(-1)[0])
     setSelectedPoints(finalPoints);
   };
 
@@ -188,26 +146,6 @@ export const BADAtlas = (props: Props) => {
     const hasInitialPoint = resultArray.length > 0 && resultArray.some((p: any) => p.identifier === initialPoint?.identifier);
     let finalPoints = hasInitialPoint ? resultArray : (initialPoint ? [initialPoint, ...resultArray] : resultArray);
 
-    if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
-      const selectedIds = new Set(finalPoints.map((p: any) => p.identifier));
-      const missingNeighborIds = neighborIDs.filter(id => !selectedIds.has(id));
-
-      if (missingNeighborIds.length > 0) { // fetch missing neighbor points
-        const neighborPoints = await coordinator.query(
-          `SELECT
-            x, y,
-            ${colorGrouping} as category,
-            name as text,
-            id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
-           FROM data
-           WHERE id IN (${missingNeighborIds.map(id => `'${id}'`).join(',')})`,
-          { type: 'json' }
-        ) as any[];
-        finalPoints = [...finalPoints, ...neighborPoints];
-      }
-    }
-
     setSelectedPoints(finalPoints);
   };
 
@@ -244,43 +182,32 @@ export const BADAtlas = (props: Props) => {
     }
   }, [isReady, colorGrouping])
 
-  useEffect(() => { // fetch initial bed id and neighbors
-    if (isReady) {
-      setTimeout(async () => {
-        const currentBed: any = await coordinator.query(
-          `SELECT
-            x, y,
-            ${colorGrouping} as category,
-            name as text,
-            id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
-           FROM data
-           WHERE id = '${bedId}'`,
-          { type: 'json' }
-        );
-        if (!currentBed || currentBed.length === 0) return;
-        setInitialPoint(currentBed[0]);
-        setTooltipPoint(currentBed[0]);
-
-        if (showNeighbors && neighborIDs && neighborIDs.length > 0) {
-          const neighborPoints: any = await coordinator.query(
-            `SELECT
-              x, y,
-              ${colorGrouping} as category,
-              name as text,
-              id as identifier,
-              {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
-             FROM data
-             WHERE id IN (${neighborIDs.map(id => `'${id}'`).join(',')})`,
-            { type: 'json' }
-          );
-          setSelectedPoints([currentBed[0], ...neighborPoints]);
-        } else {
-          setSelectedPoints([currentBed[0]]);
-        }
+  useEffect(() => { // handle user point if provided
+    if (isReady && userPoint) {
+      setTimeout(() => {
+        const point = {
+          x: userPoint.x,
+          y: userPoint.y,
+          category: 'User Point',
+          text: 'User Point',
+          identifier: 'user-point',
+          fields: {
+            'Description': 'User-provided coordinates',
+            'Assay': 'N/A',
+            'Cell Line': 'N/A'
+          }
+        };
+        setInitialPoint(point);
+        setTooltipPoint(point);
+        setSelectedPoints([point]);
+        setViewportState({
+          x: userPoint.x,
+          y: userPoint.y,
+          scale: 0.5
+        });
       }, 200);
     }
-  }, [isReady, bedId, coordinator, colorGrouping, showNeighbors, neighborIDs]);
+  }, [isReady, userPoint, coordinator, colorGrouping]);
 
   return (
     <>

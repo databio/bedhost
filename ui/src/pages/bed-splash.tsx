@@ -18,8 +18,7 @@ import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-se
 import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
 // import { BEDAtlas } from '../components/bed-splash-components/bed-atlas.tsx';
-import { BADAtlas } from '../components/bed-splash-components/bad-atlas.tsx';
-import { useState } from 'react';
+// import { useState } from 'react';
 
 // Use the response type to properly type the metadata
 type BedMetadata = components['schemas']['BedMetadataAll'];
@@ -28,7 +27,7 @@ export const BedSplash = () => {
   const params = useParams();
   const bedId = params.id;
 
-  const [showNeighbors, setShowNeighbors] = useState(false);
+  // const [showNeighbors, setShowNeighbors] = useState(false);
 
   const {
     isLoading,
@@ -143,68 +142,72 @@ export const BedSplash = () => {
         <Container className="my-2">
           <Row className="mb-2">
             <Col sm={12} md={12}>
-              {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
+              {metadata !== undefined ?
+                <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats} /> : null}
             </Col>
           </Row>
           <Row className="mt-3 mb-4 g-2">
-            <Col sm={12} md={6} className='mt-0'>
+            <Col sm={12} md={6} className="mt-0">
               <h5 className="fw-bold">Overview</h5>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <div className="table-responsive">
                   <table className="table table-sm table-striped text-truncate text-sm">
                     <thead>
-                      <tr>
-                        <th scope="col">Key</th>
-                        <th scope="col">Value</th>
-                      </tr>
+                    <tr>
+                      <th scope="col">Key</th>
+                      <th scope="col">Value</th>
+                    </tr>
                     </thead>
                     <tbody className="text-sm">
-                      {Object.keys(metadata?.annotation || {}).map((k) => {
-                        if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
-                          return null;
-                        }
+                    {Object.keys(metadata?.annotation || {}).map((k) => {
+                      if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
+                        return null;
+                      }
 
-                        const value = getAnnotationValue(metadata, k);
-                        if (!value) {
-                          return null;
-                        }
+                      const value = getAnnotationValue(metadata, k);
+                      if (!value) {
+                        return null;
+                      }
 
-                        return (
-                          <tr key={k}>
-                            <td style={{ maxWidth: '50px' }} className="fst-italic">
-                              {snakeToTitleCase(k)}
-                            </td>
-                            <td style={{ maxWidth: '120px' }} className="truncate">
-                              { k === 'global_sample_id' ?
+                      return (
+                        <tr key={k}>
+                          <td style={{ maxWidth: '50px' }} className="fst-italic">
+                            {snakeToTitleCase(k)}
+                          </td>
+                          <td style={{ maxWidth: '120px' }} className="truncate">
+                            {k === 'global_sample_id' ?
                               (Array.isArray(value) && value.length > 0)
-                              ? value.map((v, i) => (
+                                ? value.map((v, i) => (
                                   v.includes('encode:')
-                                    ? <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>{v}</a>
+                                    ? <a key={i}
+                                         href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>{v}</a>
                                     : v.includes('geo:')
-                                      ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a>
+                                      ? <a key={i}
+                                           href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a>
                                       : v ?? 'N/A'
                                 )).reduce((prev, curr) => <>{prev}, {curr}</>)
-                              : value ?? 'N/A'
+                                : value ?? 'N/A'
                               :
-                                k === 'global_experiment_id' ?
+                              k === 'global_experiment_id' ?
                                 (Array.isArray(value) && value.length > 0) ? value.map((v, i) => (
                                   v.includes('encode') ? <a key={i} href={'https://www.encodeproject.org'}>{v}</a> :
-                                  v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
-                                  v ?? 'N/A'
+                                    v.includes('geo:') ? <a key={i}
+                                                            href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
+                                      v ?? 'N/A'
                                 )).reduce((prev, curr) => <>{prev}, {curr}</>) : value ?? 'N/A'
-                              :
+                                :
                                 value ?? 'N/A'
-                              }
-                            </td>
-                          </tr>
-                        );
-                      })}
+                            }
+                          </td>
+                        </tr>
+                      );
+                    })}
                     </tbody>
                   </table>
                 </div>
               </div>
             </Col>
-            <Col sm={12} md={6} className='mt-2 mt-md-0'>
+            <Col sm={12} md={6} className="mt-2 mt-md-0">
               <h5 className="fw-bold">BEDsets</h5>
               <div className="border rounded px-0 pt-1 shadow-sm">
                 <div className="table-responsive">
@@ -275,33 +278,33 @@ export const BedSplash = () => {
             </Col>
           </Row>
 
-          {bedId && metadata?.name?.includes('encode') && (
-            <>
-              <BADAtlas bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors}/>
-              {/* <BEDAtlas bedId={bedId}/> */}
-            </>
-          )}
+          {/*{bedId && metadata?.name?.includes('encode') && (*/}
+          {/*  <>*/}
+          {/*    <BADAtlas bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors}/>*/}
+          {/*    /!* <BEDAtlas bedId={bedId}/> *!/*/}
+          {/*  </>*/}
+          {/*)}*/}
 
           {neighbours && (
             <Row className="mb-4 mx-0">
-              <div className='d-flex justify-content-between align-items-center px-0'>
-                <h5 className="fw-bold px-0">Similar BED Files</h5>
-                <div className='form-check form-switch form-switch-sm'>
-                  <input 
-                    className='form-check-input'
-                    type='checkbox'
-                    checked={showNeighbors}
-                    id='showNeighbors'
-                    onChange={() => setShowNeighbors(!showNeighbors)}
-                  />
-                  <label 
-                    className='form-check-label fw-medium text-sm'
-                    htmlFor='showNeighbors'
-                  >
-                    Show in Atlas
-                  </label>
-                </div>
-              </div>
+              {/*<div className='d-flex justify-content-between align-items-center px-0'>*/}
+              {/*  <h5 className="fw-bold px-0">Similar BED Files</h5>*/}
+              {/*  <div className='form-check form-switch form-switch-sm'>*/}
+              {/*    <input */}
+              {/*      className='form-check-input'*/}
+              {/*      type='checkbox'*/}
+              {/*      checked={showNeighbors}*/}
+              {/*      id='showNeighbors'*/}
+              {/*      onChange={() => setShowNeighbors(!showNeighbors)}*/}
+              {/*    />*/}
+              {/*    <label */}
+              {/*      className='form-check-label fw-medium text-sm'*/}
+              {/*      htmlFor='showNeighbors'*/}
+              {/*    >*/}
+              {/*      Show in Atlas*/}
+              {/*    </label>*/}
+              {/*  </div>*/}
+              {/*</div>*/}
               <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
                 <Text2BedSearchResultsTable results={neighbours} />
               </Col>

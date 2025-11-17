@@ -8,7 +8,7 @@ import { BedCartProvider } from './contexts/bedcart-context.tsx';
 import toast, { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
 import { Metrics } from './pages/metrics.tsx';
-import { UMAPGraph } from './pages/visualization.tsx';
+// import { UMAPGraph } from './pages/visualization.tsx';
 import { BEDAnalytics } from './pages/bed-analytics.tsx';
 import init from '@databio/gtars';
 import { BEDAtlasFull } from './pages/bed-atlas-full.tsx';
