@@ -5,11 +5,10 @@ type SearchView = 't2b' | 'b2b' | 't2bs';
 type Props = {
   view: SearchView;
   setView: (view: SearchView) => void;
-  setOffset: (offset: number) => void;
 };
 
 export const SearchSelector = (props: Props) => {
-  const { view, setView, setOffset } = props;
+  const { view, setView } = props;
   const [params, setParams] = useSearchParams();
   return (
     <div className='d-flex flex-row align-items-center justify-content-center w-100 my-2 text-sm'>
@@ -23,7 +22,6 @@ export const SearchSelector = (props: Props) => {
                 params.delete('q');
                 setParams(params);
                 setView('t2b');
-                setOffset(0);
               }}
             >
               Text-to-BED
@@ -37,7 +35,6 @@ export const SearchSelector = (props: Props) => {
                 params.delete('q');
                 setParams(params);
                 setView('b2b');
-                setOffset(0);
               }}
             >
               BED-to-BED
@@ -51,7 +48,6 @@ export const SearchSelector = (props: Props) => {
                 params.delete('q');
                 setParams(params);
                 setView('t2bs');
-                setOffset(0);
               }}
             >
               Text-to-BEDset

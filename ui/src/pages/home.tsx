@@ -39,13 +39,13 @@ export const Home = () => {
   return (
     <Layout footer title='BEDbase' fullHeight>
       <div className='d-flex flex-column w-100 align-items-center p-2'>
-        <div className='my-3'></div>
-        <h1 className='fw-bolder text-primary text-4xl mb-2'>BEDbase</h1>
-        <div className='col-12 col-lg-10 text-sm'>
+        <div className='mt-4 mb-3'></div>
+        <h1 className='fw-lighter text-primary text-6xl mb-3'>BEDbase</h1>
+        <div className='col-12 col-lg-10 text-muted'>
           <p className='text-center mb-0'>
             The open access platform for aggregating, analyzing, and serving genomic region data.
           </p>
-          <p className='text-center mb-4'>
+          <p className='text-center mb-4 pb-3'>
             Explore thousands of BED files (including {' '}
             <a 
               href='https://genome.ucsc.edu/FAQ/FAQformat.html#format1'
@@ -87,9 +87,10 @@ export const Home = () => {
             >
               <i className='fw-medium text-primary'>.bdg</i>
             </a>
-            ) from ENCODE, GEO,  and more.
+            ) from ENCODE, GEO, and more.
           </p>
         </div>
+        {/* <div className='my-5'></div> */}
         <div className='col-12 col-lg-10 d-flex gap-2'>
           <div className='input-group bg-white'>
             {searchType === 'b2b' ? (
@@ -141,7 +142,7 @@ export const Home = () => {
         <div className='d-flex flex-row align-items-center col-12 col-lg-10 mt-2 border rounded overflow-hidden'>
           <BEDEmbeddingPlot bedIds={[exampleBedId]} height={330} preselectPoint={true}/>
         </div>
-        <div className='text-xs text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
+        <div className='text-sm text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
           <span>explore the BED file region embedding space above, or visit a <a href={`/bed/${exampleBedId}`}>random BED file</a></span>
           <span>or <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}> BEDset</a></span>
         </div>
@@ -173,9 +174,9 @@ export const Home = () => {
                   <div className='card-body d-flex flex-column h-100'>
                     <div className='d-flex align-items-center mb-1'>
                       <i className='bi bi-body-text fs-5 text-primary me-2'></i>
-                      <h6 className='mb-0 fw-bold' style={{ fontSize: '0.9rem' }}>Vector Search</h6>
+                      <h6 className='mb-0 fw-bold'>Vector Search</h6>
                     </div>
-                    <p className='text-muted flex-grow-1' style={{ fontSize: '0.8rem' }}>
+                    <p className='text-muted flex-grow-1 text-sm'>
                       Search by text, upload BED files for similarity matching, or browse BEDsets. Explore results directly in their region embedding space.
                     </p>
                     <div className='d-flex gap-2'>
@@ -194,9 +195,9 @@ export const Home = () => {
                   <div className='card-body d-flex flex-column h-100'>
                     <div className='d-flex align-items-center mb-1'>
                       <i className='bi bi-graph-up fs-5 text-primary me-2'></i>
-                      <h6 className='mb-0 fw-bold' style={{ fontSize: '0.9rem' }}>BED Analyzer</h6>
+                      <h6 className='mb-0 fw-bold'>BED Analyzer</h6>
                     </div>
-                    <p className='text-muted flex-grow-1' style={{ fontSize: '0.8rem' }}>
+                    <p className='text-muted flex-grow-1 text-sm'>
                       Analyze any BED file in your browser with our gtars-wasm integration. Get file statistics, region distributions, and chromosome coverage instantly.
                     </p>
                     <a href='/analyze' className='btn btn-outline-primary btn-sm align-self-start'>
@@ -211,7 +212,7 @@ export const Home = () => {
               <div className='card h-100 border overflow-hidden'>
                 <div className='border-bottom position-relative' style={{ height: '210px' }}>
                   <div className='d-flex flex-row align-items-center text-sm p-1'>
-                    <ul className='nav nav-pills flex-row' style={{ fontSize: '0.7rem' }}>
+                    <ul className='nav nav-pills flex-row'>
                       {CODE_SNIPPETS.map((snippet) => (
                         <li className='nav-item' key={snippet.language}>
                           <button
@@ -257,9 +258,9 @@ export const Home = () => {
                 <div className='card-body'>
                   <div className='d-flex align-items-center mb-2'>
                     <i className='bi bi-hdd-stack-fill fs-5 text-primary me-2'></i>
-                    <h6 className='mb-0 fw-bold' style={{ fontSize: '0.9rem' }}>REST API</h6>
+                    <h6 className='mb-0 fw-bold'>REST API</h6>
                   </div>
-                  <p className='text-muted small mb-3' style={{ fontSize: '0.8rem' }}>
+                  <p className='text-muted small mb-3 text-sm'>
                     Programmatic access to the BEDbase web server with a RESTful API. Query, retrieve, and analyze genomic regions with simple HTTP requests from any language.
                   </p>
                   <a href='/api' className='btn btn-outline-primary btn-sm'>
@@ -273,7 +274,7 @@ export const Home = () => {
               <div className='card h-100 border overflow-hidden'>
                 <div className='border-bottom position-relative' style={{ height: '210px' }}>
                   <div className='d-flex flex-row align-items-center text-sm p-1'>
-                    <ul className='nav nav-pills flex-row' style={{ fontSize: '0.7rem' }}>
+                    <ul className='nav nav-pills flex-row'>
                       {BBCONF_SNIPPETS.map((snippet) => (
                         <li className='nav-item' key={snippet.language}>
                           <button
@@ -319,9 +320,9 @@ export const Home = () => {
                 <div className='card-body'>
                   <div className='d-flex align-items-center mb-2'>
                     <i className='bi bi-terminal fs-5 text-primary me-2'></i>
-                    <h6 className='mb-0 fw-bold' style={{ fontSize: '0.9rem' }}>BEDbase Clients</h6>
+                    <h6 className='mb-0 fw-bold'>BEDbase Clients</h6>
                   </div>
-                  <p className='text-muted small mb-3' style={{ fontSize: '0.8rem' }}>
+                  <p className='text-muted small mb-3 text-sm'>
                     Download, cache, and analyze BED files programmatically with native Python and R packages. Simplifies API interaction through high-level interfaces.
                   </p>
                   <div className='d-flex gap-2'>

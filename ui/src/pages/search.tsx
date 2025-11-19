@@ -23,9 +23,20 @@ export const SearchPage = () => {
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
   const [genome, setGenome] = useState(searchParams.get('genome') || '');
   const [assay, setAssay] = useState(searchParams.get('assay') || '');
-  const [limit, setLimit] = useState(20);
-  const [offset, setOffset] = useState(0);
-  const [layout, setLayout] = useState('split');
+
+  
+  const [t2bLayout, setT2bLayout] = useState('table');
+  const [t2bOffset, setT2bOffset] = useState(0);
+  const [t2bLimit, setT2bLimit] = useState(20);
+
+  const [b2bLayout, setB2bLayout] = useState('split');
+  const [b2bOffset, setB2bOffset] = useState(0);
+  const [b2bLimit, setB2bLimit] = useState(20);
+
+  const [t2bsOffset, setT2bsOffset] = useState(0);
+  const [t2bsLimit, setT2bsLimit] = useState(20);
+
+
   const [triggerSearch, setTriggerSearch] = useState(0);
   const [file, setFile] = useState<File | null>(uploadedFile || null);
   const [customCoordinates, setCustomCoordinates] = useState<number[] | null>(null);
@@ -33,7 +44,7 @@ export const SearchPage = () => {
   const { mutateAsync: getUmapCoordinates } = useBedUmap();
 
   const handleSearch = () => {
-    setOffset(0);
+    setT2bOffset(0);
     setTriggerSearch(prev => prev + 1);
   };
 
@@ -66,7 +77,7 @@ export const SearchPage = () => {
           setView={(view) => {
             setSearchView(view);
           }}
-          setOffset={setOffset}
+          // setOffset={searchView === 't2b' ? setT2bOffset : searchView === 'b2b' ? setB2bOffset : setT2bsOffset}
         />
         <SearchBar
           value={searchTerm}
@@ -75,10 +86,10 @@ export const SearchPage = () => {
           setGenome={setGenome}
           assay={assay}
           setAssay={setAssay}
-          limit={limit}
-          setLimit={setLimit}
-          layout={layout}
-          setLayout={setLayout}
+          limit={searchView === 't2b' ? t2bLimit : searchView === 'b2b' ? b2bLimit : t2bsLimit}
+          setLimit={searchView === 't2b' ? setT2bLimit : searchView === 'b2b' ? setB2bLimit : setT2bsLimit}
+          layout={searchView === 't2b' ? t2bLayout : searchView === 'b2b' ? b2bLayout : 'table'}
+          setLayout={searchView === 't2b' ? setT2bLayout : searchView === 'b2b' ? setB2bLayout : () => null}
           onSearch={handleSearch}
           file={file}
           setFile={setFile}
@@ -89,18 +100,18 @@ export const SearchPage = () => {
             searchTerm={searchTerm}
             genome={genome}
             assay={assay}
-            limit={limit}
-            offset={offset}
-            setOffset={setOffset}
-            layout={layout}
+            limit={t2bLimit}
+            offset={t2bOffset}
+            setOffset={setT2bOffset}
+            layout={t2bLayout}
             triggerSearch={triggerSearch}
           />
         ) : searchView === 'b2b' ? (
           <Bed2Bed
-            limit={limit}
-            offset={offset}
-            setOffset={setOffset}
-            layout={layout}
+            limit={b2bLimit}
+            offset={b2bOffset}
+            setOffset={setB2bOffset}
+            layout={b2bLayout}
             file={file}
             customCoordinates={customCoordinates}
             embeddingPlotRef={embeddingPlotRef}
@@ -108,10 +119,10 @@ export const SearchPage = () => {
         ) : searchView === 't2bs' ? (
           <Text2BedSet
             searchTerm={searchTerm}
-            limit={limit}
-            setLimit={setLimit}
-            offset={offset}
-            setOffset={setOffset}
+            limit={t2bsLimit}
+            setLimit={setT2bsLimit}
+            offset={t2bsOffset}
+            setOffset={setT2bsOffset}
             triggerSearch={triggerSearch}
           />
         ) : (

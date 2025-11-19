@@ -58,7 +58,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                   </OverlayTrigger>
                 </div>
                 
-                <div className='d-flex gap-1 align-items-center'>
+                <div className='d-flex gap-1 align-items-center text-sm'>
                   {(result.id === (search_query || '')) && <i className='bi bi-check-all text-primary' />}
                   <OverlayTrigger
                     placement='top'
@@ -70,7 +70,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                       </Tooltip>
                     }
                   >
-                    <span className={`badge ${(result.score ?? 0) > 0.5 ? 'bg-primary' : 'bg-secondary'}`} style={{ fontSize: '10px' }}>
+                    <span className={`badge ${(result.score ?? 0) > 0.5 ? 'bg-primary' : 'bg-secondary'}`}>
                       {roundToTwoDecimals((result.score ?? 0) * 100)}%
                     </span>
                   </OverlayTrigger>
@@ -80,20 +80,20 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 {result?.metadata?.description || 'No description'}
               </p>
 
-              <div className='d-flex flex-wrap gap-1'>
-                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+              <div className='d-flex flex-wrap gap-1 text-sm'>
+                <span className='text-muted badge border fw-medium text-bg-light'>
                   <span className='text-body-tertiary'>genome:</span>{' '}{result?.metadata?.genome_alias || 'N/A'}
                 </span>
-                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-muted badge border fw-medium text-bg-light'>
                   <span className='text-body-tertiary'>tissue:</span>{' '}{result?.metadata?.annotation?.tissue || 'N/A'}
                 </span>
-                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-muted badge border fw-medium text-bg-light'>
                   <span className='text-body-tertiary'>cell_line:</span>{' '}{result?.metadata?.annotation?.cell_line || 'N/A'}
                 </span>
-                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-muted badge border fw-medium text-bg-light'>
                   <span className='text-body-tertiary'>cell_type:</span>{' '}{result?.metadata?.annotation?.cell_type || 'N/A'}
                 </span>
-                <span className='text-muted badge border fw-medium text-bg-light' style={{ fontSize: '10px' }}>
+                <span className='text-muted badge border fw-medium text-bg-light'>
                   <span className='text-body-tertiary'>assay:</span>{' '}{result?.metadata?.annotation?.assay || 'N/A'}
                 </span>
               </div>
