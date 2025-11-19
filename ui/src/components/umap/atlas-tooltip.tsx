@@ -20,7 +20,7 @@ const TooltipContent = ({ tooltip, showLink }: { tooltip: TooltipProps['tooltip'
   if (!tooltip) return null;
   return (
     <div
-      className='border rounded shadow-sm text-xs overflow-hidden'
+      className='border rounded text-xs overflow-hidden'
       style={{
         maxWidth: '300px',
         pointerEvents: 'none',

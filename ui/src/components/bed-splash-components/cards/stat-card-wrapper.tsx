@@ -13,7 +13,7 @@ export const StatCard = (props: Props) => {
 
   return (
     <OverlayTrigger placement='right' overlay={renderTooltip()} delay={{ show: 200, hide: 200 }}>
-    <div className='border rounded p-2 shadow-sm bed-splash-stat-card-height bg-white'>
+    <div className='border rounded p-2 bed-splash-stat-card-height bg-white'>
       <div className='d-flex flex-column align-items-start justify-content-center h-100 ms-3'>
         <h6 className='text-sm'>{title}</h6>
         <div className='d-flex w-100'>

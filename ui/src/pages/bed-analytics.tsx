@@ -134,7 +134,7 @@ export const BEDAnalytics = () => {
               <label className="fw-bold">Provide BED file</label>
               <input
                 ref={regionsetFileInputRef}
-                className="form-control p-3 border-2 border-dashed rounded shadow-sm"
+                className="form-control p-3 border-2 border-dashed rounded"
                 type="file"
                 onChange={(e) => {
                   const file = e.target.files?.[0];
@@ -259,7 +259,7 @@ export const BEDAnalytics = () => {
           <div className="mt-3">
             {rs && (
               <div>
-                <div className="mt-3 p-3 border rounded shadow-sm bg-white">
+                <div className="mt-3 p-3 border rounded bg-white">
                   <table className="table table-sm mb-0">
                     <tbody>
                     <tr>
@@ -289,7 +289,7 @@ export const BEDAnalytics = () => {
                 </div>
                 <div className="mt-5">
                   {rs && (
-                    // <div className="mt-3 p-3 border rounded shadow-sm bg-light">
+                    // <div className="mt-3 p-3 border rounded bg-light">
                     //   <h5>Region Distribution Data</h5>
                     //   <pre className="bg-white p-3 rounded border"
                     //        style={{ fontSize: '0.875rem', maxHeight: '400px', overflow: 'auto' }}>

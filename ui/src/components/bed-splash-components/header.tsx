@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { bytesToSize, formatDateTime } from '../../utils';
+import { bytesToSize } from '../../utils';
 import { Dropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { RefGenomeModal } from './refgenome-modal';
 
@@ -31,13 +31,13 @@ export const BedSplashHeader = (props: Props) => {
   const noFilesToDownload = !metadata.files?.bed_file && !metadata.files?.bigbed_file;
 
   return (
-    <div className="border-bottom py-2">
-      <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-1">
-        <div className="d-flex align-items-center overflow-x-auto w-100">
-          <h4 className="fw-bold d-flex align-items-center flex-nowrap">
-            <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
+    <div className='border-bottom py-2'>
+      <div className='d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-0'>
+        <div className='d-flex align-items-center overflow-x-auto w-100 mb-3'>
+          <h5 className='fw-bold d-flex align-items-center flex-nowrap mb-0'>
+            <span className='text-truncate fw-light'>{metadata?.id || 'No ID available'}</span>
             <button
-              className="btn btn-link text-primary mb-1"
+              className='btn btn-sm btn-link text-primary mb-0'
               onClick={() => {
                 copyToClipboard(metadata.id || '');
                 setCopiedId(true);
@@ -46,55 +46,55 @@ export const BedSplashHeader = (props: Props) => {
                 }, 1000);
               }}
             >
-              {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
+              {copiedId ? <i className='bi bi-check me-1' /> : <i className='bi bi-clipboard me-1' />}
             </button>
-          </h4>
+          </h5>
         </div>
         {!metadata?.processed && (
           <p
-            className="text-warning text-nowrap me-1 btn btn-outline btn-sm transparent-btn"
+            className='text-warning text-nowrap me-1 btn btn-outline btn-sm transparent-btn'
           >
             <OverlayTrigger
-              placement="top"
+              placement='top'
               overlay={
-                <Tooltip id="tooltip-top">
+                <Tooltip id='tooltip-top'>
                   This file has not been processed by the BedBoss pipeline yet.
                 </Tooltip>
               }
             >
     <span>
-      <i className="bi bi-exclamation-triangle-fill me-1"></i>
+      <i className='bi bi-exclamation-triangle-fill me-1'></i>
       Not Processed
     </span>
             </OverlayTrigger>
           </p>
         )}
 
-        <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
+        <div className='d-flex flex-col align-items-center gap-1 flex-shrink-0'>
 
           {(metadata?.processed && metadata?.genome_alias == 'hg38') &&
             <a href={`/umap?searchId=${record_identifier}`}>
-              <button className="btn btn-outline-primary btn-sm">
-                <i className="bi bi-globe2 me-1" />
+              <button className='btn btn-outline-primary btn-sm'>
+                <i className='bi bi-globe2 me-1' />
                 Visualize
               </button>
             </a>
           }
           <a href={`/analyze?bedUrl=${record_identifier}`}>
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-bar-chart-steps me-1" />
+            <button className='btn btn-outline-primary btn-sm'>
+              <i className='bi bi-bar-chart-steps me-1' />
               Analyze
             </button>
           </a>
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-info-circle me-1" />
+            <button className='btn btn-outline-primary btn-sm'>
+              <i className='bi bi-info-circle me-1' />
               API
             </button>
           </a>
           {!addedToCart && cart[record_identifier || ''] ? (
             <button
-              className="btn btn-outline-danger btn-sm"
+              className='btn btn-outline-danger btn-sm'
               onClick={() => {
                 if (record_identifier == undefined || metadata === undefined) {
                   toast.error(
@@ -105,13 +105,13 @@ export const BedSplashHeader = (props: Props) => {
                 removeBedFromCart(record_identifier);
               }}
             >
-              <i className="bi bi-trash me-1" />
+              <i className='bi bi-trash me-1' />
               Remove from cart
             </button>
           ) : (
             <button
               disabled={addedToCart}
-              className="btn btn-primary btn-sm"
+              className='btn btn-primary btn-sm'
               onClick={() => {
                 if (record_identifier === undefined || metadata === undefined) {
                   toast.error(
@@ -139,23 +139,23 @@ export const BedSplashHeader = (props: Props) => {
                 }, 500);
               }}
             >
-              <i className="bi bi-cart-fill me-1" />
+              <i className='bi bi-cart-fill me-1' />
               {addedToCart ? 'Adding...' : 'Add to cart'}
             </button>
           )}
           <Dropdown>
-            <Dropdown.Toggle variant="outline-primary" id="dropdown-basic" size="sm">
-              <i className="bi bi-download me-1" />
+            <Dropdown.Toggle variant='outline-primary' id='dropdown-basic' size='sm'>
+              <i className='bi bi-download me-1' />
               Downloads
             </Dropdown.Toggle>
             {
               // If there are no files to download, disable the dropdown
               noFilesToDownload ? (
-                <Dropdown.Menu className="border border-light-subtle shadow-sm">
+                <Dropdown.Menu className='border border-light-subtle'>
                   <Dropdown.Item disabled>There are no files to download</Dropdown.Item>
                 </Dropdown.Menu>
               ) : (
-                <Dropdown.Menu className="border border-light-subtle shadow-sm">
+                <Dropdown.Menu className='border border-light-subtle'>
                   {metadata.files?.bed_file && (
                     <Fragment>
                       {(metadata.files?.bed_file?.access_methods || []).map((method, index) => {
@@ -163,9 +163,9 @@ export const BedSplashHeader = (props: Props) => {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url} key={index}>
+                          <Dropdown.Item className='text-primary' href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BED file' : 'No download link available'} (
-                            <span className="fw-bold">{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
+                            <span className='fw-bold'>{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
                           </Dropdown.Item>
                         );
                       })}
@@ -178,9 +178,9 @@ export const BedSplashHeader = (props: Props) => {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url} key={index}>
+                          <Dropdown.Item className='text-primary' href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BigBED file' : 'No download link available'} (
-                            <span className="fw-bold">{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
+                            <span className='fw-bold'>{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
                           </Dropdown.Item>
                         );
                       })}
@@ -193,38 +193,38 @@ export const BedSplashHeader = (props: Props) => {
         </div>
       </div>
       <div>
-        <h5 className="mb-1">{metadata.name}</h5>
-        <p className="text-muted fst-italic text-sm">{metadata?.description || 'No description available'}</p>
+        <h5 className='mb-1 fw-bolder'>{metadata.name}</h5>
+        <p className='text-muted fst-italic text-sm'>{metadata?.description || 'No description available'}</p>
       </div>
       <div
-        className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">
-        <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-xl-0">
-          <div className="d-flex flex-row">
-            <div className="mb-0">
+        className='d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto'>
+        <div className='d-md-flex flex-row gap-1 text-lg mb-2 mb-xl-0'>
+          <div className='d-flex flex-row'>
+            <div className='mb-0'>
               <OverlayTrigger
-                placement="top"
+                placement='top'
                 overlay={
-                  <div className="tooltip">
-                    <div className="tooltip-arrow" />
-                    <div className="tooltip-inner">Genome assembly</div>
+                  <div className='tooltip'>
+                    <div className='tooltip-arrow' />
+                    <div className='tooltip-inner'>Genome assembly</div>
                   </div>
                 }
               >
                 {metadata?.genome_digest ? (
                   <>
                     <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`}
-                       target="_blank">
+                       target='_blank'>
                       <div
                         className={genomeStats?.compared_genome ? 'badge bg-primary rounded-end-0' : 'badge bg-primary'}>
-                        <i className="bi bi-database-fill me-2" />
+                        <i className='bi bi-database-fill me-2' />
                         {metadata.genome_alias || 'No assembly available'}
                       </div>
                     </a>
                   </>
                 ) : (
                   <>
-                    <div className="badge bg-primary rounded-end-0">
-                      <i className="bi bi-database-fill me-2" />
+                    <div className='badge bg-primary rounded-end-0'>
+                      <i className='bi bi-database-fill me-2' />
                       {metadata.genome_alias || 'No assembly available'}
                     </div>
                   </>
@@ -232,82 +232,82 @@ export const BedSplashHeader = (props: Props) => {
               </OverlayTrigger>
               {genomeStats?.compared_genome &&
                 <OverlayTrigger
-                  placement="top"
+                  placement='top'
                   overlay={
-                    <div className="tooltip">
-                      <div className="tooltip-arrow" />
-                      <div className="tooltip-inner">Genome compatibility details</div>
+                    <div className='tooltip'>
+                      <div className='tooltip-arrow' />
+                      <div className='tooltip-inner'>Genome compatibility details</div>
                     </div>
                   }
                 >
                   <div
-                    className="badge bg-primary border-start border-light rounded-start-0"
-                    role="button"
+                    className='badge bg-primary border-start border-light rounded-start-0'
+                    role='button'
                     onClick={() => {
                       if (showRefGenomeModal !== true) {
                         setShowRefGenomeModal(true);
                       }
                     }}
                   >
-                    <i className="bi bi-info-circle-fill" />
+                    <i className='bi bi-info-circle-fill' />
                   </div>
                 </OverlayTrigger>
               }
             </div>
           </div>
-          <div className="d-flex flex-row">
-            <div className="mb-0">
+          <div className='d-flex flex-row'>
+            <div className='mb-0'>
               <OverlayTrigger
-                placement="top"
+                placement='top'
                 overlay={
-                  <div className="tooltip">
-                    <div className="tooltip-arrow" />
-                    <div className="tooltip-inner">BED compliance</div>
+                  <div className='tooltip'>
+                    <div className='tooltip-arrow' />
+                    <div className='tooltip-inner'>BED compliance</div>
                   </div>
                 }
               >
-                <div className="badge bg-primary">
-                  <i className="bi bi-file-earmark-text-fill me-1" />
+                <div className='badge bg-primary'>
+                  <i className='bi bi-file-earmark-text-fill me-1' />
                   {metadata?.bed_compliance || 'No compliance available'}
                 </div>
               </OverlayTrigger>
             </div>
           </div>
-          <div className="d-flex flex-row">
-            <div className="mb-0">
+          <div className='d-flex flex-row'>
+            <div className='mb-0'>
               <OverlayTrigger
-                placement="top"
+                placement='top'
                 overlay={
-                  <div className="tooltip">
-                    <div className="tooltip-arrow" />
-                    <div className="tooltip-inner">Data Format</div>
+                  <div className='tooltip'>
+                    <div className='tooltip-arrow' />
+                    <div className='tooltip-inner'>Data Format</div>
                   </div>
                 }
               >
-                <div className="badge bg-primary">
-                  <i className="bi bi-folder-fill me-1" />
+                <div className='badge bg-primary'>
+                  <i className='bi bi-folder-fill me-1' />
                   {metadata?.data_format || 'No data format available'}
                 </div>
               </OverlayTrigger>
             </div>
           </div>
-          <div className="d-flex flex-row">
-            <div className="mb-0">
+          <div className='d-flex flex-row'>
+            <div className='mb-0'>
               <a
                 href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`}
-                target="_blank"
+                target='_blank'
               >
                 <OverlayTrigger
-                  placement="top"
+                  placement='top'
                   overlay={
-                    <div className="tooltip">
-                      <div className="tooltip-arrow" />
-                      <div className="tooltip-inner">License</div>
+                    <div className='tooltip'>
+                      <div className='tooltip-arrow' />
+                      <div className='tooltip-inner'>License</div>
                     </div>
                   }
                 >
-                  <div className="badge bg-primary">
-                    <i className="bi bi-award-fill me-1" />
+                  <div className='badge bg-primary'>
+                    <i className='bi bi-award-fill me-1' />
                     {metadata?.license_id || 'DUO:0000042'}
                   </div>
                 </OverlayTrigger>
@@ -315,43 +315,25 @@ export const BedSplashHeader = (props: Props) => {
             </div>
           </div>
           {metadata?.is_universe && (
-            <div className="d-flex flex-row">
-              <div className="mb-0 cursor-default">
+            <div className='d-flex flex-row'>
+              <div className='mb-0 cursor-default'>
                 <OverlayTrigger
-                  placement="top"
+                  placement='top'
                   overlay={
-                    <div className="tooltip">
-                      <div className="tooltip-arrow" />
-                      <div className="tooltip-inner">This BED file is part of the Universe</div>
+                    <div className='tooltip'>
+                      <div className='tooltip-arrow' />
+                      <div className='tooltip-inner'>This BED file is part of the Universe</div>
                     </div>
                   }
                 >
-                  <div className="badge bg-secondary">
-                    <i className="bi bi bi-globe2 me-1" />
+                  <div className='badge bg-secondary'>
+                    <i className='bi bi bi-globe2 me-1' />
                     Universe
                   </div>
                 </OverlayTrigger>
               </div>
             </div>
           )}
-        </div>
-        <div
-          className="d-flex flex-column flex-md-row justify-content-xl-between align-items-start align-items-xl-end text-sm">
-          <div className="d-flex flex-row text-muted">
-            <i className="bi bi-calendar4-event me-1" />
-            <p className="mb-0">
-              <span>Created:</span>{' '}
-              {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
-            </p>
-          </div>
-
-          <div className="d-flex flex-row text-muted ms-md-4">
-            <i className="bi bi-calendar4-event me-1" />
-            <p className="mb-0">
-              <span>Updated:</span>{' '}
-              {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
-            </p>
-          </div>
         </div>
       </div>
       {genomeStats?.compared_genome &&

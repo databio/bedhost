@@ -1,10 +1,10 @@
-import { SearchingJumper } from './searching-jumper';
+import { SearchingJumper } from '../searching-jumper.tsx';
 import { useEffect } from 'react';
-import { useText2BedSetSearch } from '../../queries/useText2BedSetSearch';
-import { ErrorPage } from '../common/error-page';
-import { TableToolbar } from './table-toolbar';
-import { PaginationBar } from './pagination-bar';
-import { SearchBedSetResultTable } from './search-bedset-table.tsx';
+import { useText2BedSetSearch } from '../../../queries/useText2BedSetSearch.ts';
+import { ErrorPage } from '../../common/error-page.tsx';
+// import { TableToolbar } from '../table-toolbar.tsx';
+import { PaginationBar } from '../pagination-bar.tsx';
+import { SearchBedSetResultTable } from './t2bs-search-results-table.tsx';
 import { AxiosError } from 'axios';
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 };
 
 export const Text2BedSet = (props: Props) => {
-  const { searchTerm, limit, setLimit, offset, setOffset, triggerSearch } = props;
+  const { searchTerm, limit, offset, setOffset, triggerSearch } = props;
 
   const {
     isFetching: isSearching,
@@ -59,11 +59,11 @@ export const Text2BedSet = (props: Props) => {
         ) : (
           <div className='my-2'>
             {results ? (
-              <div className='p-0 pt-1 pb-3 border rounded shadow-sm bg-white'>
-                <div className='px-2 pt-2'>
+              <div className='pb-3'>
+                {/* <div className='px-2 pt-2'>
                   <TableToolbar showTotalResults limit={limit} setLimit={setLimit} total={results.count} />
-                </div>
-                <SearchBedSetResultTable results={results} />{' '}
+                </div> */}
+                <SearchBedSetResultTable results={results} showBEDCount={true} />
                 <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
               </div>
             ) : (

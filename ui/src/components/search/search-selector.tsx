@@ -16,7 +16,7 @@ export const SearchSelector = (props: Props) => {
         <ul className='nav nav-pills'>
           <li className='nav-item'>
             <button
-              className={`rounded-5 nav-link ${view === 't2b' ? 'active shadow-sm fw-medium' : ''}`}
+              className={`rounded-5 nav-link ${view === 't2b' ? 'active fw-medium' : ''}`}
               onClick={() => {
                 params.set('view', 't2b');
                 params.delete('q');
@@ -29,7 +29,7 @@ export const SearchSelector = (props: Props) => {
           </li>
           <li className='nav-item'>
             <button
-              className={`mx-1 rounded-5 nav-link ${view === 'b2b' ? 'active shadow-sm fw-medium' : ''}`}
+              className={`mx-1 rounded-5 nav-link ${view === 'b2b' ? 'active fw-medium' : ''}`}
               onClick={() => {
                 params.set('view', 'b2b');
                 params.delete('q');
@@ -42,7 +42,7 @@ export const SearchSelector = (props: Props) => {
           </li>
           <li className='nav-item'>
             <button
-              className={`rounded-5 nav-link ${view === 't2bs' ? 'active shadow-sm fw-medium' : ''}`}
+              className={`rounded-5 nav-link ${view === 't2bs' ? 'active fw-medium' : ''}`}
               onClick={() => {
                 params.set('view', 't2bs');
                 params.delete('q');

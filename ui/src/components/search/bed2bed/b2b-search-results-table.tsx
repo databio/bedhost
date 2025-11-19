@@ -226,7 +226,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
   };
 
   return (
-    <div className='rounded border shadow-sm px-0 py-1 bg-white'>
+    <div className='rounded border px-0 py-1 bg-white'>
       <div className='d-flex flex-row mt-2'>
         <input
           className='form-control mx-3 my-2'

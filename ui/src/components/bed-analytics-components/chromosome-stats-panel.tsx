@@ -125,7 +125,7 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
         </div>
       </div>
 
-      <div className="p-3 border rounded bg-white shadow-sm" style={{ maxHeight: '500px', overflow: 'auto' }}>
+      <div className="p-3 border rounded bg-white" style={{ maxHeight: '500px', overflow: 'auto' }}>
         <div className="d-flex flex-column gap-2">
           <div className="d-flex justify-content-between align-items-center mb-2">
             <h5 className="mb-0">Chromosome regions statatistics</h5>

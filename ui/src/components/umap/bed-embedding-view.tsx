@@ -423,7 +423,7 @@ export const BEDEmbeddingView = (props: Props) => {
       {isReady ? (
         <div className="row mb-4 g-2">
           <div className='col-sm-9'>
-            <div className='border rounded shadow-sm overflow-hidden'>
+            <div className='border rounded overflow-hidden'>
               <div className='w-100' ref={containerRef}>
                 <EmbeddingViewMosaic
                   key={`embedding-${dataVersion}`}
@@ -457,7 +457,7 @@ export const BEDEmbeddingView = (props: Props) => {
             </div>
           </div>
           <div className='col-sm-3'>
-            <div className='card shadow-sm mb-2 border overflow-hidden' style={{height: 'calc(300px - 0.1875rem)'}}>
+            <div className='card mb-2 border overflow-hidden' style={{height: 'calc(300px - 0.1875rem)'}}>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
                 <span>Legend</span>
                 <div className='btn-group btn-group-xs' role='group'>
@@ -522,7 +522,7 @@ export const BEDEmbeddingView = (props: Props) => {
               </div>
             </div>
 
-            <div className='card shadow-sm border overflow-hidden' style={{height: 'calc(200px - 0.1875rem)'}}>
+            <div className='card border overflow-hidden' style={{height: 'calc(200px - 0.1875rem)'}}>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
                 <span>Selection</span>
                 {/* <i className='bi bi-window ms-1' /> */}

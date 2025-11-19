@@ -70,7 +70,7 @@ export const RefGenomeModal = (props: Props) => {
               rel="noopener noreferrer"
             >
               <div
-                className="card mb-2 shadow-sm genome-card"
+                className="card mb-2 genome-card"
                 style={{ backgroundColor: (genome.tier_ranking == 1 ? '#C8EFB3A0' : (genome.tier_ranking == 2 ? '#FFF7BAA0' : (genome.tier_ranking == 3 ? '#F9D39DA0' : '#FCB6B6A0'))) }}
                 key={genome.compared_genome}
               >
@@ -81,7 +81,7 @@ export const RefGenomeModal = (props: Props) => {
                       <div className="d-flex align-items-center gap-2">
                         <p className="mb-1 fw-semibold" style={{ width: '33%' }}>{genome.compared_genome}</p>
 
-                        <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
+                        <div className="rounded-1 mx-2 bg-white position-relative" style={{ width: '14%' }}>
                           {genome.xs ?
                             <>
                             <span
@@ -101,7 +101,7 @@ export const RefGenomeModal = (props: Props) => {
                           }
                         </div>
 
-                        <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
+                        <div className="rounded-1 mx-2 bg-white position-relative" style={{ width: '14%' }}>
                           {genome.oobr ?
                             <>
                             <span
@@ -121,7 +121,7 @@ export const RefGenomeModal = (props: Props) => {
                           }
                         </div>
 
-                        <div className="rounded-1 mx-2 bg-white position-relative shadow-sm" style={{ width: '14%' }}>
+                        <div className="rounded-1 mx-2 bg-white position-relative" style={{ width: '14%' }}>
                           {genome.sequence_fit ?
                             <>
                             <span

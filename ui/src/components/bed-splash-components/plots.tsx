@@ -30,7 +30,7 @@ const Plot = (props: PlotProps) => {
           setShow(true);
         }
       }}
-      className='h-100 border rounded p-2 shadow-sm hover-border-primary transition-all bg-white'
+      className='h-100 border rounded p-2 hover-border-primary transition-all bg-white'
     >
       <div className='p-1 text-center'>
         <p className='fw-medium text-xs mb-2'>{title}</p>

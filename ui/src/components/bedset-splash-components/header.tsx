@@ -115,7 +115,7 @@ export const BedsetSplashHeader = (props: Props) => {
               <i className="bi bi-download me-1" />
               Downloads
             </Dropdown.Toggle>
-            <Dropdown.Menu className="border border-light-subtle shadow-sm">
+            <Dropdown.Menu className="border border-light-subtle">
               <Dropdown.Item className="text-primary" onClick={() => setShowDownloadModal(true)}>
                 Download BEDset
               </Dropdown.Item>

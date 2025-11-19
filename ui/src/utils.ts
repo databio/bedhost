@@ -31,7 +31,13 @@ export const makePDFImageLink = (md5: string, plotName: string, type: ObjectType
 };
 
 export const formatDateTime = (date: string) => {
-  return new Date(date).toLocaleString();
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'Sepptember', 'October', 'November', 'December'];
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  return `${month} ${day}, ${year} at ${time}`;
 };
 
 export const bytesToSize = (bytes: number) => {

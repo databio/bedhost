@@ -29,11 +29,13 @@ export const Text2BedSearchResultsTable = (props: Props) => {
         <div className='card bg-white border mb-2 overflow-hidden' key={result.id}>
           <div className='d-flex'>
             <div
-              className={`card-body position-relative flex-1 pt-2 mb-0 ${(layout === 'split') && 'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
+              className={`card-body position-relative flex-1 pt-2 mb-0 ${'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
               onClick={() => {
                 if (layout === 'split') {
                   onCardClick?.(result.metadata?.id || '')
+                  return;
                 }
+                navigate(`/bed/${result.metadata?.id}`)
               }}
             >
               <div className='d-flex justify-content-between align-items-center mb-2 pt-1'>

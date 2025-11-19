@@ -172,7 +172,7 @@ export const Home = () => {
               <div className='d-flex flex-column gap-2 h-100'>
                 <div className='card border overflow-hidden flex-fill'>
                   <div className='card-body d-flex flex-column h-100'>
-                    <div className='d-flex align-items-center mb-1'>
+                    <div className='d-flex align-items-center mb-2'>
                       <i className='bi bi-body-text fs-5 text-primary me-2'></i>
                       <h6 className='mb-0 fw-bold'>Vector Search</h6>
                     </div>
@@ -193,12 +193,12 @@ export const Home = () => {
 
                 <div className='card border overflow-hidden flex-fill'>
                   <div className='card-body d-flex flex-column h-100'>
-                    <div className='d-flex align-items-center mb-1'>
+                    <div className='d-flex align-items-center mb-2'>
                       <i className='bi bi-graph-up fs-5 text-primary me-2'></i>
                       <h6 className='mb-0 fw-bold'>BED Analyzer</h6>
                     </div>
                     <p className='text-muted flex-grow-1 text-sm'>
-                      Analyze any BED file in your browser with our gtars-wasm integration. Get file statistics, region distributions, and chromosome coverage instantly.
+                      Analyze any BED file in your browser with gtars-wasm. Get file statistics, region distributions, and chromosome coverage instantly.
                     </p>
                     <a href='/analyze' className='btn btn-outline-primary btn-sm align-self-start'>
                       BED Analyzer

@@ -26,7 +26,7 @@ export const BEDEmbeddingAtlas = (props: Props) => {
         {isReady ? (
           <div className='row mb-4'>
             <div className='col-12'>
-              <div className='border rounded shadow-sm overflow-hidden'>
+              <div className='border rounded overflow-hidden'>
                 <div style={{width: width, height: height}}>
                   <EmbeddingAtlas
                     coordinator={coordinator}
