@@ -8,10 +8,10 @@ type Props = {
 export const PaginationBar = (props: Props) => {
   const { total, limit, offset, setOffset } = props;
   return (
-    <div className="row">
-      <div className="d-flex flex-row align-items-center justify-content-center gap-1">
+    <div className='row'>
+      <div className='d-flex flex-row align-items-center justify-content-center gap-1'>
         <button
-          className="btn btn-sm btn-outline-primary"
+          className='btn btn-sm btn-outline-primary border text-dark'
           onClick={() => {
             setOffset(0);
           }}
@@ -20,27 +20,27 @@ export const PaginationBar = (props: Props) => {
           Beginning
         </button>
         <button
-          className="btn btn-sm btn-outline-primary"
+          className='btn btn-sm btn-outline-primary border text-dark'
           onClick={() => {
             setOffset(offset - limit);
           }}
           disabled={offset === 0}
         >
-          <i className="bi bi-arrow-left-circle me-1"></i>
+          <i className='bi bi-arrow-left-circle me-1'></i>
           Previous
         </button>
         <button
-          className="btn btn-sm btn-outline-primary"
+          className='btn btn-sm btn-outline-primary border text-dark'
           onClick={() => {
             setOffset(offset + limit);
           }}
           disabled={total < limit || offset === Math.floor(total / limit) * limit}
         >
           Next
-          <i className="bi bi-arrow-right-circle ms-1"></i>
+          <i className='bi bi-arrow-right-circle ms-1'></i>
         </button>
         <button
-          className="btn btn-sm btn-outline-primary"
+          className='btn btn-sm btn-outline-primary border text-dark'
           onClick={() => {
             setOffset(Math.floor(total / limit) * limit);
           }}
@@ -50,8 +50,8 @@ export const PaginationBar = (props: Props) => {
         </button>
 
       </div>
-      <div className="text-center mt-2">
-        Viewing results {offset + 1} - {Math.min(offset + limit, total)} of {total} results.
+      <div className='text-center mt-1 text-xs text-muted'>
+        Viewing results {offset + 1} - {Math.min(offset + limit, total)} of {total} results
       </div>
     </div>
       );

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 
 import { SearchSelector } from '../components/search/search-selector';
-import { SearchBar } from '../components/search/search-bar';
+import { SearchBar } from '../components/search/bed2bed/search-bar.tsx';
 import { Text2Bed } from '../components/search/text2bed/text2bed';
 import { Bed2Bed } from '../components/search/bed2bed/bed2bed';
 import { Text2BedSet } from '../components/search/text2bedset';
@@ -66,6 +66,7 @@ export const SearchPage = () => {
           setView={(view) => {
             setSearchView(view);
           }}
+          setOffset={setOffset}
         />
         <SearchBar
           value={searchTerm}
@@ -89,7 +90,6 @@ export const SearchPage = () => {
             genome={genome}
             assay={assay}
             limit={limit}
-            setLimit={setLimit}
             offset={offset}
             setOffset={setOffset}
             layout={layout}
@@ -97,8 +97,11 @@ export const SearchPage = () => {
           />
         ) : searchView === 'b2b' ? (
           <Bed2Bed
-            file={file}
+            limit={limit}
+            offset={offset}
+            setOffset={setOffset}
             layout={layout}
+            file={file}
             customCoordinates={customCoordinates}
             embeddingPlotRef={embeddingPlotRef}
           />

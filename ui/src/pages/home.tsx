@@ -3,6 +3,7 @@ import { Layout } from '../components/layout';
 import { useNavigate } from 'react-router-dom';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
+import toast from 'react-hot-toast';
 import { CODE_SNIPPETS, BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
@@ -26,7 +27,12 @@ export const Home = () => {
   const { data: bedbaseStats } = useStats();
 
   const handleSearch = () => {
-    if (!searchTerm) return;
+    if (!searchTerm) {
+      toast.error('Please enter a search term.', {
+        position: 'top-center',
+      });
+      return;
+    }
     navigate(`/search?q=${searchTerm}&view=${searchType}`);
   };
 
@@ -35,7 +41,7 @@ export const Home = () => {
       <div className='d-flex flex-column w-100 align-items-center p-2'>
         <div className='my-3'></div>
         <h1 className='fw-bolder text-primary text-4xl mb-2'>BEDbase</h1>
-        <div className='col-12 col-lg-10 text-sm '>
+        <div className='col-12 col-lg-10 text-sm'>
           <p className='text-center mb-0'>
             The open access platform for aggregating, analyzing, and serving genomic region data.
           </p>
@@ -251,9 +257,9 @@ export const Home = () => {
                 <div className='card-body'>
                   <div className='d-flex align-items-center mb-2'>
                     <i className='bi bi-hdd-stack-fill fs-5 text-primary me-2'></i>
-                    <h6 className='mb-0 fw-bold'>REST API</h6>
+                    <h6 className='mb-0 fw-bold' style={{ fontSize: '0.9rem' }}>REST API</h6>
                   </div>
-                  <p className='text-muted small mb-3'>
+                  <p className='text-muted small mb-3' style={{ fontSize: '0.8rem' }}>
                     Programmatic access to the BEDbase web server with a RESTful API. Query, retrieve, and analyze genomic regions with simple HTTP requests from any language.
                   </p>
                   <a href='/api' className='btn btn-outline-primary btn-sm'>
@@ -313,9 +319,9 @@ export const Home = () => {
                 <div className='card-body'>
                   <div className='d-flex align-items-center mb-2'>
                     <i className='bi bi-terminal fs-5 text-primary me-2'></i>
-                    <h6 className='mb-0 fw-bold'>BEDbase Clients</h6>
+                    <h6 className='mb-0 fw-bold' style={{ fontSize: '0.9rem' }}>BEDbase Clients</h6>
                   </div>
-                  <p className='text-muted small mb-3'>
+                  <p className='text-muted small mb-3' style={{ fontSize: '0.8rem' }}>
                     Download, cache, and analyze BED files programmatically with native Python and R packages. Simplifies API interaction through high-level interfaces.
                   </p>
                   <div className='d-flex gap-2'>
