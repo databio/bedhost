@@ -1,20 +1,20 @@
 import { EmbeddingViewMosaic } from 'embedding-atlas/react';
 import { useEffect, useState, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
 import toast from 'react-hot-toast';
-import * as vg from '@uwdata/vgplot'
+import * as vg from '@uwdata/vgplot';
 
 import { tableau20 } from '../../utils';
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
 type Props = {
-  bedIds?: string[],
+  bedIds?: string[];
   height?: number;
   preselectPoint?: boolean;
   stickyBaseline?: boolean;
   customCoordinates?: number[] | null;
   customFilename?: string;
-}
+};
 
 export interface BEDEmbeddingPlotRef {
   centerOnBedId: (bedId: string, scale?: number) => Promise<void>;
@@ -42,7 +42,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
     setViewportState({
       x: point.x,
       y: point.y,
-      scale: scale
+      scale: scale,
     });
   };
 
@@ -58,7 +58,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
         {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
        FROM data
        WHERE id = '${bedId}'`,
-      { type: 'json' }
+      { type: 'json' },
     );
 
     if (bedData && bedData.length > 0) {
@@ -76,14 +76,15 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
     } catch (error) {
       console.error('Error removing file');
     }
-  }
+  };
 
   useImperativeHandle(ref, () => ({
     centerOnBedId,
     handleFileRemove,
   }));
 
-  useEffect(() => { // initialize data
+  useEffect(() => {
+    // initialize data
     initializeData().then(async () => {
       if (!!customCoordinates) {
         await addCustomPoint(customCoordinates[0], customCoordinates[1], customFilename);
@@ -93,14 +94,16 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
     });
   }, []);
 
-  useEffect(() => { // resize width of view
+  useEffect(() => {
+    // resize width of view
     if (containerRef.current) {
       setContainerWidth(containerRef.current.offsetWidth);
     }
   }, [isReady]);
 
-  useEffect(() => { // fetch provided bed ids
-    if (isReady && bedIds && (bedIds.length > 0)) {
+  useEffect(() => {
+    // fetch provided bed ids
+    if (isReady && bedIds && bedIds.length > 0) {
       setTimeout(async () => {
         const idsToQuery = customCoordinates ? ['custom_point', ...bedIds] : bedIds;
         const currentBed: any = await coordinator.query(
@@ -112,7 +115,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
             {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
            FROM data
            WHERE id IN ('${idsToQuery.join("','")}')`,
-          { type: 'json' }
+          { type: 'json' },
         );
         if (!currentBed || currentBed.length === 0) return;
         if (preselectPoint) {
@@ -145,7 +148,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
             text='name'
             category={colorGrouping}
             categoryColors={tableau20}
-            additionalFields={{'Description': 'description', 'Assay': 'assay', 'Cell Line': 'cell_line'}}
+            additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
             height={height || 500}
             width={containerWidth}
             config={{
@@ -158,12 +161,12 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
             customTooltip={{
               class: AtlasTooltip,
               props: {
-                showLink: true
-              }
+                showLink: true,
+              },
             }}
             selection={selectedPoints}
             onSelection={(dataPoints) => {
-              if (!dataPoints || dataPoints.length === 0 && stickyBaseline) {
+              if (!dataPoints || (dataPoints.length === 0 && stickyBaseline)) {
                 setTimeout(() => {
                   if (baselinePointsRef.current.length > 0) {
                     setSelectedPoints([...baselinePointsRef.current]);
@@ -174,12 +177,16 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
               setSelectedPoints(dataPoints);
             }}
             theme={{
-              statusBar: false
+              statusBar: false,
             }}
           />
         </div>
       ) : (
-        <div className='w-100 d-flex align-items-center justify-content-center bg-white' style={{height: height || 500}} ref={containerRef}>
+        <div
+          className='w-100 d-flex align-items-center justify-content-center bg-white'
+          style={{ height: height || 500 }}
+          ref={containerRef}
+        >
           <span className='text-muted text-sm'>Loading...</span>
         </div>
       )}

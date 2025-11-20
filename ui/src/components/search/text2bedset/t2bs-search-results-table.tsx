@@ -23,19 +23,14 @@ export const SearchBedSetResultTable = (props: Props) => {
             >
               <div className='d-flex justify-content-between align-items-center mb-2 pt-1'>
                 <div className='d-flex gap-2 align-items-center'>
-                  <p className='fw-semibold mb-0 flex-grow-1'>
-                    {result?.name || 'No name'}
-                  </p>
+                  <p className='fw-semibold mb-0 flex-grow-1'>{result?.name || 'No name'}</p>
                 </div>
 
                 {showBEDCount && (
-                  <div className='d-flex gap-1 align-items-center text-sm'>
-                    <span className='badge bg-secondary'>
-                      {result?.bed_ids?.length || 0} BEDs
-                    </span>
+                  <div className='d-flex align-items-center text-sm'>
+                    <span className='badge bg-secondary'>{result?.bed_ids?.length || 0} BEDs</span>
                   </div>
                 )}
-                
               </div>
               <p className='text-xs text-muted fst-italic mb-0 pb-0 text-start'>
                 {result?.description || 'No description'}

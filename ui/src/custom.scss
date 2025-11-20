@@ -1,7 +1,6 @@
 // Import Bootstrap with @use instead of @import
 @use 'bootstrap/scss/bootstrap' as * with (
-  $primary: #008080,
-  // $secondary: #f97316,
+  $primary: #008080 // $secondary: #f97316,
 );
 
 // override btn-outline-primary hover bg-color
@@ -141,7 +140,9 @@ a {
   white-space: nowrap; /* Keeps the content on a single line */
   margin: 0 auto; /* Gives that scrolling effect as the typing happens */
   letter-spacing: 0.15em; /* Adjust as needed */
-  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+  animation:
+    typing 3.5s steps(40, end),
+    blink-caret 0.75s step-end infinite;
 }
 
 .truncate {
@@ -332,7 +333,7 @@ td {
 }
 
 .metric-plot-height {
-  height: 450px;
+  height: auto;
 }
 
 .btn-xs {
@@ -360,7 +361,11 @@ td {
 }
 
 .btn-card {
-  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
 .table-transparent {

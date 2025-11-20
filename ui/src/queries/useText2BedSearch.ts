@@ -13,7 +13,6 @@ type SearchQuery = {
 };
 
 export const useText2BedSearch = (query: SearchQuery) => {
-
   const { api } = useBedbaseApi();
 
   const { q, limit, offset, autoRun, genome, assay } = query;
@@ -24,7 +23,9 @@ export const useText2BedSearch = (query: SearchQuery) => {
   return useQuery({
     queryKey: ['search', q, limit, offset, genome, assay],
     queryFn: async () => {
-      const { data } = await api.get<SearchResponse>(`/bed/search/text?query=${q}&limit=${limit}&offset=${offset}&genome=${genome}&assay=${assay}`);
+      const { data } = await api.get<SearchResponse>(
+        `/bed/search/text?query=${q}&limit=${limit}&offset=${offset}&genome=${genome}&assay=${assay}`,
+      );
       return data;
     },
     enabled: enabled,

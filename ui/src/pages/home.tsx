@@ -22,7 +22,7 @@ export const Home = () => {
   const navigate = useNavigate();
 
   // const { data: exampleBedMetadata } = useExampleBed(); # if example will be dynamic again
-  const exampleBedId = 'dcc005e8761ad5599545cc538f6a2a4d'
+  const exampleBedId = 'dcc005e8761ad5599545cc538f6a2a4d';
   const { data: exampleBedSetMetadata } = useExampleBedSet();
   const { data: bedbaseStats } = useStats();
 
@@ -46,40 +46,44 @@ export const Home = () => {
             The open access platform for aggregating, analyzing, and serving genomic region data.
           </p>
           <p className='text-center mb-4 pb-3'>
-            Explore thousands of BED files (including {' '}
-            <a 
+            Explore thousands of BED files (including{' '}
+            <a
               href='https://genome.ucsc.edu/FAQ/FAQformat.html#format1'
               target='_blank'
               rel='noopener noreferrer'
               className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
             >
               <i className='fw-medium text-primary'>.bed</i>
-            </a>,{' '}
-            <a 
+            </a>
+            ,{' '}
+            <a
               href='https://genome.ucsc.edu/goldenPath/help/bigBed.html'
               target='_blank'
               rel='noopener noreferrer'
               className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
             >
               <i className='fw-medium text-primary'>.bigbed</i>
-            </a>,{' '}
-            <a 
+            </a>
+            ,{' '}
+            <a
               href='https://genome.ucsc.edu/goldenPath/help/wiggle.html'
               target='_blank'
               rel='noopener noreferrer'
               className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
             >
               <i className='fw-medium text-primary'>.wig</i>
-            </a>,{' '}
-            <a 
+            </a>
+            ,{' '}
+            <a
               href='https://genome.ucsc.edu/goldenPath/help/bigWig.html'
               target='_blank'
               rel='noopener noreferrer'
               className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
             >
               <i className='fw-medium text-primary'>.bw</i>
-            </a>,{' '}
-            <a 
+            </a>
+            ,{' '}
+            <a
               href='https://genome.ucsc.edu/goldenPath/help/bedgraph.html'
               target='_blank'
               rel='noopener noreferrer'
@@ -114,13 +118,13 @@ export const Home = () => {
                 placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => (e.key === 'Enter') && handleSearch()}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               />
             )}
-            
+
             <select
               className='form-select'
-              style={{ maxWidth: '160px' }}
+              style={{ maxWidth: '163px' }}
               aria-label='search type selector'
               value={searchType}
               onChange={(e) => setSearchType(e.target.value)}
@@ -130,21 +134,22 @@ export const Home = () => {
               <option value='t2bs'>Text-to-BEDset</option>
             </select>
           </div>
-          <button
-            className='btn btn-primary'
-            type='button'
-            onClick={handleSearch}
-          >
+          <button className='btn btn-primary' type='button' onClick={handleSearch}>
             <i className='bi bi-search' />
           </button>
         </div>
 
         <div className='d-flex flex-row align-items-center col-12 col-lg-10 mt-2 border rounded overflow-hidden'>
-          <BEDEmbeddingPlot bedIds={[exampleBedId]} height={330} preselectPoint={true}/>
+          <BEDEmbeddingPlot bedIds={[exampleBedId]} height={330} preselectPoint={true} />
         </div>
         <div className='text-sm text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
-          <span>explore the BED file region embedding space above, or visit a <a href={`/bed/${exampleBedId}`}>random BED file</a></span>
-          <span>or <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}> BEDset</a></span>
+          <span>
+            explore the BED file region embedding space above, or visit a{' '}
+            <a href={`/bed/${exampleBedId}`}>random BED file</a>
+          </span>
+          <span>
+            or <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}> BEDset</a>
+          </span>
         </div>
 
         <div className='d-flex flex-row gap-4 justify-content-center mb-5 text-muted'>
@@ -160,9 +165,12 @@ export const Home = () => {
             <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
           </span>
           <span>•</span>
-          <a className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover' href={`/metrics`}>
+          <a
+            className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            href={`/metrics`}
+          >
             <strong>more</strong> metrics
-            <i className='bi bi-reply-fill ms-1' style={{transform: 'scale(-1, 1)', display: 'inline-block'}}></i>
+            <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
           </a>
         </div>
 
@@ -177,7 +185,8 @@ export const Home = () => {
                       <h6 className='mb-0 fw-bold'>Vector Search</h6>
                     </div>
                     <p className='text-muted flex-grow-1 text-sm'>
-                      Search by text, upload BED files for similarity matching, or browse BEDsets. Explore results directly in their region embedding space.
+                      Search by text, upload BED files for similarity matching, or browse BEDsets. Explore results
+                      directly in their region embedding space.
                     </p>
                     <div className='d-flex gap-2'>
                       <a href='/search' className='btn btn-outline-primary btn-sm align-self-start'>
@@ -187,7 +196,6 @@ export const Home = () => {
                         Embedding Atlas
                       </a>
                     </div>
-                    
                   </div>
                 </div>
 
@@ -198,7 +206,8 @@ export const Home = () => {
                       <h6 className='mb-0 fw-bold'>BED Analyzer</h6>
                     </div>
                     <p className='text-muted flex-grow-1 text-sm'>
-                      Analyze any BED file in your browser with gtars-wasm. Get file statistics, region distributions, and chromosome coverage instantly.
+                      Analyze any BED file in your browser with gtars-wasm. Get file statistics, region distributions,
+                      and chromosome coverage instantly.
                     </p>
                     <a href='/analyze' className='btn btn-outline-primary btn-sm align-self-start'>
                       BED Analyzer
@@ -228,10 +237,7 @@ export const Home = () => {
                   </div>
                   <div className='w-100 h-100 overflow-auto' style={{ maxHeight: '160px' }}>
                     {CODE_SNIPPETS.map((snippet) => (
-                      <div
-                        key={snippet.language}
-                        className={activeApiTab === snippet.language ? '' : 'd-none'}
-                      >
+                      <div key={snippet.language} className={activeApiTab === snippet.language ? '' : 'd-none'}>
                         <Markdown className='h-100' rehypePlugins={[rehypeHighlight]}>
                           {snippet.code}
                         </Markdown>
@@ -241,7 +247,7 @@ export const Home = () => {
                   <div className='position-absolute top-0 end-0 me-2 mt-1'>
                     <button
                       onClick={() => {
-                        const activeSnippet = CODE_SNIPPETS.find(s => s.language === activeApiTab);
+                        const activeSnippet = CODE_SNIPPETS.find((s) => s.language === activeApiTab);
                         if (activeSnippet) {
                           navigator.clipboard.writeText(activeSnippet.raw);
                           setCopiedAPI(true);
@@ -261,7 +267,8 @@ export const Home = () => {
                     <h6 className='mb-0 fw-bold'>REST API</h6>
                   </div>
                   <p className='text-muted small mb-3 text-sm'>
-                    Programmatic access to the BEDbase web server with a RESTful API. Query, retrieve, and analyze genomic regions with simple HTTP requests from any language.
+                    Programmatic access to the BEDbase web server with a RESTful API. Query, retrieve, and analyze
+                    genomic regions with simple HTTP requests from any language.
                   </p>
                   <a href='/api' className='btn btn-outline-primary btn-sm'>
                     API Docs
@@ -290,10 +297,7 @@ export const Home = () => {
                   </div>
                   <div className='w-100 h-100 overflow-auto' style={{ maxHeight: '160px' }}>
                     {BBCONF_SNIPPETS.map((snippet) => (
-                      <div
-                        key={snippet.language}
-                        className={activeClientTab === snippet.language ? '' : 'd-none'}
-                      >
+                      <div key={snippet.language} className={activeClientTab === snippet.language ? '' : 'd-none'}>
                         <Markdown className='h-100' rehypePlugins={[rehypeHighlight]}>
                           {snippet.code}
                         </Markdown>
@@ -303,7 +307,7 @@ export const Home = () => {
                   <div className='position-absolute top-0 end-0 me-2 mt-1'>
                     <button
                       onClick={() => {
-                        const activeSnippet = BBCONF_SNIPPETS.find(s => s.language === activeClientTab);
+                        const activeSnippet = BBCONF_SNIPPETS.find((s) => s.language === activeClientTab);
                         if (activeSnippet) {
                           navigator.clipboard.writeText(activeSnippet.raw);
                           setCopiedClient(true);
@@ -323,7 +327,8 @@ export const Home = () => {
                     <h6 className='mb-0 fw-bold'>BEDbase Clients</h6>
                   </div>
                   <p className='text-muted small mb-3 text-sm'>
-                    Download, cache, and analyze BED files programmatically with native Python and R packages. Simplifies API interaction through high-level interfaces.
+                    Download, cache, and analyze BED files programmatically with native Python and R packages.
+                    Simplifies API interaction through high-level interfaces.
                   </p>
                   <div className='d-flex gap-2'>
                     <a
@@ -346,7 +351,6 @@ export const Home = () => {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>

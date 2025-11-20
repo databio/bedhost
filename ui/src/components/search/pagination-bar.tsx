@@ -48,11 +48,10 @@ export const PaginationBar = (props: Props) => {
         >
           End
         </button>
-
       </div>
       <div className='text-center mt-1 text-xs text-muted'>
         Viewing results {offset + 1} - {Math.min(offset + limit, total)} of {total} results
       </div>
     </div>
-      );
-      };
+  );
+};

@@ -17,7 +17,6 @@ type Props = {
   onCardClick?: (bedId: string) => void;
 };
 
-
 export const Text2BedSearchResultsTable = (props: Props) => {
   const { results, search_query, layout, onCardClick } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
@@ -32,17 +31,15 @@ export const Text2BedSearchResultsTable = (props: Props) => {
               className={`card-body position-relative flex-1 pt-2 mb-0 ${'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
               onClick={() => {
                 if (layout === 'split') {
-                  onCardClick?.(result.metadata?.id || '')
+                  onCardClick?.(result.metadata?.id || '');
                   return;
                 }
-                navigate(`/bed/${result.metadata?.id}`)
+                navigate(`/bed/${result.metadata?.id}`);
               }}
             >
               <div className='d-flex justify-content-between align-items-center mb-2 pt-1'>
                 <div className='d-flex gap-2 align-items-center'>
-                  <p className='fw-semibold mb-0 flex-grow-1'>
-                    {result?.metadata?.name || 'No name'}
-                  </p>
+                  <p className='fw-semibold mb-0 flex-grow-1'>{result?.metadata?.name || 'No name'}</p>
                   <OverlayTrigger
                     placement={layout === 'split' ? 'left' : 'right'}
                     overlay={
@@ -59,9 +56,9 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                     <i className='bi bi-three-dots cursor-pointer' onClick={(e) => e.stopPropagation()}></i>
                   </OverlayTrigger>
                 </div>
-                
+
                 <div className='d-flex gap-1 align-items-center text-sm'>
-                  {(result.id === (search_query || '')) && <i className='bi bi-check-all text-primary' />}
+                  {result.id === (search_query || '') && <i className='bi bi-check-all text-primary' />}
                   <OverlayTrigger
                     placement='top'
                     overlay={
@@ -84,19 +81,21 @@ export const Text2BedSearchResultsTable = (props: Props) => {
 
               <div className='d-flex flex-wrap gap-1 text-sm'>
                 <span className='text-muted badge border fw-medium text-bg-light'>
-                  <span className='text-body-tertiary'>genome:</span>{' '}{result?.metadata?.genome_alias || 'N/A'}
+                  <span className='text-body-tertiary'>genome:</span> {result?.metadata?.genome_alias || 'N/A'}
                 </span>
                 <span className='text-muted badge border fw-medium text-bg-light'>
-                  <span className='text-body-tertiary'>tissue:</span>{' '}{result?.metadata?.annotation?.tissue || 'N/A'}
+                  <span className='text-body-tertiary'>tissue:</span> {result?.metadata?.annotation?.tissue || 'N/A'}
                 </span>
                 <span className='text-muted badge border fw-medium text-bg-light'>
-                  <span className='text-body-tertiary'>cell_line:</span>{' '}{result?.metadata?.annotation?.cell_line || 'N/A'}
+                  <span className='text-body-tertiary'>cell_line:</span>{' '}
+                  {result?.metadata?.annotation?.cell_line || 'N/A'}
                 </span>
                 <span className='text-muted badge border fw-medium text-bg-light'>
-                  <span className='text-body-tertiary'>cell_type:</span>{' '}{result?.metadata?.annotation?.cell_type || 'N/A'}
+                  <span className='text-body-tertiary'>cell_type:</span>{' '}
+                  {result?.metadata?.annotation?.cell_type || 'N/A'}
                 </span>
                 <span className='text-muted badge border fw-medium text-bg-light'>
-                  <span className='text-body-tertiary'>assay:</span>{' '}{result?.metadata?.annotation?.assay || 'N/A'}
+                  <span className='text-body-tertiary'>assay:</span> {result?.metadata?.annotation?.assay || 'N/A'}
                 </span>
               </div>
             </div>

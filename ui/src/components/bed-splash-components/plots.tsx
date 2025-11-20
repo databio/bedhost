@@ -59,7 +59,7 @@ export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
 
   // comment out partitions because we already have it in statistics section
-  const plotNames = metadata.plots ? Object.keys(metadata.plots).filter((name: string) => name != 'partitions') : []; 
+  const plotNames = metadata.plots ? Object.keys(metadata.plots).filter((name: string) => name != 'partitions') : [];
   return (
     <Fragment>
       <Row className='row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2'>
@@ -74,7 +74,7 @@ export const Plots = (props: PlotsProps) => {
                 const title = plotExists ? metadata.plots[plotNameKey]?.title : plotName;
                 const alt = plotExists
                   ? // @ts-expect-error: type checking here is just too much
-                  metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
+                    metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
                   : plotName;
                 return (
                   <Col key={plotName} sm={12} md={4} className='px-1'>

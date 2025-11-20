@@ -7,9 +7,9 @@ const STROKE_SPEAD = 0;
 export const InPaths = () => {
   return (
     <motion.svg
-      className="h-100 w-full"
-      viewBox="0 0 300 510"
-      preserveAspectRatio="xMinYMid meet"
+      className='h-100 w-full'
+      viewBox='0 0 300 510'
+      preserveAspectRatio='xMinYMid meet'
       initial={{
         opacity: 0,
       }}
@@ -22,17 +22,17 @@ export const InPaths = () => {
       }}
     >
       <motion.path
-        fill="none"
-        vectorEffect="non-scaling-stroke"
-        d="m 0,145 h 100 v 75 h 250%"
+        fill='none'
+        vectorEffect='non-scaling-stroke'
+        d='m 0,145 h 100 v 75 h 250%'
         strokeWidth={STROKE_WIDTH}
-        id="path1"
-        stroke="#000"
+        id='path1'
+        stroke='#000'
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
           direction: 'revert',
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,
@@ -41,17 +41,17 @@ export const InPaths = () => {
         }}
       />
       <motion.path
-        fill="none"
-        vectorEffect="non-scaling-stroke"
-        d="m 0,200 h 75 v 35 h 250%"
+        fill='none'
+        vectorEffect='non-scaling-stroke'
+        d='m 0,200 h 75 v 35 h 250%'
         strokeWidth={STROKE_WIDTH}
-        id="path1"
-        stroke="#000"
+        id='path1'
+        stroke='#000'
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
           direction: 'revert',
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,
@@ -61,36 +61,36 @@ export const InPaths = () => {
       />
       {/* straight across */}
       <motion.line
-        vectorEffect="non-scaling-stroke"
-        x1="0%"
-        y1="50%"
-        x2="100%"
-        y2="50%"
+        vectorEffect='non-scaling-stroke'
+        x1='0%'
+        y1='50%'
+        x2='100%'
+        y2='50%'
         strokeWidth={STROKE_WIDTH}
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,
           repeatType: 'loop',
           ease: 'linear',
         }}
-        stroke="#000"
+        stroke='#000'
       />
       <motion.path
-        fill="none"
-        vectorEffect="non-scaling-stroke"
-        d="m 0,315 h 75 v -35 h 250%"
+        fill='none'
+        vectorEffect='non-scaling-stroke'
+        d='m 0,315 h 75 v -35 h 250%'
         strokeWidth={STROKE_WIDTH}
-        id="path1"
-        stroke="#000"
+        id='path1'
+        stroke='#000'
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
           direction: 'revert',
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,
@@ -99,17 +99,17 @@ export const InPaths = () => {
         }}
       />
       <motion.path
-        fill="none"
-        vectorEffect="non-scaling-stroke"
-        d="m 0,370 h 100 v -75 h 250%"
+        fill='none'
+        vectorEffect='non-scaling-stroke'
+        d='m 0,370 h 100 v -75 h 250%'
         strokeWidth={STROKE_WIDTH}
-        id="path1"
-        stroke="#000"
+        id='path1'
+        stroke='#000'
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
           direction: 'revert',
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,
@@ -124,9 +124,9 @@ export const InPaths = () => {
 export const OutPaths = () => {
   return (
     <motion.svg
-      className="h-100 w-full"
-      viewBox="0 0 300 510"
-      preserveAspectRatio="xMinYMid meet"
+      className='h-100 w-full'
+      viewBox='0 0 300 510'
+      preserveAspectRatio='xMinYMid meet'
       initial={{
         opacity: 0,
       }}
@@ -139,17 +139,17 @@ export const OutPaths = () => {
       }}
     >
       <motion.path
-        fill="none"
-        vectorEffect="non-scaling-stroke"
-        d="m 0,220 h 150 v -115 h 250%"
+        fill='none'
+        vectorEffect='non-scaling-stroke'
+        d='m 0,220 h 150 v -115 h 250%'
         strokeWidth={STROKE_WIDTH}
-        id="path1"
+        id='path1'
         stroke={PRIMARY_COLOR}
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
           direction: 'revert',
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,
@@ -159,16 +159,16 @@ export const OutPaths = () => {
       />
       {/* straight across */}
       <motion.line
-        vectorEffect="non-scaling-stroke"
-        x1="0%"
-        y1="50%"
-        x2="100%"
-        y2="50%"
+        vectorEffect='non-scaling-stroke'
+        x1='0%'
+        y1='50%'
+        x2='100%'
+        y2='50%'
         strokeWidth={STROKE_WIDTH}
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,
@@ -178,17 +178,17 @@ export const OutPaths = () => {
         stroke={PRIMARY_COLOR}
       />
       <motion.path
-        fill="none"
-        vectorEffect="non-scaling-stroke"
-        d="m 0,295 h 150 v 125 h 550%"
+        fill='none'
+        vectorEffect='non-scaling-stroke'
+        d='m 0,295 h 150 v 125 h 550%'
         strokeWidth={STROKE_WIDTH}
-        id="path1"
+        id='path1'
         stroke={PRIMARY_COLOR}
         animate={{
           strokeDashoffset: [100, 90, 80, 70, 60, 50, 40, 30, 20, 10, 0, -10, -20],
           direction: 'revert',
         }}
-        strokeDasharray="6,6"
+        strokeDasharray='6,6'
         transition={{
           duration: STROKE_SPEAD,
           repeat: Infinity,

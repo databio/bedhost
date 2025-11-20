@@ -29,11 +29,15 @@ export const useBed2BedSearchPaginate = (query: SearchQuery) => {
       }
       const formData = new FormData();
       formData.append('file', q);
-      const { data } = await api.post<SearchResponse>(`/bed/search/bed?limit=${limit || 20}&offset=${offset || 0}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
+      const { data } = await api.post<SearchResponse>(
+        `/bed/search/bed?limit=${limit || 20}&offset=${offset || 0}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
         },
-      });
+      );
       return data;
     },
     enabled: enabled,

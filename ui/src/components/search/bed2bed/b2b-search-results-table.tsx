@@ -33,17 +33,13 @@ const scoreTooltip = (
     placement='left'
     overlay={
       <Tooltip id={`tooltip-info}`} className='moreinfo-tooltip'>
-          <pre className='text-start'>
-            Cosine similarity between files.
-            Score is between 0 an 100, where 100 is a perfect match.
-          </pre>
+        <pre className='text-start'>
+          Cosine similarity between files. Score is between 0 an 100, where 100 is a perfect match.
+        </pre>
       </Tooltip>
     }
   >
-      <span>
-        Score*
-      </span>
-
+    <span>Score*</span>
   </OverlayTrigger>
 );
 
@@ -144,7 +140,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
       cell: (info) => {
         const bedId = info.getValue();
         const rowData = info.row.original; // Get the full row data
-        
+
         return (
           <div>
             {cart[bedId || ''] ? (
@@ -167,12 +163,12 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  
+
                   if (bedId === undefined) {
                     toast.error('No bed ID found', { position: 'top-center' });
                     return;
                   }
-                  
+
                   const bedItem = {
                     id: bedId,
                     name: rowData.metadata?.name || 'No name',
@@ -183,7 +179,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                     description: rowData.metadata?.description || '',
                     assay: rowData.metadata?.annotation?.assay || 'N/A',
                   };
-                  
+
                   addBedToCart(bedItem);
                 }}
               >
@@ -237,44 +233,44 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
       </div>
       <table className='table mb-2 text-sm table-hover'>
         <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th key={header.id} colSpan={header.colSpan} scope='col'>
-                {header.isPlaceholder ? null : (
-                  <div
-                    className={header.column.getCanSort() ? 'cursor-pointer' : ''}
-                    onClick={header.column.getToggleSortingHandler()}
-                    title={
-                      header.column.getCanSort()
-                        ? header.column.getNextSortingOrder() === 'asc'
-                          ? 'Sort ascending'
-                          : header.column.getNextSortingOrder() === 'desc'
-                            ? 'Sort descending'
-                            : 'Clear sort'
-                        : undefined
-                    }
-                  >
-                    {flexRender(header.column.columnDef.header, header.getContext())}
-                    {{
-                      asc: <i className='bi bi-caret-up-fill ms-1' />,
-                      desc: <i className='bi bi-caret-down-fill ms-1' />,
-                    }[header.column.getIsSorted() as string] ?? null}
-                  </div>
-                )}
-              </th>
-            ))}
-          </tr>
-        ))}
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} colSpan={header.colSpan} scope='col'>
+                  {header.isPlaceholder ? null : (
+                    <div
+                      className={header.column.getCanSort() ? 'cursor-pointer' : ''}
+                      onClick={header.column.getToggleSortingHandler()}
+                      title={
+                        header.column.getCanSort()
+                          ? header.column.getNextSortingOrder() === 'asc'
+                            ? 'Sort ascending'
+                            : header.column.getNextSortingOrder() === 'desc'
+                              ? 'Sort descending'
+                              : 'Clear sort'
+                          : undefined
+                      }
+                    >
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {{
+                        asc: <i className='bi bi-caret-up-fill ms-1' />,
+                        desc: <i className='bi bi-caret-down-fill ms-1' />,
+                      }[header.column.getIsSorted() as string] ?? null}
+                    </div>
+                  )}
+                </th>
+              ))}
+            </tr>
+          ))}
         </thead>
         <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr key={row.id} onClick={handleRowClick(row.original.metadata?.id)} className='cursor-pointer'>
-            {row.getVisibleCells().map((cell) => (
-              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-            ))}
-          </tr>
-        ))}
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} onClick={handleRowClick(row.original.metadata?.id)} className='cursor-pointer'>
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
+              ))}
+            </tr>
+          ))}
         </tbody>
       </table>
       <div className='h-4' />

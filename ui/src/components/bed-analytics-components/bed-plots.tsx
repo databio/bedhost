@@ -9,15 +9,13 @@ type DistributionSpecDataPoint = {
   end: number;
   n: number;
   rid: number;
-
-}
+};
 
 interface BedPlotsProps {
   data: DistributionSpecDataPoint[];
 }
 
 const distributionSpec = (data: DistributionSpecDataPoint[]) => {
-
   // Transform data to match the new schema requirements
   const transformedData = data.map((item: DistributionSpecDataPoint) => ({
     chr: item.chr,
@@ -70,9 +68,31 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
           labelPadding: 10,
         },
         sort: [
-          'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
-          'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19', 'chr20',
-          'chr21', 'chr22', 'chrX', 'chrY', 'chrM',
+          'chr1',
+          'chr2',
+          'chr3',
+          'chr4',
+          'chr5',
+          'chr6',
+          'chr7',
+          'chr8',
+          'chr9',
+          'chr10',
+          'chr11',
+          'chr12',
+          'chr13',
+          'chr14',
+          'chr15',
+          'chr16',
+          'chr17',
+          'chr18',
+          'chr19',
+          'chr20',
+          'chr21',
+          'chr22',
+          'chrX',
+          'chrY',
+          'chrM',
         ],
         type: 'ordinal',
         color: {
@@ -81,7 +101,7 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
       },
       x: {
         axis: {
-          labelExpr: 'datum.value == 0 ? \'start\' : datum.value == 183 ? \'end\' : \'\'',
+          labelExpr: "datum.value == 0 ? 'start' : datum.value == 183 ? 'end' : ''",
           values: [0, 300.0],
         },
         field: 'withinGroupID',
@@ -127,10 +147,9 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
         embed(element, spec as any, {
           actions: { export: true, source: false, compiled: false },
           renderer: 'svg',
-        })
-          .catch(error => {
-            console.error('Embed error after parsing:', error);
-          });
+        }).catch((error) => {
+          console.error('Embed error after parsing:', error);
+        });
       } catch (error) {
         console.error(error);
       }
@@ -144,8 +163,8 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
   }, [spec]);
 
   return (
-    <div className="d-flex w-100 border border-primary" style={{ overflow: 'auto', maxHeight: '800px' }}>
-      <div className="mx-auto chrom-dist-plot-container pt-5" ref={plotRef} />
+    <div className='d-flex w-100 border border-primary' style={{ overflow: 'auto', maxHeight: '800px' }}>
+      <div className='mx-auto chrom-dist-plot-container pt-5' ref={plotRef} />
     </div>
   );
 };

@@ -33,7 +33,22 @@ const placeholders = [
 ];
 
 export const SearchBar = (props: Props) => {
-  const { value, onChange, onSearch, limit, setLimit, genome, setGenome, assay, setAssay, layout, setLayout, file, setFile, embeddingPlotRef } = props;
+  const {
+    value,
+    onChange,
+    onSearch,
+    limit,
+    setLimit,
+    genome,
+    setGenome,
+    assay,
+    setAssay,
+    layout,
+    setLayout,
+    file,
+    setFile,
+    embeddingPlotRef,
+  } = props;
   // const [, setSearchParams] = useSearchParams();
   const { searchView } = useSearchView();
   const { data: genomes } = useAvailableGenomes();
@@ -85,7 +100,7 @@ export const SearchBar = (props: Props) => {
                   >
                     <i className='bi bi-x-circle' />
                   </button>
-                  {(layout === 'split') && 
+                  {layout === 'split' && (
                     <button
                       className='btn btn-outline-secondary border'
                       onClick={() => {
@@ -97,7 +112,7 @@ export const SearchBar = (props: Props) => {
                     >
                       <i className='bi bi-pin-map' />
                     </button>
-                  }
+                  )}
                 </>
               ) : (
                 <input
@@ -151,11 +166,11 @@ export const SearchBar = (props: Props) => {
               <i className='bi bi-sliders' />
             </button>
           )}
-          
-          <select 
-            className='form-select w-auto' 
-            style={{ maxWidth: '130px' }} 
-            value={limit} 
+
+          <select
+            className='form-select w-auto'
+            style={{ maxWidth: '130px' }}
+            value={limit}
             onChange={(e) => setLimit(Number(e.target.value))}
           >
             <option value={10}>Limit 10</option>
@@ -164,7 +179,7 @@ export const SearchBar = (props: Props) => {
             <option value={100}>Limit 100</option>
           </select>
         </div>
-        
+
         {searchView !== 'b2b' && (
           <button
             className='btn btn-primary'
@@ -182,23 +197,29 @@ export const SearchBar = (props: Props) => {
           </button>
         )}
       </div>
-      
+
       {showOptions && (
         <div className='mt-2'>
-          {['t2b', 'b2b'].includes(searchView) && !!layout && !!setLayout &&
+          {['t2b', 'b2b'].includes(searchView) && !!layout && !!setLayout && (
             <div className='d-flex align-items-center'>
               <h6 className='mb-0 fw-semibold text-sm'>Layout:</h6>
-              <select className='form-select form-select-sm w-auto ms-1 border rounded-2' value={layout}
-                      onChange={(e) => setLayout(e.target.value)}>
+              <select
+                className='form-select form-select-sm w-auto ms-1 border rounded-2'
+                value={layout}
+                onChange={(e) => setLayout(e.target.value)}
+              >
                 <option value={'split'}>Show Embeddings</option>
                 <option value={'table'}>Hide Embeddings</option>
               </select>
 
-              {(searchView === 't2b') && (
+              {searchView === 't2b' && (
                 <>
                   <h6 className='mb-0 fw-semibold ms-auto text-sm'>Genome:</h6>
-                  <select className='form-select form-select-sm w-auto ms-1 border rounded-2' value={genome}
-                          onChange={(e) => setGenome(String(e.target.value))}>
+                  <select
+                    className='form-select form-select-sm w-auto ms-1 border rounded-2'
+                    value={genome}
+                    onChange={(e) => setGenome(String(e.target.value))}
+                  >
                     <option value={''}>All</option>
                     {genomes?.results.map((genomeItem, index) => (
                       <option key={index} value={String(genomeItem)}>
@@ -208,8 +229,11 @@ export const SearchBar = (props: Props) => {
                   </select>
 
                   <h6 className='mb-0 fw-semibold ms-4 text-sm'>Assay:</h6>
-                  <select className='form-select form-select-sm w-auto ms-1 border rounded-2' value={assay}
-                          onChange={(e) => setAssay(String(e.target.value))}>
+                  <select
+                    className='form-select form-select-sm w-auto ms-1 border rounded-2'
+                    value={assay}
+                    onChange={(e) => setAssay(String(e.target.value))}
+                  >
                     <option value={''}>All</option>
                     {assays?.results.map((assayItem, index) => (
                       <option key={index} value={String(assayItem)}>
@@ -219,13 +243,10 @@ export const SearchBar = (props: Props) => {
                   </select>
                 </>
               )}
-              
             </div>
-          }
+          )}
         </div>
       )}
-
     </>
-
   );
 };

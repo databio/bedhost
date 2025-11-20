@@ -9,7 +9,7 @@ export const BEDUmap: React.FC = () => {
   // console.log(bedId);
 
   return (
-    <Layout title="BEDbase" flexLayout>
+    <Layout title='BEDbase' flexLayout>
       <BEDEmbeddingAtlas container={false} />
     </Layout>
   );

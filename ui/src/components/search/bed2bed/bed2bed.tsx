@@ -41,8 +41,8 @@ export const Bed2Bed = (props: Props) => {
     autoRun: false,
   });
 
-  console.log(offset)
-  console.log(results)
+  console.log(offset);
+  console.log(results);
 
   useEffect(() => {
     if (file) {
@@ -59,7 +59,7 @@ export const Bed2Bed = (props: Props) => {
     const calculateHeight = () => {
       if (containerRef.current) {
         // const rect = containerRef.current.getBoundingClientRect();
-        const availableHeight = window.innerHeight*0.9;
+        const availableHeight = window.innerHeight * 0.9;
         setContainerHeight(Math.max(400, Math.min(availableHeight, 800)));
       }
     };
@@ -108,7 +108,7 @@ export const Bed2Bed = (props: Props) => {
 
           // Calculate if sticky div would go past the bottom of parent
           const stickyDivHeight = containerHeight;
-          const wouldExceedBottom = colBottom < viewportMiddle + (stickyDivHeight / 2);
+          const wouldExceedBottom = colBottom < viewportMiddle + stickyDivHeight / 2;
 
           // Determine state
           let newState: 'normal' | 'sticky' | 'bottom';
@@ -150,20 +150,21 @@ export const Bed2Bed = (props: Props) => {
             {results ? (
               <>
                 <div className='row gx-2'>
-                  {(layout === 'split') && (
+                  {layout === 'split' && (
                     <div ref={colRef} className='col-6' style={{ position: 'relative' }}>
                       <div
                         ref={placeholderRef}
                         style={{
                           height: stickyState === 'normal' ? '0' : `${containerHeight}px`,
-                          position: 'relative'
+                          position: 'relative',
                         }}
                       />
                       <div
                         ref={stickyDivRef}
                         className='d-flex border rounded overflow-hidden mb-2'
                         style={{
-                          position: stickyState === 'normal' ? 'relative' : (stickyState === 'sticky' ? 'fixed' : 'absolute'),
+                          position:
+                            stickyState === 'normal' ? 'relative' : stickyState === 'sticky' ? 'fixed' : 'absolute',
                           top: stickyState === 'sticky' ? '50vh' : 'auto',
                           bottom: stickyState === 'bottom' ? '0' : 'auto',
                           left: stickyState === 'sticky' && stickyLeft ? `${stickyLeft}px` : 'auto',
@@ -184,7 +185,7 @@ export const Bed2Bed = (props: Props) => {
                       </div>
                     </div>
                   )}
-                  
+
                   <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column`}>
                     <div>
                       <Bed2BedSearchResultsCards
@@ -206,7 +207,9 @@ export const Bed2Bed = (props: Props) => {
             ) : (
               <div className='d-flex flex-column align-items-center justify-content-center mt-5 fst-italic text-muted'>
                 <p className='mb-0'>Try uploading a BED file above to find similar files!</p>
-                <p><strong>Note: </strong>provided file should be aligned to hg38 assembly.</p>
+                <p>
+                  <strong>Note: </strong>provided file should be aligned to hg38 assembly.
+                </p>
               </div>
             )}
           </div>

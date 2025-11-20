@@ -35,16 +35,16 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
   const addMultipleBedsToCart = (beds: BedItem[]) => {
     const alreadyInCart = beds.filter((bed) => cart[bed.id]);
     if (alreadyInCart.length > 0) {
-      const bedIds = alreadyInCart.map(bed => bed.id);
+      const bedIds = alreadyInCart.map((bed) => bed.id);
       toast.error(`BED IDs ${bedIds.join(', ')} are already in the cart!`);
       return;
     }
-    
+
     const newItems = beds.reduce((acc, bed) => {
       acc[bed.id] = bed;
       return acc;
     }, {} as BedCart);
-    
+
     setCart({ ...cart, ...newItems });
   };
 
@@ -58,7 +58,7 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
 
   const removeMultipleBedsFromCart = (bedIds: string[]) => {
     const newCart = { ...cart };
-    bedIds.forEach(id => {
+    bedIds.forEach((id) => {
       delete newCart[id];
     });
     setCart(newCart);

@@ -16,30 +16,30 @@ export const ErrorPage = (props: ErrorPageProps) => {
   const errorCode = error.response?.status;
   return (
     <Layout title={title} footer fullHeight>
-      <div className="my-2 h-100">
-        <Row className="h-50">
+      <div className='my-2 h-100'>
+        <Row className='h-50'>
           <Col sm={12} md={12}>
-            <div className="d-flex flex-column align-items-center justify-content-center h-100">
-              <h2 className="text-primary">{convertStatusCodeToMessage(errorCode)}</h2>
+            <div className='d-flex flex-column align-items-center justify-content-center h-100'>
+              <h2 className='text-primary'>{convertStatusCodeToMessage(errorCode)}</h2>
               {error.message && (
                 <Fragment>
-                  <label className="fw-bold">{error.name}</label>
-                  <p className="mb-0">{error.message}:</p>
+                  <label className='fw-bold'>{error.name}</label>
+                  <p className='mb-0'>{error.message}:</p>
                 </Fragment>
               )}
-              <div className="p-2 border border-primary rounded w-50 shadow my-3">
+              <div className='p-2 border border-primary rounded w-50 shadow my-3'>
                 <pre>{JSON.stringify(error, null, 2)}</pre>
               </div>
-              <div className="d-flex flex-row align-items-center gap-2">
-                <a href="/">
-                  <button className="btn btn-primary">
-                    <i className="bi bi-house-door me-1" />
+              <div className='d-flex flex-row align-items-center gap-2'>
+                <a href='/'>
+                  <button className='btn btn-primary'>
+                    <i className='bi bi-house-door me-1' />
                     Back to home
                   </button>
                 </a>
-                <a href="https://github.com/databio/bedhost">
-                  <button className="btn btn-outline-primary">
-                    <i className="bi bi-github me-1" />
+                <a href='https://github.com/databio/bedhost'>
+                  <button className='btn btn-outline-primary'>
+                    <i className='bi bi-github me-1' />
                     Report error
                   </button>
                 </a>

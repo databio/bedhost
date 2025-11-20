@@ -5,7 +5,6 @@ import { CreateBedSetModal } from '../components/modals/create-bedset-modal';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-
 export const BedCart = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [showCreateBedsetModal, setCreateBedSetModal] = useState(false);
@@ -76,14 +75,12 @@ export const BedCart = () => {
               <div
                 className={`card-body position-relative flex-1 pt-2 mb-0 ${'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
                 onClick={() => {
-                  navigate(`/bed/${result.id}`)
+                  navigate(`/bed/${result.id}`);
                 }}
               >
                 <div className='d-flex justify-content-between align-items-center mb-2 pt-1'>
                   <div className='d-flex gap-2 align-items-center'>
-                    <p className='fw-semibold mb-0 flex-grow-1'>
-                      {result?.name || 'No name'}
-                    </p>
+                    <p className='fw-semibold mb-0 flex-grow-1'>{result?.name || 'No name'}</p>
                   </div>
                 </div>
                 <p className='text-xs text-muted fst-italic mb-2 pb-1 text-start'>
@@ -92,19 +89,19 @@ export const BedCart = () => {
 
                 <div className='d-flex flex-wrap gap-1 text-sm'>
                   <span className='text-muted badge border fw-medium text-bg-light'>
-                    <span className='text-body-tertiary'>genome:</span>{' '}{result?.genome || 'N/A'}
+                    <span className='text-body-tertiary'>genome:</span> {result?.genome || 'N/A'}
                   </span>
                   <span className='text-muted badge border fw-medium text-bg-light'>
-                    <span className='text-body-tertiary'>tissue:</span>{' '}{result?.tissue || 'N/A'}
+                    <span className='text-body-tertiary'>tissue:</span> {result?.tissue || 'N/A'}
                   </span>
                   <span className='text-muted badge border fw-medium text-bg-light'>
-                    <span className='text-body-tertiary'>cell_line:</span>{' '}{result?.cell_line || 'N/A'}
+                    <span className='text-body-tertiary'>cell_line:</span> {result?.cell_line || 'N/A'}
                   </span>
                   <span className='text-muted badge border fw-medium text-bg-light'>
-                    <span className='text-body-tertiary'>cell_type:</span>{' '}{result?.cell_type || 'N/A'}
+                    <span className='text-body-tertiary'>cell_type:</span> {result?.cell_type || 'N/A'}
                   </span>
                   <span className='text-muted badge border fw-medium text-bg-light'>
-                    <span className='text-body-tertiary'>assay:</span>{' '}{result?.assay || 'N/A'}
+                    <span className='text-body-tertiary'>assay:</span> {result?.assay || 'N/A'}
                   </span>
                 </div>
               </div>
@@ -127,7 +124,8 @@ export const BedCart = () => {
                   >
                     <i className='bi bi-cart-dash'></i>
                   </button>
-                ) : (<></>
+                ) : (
+                  <></>
                 )}
               </div>
             </div>

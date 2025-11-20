@@ -11,7 +11,7 @@ export const SearchSelector = (props: Props) => {
   const { view, setView } = props;
   const [params, setParams] = useSearchParams();
   return (
-    <div className='d-flex flex-row align-items-center justify-content-center w-100 my-2 text-sm'>
+    <div className='d-flex flex-row align-items-center justify-content-center my-2 text-sm'>
       <div className='p-1 border rounded-5 bg-white'>
         <ul className='nav nav-pills'>
           <li className='nav-item'>

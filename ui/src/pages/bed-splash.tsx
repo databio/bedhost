@@ -39,15 +39,13 @@ export const BedSplash = () => {
     full: true,
   });
 
-  const {
-    data: genomeStats,
-  } = useBedGenomeStats({
+  const { data: genomeStats } = useBedGenomeStats({
     md5: bedId,
   });
 
   const { data: neighbours } = useBedNeighbours({
     md5: bedId,
-    limit: 10,
+    limit: 5,
     offset: 0,
   });
 
@@ -79,9 +77,7 @@ export const BedSplash = () => {
           <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
             File Created
           </td>
-          <td className='py-0'>
-            {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'N/A'}
-          </td>
+          <td className='py-0'>{metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'N/A'}</td>
         </tr>
       );
     }
@@ -107,27 +103,55 @@ export const BedSplash = () => {
         <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
           {snakeToTitleCase(k)}
         </td>
-        <td style={{ maxWidth: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} className='pt-0 pb-1'>
-          { k === 'global_sample_id' ?
-          (Array.isArray(value) && value.length > 0)
-          ? value.map((v, i) => (
-              v.includes('encode:')
-                ? <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>{v}</a>
-                : v.includes('geo:')
-                  ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a>
-                  : v ?? 'N/A'
-            )).reduce((prev, curr) => <>{prev}, {curr}</>)
-          : value ?? 'N/A'
-          :
-            k === 'global_experiment_id' ?
-            (Array.isArray(value) && value.length > 0) ? value.map((v, i) => (
-              v.includes('encode') ? <a key={i} href={'https://www.encodeproject.org'}>{v}</a> :
-              v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
-              v ?? 'N/A'
-            )).reduce((prev, curr) => <>{prev}, {curr}</>) : value ?? 'N/A'
-          :
-            value ?? 'N/A'
-          }
+        <td
+          style={{ maxWidth: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          className='pt-0 pb-1'
+        >
+          {k === 'global_sample_id'
+            ? Array.isArray(value) && value.length > 0
+              ? value
+                  .map((v, i) =>
+                    v.includes('encode:') ? (
+                      <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>
+                        {v}
+                      </a>
+                    ) : v.includes('geo:') ? (
+                      <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>
+                        {v}
+                      </a>
+                    ) : (
+                      (v ?? 'N/A')
+                    ),
+                  )
+                  .reduce((prev, curr) => (
+                    <>
+                      {prev}, {curr}
+                    </>
+                  ))
+              : (value ?? 'N/A')
+            : k === 'global_experiment_id'
+              ? Array.isArray(value) && value.length > 0
+                ? value
+                    .map((v, i) =>
+                      v.includes('encode') ? (
+                        <a key={i} href={'https://www.encodeproject.org'}>
+                          {v}
+                        </a>
+                      ) : v.includes('geo:') ? (
+                        <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>
+                          {v}
+                        </a>
+                      ) : (
+                        (v ?? 'N/A')
+                      ),
+                    )
+                    .reduce((prev, curr) => (
+                      <>
+                        {prev}, {curr}
+                      </>
+                    ))
+                : (value ?? 'N/A')
+              : (value ?? 'N/A')}
         </td>
       </tr>
     );
@@ -210,32 +234,30 @@ export const BedSplash = () => {
         <div className='container my-2'>
           <div className='row mb-2'>
             <div className='col-sm-12 col-md-12'>
-              {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
+              {metadata !== undefined ? (
+                <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats} />
+              ) : null}
             </div>
           </div>
-          <div className='row mt-1 mb-4 g-2'>
+          <div className='row mt-1 mb-3 g-2'>
             <div className='col-12'>
               <h5 className='fw-bold'>Metadata</h5>
-                <div className='row'>
-                  <div className='col-12 col-xl-6 mt-0 ps-4'>
-                    <div className='text-sm'>
-                      <table className='table table-sm table-borderless table-transparent mb-0'>
-                        <tbody>
-                          {leftKeys.map(metadataRow)}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                  <div className='col-12 col-xl-6 mt-0 ps-4'>
-                    <div className='text-sm'>
-                      <table className='table table-sm table-borderless table-transparent mb-0'>
-                        <tbody>
-                          {rightKeys.map(metadataRow)}
-                        </tbody>
-                      </table>
-                    </div>
+              <div className='row'>
+                <div className='col-12 col-xl-6 mt-0 ps-4'>
+                  <div className='text-sm'>
+                    <table className='table table-sm table-borderless table-transparent mb-0'>
+                      <tbody>{leftKeys.map(metadataRow)}</tbody>
+                    </table>
                   </div>
                 </div>
+                <div className='col-12 col-xl-6 mt-0 ps-4'>
+                  <div className='text-sm'>
+                    <table className='table table-sm table-borderless table-transparent mb-0'>
+                      <tbody>{rightKeys.map(metadataRow)}</tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -267,7 +289,7 @@ export const BedSplash = () => {
             </>
           )} */}
 
-          {(metadata?.bedsets && metadata.bedsets.length > 0) && (
+          {metadata?.bedsets && metadata.bedsets.length > 0 && (
             <div className='row mb-3'>
               <div className='col-12'>
                 <h5 className='fw-bold'>BEDsets</h5>
@@ -276,13 +298,13 @@ export const BedSplash = () => {
                     count: metadata.bedsets.length,
                     limit: metadata.bedsets.length,
                     offset: 0,
-                    results: metadata.bedsets.map(bedset => ({
+                    results: metadata.bedsets.map((bedset) => ({
                       id: bedset.id,
                       name: bedset.name || '',
                       description: bedset.description || '',
                       md5sum: '',
-                      bed_ids: []
-                    }))
+                      bed_ids: [],
+                    })),
                   }}
                   showBEDCount={false}
                 />
@@ -291,7 +313,7 @@ export const BedSplash = () => {
           )}
 
           {neighbours && (
-            <div className='row mb-4'>
+            <div className='row mb-3'>
               <div className='col-12'>
                 <div className='d-flex justify-content-between align-items-center px-0'>
                   <h5 className='fw-bold px-0'>Similar BED Files</h5>

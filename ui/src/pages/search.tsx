@@ -24,7 +24,6 @@ export const SearchPage = () => {
   const [genome, setGenome] = useState(searchParams.get('genome') || '');
   const [assay, setAssay] = useState(searchParams.get('assay') || '');
 
-  
   const [t2bLayout, setT2bLayout] = useState('table');
   const [t2bOffset, setT2bOffset] = useState(0);
   const [t2bLimit, setT2bLimit] = useState(20);
@@ -36,7 +35,6 @@ export const SearchPage = () => {
   const [t2bsOffset, setT2bsOffset] = useState(0);
   const [t2bsLimit, setT2bsLimit] = useState(20);
 
-
   const [triggerSearch, setTriggerSearch] = useState(0);
   const [file, setFile] = useState<File | null>(uploadedFile || null);
   const [customCoordinates, setCustomCoordinates] = useState<number[] | null>(null);
@@ -45,7 +43,7 @@ export const SearchPage = () => {
 
   const handleSearch = () => {
     setT2bOffset(0);
-    setTriggerSearch(prev => prev + 1);
+    setTriggerSearch((prev) => prev + 1);
   };
 
   useEffect(() => {
@@ -67,7 +65,7 @@ export const SearchPage = () => {
       const coordinates = await getUmapCoordinates(file);
       setCustomCoordinates(coordinates);
     })();
-  }, [file])
+  }, [file]);
 
   return (
     <Layout title='BEDbase | Search' footer fullHeight>

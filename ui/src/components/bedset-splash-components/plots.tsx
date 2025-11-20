@@ -29,16 +29,16 @@ const Plot = (props: PlotProps) => {
           setShow(true);
         }
       }}
-      className="h-100 border rounded p-1 hover-border-primary transition-all bg-white"
+      className='h-100 border rounded p-1 hover-border-primary transition-all bg-white'
     >
-      <div className="p-1 text-center">
-        <span className="fw-medium text-xs mb-2">{title}</span>
+      <div className='p-1 text-center'>
+        <span className='fw-medium text-xs mb-2'>{title}</span>
         {/* <button onClick={() => setShow(true)} className="btn btn-sm btn-outline-primary text-xs">
           <i className="bi bi-eye" />
         </button> */}
       </div>
-      <div className="text-center">
-        <Image height="250px" src={src} alt={alt} />
+      <div className='text-center'>
+        <Image height='250px' src={src} alt={alt} />
       </div>
       <FigureModal
         show={show}
@@ -58,7 +58,7 @@ export const Plots = (props: PlotsProps) => {
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
     <Fragment>
-      <Row className="row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
+      <Row className='row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2'>
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
             <Fragment key={idx}>
@@ -73,7 +73,7 @@ export const Plots = (props: PlotsProps) => {
                     metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
                   : plotName;
                 return (
-                  <Col key={plotName} sm={12} md={4} className="px-1">
+                  <Col key={plotName} sm={12} md={4} className='px-1'>
                     <Plot
                       key={plotName}
                       src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bedset') : '/fignotavl_png.svg'}

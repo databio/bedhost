@@ -27,15 +27,14 @@ export const BedSplashHeader = (props: Props) => {
   const [copiedId, setCopiedId] = useState(false);
   const [showRefGenomeModal, setShowRefGenomeModal] = useState(false);
 
-
   const noFilesToDownload = !metadata.files?.bed_file && !metadata.files?.bigbed_file;
 
   return (
     <div className='border-bottom py-2'>
       <div className='d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-0'>
         <div className='d-flex align-items-center overflow-x-auto w-100 mb-3'>
-          <h5 className='fw-bold d-flex align-items-center flex-nowrap mb-0'>
-            <span className='text-truncate fw-light'>{metadata?.id || 'No ID available'}</span>
+          <h5 className='fw-light d-flex align-items-center flex-nowrap mb-0'>
+            <span className='text-truncate'>{metadata?.id || 'No ID available'}</span>
             <button
               className='btn btn-sm btn-link text-primary mb-0'
               onClick={() => {
@@ -51,35 +50,30 @@ export const BedSplashHeader = (props: Props) => {
           </h5>
         </div>
         {!metadata?.processed && (
-          <p
-            className='text-warning text-nowrap me-1 btn btn-outline btn-sm transparent-btn'
-          >
+          <p className='text-warning text-nowrap me-1 btn btn-outline btn-sm transparent-btn'>
             <OverlayTrigger
               placement='top'
               overlay={
-                <Tooltip id='tooltip-top'>
-                  This file has not been processed by the BedBoss pipeline yet.
-                </Tooltip>
+                <Tooltip id='tooltip-top'>This file has not been processed by the BedBoss pipeline yet.</Tooltip>
               }
             >
-    <span>
-      <i className='bi bi-exclamation-triangle-fill me-1'></i>
-      Not Processed
-    </span>
+              <span>
+                <i className='bi bi-exclamation-triangle-fill me-1'></i>
+                Not Processed
+              </span>
             </OverlayTrigger>
           </p>
         )}
 
         <div className='d-flex flex-col align-items-center gap-1 flex-shrink-0'>
-
-          {(metadata?.processed && metadata?.genome_alias == 'hg38') &&
+          {metadata?.processed && metadata?.genome_alias == 'hg38' && (
             <a href={`/umap?searchId=${record_identifier}`}>
               <button className='btn btn-outline-primary btn-sm'>
                 <i className='bi bi-globe2 me-1' />
                 Visualize
               </button>
             </a>
-          }
+          )}
           <a href={`/analyze?bedUrl=${record_identifier}`}>
             <button className='btn btn-outline-primary btn-sm'>
               <i className='bi bi-bar-chart-steps me-1' />
@@ -196,8 +190,7 @@ export const BedSplashHeader = (props: Props) => {
         <h5 className='mb-1 fw-bolder'>{metadata.name}</h5>
         <p className='text-muted fst-italic text-sm'>{metadata?.description || 'No description available'}</p>
       </div>
-      <div
-        className='d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto'>
+      <div className='d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto'>
         <div className='d-md-flex flex-row gap-1 text-lg mb-2 mb-xl-0'>
           <div className='d-flex flex-row'>
             <div className='mb-0'>
@@ -212,10 +205,13 @@ export const BedSplashHeader = (props: Props) => {
               >
                 {metadata?.genome_digest ? (
                   <>
-                    <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`}
-                       target='_blank'>
+                    <a
+                      href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`}
+                      target='_blank'
+                    >
                       <div
-                        className={genomeStats?.compared_genome ? 'badge bg-primary rounded-end-0' : 'badge bg-primary'}>
+                        className={genomeStats?.compared_genome ? 'badge bg-primary rounded-end-0' : 'badge bg-primary'}
+                      >
                         <i className='bi bi-database-fill me-2' />
                         {metadata.genome_alias || 'No assembly available'}
                       </div>
@@ -230,7 +226,7 @@ export const BedSplashHeader = (props: Props) => {
                   </>
                 )}
               </OverlayTrigger>
-              {genomeStats?.compared_genome &&
+              {genomeStats?.compared_genome && (
                 <OverlayTrigger
                   placement='top'
                   overlay={
@@ -252,7 +248,7 @@ export const BedSplashHeader = (props: Props) => {
                     <i className='bi bi-info-circle-fill' />
                   </div>
                 </OverlayTrigger>
-              }
+              )}
             </div>
           </div>
           <div className='d-flex flex-row'>
@@ -336,7 +332,7 @@ export const BedSplashHeader = (props: Props) => {
           )}
         </div>
       </div>
-      {genomeStats?.compared_genome &&
+      {genomeStats?.compared_genome && (
         <RefGenomeModal
           show={showRefGenomeModal}
           onHide={() => {
@@ -344,7 +340,7 @@ export const BedSplashHeader = (props: Props) => {
           }}
           genomeStats={genomeStats}
         />
-      }
+      )}
     </div>
   );
 };
