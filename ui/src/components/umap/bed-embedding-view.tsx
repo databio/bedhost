@@ -532,7 +532,7 @@ export const BEDEmbeddingView = (props: Props) => {
             </div>
           </div>
           <div className='col-sm-2'>
-            <div className='card mb-2 border overflow-hidden'>
+            <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(100vh - 93.6px)` }}>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
                 <span>Legend</span>
                 <div className='btn-group btn-group-xs' role='group'>

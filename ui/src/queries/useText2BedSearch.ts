@@ -30,6 +30,6 @@ export const useText2BedSearch = (query: SearchQuery) => {
     },
     enabled: enabled,
     staleTime: 0,
-    placeholderData: (previousData) => previousData,
+    // placeholderData: (previousData) => previousData,
   });
 };

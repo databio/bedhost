@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Text2BedSearchResultsTable } from './t2b-search-results-table';
 import { SearchingJumper } from '../searching-jumper';
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 import { useText2BedSearch } from '../../../queries/useText2BedSearch';
 import { PaginationBar } from '../pagination-bar';
 import { SearchError } from '../search-error';
@@ -25,6 +25,8 @@ export const Text2Bed = (props: Props) => {
   const [stickyState, setStickyState] = useState<'normal' | 'sticky' | 'bottom'>('normal');
   const [stickyWidth, setStickyWidth] = useState<number | undefined>(undefined);
   const [stickyLeft, setStickyLeft] = useState<number | undefined>(undefined);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [resultsCount, setResultsCount] = useState(0);
 
   const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -46,6 +48,17 @@ export const Text2Bed = (props: Props) => {
     offset: offset,
     autoRun: false,
   });
+
+  const bedIds = useMemo(() => {
+    return results?.results?.map((result: any) => result.id)
+  }, [results?.results]);
+
+  useEffect(() => {
+    if (results?.results) {
+      setHasLoaded(true);
+      setResultsCount(results.count);
+    }
+  }, [results?.results])
 
   useEffect(() => {
     if (triggerSearch > 0) {
@@ -153,11 +166,11 @@ export const Text2Bed = (props: Props) => {
   return (
     <div className='my-2'>
       <div>
-        {isSearching ? (
+        {isSearching && !hasLoaded ? (
           <SearchingJumper />
         ) : (
           <div className='my-2' ref={containerRef}>
-            {results ? (
+            {hasLoaded ? (
               <>
                 <div className='row gx-2'>
                   {layout === 'split' && (
@@ -185,7 +198,7 @@ export const Text2Bed = (props: Props) => {
                       >
                         <BEDEmbeddingPlot
                           ref={embeddingPlotRef}
-                          bedIds={results?.results?.map((result: any) => result.id)}
+                          bedIds={bedIds}
                           height={containerHeight}
                           preselectPoint={false}
                           stickyBaseline={true}
@@ -193,9 +206,8 @@ export const Text2Bed = (props: Props) => {
                       </div>
                     </div>
                   )}
-
                   <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column`}>
-                    <div className=''>
+                    {results ? (
                       <Text2BedSearchResultsTable
                         results={results || []}
                         search_query={searchTerm}
@@ -203,13 +215,17 @@ export const Text2Bed = (props: Props) => {
                         onCardClick={(bedId) => {
                           embeddingPlotRef.current?.centerOnBedId(bedId);
                         }}
-                      />{' '}
-                    </div>
+                      />
+                    ) : (
+                      <div style={{height: '660px'}}>
+                        <SearchingJumper />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-12'>
-                    <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
+                    <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
                   </div>
                 </div>
               </>

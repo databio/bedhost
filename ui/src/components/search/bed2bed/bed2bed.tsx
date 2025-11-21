@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, RefObject } from 'react';
+import { useEffect, useState, useRef, RefObject, useMemo } from 'react';
 import { SearchingJumper } from '../searching-jumper';
 // import { useBed2BedSearch } from '../../../queries/useBed2BedSearch';
 import { useBed2BedSearchPaginate } from '../../../queries/useBed2BedSearchPaginate.ts';
@@ -23,12 +23,15 @@ export const Bed2Bed = (props: Props) => {
   const [stickyState, setStickyState] = useState<'normal' | 'sticky' | 'bottom'>('normal');
   const [stickyWidth, setStickyWidth] = useState<number | undefined>(undefined);
   const [stickyLeft, setStickyLeft] = useState<number | undefined>(undefined);
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [resultsCount, setResultsCount] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const stickyDivRef = useRef<HTMLDivElement>(null);
   const colRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
   const stickyStateRef = useRef<'normal' | 'sticky' | 'bottom'>('normal');
+  // const hasLoaded = useRef<boolean>(false);
 
   const {
     isFetching: isSearching,
@@ -41,8 +44,16 @@ export const Bed2Bed = (props: Props) => {
     autoRun: false,
   });
 
-  console.log(offset);
-  console.log(results);
+  const bedIds = useMemo(() => {
+    return results?.results?.map((result: any) => result.payload.id)
+  }, [results?.results]);
+
+  useEffect(() => {
+    if (results?.results) {
+      setHasLoaded(true);
+      setResultsCount(results.count);
+    }
+  }, [results?.results])
 
   useEffect(() => {
     if (file) {
@@ -143,11 +154,11 @@ export const Bed2Bed = (props: Props) => {
   return (
     <div className='my-2'>
       <div>
-        {isSearching ? (
+        {isSearching && !hasLoaded ? (
           <SearchingJumper />
         ) : (
           <div className='my-2' ref={containerRef}>
-            {results ? (
+            {hasLoaded ? (
               <>
                 <div className='row gx-2'>
                   {layout === 'split' && (
@@ -175,7 +186,7 @@ export const Bed2Bed = (props: Props) => {
                       >
                         <BEDEmbeddingPlot
                           ref={embeddingPlotRef}
-                          bedIds={results?.results?.map((result: any) => result.payload.id)}
+                          bedIds={bedIds}
                           height={containerHeight}
                           preselectPoint={true}
                           stickyBaseline={true}
@@ -185,9 +196,8 @@ export const Bed2Bed = (props: Props) => {
                       </div>
                     </div>
                   )}
-
                   <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column`}>
-                    <div>
+                    {results ? (
                       <Bed2BedSearchResultsCards
                         results={results.results || []}
                         layout={'split'}
@@ -195,12 +205,16 @@ export const Bed2Bed = (props: Props) => {
                           embeddingPlotRef.current?.centerOnBedId(bedId);
                         }}
                       />
-                    </div>
+                    ) : (
+                      <div style={{height: '660px'}}>
+                        <SearchingJumper />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className='row'>
                   <div className='col-12'>
-                    <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
+                    <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
                   </div>
                 </div>
               </>

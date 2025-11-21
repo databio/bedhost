@@ -1,5 +1,5 @@
 import { SearchingJumper } from '../searching-jumper.tsx';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useText2BedSetSearch } from '../../../queries/useText2BedSetSearch.ts';
 import { ErrorPage } from '../../common/error-page.tsx';
 // import { TableToolbar } from '../table-toolbar.tsx';
@@ -19,6 +19,9 @@ type Props = {
 export const Text2BedSet = (props: Props) => {
   const { searchTerm, limit, offset, setOffset, triggerSearch } = props;
 
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [resultsCount, setResultsCount] = useState(0);
+
   const {
     isFetching: isSearching,
     data: results,
@@ -30,6 +33,13 @@ export const Text2BedSet = (props: Props) => {
     offset: offset,
     autoRun: false,
   });
+
+  useEffect(() => {
+    if (results?.results) {
+      setHasLoaded(true);
+      setResultsCount(results.count);
+    }
+  }, [results?.results])
 
   useEffect(() => {
     if (triggerSearch > 0) {
@@ -54,17 +64,20 @@ export const Text2BedSet = (props: Props) => {
   return (
     <div className='my-2'>
       <div>
-        {isSearching ? (
+        {isSearching && !hasLoaded ? (
           <SearchingJumper />
         ) : (
           <div className='my-2'>
-            {results ? (
+            {hasLoaded ? (
               <div className='pb-3'>
-                {/* <div className='px-2 pt-2'>
-                  <TableToolbar showTotalResults limit={limit} setLimit={setLimit} total={results.count} />
-                </div> */}
-                <SearchBedSetResultTable results={results} showBEDCount={true} />
-                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
+                {results ? (
+                  <SearchBedSetResultTable results={results} showBEDCount={true} />
+                ) : (
+                  <div style={{height: '660px'}}>
+                    <SearchingJumper />
+                  </div>
+                )}
+                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
               </div>
             ) : (
               <div className='d-flex flex-column align-items-center justify-content-center mt-5 fst-italic'>
