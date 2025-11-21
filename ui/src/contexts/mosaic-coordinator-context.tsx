@@ -101,7 +101,8 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
           const adapter = await (navigator as any).gpu.requestAdapter();
           webgpuAvailable = !!adapter;
         } catch (error) {
-          console.error('WebGPU check failed:', error);
+          // console.error('WebGPU check failed:', error);
+          webgpuAvailable = false;
         }
       }
 
@@ -120,7 +121,7 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
         if ('gpu' in navigator) {
           Object.defineProperty(navigator, 'gpu', {
             get: () => undefined,
-            configurable: true
+            configurable: true,
           });
         }
       }
@@ -129,13 +130,13 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
         setWebglStatus({
           checking: false,
           webgl2: false,
-          error: 'WebGL2 is unavailable. Please enable it or use a different browser to use the Embedding Atlas.'
+          error: 'WebGL2 is unavailable. Please enable it or use a different browser to use the Embedding Atlas.',
         });
       } else {
         setWebglStatus({
           checking: false,
           webgl2: webgl2Available,
-          error: null
+          error: null,
         });
       }
     };
@@ -143,7 +144,10 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
     checkGraphicsSupport();
   }, []);
 
-  const value = useMemo(() => ({ getCoordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus }), [webglStatus]);
+  const value = useMemo(
+    () => ({ getCoordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus }),
+    [webglStatus],
+  );
   return <MosaicCoordinatorContext.Provider value={value}>{children}</MosaicCoordinatorContext.Provider>;
 };
 

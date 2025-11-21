@@ -43,7 +43,7 @@ export const Text2Bed = (props: Props) => {
   });
 
   const bedIds = useMemo(() => {
-    return results?.results?.map((result: any) => result.id)
+    return results?.results?.map((result: any) => result.id);
   }, [results?.results]);
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export const Text2Bed = (props: Props) => {
       setHasLoaded(true);
       setResultsCount(results.count);
     }
-  }, [results?.results])
+  }, [results?.results]);
 
   useEffect(() => {
     if (triggerSearch > 0) {
@@ -125,7 +125,7 @@ export const Text2Bed = (props: Props) => {
                         }}
                       />
                     ) : (
-                      <div style={{height: '660px'}}>
+                      <div style={{ height: '660px' }}>
                         <SearchingJumper />
                       </div>
                     )}

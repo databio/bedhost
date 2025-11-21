@@ -30,7 +30,7 @@ export const BEDAnalytics = () => {
 
   useEffect(() => {
     initializeRegionSet();
-  }, [triggerSearch])
+  }, [triggerSearch]);
 
   const fetchBedFromUrl = async (url: string): Promise<File> => {
     // console.log(`${url[0]}, ${url[1]}, ${url}`);
@@ -110,7 +110,7 @@ export const BEDAnalytics = () => {
       }
       setTriggerSearch(triggerSearch + 1);
     }
-  }
+  };
 
   return (
     <Layout footer title='BEDbase' fullHeight>
@@ -200,7 +200,7 @@ export const BEDAnalytics = () => {
                 value={inputMode}
                 onChange={(e) => {
                   unloadFile();
-                  setInputMode(e.target.value as 'file'|'url');
+                  setInputMode(e.target.value as 'file' | 'url');
                 }}
               >
                 <option value='file'>File Upload</option>
@@ -242,17 +242,11 @@ export const BEDAnalytics = () => {
                 )}
               </p>
             ) : (
-              <p className='mb-0'>
-                {(!!rs && bedUrl) && (
-                  <div>
-                    Source: {bedUrl}
-                  </div>
-                )}
-              </p>
+              <p className='mb-0'>{!!rs && bedUrl && <div>Source: {bedUrl}</div>}</p>
             )}
             {!(!!rs || !!selectedFile || !!bedUrl.trim()) && (
               <p className='mb-0'>
-                No input provided. Try this {' '}
+                No input provided. Try this{' '}
                 <a
                   href='#'
                   onClick={(e) => {
@@ -261,7 +255,7 @@ export const BEDAnalytics = () => {
                       'https://api.bedbase.org/v1/files/files/d/c/dcc005e8761ad5599545cc538f6a2a4d.bed.gz';
                     setInputMode('url');
                     setBedUrl(exampleUrl);
-                    
+
                     const params = new URLSearchParams(searchParams);
                     params.set('bedUrl', exampleUrl);
                     navigate(`?${params.toString()}`);
@@ -274,10 +268,8 @@ export const BEDAnalytics = () => {
               </p>
             )}
 
-            {(rs && !!totalProcessingTime) && (
-              <p className='mb-0'>
-                Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s
-              </p>
+            {rs && !!totalProcessingTime && (
+              <p className='mb-0'>Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s</p>
             )}
           </div>
         </div>

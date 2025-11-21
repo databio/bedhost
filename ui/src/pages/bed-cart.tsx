@@ -43,12 +43,16 @@ export const BedCart = () => {
 
   return (
     <Layout title='BEDbase | Cart'>
-
       <div className='container my-2'>
         <div className='row mb-2'>
           <div className='col-12'>
             <div className='d-flex align-items-center justify-content-between mb-2'>
-                <h4 className='mb-0'><strong>Cart </strong> <span className='fs-6 fw-light'>({Object.keys(cart).length} item{(Object.keys(cart).length !== 1) && 's'})</span></h4>
+              <h4 className='mb-0'>
+                <strong>Cart </strong>{' '}
+                <span className='fs-6 fw-light'>
+                  ({Object.keys(cart).length} item{Object.keys(cart).length !== 1 && 's'})
+                </span>
+              </h4>
               <div className='d-flex align-items-center gap-1 mt-1'>
                 <button className='btn btn-sm btn-outline-danger' onClick={() => removeBedFromCart('all')}>
                   <i className='bi bi-trash me-2'></i>

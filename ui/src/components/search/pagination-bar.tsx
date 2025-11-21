@@ -27,7 +27,7 @@ export const PaginationBar = (props: Props) => {
         >
           <i className='bi bi-arrow-left' />
         </button>
-        {(prevPrevPage >= 0) && (
+        {prevPrevPage >= 0 && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
             onClick={() => {
@@ -37,7 +37,7 @@ export const PaginationBar = (props: Props) => {
             {prevPrevPage + 1}
           </button>
         )}
-        {(prevPage >= 0) && (
+        {prevPage >= 0 && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
             onClick={() => {
@@ -53,7 +53,7 @@ export const PaginationBar = (props: Props) => {
         >
           {currentPage + 1}
         </button>
-        {(nextPage < lastPage) && (
+        {nextPage < lastPage && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
             onClick={() => {
@@ -63,7 +63,7 @@ export const PaginationBar = (props: Props) => {
             {nextPage + 1}
           </button>
         )}
-        {(nextNextPage < lastPage) && (
+        {nextNextPage < lastPage && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
             onClick={() => {

@@ -326,7 +326,7 @@ export const BEDEmbeddingView = (props: Props) => {
         setContainerWidth(containerRef.current.offsetWidth);
       }
       // Calculate height: window height minus approximate offset for header/footer/margins
-      const calculatedHeight = Math.max(400, window.innerHeight* 0.6);
+      const calculatedHeight = Math.max(400, window.innerHeight * 0.6);
       setEmbeddingHeight(calculatedHeight);
     };
 
@@ -408,9 +408,7 @@ export const BEDEmbeddingView = (props: Props) => {
       <div className='row mt-2 pt-1'>
         {enableUpload && (
           <div className='col-12'>
-            <div className='d-flex align-items-start justify-content-between'>
-              
-            </div>
+            <div className='d-flex align-items-start justify-content-between'></div>
           </div>
         )}
       </div>
@@ -420,8 +418,8 @@ export const BEDEmbeddingView = (props: Props) => {
             <div className='card mb-2 border overflow-hidden'>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
                 <span>Region Embeddings</span>
-                <button 
-                  className='btn btn-secondary btn-xs ms-auto' 
+                <button
+                  className='btn btn-secondary btn-xs ms-auto'
                   onClick={handleUploadClick}
                   disabled={uploadButtonText !== 'Upload BED'}
                 >
@@ -437,7 +435,10 @@ export const BEDEmbeddingView = (props: Props) => {
                 {!!uploadedFilename && (
                   <span className='btn btn-outline-secondary btn-xs ms-1' onClick={handleFileRemove}>
                     {uploadedFilename}
-                    <i className='bi bi-trash3-fill text-danger ms-1 cursor-pointer' style={{position: 'relative', top: '-1px'}}/>
+                    <i
+                      className='bi bi-trash3-fill text-danger ms-1 cursor-pointer'
+                      style={{ position: 'relative', top: '-1px' }}
+                    />
                   </span>
                 )}
                 <button
@@ -598,13 +599,11 @@ export const BEDEmbeddingView = (props: Props) => {
                 </table>
               </div>
             </div>
-
-            
           </div>
         </div>
       ) : (
         <div className='row mb-4'>
-          <div className='col-12 d-flex align-items-center justify-content-center' style={{minHeight: '400px'}}>
+          <div className='col-12 d-flex align-items-center justify-content-center' style={{ minHeight: '400px' }}>
             <span>Loading...</span>
           </div>
         </div>

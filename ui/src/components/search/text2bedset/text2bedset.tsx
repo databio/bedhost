@@ -39,7 +39,7 @@ export const Text2BedSet = (props: Props) => {
       setHasLoaded(true);
       setResultsCount(results.count);
     }
-  }, [results?.results])
+  }, [results?.results]);
 
   useEffect(() => {
     if (triggerSearch > 0) {
@@ -73,7 +73,7 @@ export const Text2BedSet = (props: Props) => {
                 {results ? (
                   <SearchBedSetResultTable results={results} showBEDCount={true} />
                 ) : (
-                  <div style={{height: '660px'}}>
+                  <div style={{ height: '660px' }}>
                     <SearchingJumper />
                   </div>
                 )}
