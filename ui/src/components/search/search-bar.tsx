@@ -1,10 +1,10 @@
 import toast from 'react-hot-toast';
 // import { useSearchParams } from 'react-router-dom';
 import { useMemo, useState, useRef, RefObject } from 'react';
-import { useSearchView } from '../../../contexts/search-view-context.tsx';
-import { useAvailableGenomes } from '../../../queries/useAvailableGenomes.ts';
-import { useAvailableAssays } from '../../../queries/useAvailableAssays.ts';
-import { BEDEmbeddingPlotRef } from '../../umap/bed-embedding-plot.tsx';
+import { useSearchView } from '../../contexts/search-view-context.tsx';
+import { useAvailableGenomes } from '../../queries/useAvailableGenomes.ts';
+import { useAvailableAssays } from '../../queries/useAvailableAssays.ts';
+import { BEDEmbeddingPlotRef } from '../umap/bed-embedding-plot.tsx';
 
 type Props = {
   value: string;

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 
 import { SearchSelector } from '../components/search/search-selector';
-import { SearchBar } from '../components/search/bed2bed/search-bar.tsx';
+import { SearchBar } from '../components/search/search-bar.tsx';
 import { Text2Bed } from '../components/search/text2bed/text2bed';
 import { Bed2Bed } from '../components/search/bed2bed/bed2bed';
 import { Text2BedSet } from '../components/search/text2bedset/text2bedset.tsx';

@@ -94,7 +94,6 @@ export const Home = () => {
             ) from ENCODE, GEO, and more.
           </p>
         </div>
-        {/* <div className='my-5'></div> */}
         <div className='col-12 col-lg-10 d-flex gap-2'>
           <div className='input-group bg-white'>
             {searchType === 'b2b' ? (

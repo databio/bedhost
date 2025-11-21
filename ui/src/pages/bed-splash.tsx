@@ -233,7 +233,7 @@ export const BedSplash = () => {
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
         <div className='container my-2'>
           <div className='row mb-2'>
-            <div className='col-sm-12 col-md-12'>
+            <div className='col-12'>
               {metadata !== undefined ? (
                 <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats} />
               ) : null}

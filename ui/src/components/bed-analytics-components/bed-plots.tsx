@@ -163,7 +163,7 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
   }, [spec]);
 
   return (
-    <div className='d-flex w-100 border border-primary' style={{ overflow: 'auto', maxHeight: '800px' }}>
+    <div className='d-flex w-100 border overflow-auto bg-white rounded' style={{ maxHeight: '800px' }}>
       <div className='mx-auto chrom-dist-plot-container pt-5' ref={plotRef} />
     </div>
   );

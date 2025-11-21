@@ -3,7 +3,7 @@ import { ChromosomeStatistics, RegionSet } from '@databio/gtars';
 
 interface Props {
   rs: RegionSet;
-  selectedFile: File | null;
+  selectedFile: File | undefined;
 }
 
 const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
@@ -35,8 +35,8 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
     <div>
       {/*This section is AI rendered. It provides statistics on number of regions per chromosome.*/}
       <div className='mb-3 w-100'>
-        <h5>Number of regions per chromosome: </h5>
-        <div className='border rounded p-2 bg-light' style={{ overflowX: 'auto' }}>
+        <h6>Number of regions per chromosome: </h6>
+        <div className='border rounded p-2 bg-light bg-white overflow-x-auto'>
           <svg
             width={Math.max(400, statsEntries.length * 70)}
             height='180'
@@ -124,9 +124,9 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
         </div>
       </div>
 
-      <div className='p-3 border rounded bg-white' style={{ maxHeight: '500px', overflow: 'auto' }}>
-        <div className='d-flex flex-column gap-2'>
-          <div className='d-flex justify-content-between align-items-center mb-2'>
+      <div className='p-0 border rounded bg-white overflow-hidden' style={{ maxHeight: '500px', overflow: 'auto' }}>
+        <div className='d-flex flex-column gap-2 overflow-auto'>
+          <div className='d-flex justify-content-between align-items-center m-3'>
             <h5 className='mb-0'>Chromosome regions statatistics</h5>
             <div>
               <button
@@ -171,7 +171,7 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
             </div>
           </div>
 
-          <table className='table table-sm small mb-0'>
+          <table className='table table-sm small mb-2'>
             <thead>
               <tr>
                 <th>Chromosome name</th>
