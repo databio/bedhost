@@ -28,6 +28,7 @@ export const BEDEmbeddingView = (props: Props) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [containerWidth, setContainerWidth] = useState(900);
+  const [embeddingHeight, setEmbeddingHeight] = useState(500);
   const [isReady, setIsReady] = useState(false);
   const [colorGrouping, setColorGrouping] = useState('cell_line_category');
   const [selectedPoints, setSelectedPoints] = useState<any[]>([]);
@@ -40,6 +41,7 @@ export const BEDEmbeddingView = (props: Props) => {
   const [uploadedFilename, setUploadedFilename] = useState('');
   const [dataVersion, setDataVersion] = useState(0);
   const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
+  const [uploadButtonText, setUploadButtonText] = useState('Upload BED');
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -77,6 +79,8 @@ export const BEDEmbeddingView = (props: Props) => {
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    setUploadButtonText('Uploading...');
 
     try {
       const coordinates = await getUmapCoordinates(file);
@@ -123,6 +127,7 @@ export const BEDEmbeddingView = (props: Props) => {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+      setUploadButtonText('Upload BED');
     }
   };
 
@@ -315,10 +320,20 @@ export const BEDEmbeddingView = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    // resize width of view
-    if (containerRef.current) {
-      setContainerWidth(containerRef.current.offsetWidth);
-    }
+    // resize width and height of view based on window size
+    const updateDimensions = () => {
+      if (containerRef.current) {
+        setContainerWidth(containerRef.current.offsetWidth);
+      }
+      // Calculate height: window height minus approximate offset for header/footer/margins
+      const calculatedHeight = Math.max(400, window.innerHeight* 0.6);
+      setEmbeddingHeight(calculatedHeight);
+    };
+
+    updateDimensions();
+    window.addEventListener('resize', updateDimensions);
+
+    return () => window.removeEventListener('resize', updateDimensions);
   }, [isReady]);
 
   useEffect(() => {
@@ -390,39 +405,69 @@ export const BEDEmbeddingView = (props: Props) => {
 
   return (
     <>
-      <div className='row'>
-        {enableUpload ? (
+      <div className='row mt-2 pt-1'>
+        {enableUpload && (
           <div className='col-12'>
             <div className='d-flex align-items-start justify-content-between'>
-              <h5 className='fw-bold'>BED Embedding Atlas</h5>
-              <button className='btn btn-secondary btn-sm ms-auto mb-auto text-xs' onClick={handleUploadClick}>
-                Upload BED
-              </button>
-              <input
-                ref={fileInputRef}
-                className='d-none'
-                type='file'
-                accept='.bed,.gz,application/gzip,application/x-gzip'
-                onChange={handleFileUpload}
-              />
-              {!!uploadedFilename && (
-                <span className='btn btn-outline-secondary btn-sm ms-1 mb-auto text-xs' onClick={handleFileRemove}>
-                  {uploadedFilename}
-                  <i className='bi bi-trash3-fill text-danger ms-1 cursor-pointer' />
-                </span>
-              )}
+              
             </div>
-          </div>
-        ) : (
-          <div className='col-12'>
-            <h5 className='fw-bold'>BED Embedding Atlas</h5>
           </div>
         )}
       </div>
       {isReady ? (
         <div className='row mb-4 g-2'>
-          <div className='col-sm-9'>
-            <div className='border rounded overflow-hidden'>
+          <div className='col-sm-10'>
+            <div className='card mb-2 border overflow-hidden'>
+              <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
+                <span>Region Embeddings</span>
+                <button 
+                  className='btn btn-secondary btn-xs ms-auto' 
+                  onClick={handleUploadClick}
+                  disabled={uploadButtonText !== 'Upload BED'}
+                >
+                  {uploadButtonText}
+                </button>
+                <input
+                  ref={fileInputRef}
+                  className='d-none'
+                  type='file'
+                  accept='.bed,.gz,application/gzip,application/x-gzip'
+                  onChange={handleFileUpload}
+                />
+                {!!uploadedFilename && (
+                  <span className='btn btn-outline-secondary btn-xs ms-1' onClick={handleFileRemove}>
+                    {uploadedFilename}
+                    <i className='bi bi-trash3-fill text-danger ms-1 cursor-pointer' style={{position: 'relative', top: '-1px'}}/>
+                  </span>
+                )}
+                <button
+                  className='btn btn-primary btn-xs ms-1'
+                  onClick={() =>
+                    selectedPoints
+                      .filter((point: any) => point.identifier !== 'custom_point')
+                      .map((point: any) => {
+                        const bedItem = {
+                          id: point.identifier,
+                          name: point.text || 'No name',
+                          genome: point.genome_alias || 'N/A',
+                          tissue: point.annotation?.tissue || 'N/A',
+                          cell_line: point.fields?.['Cell Line'] || 'N/A',
+                          cell_type: point.annotation?.cell_type || 'N/A',
+                          description: point.fields?.Description || '',
+                          assay: point.fields?.Assay || 'N/A',
+                        };
+
+                        addBedToCart(bedItem);
+                        setAddedToCart(true);
+                        setTimeout(() => {
+                          setAddedToCart(false);
+                        }, 500);
+                      })
+                  }
+                >
+                  {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
+                </button>
+              </div>
               <div className='w-100' ref={containerRef}>
                 <EmbeddingViewMosaic
                   key={`embedding-${dataVersion}`}
@@ -435,7 +480,7 @@ export const BEDEmbeddingView = (props: Props) => {
                   category={colorGrouping}
                   categoryColors={tableau20}
                   additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
-                  height={500}
+                  height={embeddingHeight}
                   width={containerWidth}
                   config={{
                     autoLabelEnabled: false,
@@ -446,7 +491,9 @@ export const BEDEmbeddingView = (props: Props) => {
                   tooltip={tooltipPoint}
                   customTooltip={{
                     class: AtlasTooltip,
-                    props: {},
+                    props: {
+                      showLink: true,
+                    },
                   }}
                   selection={selectedPoints}
                   onSelection={handlePointSelection}
@@ -454,9 +501,38 @@ export const BEDEmbeddingView = (props: Props) => {
                 />
               </div>
             </div>
+
+            <div className='card border overflow-hidden' style={{ height: `calc(100vh - ${embeddingHeight + 140}px)` }}>
+              <div className='card-body table-responsive p-0'>
+                <table className='table table-striped table-hover text-xs'>
+                  <thead>
+                    <tr className='text-nowrap'>
+                      <th scope='col'>BED Name</th>
+                      <th scope='col'>Assay</th>
+                      <th scope='col'>Cell Line</th>
+                      <th scope='col'>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {getSortedSelectedPoints().map((point: any, index: number) => (
+                      <tr
+                        className='text-nowrap cursor-pointer'
+                        onClick={() => centerOnPoint(point, 0.3)}
+                        key={point.identifier + '_' + index}
+                      >
+                        <td>{point.text}</td>
+                        <td>{point.fields.Assay}</td>
+                        <td>{point.fields['Cell Line']}</td>
+                        <td>{point.fields.Description}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
-          <div className='col-sm-3'>
-            <div className='card mb-2 border overflow-hidden' style={{ height: 'calc(300px - 0.1875rem)' }}>
+          <div className='col-sm-2'>
+            <div className='card mb-2 border overflow-hidden'>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
                 <span>Legend</span>
                 <div className='btn-group btn-group-xs' role='group'>
@@ -489,7 +565,7 @@ export const BEDEmbeddingView = (props: Props) => {
                 </div>
               </div>
               <div className='card-body table-responsive p-0'>
-                <table className='table table-hover text-xs'>
+                <table className='table table-hover text-xs mb-2'>
                   <tbody>
                     {legendItems?.map((item: any) => (
                       <tr
@@ -513,72 +589,12 @@ export const BEDEmbeddingView = (props: Props) => {
               </div>
             </div>
 
-            <div className='card border overflow-hidden' style={{ height: 'calc(200px - 0.1875rem)' }}>
-              <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
-                <span>Selection</span>
-                {/* <i className='bi bi-window ms-1' /> */}
-                <button
-                  className='btn btn-primary btn-xs ms-auto'
-                  onClick={() =>
-                    selectedPoints
-                      .filter((point: any) => point.identifier !== 'custom_point')
-                      .map((point: any) => {
-                        const bedItem = {
-                          id: point.identifier,
-                          name: point.text || 'No name',
-                          genome: point.genome_alias || 'N/A',
-                          tissue: point.annotation?.tissue || 'N/A',
-                          cell_line: point.fields?.['Cell Line'] || 'N/A',
-                          cell_type: point.annotation?.cell_type || 'N/A',
-                          description: point.fields?.Description || '',
-                          assay: point.fields?.Assay || 'N/A',
-                        };
-
-                        addBedToCart(bedItem);
-                        setAddedToCart(true);
-                        setTimeout(() => {
-                          setAddedToCart(false);
-                        }, 500);
-                      })
-                  }
-                >
-                  {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
-                </button>
-                {/* <button className='btn btn-secondary btn-xs ms-1'>
-                </button> */}
-              </div>
-              <div className='card-body table-responsive p-0'>
-                <table className='table table-striped table-hover text-xs'>
-                  <thead>
-                    <tr className='text-nowrap'>
-                      <th scope='col'>BED Name</th>
-                      <th scope='col'>Assay</th>
-                      <th scope='col'>Cell Line</th>
-                      <th scope='col'>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {getSortedSelectedPoints().map((point: any, index: number) => (
-                      <tr
-                        className='text-nowrap cursor-pointer'
-                        onClick={() => centerOnPoint(point, 0.3)}
-                        key={point.identifier + '_' + index}
-                      >
-                        <td>{point.text}</td>
-                        <td>{point.fields.Assay}</td>
-                        <td>{point.fields['Cell Line']}</td>
-                        <td>{point.fields.Description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            
           </div>
         </div>
       ) : (
         <div className='row mb-4'>
-          <div className='col-12'>
+          <div className='col-12 d-flex align-items-center justify-content-center' style={{minHeight: '400px'}}>
             <span>Loading...</span>
           </div>
         </div>

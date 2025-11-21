@@ -225,7 +225,7 @@ export const BEDAnalytics = () => {
                 loadingRS
               }
             >
-              <i className='bi bi-search' />
+              Analyze!
             </button>
           </div>
         </div>
@@ -252,7 +252,7 @@ export const BEDAnalytics = () => {
             )}
             {!(!!rs || !!selectedFile || !!bedUrl.trim()) && (
               <p className='mb-0'>
-                No inputs provided. Try this {' '}
+                No input provided. Try this {' '}
                 <a
                   href='#'
                   onClick={(e) => {
