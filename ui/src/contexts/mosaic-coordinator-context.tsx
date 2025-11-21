@@ -92,8 +92,20 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
 
   useEffect(() => {
     const checkGraphicsSupport = async () => {
+      let webgpuAvailable = false;
       let webgl2Available = false;
 
+      // Check WebGPU
+      if ('gpu' in navigator) {
+        try {
+          const adapter = await (navigator as any).gpu.requestAdapter();
+          webgpuAvailable = !!adapter;
+        } catch (error) {
+          console.error('WebGPU check failed:', error);
+        }
+      }
+
+      // Check WebGL2
       const canvas = document.createElement('canvas');
       const gl = canvas.getContext('webgl2');
       webgl2Available = !!gl;
@@ -102,7 +114,18 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
         gl.getExtension('WEBGL_lose_context')?.loseContext();
       }
 
-      if (!webgl2Available) {
+      // Force WebGL by hiding WebGPU if not available
+      if (!webgpuAvailable && webgl2Available) {
+        console.log('WebGPU not available, forcing WebGL2 fallback');
+        if ('gpu' in navigator) {
+          Object.defineProperty(navigator, 'gpu', {
+            get: () => undefined,
+            configurable: true
+          });
+        }
+      }
+
+      if (!webgpuAvailable && !webgl2Available) {
         setWebglStatus({
           checking: false,
           webgl2: false,
