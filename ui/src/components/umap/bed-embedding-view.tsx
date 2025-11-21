@@ -20,7 +20,7 @@ type Props = {
 
 export const BEDEmbeddingView = (props: Props) => {
   const { bedId, neighbors, showNeighbors, enableUpload } = props;
-  const { coordinator, initializeData, addCustomPoint, deleteCustomPoint } = useMosaicCoordinator();
+  const { coordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus } = useMosaicCoordinator();
   const { addBedToCart } = useBedCart();
   const { mutateAsync: getUmapCoordinates } = useBedUmap();
 
@@ -469,36 +469,46 @@ export const BEDEmbeddingView = (props: Props) => {
                 </button>
               </div>
               <div className='w-100' ref={containerRef}>
-                <EmbeddingViewMosaic
-                  key={`embedding-${dataVersion}`}
-                  coordinator={coordinator}
-                  table='data'
-                  x='x'
-                  y='y'
-                  identifier='id'
-                  text='name'
-                  category={colorGrouping}
-                  categoryColors={tableau20}
-                  additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
-                  height={embeddingHeight}
-                  width={containerWidth}
-                  config={{
-                    autoLabelEnabled: false,
-                  }}
-                  filter={filter}
-                  viewportState={viewportState}
-                  onViewportState={setViewportState}
-                  tooltip={tooltipPoint}
-                  customTooltip={{
-                    class: AtlasTooltip,
-                    props: {
-                      showLink: true,
-                    },
-                  }}
-                  selection={selectedPoints}
-                  onSelection={handlePointSelection}
-                  onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
-                />
+                {webglStatus.error ? (
+                  <div
+                    className='w-100 d-flex align-items-center justify-content-center bg-white'
+                    style={{ height: embeddingHeight || 500 }}
+                    ref={containerRef}
+                  >
+                    <span className='text-muted text-sm'>{webglStatus.error}</span>
+                  </div>
+                ) : (
+                  <EmbeddingViewMosaic
+                    key={`embedding-${dataVersion}`}
+                    coordinator={coordinator}
+                    table='data'
+                    x='x'
+                    y='y'
+                    identifier='id'
+                    text='name'
+                    category={colorGrouping}
+                    categoryColors={tableau20}
+                    additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
+                    height={embeddingHeight}
+                    width={containerWidth}
+                    config={{
+                      autoLabelEnabled: false,
+                    }}
+                    filter={filter}
+                    viewportState={viewportState}
+                    onViewportState={setViewportState}
+                    tooltip={tooltipPoint}
+                    customTooltip={{
+                      class: AtlasTooltip,
+                      props: {
+                        showLink: true,
+                      },
+                    }}
+                    selection={selectedPoints}
+                    onSelection={handlePointSelection}
+                    onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
+                  />
+                )}
               </div>
             </div>
 

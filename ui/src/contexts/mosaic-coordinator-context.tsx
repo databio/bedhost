@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useRef, ReactNode } from 'react';
+import { createContext, useContext, useMemo, useRef, ReactNode, useState, useEffect } from 'react';
 import * as vg from '@uwdata/vgplot';
 
 interface MosaicCoordinatorContextType {
@@ -6,6 +6,7 @@ interface MosaicCoordinatorContextType {
   initializeData: () => Promise<void>;
   addCustomPoint: (x: number, y: number, description?: string) => Promise<void>;
   deleteCustomPoint: () => Promise<void>;
+  webglStatus: { checking: boolean; webgl2: boolean; error: string | null };
 }
 
 const MosaicCoordinatorContext = createContext<MosaicCoordinatorContextType | null>(null);
@@ -13,6 +14,11 @@ const MosaicCoordinatorContext = createContext<MosaicCoordinatorContextType | nu
 export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode }) => {
   const coordinatorRef = useRef<vg.Coordinator | null>(null);
   const dataInitializedRef = useRef<boolean>(false);
+  const [webglStatus, setWebglStatus] = useState<{ checking: boolean; webgl2: boolean; error: string | null }>({
+    checking: true,
+    webgl2: false,
+    error: null,
+  });
 
   const getCoordinator = () => {
     if (!coordinatorRef.current) {
@@ -84,7 +90,37 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
     ]);
   };
 
-  const value = useMemo(() => ({ getCoordinator, initializeData, addCustomPoint, deleteCustomPoint }), []);
+  useEffect(() => {
+    const checkGraphicsSupport = async () => {
+      let webgl2Available = false;
+
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl2');
+      webgl2Available = !!gl;
+
+      if (gl) {
+        gl.getExtension('WEBGL_lose_context')?.loseContext();
+      }
+
+      if (!webgl2Available) {
+        setWebglStatus({
+          checking: false,
+          webgl2: false,
+          error: 'WebGL2 is unavailable. Please enable it or use a different browser to use the Embedding Atlas.'
+        });
+      } else {
+        setWebglStatus({
+          checking: false,
+          webgl2: webgl2Available,
+          error: null
+        });
+      }
+    };
+
+    checkGraphicsSupport();
+  }, []);
+
+  const value = useMemo(() => ({ getCoordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus }), [webglStatus]);
   return <MosaicCoordinatorContext.Provider value={value}>{children}</MosaicCoordinatorContext.Provider>;
 };
 
@@ -98,5 +134,6 @@ export const useMosaicCoordinator = () => {
     initializeData: context.initializeData,
     addCustomPoint: context.addCustomPoint,
     deleteCustomPoint: context.deleteCustomPoint,
+    webglStatus: context.webglStatus,
   };
 };
