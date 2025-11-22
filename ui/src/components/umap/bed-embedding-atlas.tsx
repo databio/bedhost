@@ -8,10 +8,10 @@ type Props = {
   container?: boolean;
   width?: string;
   height?: string;
-}
+};
 
 export const BEDEmbeddingAtlas = (props: Props) => {
-  const {container, width, height} = props;
+  const { container, width, height } = props;
 
   const [isReady, setIsReady] = useState(false);
   const { coordinator, initializeData } = useMosaicCoordinator();
@@ -20,61 +20,60 @@ export const BEDEmbeddingAtlas = (props: Props) => {
     initializeData().then(() => setIsReady(true));
   }, []);
 
-  return (
-    container ? (
-      <>
-        {isReady ? (
-          <div className='row mb-4'>
-            <div className='col-12'>
-              <div className='border rounded shadow-sm overflow-hidden'>
-                <div style={{width: width, height: height}}>
-                  <EmbeddingAtlas
-                    coordinator={coordinator}
-                    data={{
-                      table: 'data',
-                      id: 'id',
-                      projection: { x: 'x', y: 'y' },
-                      text: 'description'
-                    }}
-                    embeddingViewConfig={{
-                      autoLabelEnabled: false
-                    }}
-                  />
-                </div>
+  return container ? (
+    <>
+      {isReady ? (
+        <div className='row mb-4'>
+          <div className='col-12'>
+            <div className='border rounded overflow-hidden'>
+              <div style={{ width: width, height: height }}>
+                <EmbeddingAtlas
+                  coordinator={coordinator}
+                  data={{
+                    table: 'data',
+                    id: 'id',
+                    projection: { x: 'x', y: 'y' },
+                    text: 'description',
+                  }}
+                  embeddingViewConfig={{
+                    autoLabelEnabled: false,
+                  }}
+                />
               </div>
             </div>
           </div>
-        ) : (
-          <div className='row mb-4'>
-            <div className='col-12'>
-              <span>Loading...</span>
-            </div>
+        </div>
+      ) : (
+        <div className='row mb-4'>
+          <div className='col-12'>
+            <span>Loading...</span>
           </div>
-        )}
-      </>
-    ) : (
-      <>
-        {isReady ? (
-          <div className='row h-100'>
-            <div className='col-12 p-0 h-100'>
-              <EmbeddingAtlas
-                coordinator={coordinator}
-                data={{
-                  table: 'data',
-                  id: 'id',
-                  projection: { x: 'x', y: 'y' },
-                  text: 'description'
-                }}
-                embeddingViewConfig={{
-                  autoLabelEnabled: false
-                }}
-                onStateChange={(e) => console.log(e)}
-                onExportSelection={async (predicate, format) => {
-                  console.log('Export selection:', predicate, format);
-                }}
-              />
-            </div>
+        </div>
+      )}
+    </>
+  ) : (
+    <>
+      {isReady ? (
+        <div className='row h-100'>
+          <div className='col-12 p-0 h-100'>
+            <EmbeddingAtlas
+              coordinator={coordinator}
+              data={{
+                table: 'data',
+                id: 'id',
+                projection: { x: 'x', y: 'y' },
+                text: 'description',
+              }}
+              embeddingViewConfig={{
+                autoLabelEnabled: false,
+              }}
+              onStateChange={(e) => console.log(e)}
+              // onExportSelection={async (predicate, format) => {
+              //   console.log('Export selection:', predicate, format);
+              // }}
+            />
           </div>
+        </div>
       ) : (
         <div className='row h-100'>
           <div className='col-12 h-100 d-flex align-items-center'>
@@ -82,7 +81,6 @@ export const BEDEmbeddingAtlas = (props: Props) => {
           </div>
         </div>
       )}
-      </>
-    )
+    </>
   );
-}
+};

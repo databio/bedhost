@@ -1,383 +1,354 @@
 import { useState } from 'react';
 import { Layout } from '../components/layout';
 import { useNavigate } from 'react-router-dom';
-import { InPaths, OutPaths } from '../motions/landing-animations';
-import { Col, Image, Nav, Row, Tab } from 'react-bootstrap';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
-import { CODE_SNIPPETS } from '../const';
-import { BBCONF_SNIPPETS } from '../const';
+import toast from 'react-hot-toast';
+import { CODE_SNIPPETS, BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
-
-type FileBadgeProps = {
-  children?: React.ReactNode;
-};
-
-const FileBadge = (props: FileBadgeProps) => {
-  const { children } = props;
-  return <div className="w-100 py-1 px-3 text-center rounded-pill border border-dark bg-light">{children}</div>;
-};
+import { BEDEmbeddingPlot } from '../components/umap/bed-embedding-plot.tsx';
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchTermSmall, setSearchTermSmall] = useState('Kidney cancer in humans');
-  const [copied, setCopied] = useState(false);
+
+  const [copiedAPI, setCopiedAPI] = useState(false);
+  const [copiedClient, setCopiedClient] = useState(false);
+  const [searchType, setSearchType] = useState('t2b');
+  const [activeApiTab, setActiveApiTab] = useState(CODE_SNIPPETS[0].language);
+  const [activeClientTab, setActiveClientTab] = useState(BBCONF_SNIPPETS[0].language);
 
   const navigate = useNavigate();
 
   // const { data: exampleBedMetadata } = useExampleBed(); # if example will be dynamic again
+  const exampleBedId = 'dcc005e8761ad5599545cc538f6a2a4d';
   const { data: exampleBedSetMetadata } = useExampleBedSet();
   const { data: bedbaseStats } = useStats();
 
+  const handleSearch = () => {
+    if (!searchTerm) {
+      toast.error('Please enter a search term.');
+      return;
+    }
+    navigate(`/search?q=${searchTerm}&view=${searchType}`);
+  };
+
   return (
-    <Layout footer title="BEDbase" fullHeight>
-      <div className="d-flex flex-column w-100 align-items-center p-2">
-        <div className="my-5"></div>
-        {/*<div className="d-flex flex-row align-items-center mt-5 gap-2 mb-2 mb-4">*/}
-        {/*  <a href="https://github.com/databio/bedhost">*/}
-        {/*    <span className="badge bg-primary text-sm bg-opacity-10 text-primary border border-primary">*/}
-        {/*      <i className="bi bi-github me-2" />*/}
-        {/*      GitHub*/}
-        {/*    </span>*/}
-        {/*  </a>*/}
-        {/*  <a href="https://docs.bedbase.org">*/}
-        {/*    <span className="badge bg-primary text-sm bg-opacity-10 text-primary border border-primary">*/}
-        {/*      <i className="bi bi-file-earmark-text-fill me-2" />*/}
-        {/*      Documentation*/}
-        {/*    </span>*/}
-        {/*  </a>*/}
-        {/*</div>*/}
-        <h1 className="fw-bolder text-primary text-6xl mb-4">Welcome to BEDbase</h1>
-        <div className="my-3"></div>
-        <div className="col-12 col-lg-9">
-          <p className="text-md-center text-base mb-4">
-            BEDbase is a unified platform for aggregating, analyzing, and serving genomic region data. BEDbase redefines
-            the way to manage genomic region data and allows users to search for BED files of interest and create
-            collections tailored to research needs. BEDbase is composed of a web server and an API. Users can explore
-            comprehensive descriptions of specific BED files via a user-oriented web interface and programmatically
-            interact with the data via an OpenAPI-compatible API.
+    <Layout footer title='BEDbase' fullHeight>
+      <div className='d-flex flex-column w-100 align-items-center p-2'>
+        <div className='mt-4 mb-3'></div>
+        <h1 className='fw-lighter text-primary text-6xl mb-3'>BEDbase</h1>
+        <div className='col-12 col-lg-10 text-muted'>
+          <p className='text-center mb-0'>
+            The open access platform for aggregating, analyzing, and serving genomic region data.
+          </p>
+          <p className='text-center mb-4 pb-3'>
+            Explore thousands of BED files (including{' '}
+            <a
+              href='https://genome.ucsc.edu/FAQ/FAQformat.html#format1'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            >
+              <i className='fw-medium text-primary'>.bed</i>
+            </a>
+            ,{' '}
+            <a
+              href='https://genome.ucsc.edu/goldenPath/help/bigBed.html'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            >
+              <i className='fw-medium text-primary'>.bigbed</i>
+            </a>
+            ,{' '}
+            <a
+              href='https://genome.ucsc.edu/goldenPath/help/wiggle.html'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            >
+              <i className='fw-medium text-primary'>.wig</i>
+            </a>
+            ,{' '}
+            <a
+              href='https://genome.ucsc.edu/goldenPath/help/bigWig.html'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            >
+              <i className='fw-medium text-primary'>.bw</i>
+            </a>
+            ,{' '}
+            <a
+              href='https://genome.ucsc.edu/goldenPath/help/bedgraph.html'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            >
+              <i className='fw-medium text-primary'>.bdg</i>
+            </a>
+            ) from ENCODE, GEO, and more.
           </p>
         </div>
-        <div className="d-flex flex-row align-items-center col-12 col-lg-9 gap-1">
-          <input
-            className="form-control form-control-lg"
-            type="text"
-            placeholder="Start searching for BED files"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                if (searchTerm.length === 0) {
-                  return;
-                }
-                navigate(`/search?q=${searchTerm}`);
-              }
-            }}
-          />
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={() => {
-              if (searchTerm.length === 0) {
-                return;
-              }
-              navigate(`/search?q=${searchTerm}&view=t2b`);
-            }}
-          >
-            <span className="d-flex align-items-center">
-              <i className="bi bi-search me-1"></i>
-              Search
-            </span>
+        <div className='col-12 col-lg-10 d-flex gap-2'>
+          <div className='input-group bg-white'>
+            {searchType === 'b2b' ? (
+              <input
+                key='file-input'
+                className='form-control border'
+                type='file'
+                accept='.bed,.gz,application/gzip,application/x-gzip'
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    navigate(`/search?view=b2b`, { state: { file: file } });
+                  }
+                }}
+              />
+            ) : (
+              <input
+                key='text-input'
+                className='form-control border'
+                type='text'
+                placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+            )}
+
+            <select
+              className='form-select'
+              style={{ maxWidth: '163px' }}
+              aria-label='search type selector'
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+            >
+              <option value='t2b'>Text-to-BED</option>
+              <option value='b2b'>BED-to-BED</option>
+              <option value='t2bs'>Text-to-BEDset</option>
+            </select>
+          </div>
+          <button className='btn btn-primary' type='button' onClick={handleSearch}>
+            <i className='bi bi-search' />
           </button>
         </div>
-        <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 my-3">
-          {/*<span>Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a></span>*/}
-          <span>Or, explore an <a href={`/bed/dcc005e8761ad5599545cc538f6a2a4d`}>example BED file</a></span>
-          <span>or an{' '} <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BEDset</a></span>
+
+        <div className='d-flex flex-row align-items-center col-12 col-lg-10 mt-2 border rounded overflow-hidden'>
+          <BEDEmbeddingPlot bedIds={[exampleBedId]} height={330} preselectPoint={true} />
+        </div>
+        <div className='text-sm text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
+          <span>
+            explore the BED file region embedding space above, or visit a{' '}
+            <a href={`/bed/${exampleBedId}`}>random BED file</a>
+          </span>
+          <span>
+            or <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}> BEDset</a>
+          </span>
         </div>
 
-        <div className="flex-row w-100 landing-animation-container hidden large-flex">
-          <div
-            className="d-flex flex-column align-items-center justify-content-center gap-3 px-2 text-center"
-            style={{ width: '23%' }}
+        <div className='d-flex flex-row gap-4 justify-content-center mb-5 text-muted'>
+          <span>
+            <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
+          </span>
+          <span>•</span>
+          <span>
+            <strong className='text-success'>{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</strong> BEDsets
+          </span>
+          <span>•</span>
+          <span>
+            <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
+          </span>
+          <span>•</span>
+          <a
+            className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            href={`/metrics`}
           >
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                Bed files
-              </a>
-              <Image src="/bed.svg" alt="BED file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/bigBed.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                {' '}
-                BigBed files
-              </a>
-              <Image src="/bigbed.svg" alt="BigBed file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/wiggle.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                Wig files
-              </a>
-              <Image src="/wig.svg" alt="Wiggle file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/bigWig.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                BigWig files
-              </a>
-              <Image src="/big_wig.svg" alt="BigWig file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/bedgraph.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                BedGraph files
-              </a>
-              <Image src="/bdg.svg" alt="BDG file icon" height="30px" className="ms-2" />
-            </FileBadge>
-          </div>
-          <InPaths />
-          <div className="d-flex flex column h-100 align-items-center">
-            <div className="p-2 border border-primary rounded rounded border-2 landing-main-logo-shadow">
-              <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="125px" className="landing-animation-logo" />
-            </div>
-          </div>
-          <OutPaths />
-          <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
-            <div className="d=flex flex-column">
-              <p className="mb-0 fw-bold text-center">Statistics</p>
-              <div className="border border-dark rounded p-1 shadow">
-                <Image src="/stats.svg" alt="Statistics icon" width="100px" className="ms-2" />
-              </div>
-            </div>
-            <div className="d=flex flex-column">
-              <p className="mb-0 fw-bold text-center">BED sets</p>
-              <div className="border border-dark rounded p-1 shadow">
-                <Image src="/bedset.svg" alt="Statistics icon" height="90px" className="ms-2" />
-              </div>
-            </div>
-            <div className="d=flex flex-column">
-              <p className="mb-0 fw-bold text-center">Embeddings</p>
-              <div className="border border-dark rounded p-1 shadow">
-                <Image src="/embeddings.svg" alt="Statistics icon" height="100px" className="ms-2" />
-              </div>
-            </div>
-          </div>
+            <strong>more</strong> metrics
+            <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
+          </a>
         </div>
-        <div className="my-2 w-100">
-          <Row className="w-100 align-items-center mb-5">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">Web Server and API</h2>
-              <p className="text-balance pe-4">
-                The BEDbase web server and API are designed to provide a user-friendly interface for exploring and
-                working with genomic region data. The web server allows users to search for BED files and BED sets, view
-                detailed information about specific files, and create collections of files.
-              </p>
-            </Col>
-            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div
-                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
-                <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
-                  <div className="d-flex flex-row align-items-center text-sm">
-                    <Nav variant="pills" className="flex-row">
-                      {CODE_SNIPPETS.map((snippet) => (
-                        <Nav.Item key={snippet.language}>
-                          <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
-                            {snippet.language}
-                          </Nav.Link>
-                        </Nav.Item>
-                      ))}
-                    </Nav>
-                  </div>
-                  <Tab.Content className="w-100 h-100">
-                    {CODE_SNIPPETS.map((snippet) => (
-                      <Tab.Pane key={snippet.language} eventKey={snippet.language}>
-                        <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
-                          {snippet.code}
-                        </Markdown>
-                        <div className="position-absolute top-0 end-0 me-2">
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(snippet.raw);
-                              setCopied(true);
-                              setTimeout(() => {
-                                setCopied(false);
-                              }, 2000);
-                            }}
-                            className="btn btn-outline-primary btn-sm mt-2"
-                          >
-                            {copied ? 'Copied!' : 'Copy'}
-                          </button>
-                        </div>
-                      </Tab.Pane>
-                    ))}
-                  </Tab.Content>
-                </Tab.Container>
-              </div>
-            </Col>
-          </Row>
-          <Row className="w-100 align-items-center mb-5">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">BED Embedding Visualization</h2>
-              <p className="text-balance pe-4">
-                BEDbase supports visualization of UMAP of hg38 BED embeddings. It allows users to explore the
-                similarity of genomic regions based on their embeddings, and
-                providing insights into the relationships between different BED files.
-                The visualization is available on the <a href="/umap">UMAP visualization</a>.
-              </p>
-            </Col>
-            <Col>
-              <Image src="/umap.png" alt="UMAP visualization" height="300px" className="mb-3 d-flex img-fluid" />
-            </Col>
-          </Row>
-          <Row className="w-100 mb-5">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">Search for BED Files</h2>
-              <p className="text-balance pe-4">
-                BEDbase offers three search endpoints for discovering BED files and BEDsets, distinguishing itself from
-                other platforms by utilizing vector search to index and search through bed file regions. This approach
-                enhances search accuracy and efficiency compared to platforms relying on unstructured user-provided
-                metadata, which can be ambiguous and less reliable. User can search for BED files by providing a query
-                string, or a BED file.
-              </p>
-            </Col>
-            <Col sm={6} md={6}>
-              <div className="d-flex flex-row align-items-center width-100 justify-content-center h-100 gap-1">
-                <input
-                  value={searchTermSmall}
-                  onChange={(e) => setSearchTermSmall(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      if (searchTermSmall.length === 0) {
-                        return;
-                      }
-                      navigate(`/search?q=${searchTermSmall}`);
-                    }
-                  }}
-                  className="p-2 rounded border w-100 shadow-sm"
-                />
-                <button
-                  onClick={() => {
-                    if (searchTermSmall.length === 0) {
-                      return;
-                    }
-                    navigate(`/search?q=${searchTermSmall}&view=t2b`);
-                  }}
-                  className="btn btn-primary btn-lg"
-                >
-                  <i className="bi bi-search"></i>
-                </button>
-              </div>
-            </Col>
-          </Row>
-          {/* <div className="my-5"></div> */}
-          <Row className="w-100 align-items-center mb-5 mb-md-2">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">BEDbase Client </h2>
-              <p className="text-balance pe-4">
-                BEDbase provides a Python an R client for interacting with the BEDbase API. The client allows users to
-                download, cache, and analyze BED files and BED sets programmatically, without the need to interact with
-                the native API. BBclient is available on PyPI in geniml package with other useful tools for genomic data
-                analysis. Python Geniml package:{' '}
-                <a href="https://pypi.org/project/geniml/" className="bi bi-box-fill">
-                  {' '}
-                  PyPI geniml
-                </a>
-                .
-                R package:{' '}
-                <a href="https://github.com/waldronlab/bedbaser" className="bi bi-github">
-                  {' '}
-                  BEDbaser
-                </a>
-                .
-              </p>
-            </Col>
 
-            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div
-                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
-                <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
-                  <div className="d-flex flex-row align-items-center text-sm">
-                    <Nav variant="pills" className="flex-row">
-                      {BBCONF_SNIPPETS.map((snippet) => (
-                        <Nav.Item key={snippet.language}>
-                          <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
-                            {snippet.language}
-                          </Nav.Link>
-                        </Nav.Item>
-                      ))}
-                    </Nav>
+        <div className='col-12 col-lg-10 mb-5'>
+          <div className='row g-2'>
+            <div className='col-md-4'>
+              <div className='d-flex flex-column gap-2 h-100'>
+                <div className='card border overflow-hidden flex-fill'>
+                  <div className='card-body d-flex flex-column h-100'>
+                    <div className='d-flex align-items-center mb-2'>
+                      <i className='bi bi-body-text fs-5 text-primary me-2'></i>
+                      <h6 className='mb-0 fw-bold'>Vector Search</h6>
+                    </div>
+                    <p className='text-muted flex-grow-1 text-sm'>
+                      Search by text, upload BED files for similarity matching, or browse BEDsets. Explore results
+                      directly in their region embedding space.
+                    </p>
+                    <div className='d-flex gap-2'>
+                      <a href='/search' className='btn btn-outline-primary btn-sm align-self-start'>
+                        Search
+                      </a>
+                      <a href='/umap' className='btn btn-outline-primary btn-sm align-self-start'>
+                        Embedding Atlas
+                      </a>
+                    </div>
                   </div>
-                  <Tab.Content className="w-100 h-100">
-                    {BBCONF_SNIPPETS.map((snippet) => (
-                      <Tab.Pane key={snippet.language} eventKey={snippet.language}>
-                        <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
+                </div>
+
+                <div className='card border overflow-hidden flex-fill'>
+                  <div className='card-body d-flex flex-column h-100'>
+                    <div className='d-flex align-items-center mb-2'>
+                      <i className='bi bi-graph-up fs-5 text-primary me-2'></i>
+                      <h6 className='mb-0 fw-bold'>BED Analyzer</h6>
+                    </div>
+                    <p className='text-muted flex-grow-1 text-sm'>
+                      Analyze any BED file in your browser with gtars-wasm. Get file statistics, region distributions,
+                      and chromosome coverage instantly.
+                    </p>
+                    <a href='/analyze' className='btn btn-outline-primary btn-sm align-self-start'>
+                      BED Analyzer
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className='col-md-8'>
+              <div className='card h-100 border overflow-hidden'>
+                <div className='border-bottom position-relative' style={{ height: '210px' }}>
+                  <div className='d-flex flex-row align-items-center text-sm p-1'>
+                    <ul className='nav nav-pills flex-row'>
+                      {CODE_SNIPPETS.map((snippet) => (
+                        <li className='nav-item' key={snippet.language}>
+                          <button
+                            className={`nav-link py-0 px-2 m-1 ${activeApiTab === snippet.language ? 'active' : ''}`}
+                            onClick={() => setActiveApiTab(snippet.language)}
+                            style={{ fontSize: '0.7rem' }}
+                          >
+                            {snippet.language}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className='w-100 h-100 overflow-auto' style={{ maxHeight: '160px' }}>
+                    {CODE_SNIPPETS.map((snippet) => (
+                      <div key={snippet.language} className={activeApiTab === snippet.language ? '' : 'd-none'}>
+                        <Markdown className='h-100' rehypePlugins={[rehypeHighlight]}>
                           {snippet.code}
                         </Markdown>
-                        <div className="position-absolute top-0 end-0 me-2">
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(snippet.raw);
-                              setCopied(true);
-                              setTimeout(() => {
-                                setCopied(false);
-                              }, 2000);
-                            }}
-                            className="btn btn-outline-primary btn-sm mt-2"
-                          >
-                            {copied ? 'Copied!' : 'Copy'}
-                          </button>
-                        </div>
-                      </Tab.Pane>
+                      </div>
                     ))}
-                  </Tab.Content>
-                </Tab.Container>
+                  </div>
+                  <div className='position-absolute top-0 end-0 me-2 mt-1'>
+                    <button
+                      onClick={() => {
+                        const activeSnippet = CODE_SNIPPETS.find((s) => s.language === activeApiTab);
+                        if (activeSnippet) {
+                          navigator.clipboard.writeText(activeSnippet.raw);
+                          setCopiedAPI(true);
+                          setTimeout(() => setCopiedAPI(false), 2000);
+                        }
+                      }}
+                      className='btn btn-outline-primary py-0 px-2 m-1'
+                      style={{ fontSize: '0.7rem' }}
+                    >
+                      {copiedAPI ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                </div>
+                <div className='card-body'>
+                  <div className='d-flex align-items-center mb-2'>
+                    <i className='bi bi-hdd-stack-fill fs-5 text-primary me-2'></i>
+                    <h6 className='mb-0 fw-bold'>REST API</h6>
+                  </div>
+                  <p className='text-muted small mb-3 text-sm'>
+                    Programmatic access to the BEDbase web server with a RESTful API. Query, retrieve, and analyze
+                    genomic regions with simple HTTP requests from any language.
+                  </p>
+                  <a href='/api' className='btn btn-outline-primary btn-sm'>
+                    API Docs
+                  </a>
+                </div>
               </div>
-            </Col>
-          </Row>
-          <Row className="w-100 align-items-center">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">Data Availability Summary</h2>
-              <p className="text-balance pe-4">
-                Comprehensive metrics about BEDbase file statistics is available on the {' '}
-                <a href={`/metrics`}>metrics page</a>.
-              </p>
-            </Col>
-            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div className="mt-0 mt-md-5 mb-5 w-100">
-                <ul className="list-group w-100">
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Number of bed files available:
-                    <span
-                      className="badge bg-primary rounded-pill">{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Number of bed sets available:
-                    <span
-                      className="badge bg-success rounded-pill">{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Number of genomes available:
-                    <span
-                      className="badge bg-info rounded-pill">{(bedbaseStats?.genomes_number || 0).toLocaleString()}</span>
-                  </li>
-                </ul>
+            </div>
+
+            <div className='col-md-12'>
+              <div className='card h-100 border overflow-hidden'>
+                <div className='border-bottom position-relative' style={{ height: '210px' }}>
+                  <div className='d-flex flex-row align-items-center text-sm p-1'>
+                    <ul className='nav nav-pills flex-row'>
+                      {BBCONF_SNIPPETS.map((snippet) => (
+                        <li className='nav-item' key={snippet.language}>
+                          <button
+                            className={`nav-link py-0 px-2 m-1 ${activeClientTab === snippet.language ? 'active' : ''}`}
+                            onClick={() => setActiveClientTab(snippet.language)}
+                            style={{ fontSize: '0.7rem' }}
+                          >
+                            {snippet.language}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className='w-100 h-100 overflow-auto' style={{ maxHeight: '160px' }}>
+                    {BBCONF_SNIPPETS.map((snippet) => (
+                      <div key={snippet.language} className={activeClientTab === snippet.language ? '' : 'd-none'}>
+                        <Markdown className='h-100' rehypePlugins={[rehypeHighlight]}>
+                          {snippet.code}
+                        </Markdown>
+                      </div>
+                    ))}
+                  </div>
+                  <div className='position-absolute top-0 end-0 me-2 mt-1'>
+                    <button
+                      onClick={() => {
+                        const activeSnippet = BBCONF_SNIPPETS.find((s) => s.language === activeClientTab);
+                        if (activeSnippet) {
+                          navigator.clipboard.writeText(activeSnippet.raw);
+                          setCopiedClient(true);
+                          setTimeout(() => setCopiedClient(false), 2000);
+                        }
+                      }}
+                      className='btn btn-outline-primary py-0 px-2 m-1'
+                      style={{ fontSize: '0.7rem' }}
+                    >
+                      {copiedClient ? 'Copied!' : 'Copy'}
+                    </button>
+                  </div>
+                </div>
+                <div className='card-body'>
+                  <div className='d-flex align-items-center mb-2'>
+                    <i className='bi bi-terminal fs-5 text-primary me-2'></i>
+                    <h6 className='mb-0 fw-bold'>BEDbase Clients</h6>
+                  </div>
+                  <p className='text-muted small mb-3 text-sm'>
+                    Download, cache, and analyze BED files programmatically with native Python and R packages.
+                    Simplifies API interaction through high-level interfaces.
+                  </p>
+                  <div className='d-flex gap-2'>
+                    <a
+                      href='https://pypi.org/project/geniml/'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='btn btn-outline-primary btn-sm'
+                    >
+                      <i className='bi bi-box-fill me-1'></i> Python
+                    </a>
+                    <a
+                      href='https://github.com/waldronlab/bedbaser'
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='btn btn-outline-primary btn-sm'
+                    >
+                      <i className='bi bi-github me-1'></i> R
+                    </a>
+                  </div>
+                </div>
               </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>

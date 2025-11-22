@@ -2,7 +2,7 @@ import { Modal } from 'react-bootstrap';
 
 type Props = {
   titles: string[];
-  endpoints: string[],
+  endpoints: string[];
   show: boolean;
   onHide: () => void;
 };
@@ -34,12 +34,14 @@ export const EndpointsModal = (props: Props) => {
                 <tr key={index}>
                   <td>{title}</td>
                   <td>
-                    <a href={endpoints[index]} target='_blank' rel='noopener noreferrer'>{endpoints[index]}</a>
+                    <a href={endpoints[index]} target='_blank' rel='noopener noreferrer'>
+                      {endpoints[index]}
+                    </a>
                   </td>
                 </tr>
               ))}
-              </tbody>
-            </table>
+            </tbody>
+          </table>
         </div>
       </Modal.Body>
     </Modal>

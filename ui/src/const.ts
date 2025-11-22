@@ -127,7 +127,6 @@ print(bed_granges)
 \`\`\`
 `;
 
-
 export const BBCONF_SNIPPETS = [
   {
     language: 'Python',

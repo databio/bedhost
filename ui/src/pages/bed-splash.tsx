@@ -2,7 +2,6 @@ import { useParams } from 'react-router-dom';
 import { useBedMetadata } from '../queries/useBedMetadata';
 import { useBedGenomeStats } from '../queries/useBedGenomeStats';
 import { Layout } from '../components/layout';
-import { Col, Container, Row } from 'react-bootstrap';
 import { BedSplashHeader } from '../components/bed-splash-components/header';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { ErrorPage } from '../components/common/error-page';
@@ -13,12 +12,13 @@ import { GenomicFeatureBar } from '../components/bed-splash-components/charts/ge
 import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
 import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
-import { snakeToTitleCase } from '../utils';
+import { snakeToTitleCase, formatDateTime } from '../utils';
 import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table';
 import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
-import { BEDEmbeddingView } from '../components/umap/bed-embedding-view.tsx';
-import { useState } from 'react';
+// import { BEDEmbeddingView } from '../components/umap/bed-embedding-view.tsx';
+// import { useState } from 'react';
+import { SearchBedSetResultTable } from '../components/search/text2bedset/t2bs-search-results-table.tsx';
 
 // Use the response type to properly type the metadata
 type BedMetadata = components['schemas']['BedMetadataAll'];
@@ -27,7 +27,7 @@ export const BedSplash = () => {
   const params = useParams();
   const bedId = params.id;
 
-  const [showNeighbors, setShowNeighbors] = useState(false);
+  // const [showNeighbors, setShowNeighbors] = useState(false);
 
   const {
     isLoading,
@@ -39,15 +39,13 @@ export const BedSplash = () => {
     full: true,
   });
 
-  const {
-    data: genomeStats,
-  } = useBedGenomeStats({
+  const { data: genomeStats } = useBedGenomeStats({
     md5: bedId,
   });
 
   const { data: neighbours } = useBedNeighbours({
     md5: bedId,
-    limit: 10,
+    limit: 5,
     offset: 0,
   });
 
@@ -65,33 +63,127 @@ export const BedSplash = () => {
     );
   };
 
+  const filteredKeys = getFilteredKeys(metadata);
+  // Add created and updated at the end
+  const allKeys = [...filteredKeys, '_created', '_updated'];
+  const midpoint = Math.ceil(allKeys.length / 2);
+  const leftKeys = allKeys.slice(0, midpoint);
+  const rightKeys = allKeys.slice(midpoint);
+
+  const metadataRow = (k: string) => {
+    if (k === '_created') {
+      return (
+        <tr key={k}>
+          <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
+            File Created
+          </td>
+          <td className='py-0'>{metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'N/A'}</td>
+        </tr>
+      );
+    }
+
+    if (k === '_updated') {
+      return (
+        <tr key={k}>
+          <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
+            File Updated
+          </td>
+          <td className='pt-0 pb-1'>
+            {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'N/A'}
+          </td>
+        </tr>
+      );
+    }
+
+    const value = getAnnotationValue(metadata, k);
+    if (!value) return null;
+
+    return (
+      <tr key={k}>
+        <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
+          {snakeToTitleCase(k)}
+        </td>
+        <td
+          style={{ maxWidth: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
+          className='pt-0 pb-1'
+        >
+          {k === 'global_sample_id'
+            ? Array.isArray(value) && value.length > 0
+              ? value
+                  .map((v, i) =>
+                    v.includes('encode:') ? (
+                      <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>
+                        {v}
+                      </a>
+                    ) : v.includes('geo:') ? (
+                      <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>
+                        {v}
+                      </a>
+                    ) : (
+                      (v ?? 'N/A')
+                    ),
+                  )
+                  .reduce((prev, curr) => (
+                    <>
+                      {prev}, {curr}
+                    </>
+                  ))
+              : (value ?? 'N/A')
+            : k === 'global_experiment_id'
+              ? Array.isArray(value) && value.length > 0
+                ? value
+                    .map((v, i) =>
+                      v.includes('encode') ? (
+                        <a key={i} href={'https://www.encodeproject.org'}>
+                          {v}
+                        </a>
+                      ) : v.includes('geo:') ? (
+                        <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>
+                          {v}
+                        </a>
+                      ) : (
+                        (v ?? 'N/A')
+                      ),
+                    )
+                    .reduce((prev, curr) => (
+                      <>
+                        {prev}, {curr}
+                      </>
+                    ))
+                : (value ?? 'N/A')
+              : (value ?? 'N/A')}
+        </td>
+      </tr>
+    );
+  };
+
   if (isLoading) {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer>
-        <div className="my-2">
-          <Row>
-            <Col sm={12} md={12}>
-              <div className="mb-2">
-                <CardSkeleton height="100px" />
+        <div className='my-2'>
+          <div className='row'>
+            <div className='col-sm-12 col-md-12'>
+              <div className='mb-2'>
+                <CardSkeleton height='100px' />
               </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={5} md={5}>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+            </div>
+          </div>
+          <div className='row'>
+            <div className='col-sm-5 col-md-5'>
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-            </Col>
-            <Col sm={7} md={7}>
-              <CardSkeleton height="100%" />
-            </Col>
-          </Row>
+            </div>
+            <div className='col-sm-7 col-md-7'>
+              <CardSkeleton height='100%' />
+            </div>
+          </div>
         </div>
       </Layout>
     );
@@ -100,32 +192,32 @@ export const BedSplash = () => {
       return (
         <Layout title={`BEDbase | ${bedId}`}>
           <div
-            className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
+            className='mt-5 w-100 d-flex flex-column align-items-center justify-content-center'
             style={{ height: '50vh' }}
           >
-            <h1 className="fw-bold text-center mb-3">Oh no!</h1>
-            <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h5 className="text-2xl text-center">
+            <h1 className='fw-bold text-center mb-3'>Oh no!</h1>
+            <div className='d-flex flex-row align-items-center w-100 justify-content-center'>
+              <h5 className='text-2xl text-center'>
                 We could not find BED with record identifier: <br />
-                <span className="fw-bold">{bedId}</span>
+                <span className='fw-bold'>{bedId}</span>
               </h5>
             </div>
-            <div className="w-50">
-              <p className="fst-italic text-center mt-3">
+            <div className='w-50'>
+              <p className='fst-italic text-center mt-3'>
                 Are you sure you have the correct record identifier? If you believe this is an error, please open an
-                issue: <a href="https://github.com/databio/bedhost/issues">on GitHub</a>
+                issue: <a href='https://github.com/databio/bedhost/issues'>on GitHub</a>
               </p>
             </div>
-            <div className="d-flex flex-row align-items-center justify-content-center">
-              <a href="/">
-                <button className="btn btn-primary">
-                  <i className="bi bi-house me-1"></i>
+            <div className='d-flex flex-row align-items-center justify-content-center'>
+              <a href='/'>
+                <button className='btn btn-primary'>
+                  <i className='bi bi-house me-1'></i>
                   Home
                 </button>
               </a>
-              <a href="https://github.com/databio/bedhost/issues">
-                <button className="btn btn-primary ms-2">
-                  <i className="bi bi-exclamation-triangle me-1"></i>
+              <a href='https://github.com/databio/bedhost/issues'>
+                <button className='btn btn-primary ms-2'>
+                  <i className='bi bi-exclamation-triangle me-1'></i>
                   Report issue
                 </button>
               </a>
@@ -139,173 +231,113 @@ export const BedSplash = () => {
   } else {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
-        <Container className="my-2">
-          <Row className="mb-2">
-            <Col sm={12} md={12}>
-              {metadata !== undefined ? <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats}/> : null}
-            </Col>
-          </Row>
-          <Row className="mt-3 mb-4 g-2">
-            <Col sm={12} md={6} className='mt-0'>
-              <h5 className="fw-bold">Overview</h5>
-              <div className="border rounded px-0 pt-1 shadow-sm">
-                <div className="table-responsive">
-                  <table className="table table-sm table-striped text-truncate text-sm">
-                    <thead>
-                      <tr>
-                        <th scope="col">Key</th>
-                        <th scope="col">Value</th>
-                      </tr>
-                    </thead>
-                    <tbody className="text-sm">
-                      {Object.keys(metadata?.annotation || {}).map((k) => {
-                        if (k === 'input_file' || k === 'file_name' || k === 'sample_name') {
-                          return null;
-                        }
-
-                        const value = getAnnotationValue(metadata, k);
-                        if (!value) {
-                          return null;
-                        }
-
-                        return (
-                          <tr key={k}>
-                            <td style={{ maxWidth: '50px' }} className="fst-italic">
-                              {snakeToTitleCase(k)}
-                            </td>
-                            <td style={{ maxWidth: '120px' }} className="truncate">
-                              { k === 'global_sample_id' ?
-                              (Array.isArray(value) && value.length > 0)
-                              ? value.map((v, i) => (
-                                  v.includes('encode:')
-                                    ? <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>{v}</a>
-                                    : v.includes('geo:')
-                                      ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a>
-                                      : v ?? 'N/A'
-                                )).reduce((prev, curr) => <>{prev}, {curr}</>)
-                              : value ?? 'N/A'
-                              :
-                                k === 'global_experiment_id' ?
-                                (Array.isArray(value) && value.length > 0) ? value.map((v, i) => (
-                                  v.includes('encode') ? <a key={i} href={'https://www.encodeproject.org'}>{v}</a> :
-                                  v.includes('geo:') ? <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>{v}</a> :
-                                  v ?? 'N/A'
-                                )).reduce((prev, curr) => <>{prev}, {curr}</>) : value ?? 'N/A'
-                              :
-                                value ?? 'N/A'
-                              }
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+        <div className='container my-2'>
+          <div className='row mb-2'>
+            <div className='col-12'>
+              {metadata !== undefined ? (
+                <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats} />
+              ) : null}
+            </div>
+          </div>
+          <div className='row mt-1 mb-3 g-2'>
+            <div className='col-12'>
+              <h5 className='fw-bold'>Metadata</h5>
+              <div className='row'>
+                <div className='col-12 col-xl-6 mt-0 ps-4'>
+                  <div className='text-sm'>
+                    <table className='table table-sm table-borderless table-transparent mb-0'>
+                      <tbody>{leftKeys.map(metadataRow)}</tbody>
+                    </table>
+                  </div>
+                </div>
+                <div className='col-12 col-xl-6 mt-0 ps-4'>
+                  <div className='text-sm'>
+                    <table className='table table-sm table-borderless table-transparent mb-0'>
+                      <tbody>{rightKeys.map(metadataRow)}</tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
-            </Col>
-            <Col sm={12} md={6} className='mt-2 mt-md-0'>
-              <h5 className="fw-bold">BEDsets</h5>
-              <div className="border rounded px-0 pt-1 shadow-sm">
-                <div className="table-responsive">
-                  <table className="table table-sm table-striped text-truncate text-sm">
-                    <thead>
-                    <tr>
-                      <th scope="col">BEDset ID</th>
-                      <th scope="col">Name</th>
-                      <th scope="col">Description</th>
-                      <th scope="col">View</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {[
-                      ...(metadata?.bedsets || []).map((bedset) => (
-                        <tr key={bedset.id} className="truncate">
-                          <td className="truncate" style={{ maxWidth: '150px' }}>
-                            {bedset.id}
-                          </td>
-                          <td className="truncate" style={{ maxWidth: '100px' }}>
-                            {bedset.name || 'No name'}
-                          </td>
-                          <td className="truncate" style={{ maxWidth: '300px' }}>
-                            {bedset.description || 'No description'}
-                          </td>
-                          <td>
-                            <a href={`/bedset/${bedset.id}`}>View</a>
-                          </td>
-                        </tr>
-                      )),
-                      ...Array(Math.max(0, getFilteredKeys(metadata).length - (metadata?.bedsets?.length || 0)))
-                        .fill(null)
-                        .map((_, index) => (
-                          <tr key={`empty-${index}`}>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                            <td>&nbsp;</td>
-                          </tr>
-                        )),
-                    ]}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row className="mb-4 g-2">
-            <h5 className="fw-bold">Statistics</h5>
+          <div className='row mb-4 g-2'>
+            <h5 className='fw-bold'>Statistics</h5>
             {metadata && (
-              <Col sm={12} md={3} className="d-flex flex-column mt-0 gap-2">
+              <div className='col-sm-12 col-md-3 d-flex flex-column mt-0 gap-2'>
                 <NoRegionsCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <MeanRegionWidthCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
-              </Col>
+              </div>
             )}
-            <Col sm={12} md={9} className="d-flex flex-column mt-2 mt-md-0">
+            <div className='col-sm-12 col-md-9 d-flex flex-column mt-2 mt-md-0'>
               <GenomicFeatureBar metadata={metadata!} />
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row className="mb-4">
-            <h5 className="fw-bold">Plots</h5>
-            <Col sm={12}>
+          <div className='row mb-4'>
+            <h5 className='fw-bold'>Plots</h5>
+            <div className='col-sm-12'>
               <Plots metadata={metadata!} />
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          {bedId && metadata?.name?.includes('encode') && (
+          {/* {bedId && metadata?.name?.includes('encode') && (
             <>
-              <BEDEmbeddingView bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors} enableUpload={true}/>
+              <BEDEmbeddingView bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors} enableUpload={false}/>
             </>
+          )} */}
+
+          {metadata?.bedsets && metadata.bedsets.length > 0 && (
+            <div className='row mb-3'>
+              <div className='col-12'>
+                <h5 className='fw-bold'>BEDsets</h5>
+                <SearchBedSetResultTable
+                  results={{
+                    count: metadata.bedsets.length,
+                    limit: metadata.bedsets.length,
+                    offset: 0,
+                    results: metadata.bedsets.map((bedset) => ({
+                      id: bedset.id,
+                      name: bedset.name || '',
+                      description: bedset.description || '',
+                      md5sum: '',
+                      bed_ids: [],
+                    })),
+                  }}
+                  showBEDCount={false}
+                />
+              </div>
+            </div>
           )}
 
           {neighbours && (
-            <Row className="mb-4 mx-0">
-              <div className='d-flex justify-content-between align-items-center px-0'>
-                <h5 className="fw-bold px-0">Similar BED Files</h5>
-                <div className='form-check form-switch form-switch-sm'>
-                  <input 
-                    className='form-check-input'
-                    type='checkbox'
-                    checked={showNeighbors}
-                    id='showNeighbors'
-                    onChange={() => setShowNeighbors(!showNeighbors)}
-                  />
-                  <label 
-                    className='form-check-label fw-medium text-sm'
-                    htmlFor='showNeighbors'
-                  >
-                    Show in Atlas
-                  </label>
+            <div className='row mb-3'>
+              <div className='col-12'>
+                <div className='d-flex justify-content-between align-items-center px-0'>
+                  <h5 className='fw-bold px-0'>Similar BED Files</h5>
+                  {/* <div className='form-check form-switch form-switch-sm'>
+                    <input
+                      className='form-check-input'
+                      type='checkbox'
+                      checked={showNeighbors}
+                      id='showNeighbors'
+                      onChange={() => setShowNeighbors(!showNeighbors)}
+                    />
+                    <label
+                      className='form-check-label fw-medium text-sm'
+                      htmlFor='showNeighbors'
+                    >
+                      Show in Atlas
+                    </label>
+                  </div> */}
                 </div>
-              </div>
-              <Col sm={12} className="d-flex flex-column mt-0 border rounded rounded-2 shadow-sm px-0 pt-1 pb-0">
                 <Text2BedSearchResultsTable results={neighbours} />
-              </Col>
-            </Row>
+              </div>
+            </div>
           )}
-        </Container>
+        </div>
       </Layout>
     );
   }

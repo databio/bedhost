@@ -1,16 +1,6 @@
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-
-$primary: #008080;
-// $secondary: #f97316;
-
-// merge with existing $theme-colors map
-$theme-colors: map-merge(
-  $theme-colors,
-  (
-    'primary': $primary,
-    // 'secondary': $secondary,
-  )
+// Import Bootstrap with @use instead of @import
+@use 'bootstrap/scss/bootstrap' as * with (
+  $primary: #008080 // $secondary: #f97316,
 );
 
 // override btn-outline-primary hover bg-color
@@ -22,8 +12,9 @@ $theme-colors: map-merge(
   }
 }
 
-// set changes
-@import 'bootstrap';
+body {
+  background-color: var(--bs-body-tertiary-bg) !important;
+}
 
 a {
   color: $primary;
@@ -149,7 +140,9 @@ a {
   white-space: nowrap; /* Keeps the content on a single line */
   margin: 0 auto; /* Gives that scrolling effect as the typing happens */
   letter-spacing: 0.15em; /* Adjust as needed */
-  animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+  animation:
+    typing 3.5s steps(40, end),
+    blink-caret 0.75s step-end infinite;
 }
 
 .truncate {
@@ -340,7 +333,7 @@ td {
 }
 
 .metric-plot-height {
-  height: 450px;
+  height: auto;
 }
 
 .btn-xs {
@@ -362,8 +355,20 @@ td {
   border-radius: 0.25rem;
 }
 
-.chrom-dist-plot-container {
-  width: 85% !important;
-  transform: translateX(-3rem) !important;
+.btn-card {
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
 }
 
+.table-transparent {
+  background-color: transparent; /* Makes the table background completely transparent */
+  --bs-table-bg: transparent;
+}
+
+.table-transparent tbody tr {
+  background-color: transparent;
+  --bs-table-bg: transparent;
+}

@@ -1,40 +1,43 @@
-// import { ProgressBar } from 'react-bootstrap';
-import { components } from '../../../../bedbase-types';
-import { roundToTwoDecimals } from '../../../utils';
-import { useBedCart } from '../../../contexts/bedcart-context';
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-import toast from 'react-hot-toast';
-import YAML from 'js-yaml';
+// import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-type SearchResponse = components['schemas']['BedListSearchResult'];
-// type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
+import { components } from '../../../../bedbase-types';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { roundToTwoDecimals } from '../../../utils';
+import YAML from 'js-yaml';
+import { useBedCart } from '../../../contexts/bedcart-context';
+import toast from 'react-hot-toast';
+
+type Bed = components['schemas']['QdrantSearchResult'];
 
 type Props = {
-  results: SearchResponse;
-  search_query?: string | undefined;
+  results: Bed[];
   layout?: string;
   onCardClick?: (bedId: string) => void;
 };
 
-export const Text2BedSearchResultsTable = (props: Props) => {
-  const { results, search_query, layout, onCardClick } = props;
+export const Bed2BedSearchResultsCards = (props: Props) => {
+  const { results, layout, onCardClick } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
   const navigate = useNavigate();
 
+  // const [sorting, setSorting] = useState<SortingState>([]);
+  // const [pagination, setPagination] = useState<PaginationState>({
+  //   pageIndex: 0,
+  //   pageSize: 20,
+  // });
+
   return (
     <>
-      {results.results?.map((result) => (
+      {results?.map((result) => (
         <div className='card bg-white border mb-2 overflow-hidden' key={result.id}>
           <div className='d-flex'>
             <div
-              className={`card-body position-relative flex-1 pt-2 mb-0 ${'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
+              className={`card-body position-relative flex-1 pt-2 mb-0 ${layout === 'split' && 'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
               onClick={() => {
                 if (layout === 'split') {
                   onCardClick?.(result.metadata?.id || '');
-                  return;
                 }
-                navigate(`/bed/${result.metadata?.id}`);
               }}
             >
               <div className='d-flex justify-content-between align-items-center mb-2 pt-1'>
@@ -58,7 +61,6 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 </div>
 
                 <div className='d-flex gap-1 align-items-center text-sm'>
-                  {result.id === (search_query || '') && <i className='bi bi-check-all text-primary' />}
                   <OverlayTrigger
                     placement='top'
                     overlay={
