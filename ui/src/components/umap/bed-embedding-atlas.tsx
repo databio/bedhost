@@ -68,9 +68,9 @@ export const BEDEmbeddingAtlas = (props: Props) => {
                 autoLabelEnabled: false,
               }}
               onStateChange={(e) => console.log(e)}
-              onExportSelection={async (predicate, format) => {
-                console.log('Export selection:', predicate, format);
-              }}
+              // onExportSelection={async (predicate, format) => {
+              //   console.log('Export selection:', predicate, format);
+              // }}
             />
           </div>
         </div>

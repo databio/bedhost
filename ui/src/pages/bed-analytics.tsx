@@ -38,7 +38,7 @@ export const BEDAnalytics = () => {
       url.length === 32 && !url.startsWith('http')
         ? `https://api.bedbase.org/v1/files/files/${url[0]}/${url[1]}/${url}.bed.gz`
         : url;
-    console.log(`${fetchUrl}`);
+    // console.log(`${fetchUrl}`);
     const response = await fetch(fetchUrl);
     if (!response.ok) {
       throw new Error(`Failed to fetch BED file: ${response.statusText}`);

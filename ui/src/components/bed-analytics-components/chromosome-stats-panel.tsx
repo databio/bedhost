@@ -53,7 +53,7 @@ const ChromosomeStatsPanel = ({ rs, selectedFile }: Props) => {
       <div className='mb-3 w-100'>
         <h6>Number of regions per chromosome: </h6>
         <div className='border rounded bg-white overflow-hidden w-100' ref={plotRef}>
-          <div className='overflow-auto px-4 py-2 w-100' style={{ maxHeight: 400 }}>
+          <div className='overflow-auto px-4 pt-3 pb-2 w-100' style={{ maxHeight: 400 }}>
             {containerWidth > 0 && <RegionCountsPlot statsEntries={statsEntries} width={containerWidth} />}
           </div>
         </div>

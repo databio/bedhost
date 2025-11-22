@@ -117,7 +117,7 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
 
       // Force WebGL by hiding WebGPU if not available
       if (!webgpuAvailable && webgl2Available) {
-        console.log('WebGPU not available, forcing WebGL2 fallback');
+        // console.log('WebGPU not available, forcing WebGL2 fallback');
         if ('gpu' in navigator) {
           Object.defineProperty(navigator, 'gpu', {
             get: () => undefined,
