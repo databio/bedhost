@@ -45,7 +45,7 @@ export const BedsetSplashHeader = (props: Props) => {
             </button>
           </h5>
         </div>
-        <div className='d-flex flex-column flex-lg-row align-items-start align-items-lg-end gap-1 flex-shrink-0'>
+        <div className='d-flex flex-wrap align-items-center gap-1 flex-shrink-0'>
           {/*  TODO: change hg38 on correct genome */}
           {/*<a href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=https://api-dev.bedbase.org/v1/bedset/${metadata.id}/track_hub`}>*/}
           {(metadata.bed_ids?.length || 0) <= 20 && (
@@ -53,7 +53,7 @@ export const BedsetSplashHeader = (props: Props) => {
               href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=hg38&hubUrl=${API_BASE}/bedset/${metadata.id}/track_hub`}
               target='_blank'
             >
-              <button className='btn btn-outline-primary btn-sm'>
+              <button className='btn btn-outline-primary btn-sm text-nowrap'>
                 <i className='bi bi-distribute-vertical me-1' />
                 Genome Browser
               </button>
@@ -61,7 +61,7 @@ export const BedsetSplashHeader = (props: Props) => {
           )}
 
           <a href={`${API_BASE}/bedset/${metadata.id}/metadata?full=true`}>
-            <button className='btn btn-outline-primary btn-sm'>
+            <button className='btn btn-outline-primary btn-sm text-nowrap'>
               <i className='bi bi-info-circle me-1' />
               API
             </button>
@@ -71,7 +71,7 @@ export const BedsetSplashHeader = (props: Props) => {
             metadata.bed_ids?.every((bedId) => cart[bedId]) && !addedToCart ? (
               <button
                 onClick={() => removeMultipleBedsFromCart(metadata.bed_ids || [])}
-                className='btn btn-outline-danger btn-sm'
+                className='btn btn-outline-danger btn-sm text-nowrap'
               >
                 <i className='bi bi-cart-x me-1' />
                 Remove beds from cart
@@ -101,7 +101,7 @@ export const BedsetSplashHeader = (props: Props) => {
                       }
                 }
                 disabled={metadata.bed_ids?.length === 0 || addedToCart}
-                className='btn btn-primary btn-sm'
+                className='btn btn-primary btn-sm text-nowrap'
               >
                 <i className='bi bi-cart-plus me-1' />
                 {addedToCart ? 'Added files to cart!' : `Add ${metadata.bed_ids?.length || 0} BEDs to cart`}

@@ -65,30 +65,30 @@ export const BedSplashHeader = (props: Props) => {
           </p>
         )}
 
-        <div className='d-flex flex-col align-items-center gap-1 flex-shrink-0'>
+        <div className='d-flex flex-wrap align-items-center gap-1 flex-shrink-0'>
           {metadata?.processed && metadata?.genome_alias == 'hg38' && (
             <a href={`/umap?searchId=${record_identifier}`}>
-              <button className='btn btn-outline-primary btn-sm'>
+              <button className='btn btn-outline-primary btn-sm text-nowrap'>
                 <i className='bi bi-pin-map me-1' />
                 Embeddings
               </button>
             </a>
           )}
           <a href={`/analyze?bedUrl=${record_identifier}`}>
-            <button className='btn btn-outline-primary btn-sm'>
+            <button className='btn btn-outline-primary btn-sm text-nowrap'>
               <i className='bi bi-bar-chart-steps me-1' />
               Analyze
             </button>
           </a>
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
-            <button className='btn btn-outline-primary btn-sm'>
+            <button className='btn btn-outline-primary btn-sm text-nowrap'>
               <i className='bi bi-info-circle me-1' />
               API
             </button>
           </a>
           {!addedToCart && cart[record_identifier || ''] ? (
             <button
-              className='btn btn-outline-danger btn-sm'
+              className='btn btn-outline-danger btn-sm text-nowrap'
               onClick={() => {
                 if (record_identifier == undefined || metadata === undefined) {
                   toast.error(
@@ -105,7 +105,7 @@ export const BedSplashHeader = (props: Props) => {
           ) : (
             <button
               disabled={addedToCart}
-              className='btn btn-primary btn-sm'
+              className='btn btn-primary btn-sm text-nowrap'
               onClick={() => {
                 if (record_identifier === undefined || metadata === undefined) {
                   toast.error(

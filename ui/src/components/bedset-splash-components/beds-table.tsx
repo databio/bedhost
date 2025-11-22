@@ -234,28 +234,28 @@ export const BedsTable = (props: Props) => {
         <div className='d-flex flex-row align-items-center gap-2'>
           <div className='d-flex flex-row align-items-center btn-group'>
             <button
-              className='btn btn-sm btn-primary'
+              className='btn btn-sm btn-outline-primary border'
               onClick={() => table.firstPage()}
               disabled={!table.getCanPreviousPage()}
             >
               <i className='bi bi-chevron-double-left'></i>
             </button>
             <button
-              className='btn btn-sm btn-primary'
+              className='btn btn-sm btn-outline-primary border'
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
             >
               <i className='bi bi-chevron-left'></i>
             </button>
             <button
-              className='btn btn-sm btn-primary'
+              className='btn btn-sm btn-outline-primary border'
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
             >
               <i className='bi bi-chevron-right'></i>
             </button>
             <button
-              className='btn btn-sm btn-primary'
+              className='btn btn-sm btn-outline-primary border'
               onClick={() => table.lastPage()}
               disabled={!table.getCanNextPage()}
             >
@@ -263,7 +263,7 @@ export const BedsTable = (props: Props) => {
             </button>
           </div>
           <select
-            className='form-select'
+            className='form-select form-select-sm'
             value={table.getState().pagination.pageSize}
             onChange={(e) => {
               table.setPageSize(Number(e.target.value));
