@@ -21,7 +21,7 @@ type Props = {
 export const BEDEmbeddingView = (props: Props) => {
   const { bedId, neighbors, showNeighbors, enableUpload } = props;
   const { coordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus } = useMosaicCoordinator();
-  const { addBedToCart } = useBedCart();
+  const { addMultipleBedsToCart } = useBedCart();
   const { mutateAsync: getUmapCoordinates } = useBedUmap();
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -443,28 +443,26 @@ export const BEDEmbeddingView = (props: Props) => {
                 )}
                 <button
                   className='btn btn-primary btn-xs ms-1'
-                  onClick={() =>
-                    selectedPoints
+                  onClick={() => {
+                    const bedItems = selectedPoints
                       .filter((point: any) => point.identifier !== 'custom_point')
-                      .map((point: any) => {
-                        const bedItem = {
-                          id: point.identifier,
-                          name: point.text || 'No name',
-                          genome: point.genome_alias || 'N/A',
-                          tissue: point.annotation?.tissue || 'N/A',
-                          cell_line: point.fields?.['Cell Line'] || 'N/A',
-                          cell_type: point.annotation?.cell_type || 'N/A',
-                          description: point.fields?.Description || '',
-                          assay: point.fields?.Assay || 'N/A',
-                        };
+                      .map((point: any) => ({
+                        id: point.identifier,
+                        name: point.text || 'No name',
+                        genome: point.genome_alias || 'N/A',
+                        tissue: point.annotation?.tissue || 'N/A',
+                        cell_line: point.fields?.['Cell Line'] || 'N/A',
+                        cell_type: point.annotation?.cell_type || 'N/A',
+                        description: point.fields?.Description || '',
+                        assay: point.fields?.Assay || 'N/A',
+                      }));
 
-                        addBedToCart(bedItem);
-                        setAddedToCart(true);
-                        setTimeout(() => {
-                          setAddedToCart(false);
-                        }, 500);
-                      })
-                  }
+                    addMultipleBedsToCart(bedItems);
+                    setAddedToCart(true);
+                    setTimeout(() => {
+                      setAddedToCart(false);
+                    }, 500);
+                  }}
                 >
                   {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
                 </button>

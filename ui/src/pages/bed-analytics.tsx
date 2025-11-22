@@ -294,33 +294,42 @@ export const BEDAnalytics = () => {
           <div className='mt-3'>
             {rs && (
               <div>
-                <div className='mt-3 border rounded bg-white p-0 overflow-hidden'>
-                  <table className='table table-sm mb-2'>
+                <h5 className='fw-bolder mt-3'>Metrics</h5>
+                <div className='p-3 overflow-hidden text-sm bg-white rounded border'>
+                  <table className='table table-sm table-borderless table-transparent mb-0'>
                     <tbody>
                       <tr>
-                        <th scope='row'>Identifier</th>
-                        <td>{rs.identifier}</td>
+                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0 pb-1'>
+                          Identifier
+                        </td>
+                        <td className='py-0'>{rs.identifier}</td>
                       </tr>
                       <tr>
-                        <th scope='row'>Mean region width</th>
-                        <td>{rs.meanRegionWidth}</td>
+                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0 pb-1'>
+                          Mean region width
+                        </td>
+                        <td className='py-0'>{rs.meanRegionWidth}</td>
                       </tr>
                       <tr>
-                        <th scope='row'>Total number of regions</th>
-                        <td>{rs.numberOfRegions}</td>
+                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0 pb-1'>
+                          Total number of regions
+                        </td>
+                        <td className='py-0'>{rs.numberOfRegions}</td>
                       </tr>
                       <tr>
-                        <th scope='row'>Total number of nucleotides</th>
-                        <td>{rs.nucleotidesLength}</td>
+                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0'>
+                          Total number of nucleotides
+                        </td>
+                        <td className='py-0'>{rs.nucleotidesLength}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
-                <div className='mt-3'>
-                  <h4 className='fw-bolder'>Interval Chromosome Length Statistics</h4>
+                <div className='mt-4'>
+                  <h5 className='fw-bolder'>Interval Chromosome Length Statistics</h5>
                   {rs && <ChromosomeStatsPanel rs={rs} selectedFile={selectedFile} />}
                 </div>
-                <div className='mt-3'>
+                <div className='mt-4'>
                   {rs && (
                     // <div className="mt-3 p-3 border rounded bg-light">
                     //   <h5>Region Distribution Data</h5>
@@ -330,6 +339,7 @@ export const BEDAnalytics = () => {
                     //   </pre>
                     // </div>
                     <div className='mb-3'>
+                      <h5 className='fw-bolder'>Region Distribution Plot</h5>
                       <RegionDistributionPlot data={rs.regionDistribution(300)} />
                     </div>
                   )}

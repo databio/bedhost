@@ -148,7 +148,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                 className='btn btn-sm btn-outline-danger'
                 onClick={() => {
                   if (bedId === undefined) {
-                    toast.error('No bed ID found', { position: 'top-center' });
+                    toast.error('No bed ID found');
                     return;
                   }
                   removeBedFromCart(bedId || '');
@@ -165,7 +165,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                   e.stopPropagation();
 
                   if (bedId === undefined) {
-                    toast.error('No bed ID found', { position: 'top-center' });
+                    toast.error('No bed ID found');
                     return;
                   }
 

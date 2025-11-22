@@ -114,7 +114,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                   onClick={(e) => {
                     e.stopPropagation();
                     if (result.metadata?.id === undefined) {
-                      toast.error('No bed ID found', { position: 'top-center' });
+                      toast.error('No bed ID found');
                       return;
                     }
                     removeBedFromCart(result.metadata?.id);
@@ -128,7 +128,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                   onClick={(e) => {
                     e.stopPropagation();
                     if (result.metadata?.id === undefined) {
-                      toast.error('No bed ID found', { position: 'top-center' });
+                      toast.error('No bed ID found');
                       return;
                     }
                     const bedItem = {

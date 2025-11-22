@@ -146,9 +146,7 @@ export const SearchBar = (props: Props) => {
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   if (value === '') {
-                    toast.error('Please enter a search term.', {
-                      position: 'top-center',
-                    });
+                    toast.error('Please enter a search term.');
                     return;
                   }
                   onSearch();
@@ -185,9 +183,7 @@ export const SearchBar = (props: Props) => {
             className='btn btn-primary'
             onClick={() => {
               if (value === '') {
-                toast.error('Please enter a search term', {
-                  position: 'top-center',
-                });
+                toast.error('Please enter a search term');
                 return;
               }
               onSearch();

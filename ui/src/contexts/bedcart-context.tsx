@@ -46,6 +46,7 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
     }, {} as BedCart);
 
     setCart({ ...cart, ...newItems });
+    toast.success(`Added ${beds.length} BED file${beds.length !== 1 ? 's' : ''} to cart!`);
   };
 
   const addBedToCart = (bed: BedItem) => {
@@ -54,6 +55,7 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
       return;
     }
     setCart({ ...cart, [bed.id]: bed });
+    // toast.success(`Added ${bed.id} to cart!`);
   };
 
   const removeMultipleBedsFromCart = (bedIds: string[]) => {
@@ -72,6 +74,7 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
     const newCart = { ...cart };
     delete newCart[bedId];
     setCart(newCart);
+    // toast.success(`Removed ${bedId} from cart!`);
   };
 
   return (

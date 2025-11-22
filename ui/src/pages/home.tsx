@@ -28,9 +28,7 @@ export const Home = () => {
 
   const handleSearch = () => {
     if (!searchTerm) {
-      toast.error('Please enter a search term.', {
-        position: 'top-center',
-      });
+      toast.error('Please enter a search term.');
       return;
     }
     navigate(`/search?q=${searchTerm}&view=${searchType}`);
