@@ -39,7 +39,7 @@ export const Home = () => {
         <AnimatedEmbeddingsBackground />
 
         {/* Hero Content */}
-        <div className='position-relative d-flex flex-column align-items-center' style={{ height: '85vh', zIndex: 1, paddingTop: '10vh' }}>
+        <div className='position-relative d-flex flex-column align-items-center' style={{ height: '85vh', zIndex: 1, paddingTop: '15vh' }}>
           <div className='text-center w-100'>
             <h1 className='fw-lighter text-primary mb-4' style={{ fontSize: 'clamp(3rem, 8vw, 6rem)' }}>
               BEDbase
@@ -99,7 +99,7 @@ export const Home = () => {
             </div>
 
             {/* Search Bar */}
-            <div className='col-12 col-lg-10 col-xl-8 mx-auto mb-3'>
+            <div className='col-12 col-lg-8 col-xl-6 mx-auto mb-3'>
               <div className='d-flex gap-2'>
                 <div className='input-group bg-white rounded shadow-sm'>
                   {searchType === 'b2b' ? (
