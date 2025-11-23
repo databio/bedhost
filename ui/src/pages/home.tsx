@@ -8,7 +8,7 @@ import { CODE_SNIPPETS, BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
-import { BEDEmbeddingPlot } from '../components/umap/bed-embedding-plot.tsx';
+import { AnimatedEmbeddingsBackground } from '../components/animated-embeddings-background.tsx';
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -21,8 +21,6 @@ export const Home = () => {
 
   const navigate = useNavigate();
 
-  // const { data: exampleBedMetadata } = useExampleBed(); # if example will be dynamic again
-  const exampleBedId = 'dcc005e8761ad5599545cc538f6a2a4d';
   const { data: exampleBedSetMetadata } = useExampleBedSet();
   const { data: bedbaseStats } = useStats();
 
@@ -36,140 +34,154 @@ export const Home = () => {
 
   return (
     <Layout footer title='BEDbase' fullHeight>
-      <div className='d-flex flex-column w-100 align-items-center p-2'>
-        <div className='mt-4 mb-3'></div>
-        <h1 className='fw-lighter text-primary text-6xl mb-3'>BEDbase</h1>
-        <div className='col-12 col-lg-10 text-muted'>
-          <p className='text-center mb-0'>
-            The open access platform for aggregating, analyzing, and serving genomic region data.
-          </p>
-          <p className='text-center mb-4 pb-3'>
-            Explore thousands of BED files (including{' '}
-            <a
-              href='https://genome.ucsc.edu/FAQ/FAQformat.html#format1'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
-            >
-              <i className='fw-medium text-primary'>.bed</i>
-            </a>
-            ,{' '}
-            <a
-              href='https://genome.ucsc.edu/goldenPath/help/bigBed.html'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
-            >
-              <i className='fw-medium text-primary'>.bigbed</i>
-            </a>
-            ,{' '}
-            <a
-              href='https://genome.ucsc.edu/goldenPath/help/wiggle.html'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
-            >
-              <i className='fw-medium text-primary'>.wig</i>
-            </a>
-            ,{' '}
-            <a
-              href='https://genome.ucsc.edu/goldenPath/help/bigWig.html'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
-            >
-              <i className='fw-medium text-primary'>.bw</i>
-            </a>
-            ,{' '}
-            <a
-              href='https://genome.ucsc.edu/goldenPath/help/bedgraph.html'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
-            >
-              <i className='fw-medium text-primary'>.bdg</i>
-            </a>
-            ) from ENCODE, GEO, and more.
-          </p>
-        </div>
-        <div className='col-12 col-lg-10 d-flex gap-2'>
-          <div className='input-group bg-white'>
-            {searchType === 'b2b' ? (
-              <input
-                key='file-input'
-                className='form-control border'
-                type='file'
-                accept='.bed,.gz,application/gzip,application/x-gzip'
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    navigate(`/search?view=b2b`, { state: { file: file } });
-                  }
-                }}
-              />
-            ) : (
-              <input
-                key='text-input'
-                className='form-control border'
-                type='text'
-                placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-            )}
+      {/* Hero Section with Animated Background */}
+      <div className='position-relative w-100' style={{ height: '85vh', overflow: 'hidden' }}>
+        <AnimatedEmbeddingsBackground />
 
-            <select
-              className='form-select'
-              style={{ maxWidth: '163px' }}
-              aria-label='search type selector'
-              value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
-            >
-              <option value='t2b'>Text-to-BED</option>
-              <option value='b2b'>BED-to-BED</option>
-              <option value='t2bs'>Text-to-BEDset</option>
-            </select>
+        {/* Hero Content */}
+        <div className='position-relative d-flex flex-column align-items-center' style={{ height: '85vh', zIndex: 1, paddingTop: '10vh' }}>
+          <div className='text-center w-100'>
+            <h1 className='fw-lighter text-primary mb-4' style={{ fontSize: 'clamp(3rem, 8vw, 6rem)' }}>
+              BEDbase
+            </h1>
+            <div className='col-12 col-lg-10 mx-auto text-muted mb-4'>
+              <p className='fs-4 mb-3' style={{ fontWeight: 300 }}>
+                The open access platform for aggregating, analyzing, and serving genomic region data.
+              </p>
+              <p className='mb-4'>
+                Explore thousands of BED files (including{' '}
+                <a
+                  href='https://genome.ucsc.edu/FAQ/FAQformat.html#format1'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+                >
+                  <i className='fw-medium text-primary'>.bed</i>
+                </a>
+                ,{' '}
+                <a
+                  href='https://genome.ucsc.edu/goldenPath/help/bigBed.html'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+                >
+                  <i className='fw-medium text-primary'>.bigbed</i>
+                </a>
+                ,{' '}
+                <a
+                  href='https://genome.ucsc.edu/goldenPath/help/wiggle.html'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+                >
+                  <i className='fw-medium text-primary'>.wig</i>
+                </a>
+                ,{' '}
+                <a
+                  href='https://genome.ucsc.edu/goldenPath/help/bigWig.html'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+                >
+                  <i className='fw-medium text-primary'>.bw</i>
+                </a>
+                ,{' '}
+                <a
+                  href='https://genome.ucsc.edu/goldenPath/help/bedgraph.html'
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+                >
+                  <i className='fw-medium text-primary'>.bdg</i>
+                </a>
+                ) from ENCODE, GEO, and more.
+              </p>
+            </div>
+
+            {/* Search Bar */}
+            <div className='col-12 col-lg-8 col-xl-6 mx-auto mb-4'>
+              <div className='d-flex gap-2'>
+                <div className='input-group bg-white rounded shadow-sm'>
+                  {searchType === 'b2b' ? (
+                    <input
+                      key='file-input'
+                      className='form-control border-0'
+                      type='file'
+                      accept='.bed,.gz,application/gzip,application/x-gzip'
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          navigate(`/search?view=b2b`, { state: { file: file } });
+                        }
+                      }}
+                    />
+                  ) : (
+                    <input
+                      key='text-input'
+                      className='form-control border-0'
+                      type='text'
+                      placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                    />
+                  )}
+
+                  <select
+                    className='form-select border-0'
+                    style={{ maxWidth: '163px' }}
+                    aria-label='search type selector'
+                    value={searchType}
+                    onChange={(e) => setSearchType(e.target.value)}
+                  >
+                    <option value='t2b'>Text-to-BED</option>
+                    <option value='b2b'>BED-to-BED</option>
+                    <option value='t2bs'>Text-to-BEDset</option>
+                  </select>
+                </div>
+                <button className='btn btn-primary px-4' type='button' onClick={handleSearch}>
+                  <i className='bi bi-search' />
+                </button>
+              </div>
+            </div>
+
+            {/* Stats */}
+            <div className='d-flex flex-wrap gap-4 justify-content-center mb-4 text-muted'>
+              <span>
+                <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
+              </span>
+              <span>•</span>
+              <span>
+                <strong className='text-success'>{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</strong> BEDsets
+              </span>
+              <span>•</span>
+              <span>
+                <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
+              </span>
+              <span>•</span>
+              <a
+                className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+                href={`/metrics`}
+              >
+                <strong>more</strong> metrics
+                <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
+              </a>
+            </div>
+
+            {/* Quick Links */}
+            <div className='text-sm text-muted'>
+              <span>
+                Visit a <a href='/umap'>full embedding atlas</a>, explore a{' '}
+                <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>BEDset</a>, or{' '}
+                <a href='/analyze'>analyze your own BED file</a>
+              </span>
+            </div>
           </div>
-          <button className='btn btn-primary' type='button' onClick={handleSearch}>
-            <i className='bi bi-search' />
-          </button>
         </div>
+      </div>
 
-        <div className='d-flex flex-row align-items-center col-12 col-lg-10 mt-2 border rounded overflow-hidden'>
-          <BEDEmbeddingPlot bedIds={[exampleBedId]} height={330} preselectPoint={true} />
-        </div>
-        <div className='text-sm text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
-          <span>
-            explore the BED file region embedding space above, or visit a{' '}
-            <a href={`/bed/${exampleBedId}`}>random BED file</a>
-          </span>
-          <span>
-            or <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}> BEDset</a>
-          </span>
-        </div>
-
-        <div className='d-flex flex-row gap-4 justify-content-center mb-5 text-muted'>
-          <span>
-            <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
-          </span>
-          <span>•</span>
-          <span>
-            <strong className='text-success'>{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</strong> BEDsets
-          </span>
-          <span>•</span>
-          <span>
-            <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
-          </span>
-          <span>•</span>
-          <a
-            className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
-            href={`/metrics`}
-          >
-            <strong>more</strong> metrics
-            <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
-          </a>
-        </div>
+      {/* Features Section */}
+      <div className='d-flex flex-column w-100 align-items-center p-2 bg-white'>
 
         <div className='col-12 col-lg-10 mb-5'>
           <div className='row g-2'>
