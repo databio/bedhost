@@ -33,9 +33,9 @@ export const Home = () => {
   };
 
   return (
-    <Layout footer title='BEDbase' fullHeight>
+    <Layout footer title='BEDbase' fullHeight fullWidth>
       {/* Hero Section with Animated Background */}
-      <div className='position-relative w-100' style={{ height: '85vh', overflow: 'hidden' }}>
+      <div className='position-relative' style={{ height: '85vh', overflow: 'hidden', width: '100vw', marginLeft: 'calc(-50vw + 50%)', marginRight: 'calc(-50vw + 50%)' }}>
         <AnimatedEmbeddingsBackground />
 
         {/* Hero Content */}
@@ -99,7 +99,7 @@ export const Home = () => {
             </div>
 
             {/* Search Bar */}
-            <div className='col-12 col-lg-8 col-xl-6 mx-auto mb-4'>
+            <div className='col-12 col-lg-10 col-xl-8 mx-auto mb-3'>
               <div className='d-flex gap-2'>
                 <div className='input-group bg-white rounded shadow-sm'>
                   {searchType === 'b2b' ? (
@@ -145,8 +145,16 @@ export const Home = () => {
               </div>
             </div>
 
+            {/* Example Links - Under Search */}
+            <div className='text-sm text-muted mb-4'>
+              <span>
+                Try an example: <a href='/bed/dcc005e8761ad5599545cc538f6a2a4d'>BED file</a> or{' '}
+                <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>BEDset</a>
+              </span>
+            </div>
+
             {/* Stats */}
-            <div className='d-flex flex-wrap gap-4 justify-content-center mb-4 text-muted'>
+            <div className='d-flex flex-wrap gap-4 justify-content-center text-muted'>
               <span>
                 <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
               </span>
@@ -167,23 +175,14 @@ export const Home = () => {
                 <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
               </a>
             </div>
-
-            {/* Quick Links */}
-            <div className='text-sm text-muted'>
-              <span>
-                Visit a <a href='/umap'>full embedding atlas</a>, explore a{' '}
-                <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>BEDset</a>, or{' '}
-                <a href='/analyze'>analyze your own BED file</a>
-              </span>
-            </div>
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className='d-flex flex-column w-100 align-items-center p-2 bg-white'>
-
-        <div className='col-12 col-lg-10 mb-5'>
+      <div className='d-flex flex-column w-100 align-items-center p-4 bg-white'>
+        <div className='container'>
+          <div className='col-12 col-lg-10 mx-auto mb-5'>
           <div className='row g-2'>
             <div className='col-md-4'>
               <div className='d-flex flex-column gap-2 h-100'>
@@ -361,6 +360,7 @@ export const Home = () => {
               </div>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </Layout>
