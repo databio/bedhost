@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { components } from '../../../../bedbase-types';
-import { OverlayTrigger, ProgressBar, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { roundToTwoDecimals } from '../../../utils';
 import YAML from 'js-yaml';
 import { useBedCart } from '../../../contexts/bedcart-context';
@@ -129,7 +129,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
       cell: (info) => {
         const scoreValue = (info.getValue() ?? 0) * 100;
         const getScoreColor = (score: number) => {
-          // if (score >= 80) return 'text-success';
+          if (score >= 80) return 'text-success';
           // if (score >= 60) return 'text-warning';
           // if (score >= 40) return 'text-info';
           // return 'text-danger';

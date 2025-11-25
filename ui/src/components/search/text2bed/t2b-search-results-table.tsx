@@ -1,4 +1,4 @@
-import { ProgressBar } from 'react-bootstrap';
+// import { ProgressBar } from 'react-bootstrap';
 import { components } from '../../../../bedbase-types';
 import { roundToTwoDecimals } from '../../../utils';
 import { useBedCart } from '../../../contexts/bedcart-context';
@@ -118,7 +118,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             </td>
             <td>
               <span className={`fw-bold ${(() => {
-                const scoreValue = (result.score ?? 0) * 100;
+                // const scoreValue = (result.score ?? 0) * 100;
                 // if (scoreValue >= 80) return 'text-success';
                 // if (scoreValue >= 60) return 'text-warning';
                 // if (scoreValue >= 40) return 'text-info';
