@@ -8,6 +8,7 @@ import rehypeHighlight from 'rehype-highlight';
 import { CODE_SNIPPETS } from '../const';
 import { BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
+import toast from 'react-hot-toast';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
 
@@ -24,8 +25,18 @@ export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchTermSmall, setSearchTermSmall] = useState('Kidney cancer in humans');
   const [copied, setCopied] = useState(false);
+  const [searchType, setSearchType] = useState('t2b');
 
   const navigate = useNavigate();
+
+  const handleSearch = () => {
+    if (!searchTerm) {
+      toast.error('Please enter a search term.');
+      return;
+    }
+    navigate(`/search?q=${searchTerm}&view=${searchType}`);
+  };
+
 
   // const { data: exampleBedMetadata } = useExampleBed(); # if example will be dynamic again
   const { data: exampleBedSetMetadata } = useExampleBedSet();
@@ -49,46 +60,62 @@ export const Home = () => {
         {/*    </span>*/}
         {/*  </a>*/}
         {/*</div>*/}
-        <h1 className="fw-bolder text-primary text-6xl mb-4">Welcome to BEDbase</h1>
-        <div className="my-3"></div>
+        <h1 className="fw-bolder text-primary text-6xl mb-4">BEDbase</h1>
+        <h3 className="text-primary text-2xl mt-2 mb-0">Find, analyze, and understand genomic region data - all in one
+          place</h3>
+
+        <div className="my-2"></div>
         <div className="col-12 col-lg-9">
-          <p className="text-md-center text-base mb-4">
-            BEDbase is a unified platform for aggregating, analyzing, and serving genomic region data. BEDbase redefines
-            the way to manage genomic region data and allows users to search for BED files of interest and create
-            collections tailored to research needs. BEDbase is composed of a web server and an API. Users can explore
+          <p className="text-md-center text-base mb-5">
+            BEDbase is a unified platform for searching, analyzing, visualizing and serving genomic region data.
+            BEDbase redefines the way to manage genomic region data and allows users to search for BED files of
+            interest, visualize them, and create
+            collections tailored to research needs. Users can explore
             comprehensive descriptions of specific BED files via a user-oriented web interface and programmatically
             interact with the data via an OpenAPI-compatible API.
           </p>
         </div>
-        <div className="d-flex flex-row align-items-center col-12 col-lg-9 gap-1">
-          <input
-            className="form-control form-control-lg"
-            type="text"
-            placeholder="Start searching for BED files"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                if (searchTerm.length === 0) {
-                  return;
-                }
-                navigate(`/search?q=${searchTerm}`);
-              }
-            }}
-          />
-          <button
-            className="btn btn-primary btn-lg"
-            onClick={() => {
-              if (searchTerm.length === 0) {
-                return;
-              }
-              navigate(`/search?q=${searchTerm}&view=t2b`);
-            }}
-          >
-            <span className="d-flex align-items-center">
-              <i className="bi bi-search me-1"></i>
-              Search
-            </span>
+        <div className="col-12 col-lg-10 d-flex gap-2">
+          <div className="input-group bg-white">
+            {searchType === 'b2b' ? (
+              <input
+                key="file-input"
+                className="form-control border"
+                type="file"
+                accept=".bed,.gz,application/gzip,application/x-gzip"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    navigate(`/search?view=b2b`, { state: { file: file } });
+                  }
+                }}
+              />
+            ) : (
+              <input
+                key="text-input"
+                className="form-control border"
+                type="text"
+                placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              />
+            )}
+
+            <select
+              className="form-select"
+              style={{ maxWidth: '163px' }}
+              aria-label="search type selector"
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+            >
+              <option value="t2b">Text-to-BED</option>
+              <option value="b2b">BED-to-BED</option>
+              <option value="t2bs">Text-to-BEDset</option>
+            </select>
+          </div>
+          <button className="btn btn-primary" type="button" onClick={handleSearch}>
+            <i className="bi bi-search" />
           </button>
         </div>
         <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 my-3">
@@ -229,18 +256,21 @@ export const Home = () => {
               </div>
             </Col>
           </Row>
-          <Row className="w-100 align-items-center mb-5">
+          <Row className="w-100 align-items-center mb-3">
             <Col sm={6} md={6}>
               <h2 className="fw-bold">BED Embedding Visualization</h2>
               <p className="text-balance pe-4">
-                BEDbase supports visualization of UMAP of hg38 BED embeddings. It allows users to explore the
+                BEDbase provides visualization of UMAP of hg38 BED embeddings. It allows users to explore the
                 similarity of genomic regions based on their embeddings, and
                 providing insights into the relationships between different BED files.
                 The visualization is available on the <a href="/umap">UMAP visualization</a>.
               </p>
             </Col>
             <Col>
-              <Image src="/umap.png" alt="UMAP visualization" height="300px" className="mb-3 d-flex img-fluid" />
+              <a href="/umap">
+                <Image src="/bed_umap.svg" alt="UMAP visualization" height="400px"
+                       className="mb-0 mx-auto d-block img-fluid" />
+              </a>
             </Col>
           </Row>
           <Row className="w-100 mb-5">
@@ -306,7 +336,7 @@ export const Home = () => {
               </p>
             </Col>
 
-            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
+            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100 mb-5">
               <div
                 className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
                 <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
@@ -346,6 +376,22 @@ export const Home = () => {
                   </Tab.Content>
                 </Tab.Container>
               </div>
+            </Col>
+          </Row>
+          <Row className="w-100 align-items-center mb-5">
+            <Col sm={6} md={6}>
+              <h2 className="fw-bold">BED Analyzer</h2>
+              <p className="text-balance pe-4">
+                BEDbase includes an interactive BED Analyzer that lets you quickly explore any BED file.
+                You can upload your own file or provide a URL, and the analyzer will generate key
+                statistics, summary tables, and visualizations. It gives you an instant overview of
+                region counts, lengths, genome coverage, and other useful properties. Analyze your file: <a
+                href="/analyze"> Analyzer</a>
+              </p>
+            </Col>
+            <Col>
+              <Image src="/bed_analyzer.svg" alt="BED analyzer" height="300px"
+                     className="mb-3 mx-auto d-block img-fluid" />
             </Col>
           </Row>
           <Row className="w-100 align-items-center">
