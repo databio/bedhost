@@ -117,12 +117,16 @@ export const Text2BedSearchResultsTable = (props: Props) => {
               </OverlayTrigger>
             </td>
             <td>
-              <ProgressBar
-                min={5}
-                now={(result.score ?? 0) * 100}
-                label={`${roundToTwoDecimals((result.score ?? 0) * 100)}`}
-                variant="primary"
-              />
+              <span className={`fw-bold ${(() => {
+                const scoreValue = (result.score ?? 0) * 100;
+                // if (scoreValue >= 80) return 'text-success';
+                // if (scoreValue >= 60) return 'text-warning';
+                // if (scoreValue >= 40) return 'text-info';
+                // return 'text-danger';
+                return 'text-success';
+              })()}`}>
+                {roundToTwoDecimals((result.score ?? 0) * 100)}%
+              </span>
             </td>
             <td>
               {cart[result?.metadata?.id || ''] ? (
@@ -149,7 +153,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                       toast.error('No bed ID found', { position: 'top-center' });
                       return;
                     }
-                    
+
                     // Create the simplified bed item object
                     const bedItem = {
                       id: result.metadata.id,
@@ -161,7 +165,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                       description: result.metadata.description || '',
                       assay: result.metadata.annotation?.assay || 'N/A',
                     };
-                    
+
                     addBedToCart(bedItem);
                   }}
                 >

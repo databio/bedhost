@@ -118,88 +118,57 @@ export const Home = () => {
             <i className="bi bi-search" />
           </button>
         </div>
-        <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 my-3">
-          {/*<span>Or, explore an <a href={`/bed/${exampleBedMetadata?.id || 'not-found'}`}>example BED file</a></span>*/}
+        <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-2 mb-0">
           <span>Or, explore an <a href={`/bed/dcc005e8761ad5599545cc538f6a2a4d`}>example BED file</a></span>
           <span>or an{' '} <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BEDset</a></span>
         </div>
 
-        <div className="flex-row w-100 landing-animation-container hidden large-flex">
-          <div
-            className="d-flex flex-column align-items-center justify-content-center gap-3 px-2 text-center"
-            style={{ width: '23%' }}
-          >
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/FAQ/FAQformat.html#format1"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                Bed files
-              </a>
-              <Image src="/bed.svg" alt="BED file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/bigBed.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                {' '}
-                BigBed files
-              </a>
-              <Image src="/bigbed.svg" alt="BigBed file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/wiggle.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                Wig files
-              </a>
-              <Image src="/wig.svg" alt="Wiggle file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/bigWig.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                BigWig files
-              </a>
-              <Image src="/big_wig.svg" alt="BigWig file icon" height="30px" className="ms-2" />
-            </FileBadge>
-            <FileBadge>
-              <a
-                href="https://genome.ucsc.edu/goldenPath/help/bedgraph.html"
-                className="fw-bold text-sm text-decoration-none"
-              >
-                BedGraph files
-              </a>
-              <Image src="/bdg.svg" alt="BDG file icon" height="30px" className="ms-2" />
-            </FileBadge>
+        <div
+          className="d-flex flex-row w-100 landing-animation-container hidden large-flex justify-content-center my-1">
+          <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
+            <div className="d=flex flex-column">
+              <p className="mb-0 fw-bold text-center">Search</p>
+              <div className="p-1">
+                <Image src="/search.svg" alt="Search icon" width="75px" className="ms-2" />
+              </div>
+            </div>
+            <div className="d=flex flex-column">
+              <p className="mb-0 fw-bold text-center">Analyzer</p>
+              <div className="p-1">
+                <Image src="/analyzer_icon.svg" alt="Analyzer icon" height="70px" className="ms-2" />
+              </div>
+            </div>
+            <div className="d=flex flex-column">
+              <p className="mb-0 fw-bold text-center">API and Clients</p>
+              <div className="p-1">
+                <Image src="/api_icon.svg" alt="API icon" height="75px" className="ms-2" />
+              </div>
+            </div>
           </div>
           <InPaths />
           <div className="d-flex flex column h-100 align-items-center">
             <div className="p-2 border border-primary rounded rounded border-2 landing-main-logo-shadow">
-              <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="125px" className="landing-animation-logo" />
+              <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="100px" className="landing-animation-logo" />
             </div>
           </div>
           <OutPaths />
           <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
             <div className="d=flex flex-column">
               <p className="mb-0 fw-bold text-center">Statistics</p>
-              <div className="border border-dark rounded p-1 shadow">
-                <Image src="/stats.svg" alt="Statistics icon" width="100px" className="ms-2" />
+              <div className="p-1">
+                <Image src="/stats_icon.svg" alt="Statistics icon" width="75px" className="ms-2" />
               </div>
             </div>
             <div className="d=flex flex-column">
               <p className="mb-0 fw-bold text-center">BED sets</p>
-              <div className="border border-dark rounded p-1 shadow">
-                <Image src="/bedset.svg" alt="Statistics icon" height="90px" className="ms-2" />
+              <div className="p-1">
+                <Image src="/bedset.svg" alt="Statistics icon" height="70px" className="ms-2" />
               </div>
             </div>
             <div className="d=flex flex-column">
               <p className="mb-0 fw-bold text-center">Embeddings</p>
-              <div className="border border-dark rounded p-1 shadow">
-                <Image src="/embeddings.svg" alt="Statistics icon" height="100px" className="ms-2" />
+              <div className="p-1">
+                <Image src="/embeddings.svg" alt="Statistics icon" height="75px" className="ms-2" />
               </div>
             </div>
           </div>
