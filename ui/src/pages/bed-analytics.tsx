@@ -14,8 +14,11 @@ export const BEDAnalytics = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<'file' | 'url'>('file');
   const [bedUrl, setBedUrl] = useState<string>('');
+  const [triggerSearch, setTriggerSearch] = useState(0);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const urlParam = searchParams.get('bedUrl');
@@ -25,14 +28,17 @@ export const BEDAnalytics = () => {
     }
   }, [searchParams]);
 
-  const regionsetFileInputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    initializeRegionSet();
+  }, [triggerSearch]);
 
   const fetchBedFromUrl = async (url: string): Promise<File> => {
-    console.log(`${url[0]}, ${url[1]}, ${url}`);
-    const fetchUrl = url.length === 32 && !url.startsWith('http')
-      ? `https://api.bedbase.org/v1/files/files/${url[0]}/${url[1]}/${url}.bed.gz`
-      : url;
-    console.log(`${fetchUrl}`);
+    // console.log(`${url[0]}, ${url[1]}, ${url}`);
+    const fetchUrl =
+      url.length === 32 && !url.startsWith('http')
+        ? `https://api.bedbase.org/v1/files/files/${url[0]}/${url[1]}/${url}.bed.gz`
+        : url;
+    // console.log(`${fetchUrl}`);
     const response = await fetch(fetchUrl);
     if (!response.ok) {
       throw new Error(`Failed to fetch BED file: ${response.statusText}`);
@@ -90,8 +96,19 @@ export const BEDAnalytics = () => {
     setTotalProcessingTime(null);
     setSelectedFile(null);
     setBedUrl('');
-    if (regionsetFileInputRef.current) {
-      regionsetFileInputRef.current.value = '';
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleOnKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+    if (e.key === 'Enter') {
+      if (inputMode === 'url') {
+        const params = new URLSearchParams(searchParams);
+        params.set('bedUrl', bedUrl);
+        navigate(`?${params.toString()}`);
+      }
+      setTriggerSearch(triggerSearch + 1);
     }
   };
 
@@ -99,139 +116,160 @@ export const BEDAnalytics = () => {
     <Layout footer title="BEDbase" fullHeight>
       <h1 className="text-center mt-4">BED analyzer</h1>
       <div className="container-fluid d-flex flex-column p-3">
-        <div className="d-flex flex-column gap-3">
-          <div className="d-flex gap-3">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="inputMode"
-                id="fileMode"
-                checked={inputMode === 'file'}
-                onChange={() => setInputMode('file')}
-              />
-              <label className="form-check-label" htmlFor="fileMode">
-                Upload file
-              </label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                name="inputMode"
-                id="urlMode"
-                checked={inputMode === 'url'}
-                onChange={() => setInputMode('url')}
-              />
-              <label className="form-check-label" htmlFor="urlMode">
-                From URL
-              </label>
-            </div>
-          </div>
-
-          {inputMode === 'file' ? (
-            <div className="d-flex flex-column gap-1">
-              <label className="fw-bold">Provide BED file</label>
-              <input
-                ref={regionsetFileInputRef}
-                className="form-control p-3 border-2 border-dashed rounded shadow-sm"
-                type="file"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
+        <div className="row">
+          <div className="col-12 d-flex gap-2">
+            <div className="input-group bg-white">
+              {inputMode === 'file' ? (
+                <>
+                  {!!selectedFile ? (
+                    <>
+                      <input
+                        className="form-control border cursor-pointer"
+                        type="text"
+                        value={selectedFile.name}
+                        onClick={() => fileInputRef.current?.click()}
+                        readOnly
+                      />
+                      <input
+                        ref={fileInputRef}
+                        className="d-none"
+                        type="file"
+                        accept=".bed,.gz,application/gzip,application/x-gzip"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            unloadFile();
+                            setSelectedFile(file);
+                            setTriggerSearch(triggerSearch + 1);
+                          }
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <input
+                      ref={fileInputRef}
+                      key="file-input"
+                      className="form-control border"
+                      type="file"
+                      accept=".bed,.gz,application/gzip,application/x-gzip"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          unloadFile();
+                          setSelectedFile(file);
+                          setTriggerSearch(triggerSearch + 1);
+                        }
+                      }}
+                    />
+                  )}
+                </>
+              ) : (
+                <input
+                  key="text-input"
+                  className="form-control border"
+                  type="text"
+                  placeholder="https://example.com/file.bed"
+                  value={bedUrl}
+                  onChange={(e) => {
+                    const newUrl = e.target.value;
+                    setBedUrl(newUrl);
+                    if (rs) unloadFile();
+                  }}
+                  onKeyDown={handleOnKeyDown}
+                />
+              )}
+              {(!!rs || !!selectedFile || !!bedUrl.trim()) && (
+                <button
+                  className="btn btn-outline-secondary border"
+                  onClick={() => {
                     unloadFile();
-                    setSelectedFile(file);
-                  }
-                }}
-              />
-              {selectedFile && (
-                <div className="text-muted small mx-1">
-                  <div>Selected file: {selectedFile.name}</div>
-                  <div>File size: {bytesToSize(selectedFile.size)}</div>
-                </div>
+                  }}
+                  title="Remove file"
+                >
+                  <i className="bi bi-x-circle" />
+                </button>
               )}
-            </div>
-          ) : (
-            <div className="d-flex flex-column gap-1">
-              <label className="fw-bold">BED file URL</label>
-              <input
-                type="url"
-                className="form-control"
-                placeholder="https://example.com/file.bed"
-                value={bedUrl || ''}
+              <select
+                className="form-select"
+                style={{ maxWidth: '163px' }}
+                aria-label="analyzer input selector"
+                value={inputMode}
                 onChange={(e) => {
-                  const newUrl = e.target.value;
-                  setBedUrl(newUrl);
-                  if (rs) unloadFile();
-
-                  // Update the URL query parameter
-                  const params = new URLSearchParams(searchParams);
-                  if (newUrl.trim()) {
-                    params.set('bedUrl', newUrl);
-                  } else {
-                    params.delete('bedUrl');
-                  }
-                  navigate(`?${params.toString()}`);
-                }}
-              />
-              {bedUrl && (
-                <div className="text-muted small mx-1">
-                  URL: {bedUrl}
-                </div>
-              )}
-            </div>
-          )}
-          {inputMode === 'file' && !selectedFile && (
-            <div className="text-muted small mx-1">
-              No file selected. Use this example {' '}
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  const exampleUrl = 'https://api.bedbase.org/v1/files/files/d/c/dcc005e8761ad5599545cc538f6a2a4d.bed.gz';
-                  setInputMode('url');
-                  setBedUrl(exampleUrl);
-
-                  // Update the URL query parameter
-                  const params = new URLSearchParams(searchParams);
-                  params.set('bedUrl', exampleUrl);
-                  navigate(`?${params.toString()}`);
+                  unloadFile();
+                  setInputMode(e.target.value as 'file' | 'url');
                 }}
               >
-                example file
-              </a>.
+                <option value="file">File Upload</option>
+                <option value="url">URL</option>
+              </select>
             </div>
-          )}
-
-
-          {rs && totalProcessingTime !== null && (
-            <div className="text-muted small mx-1">
-              Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s
-            </div>
-          )}
+            <button
+              className="btn btn-primary"
+              type="button"
+              onClick={() => {
+                if (inputMode === 'url') {
+                  const params = new URLSearchParams(searchParams);
+                  params.set('bedUrl', bedUrl);
+                  navigate(`?${params.toString()}`);
+                }
+                setTriggerSearch(triggerSearch + 1);
+              }}
+              disabled={
+                (inputMode === 'file' && !selectedFile) ||
+                (inputMode === 'url' && !bedUrl.trim()) ||
+                rs !== null ||
+                loadingRS
+              }
+            >
+              Analyze!
+            </button>
+          </div>
         </div>
 
-        <div className="d-flex flex-row align-items-center justify-content-end gap-2 mt-3">
-          <button
-            disabled={
-              (inputMode === 'file' && !selectedFile) ||
-              (inputMode === 'url' && !bedUrl.trim()) ||
-              rs !== null ||
-              loadingRS
-            }
-            className="btn btn-primary"
-            onClick={initializeRegionSet}
-          >
-            Analyze RegionSet
-          </button>
-          <button
-            disabled={rs === null && selectedFile === null && !bedUrl.trim()}
-            className="btn btn-danger w-25"
-            onClick={unloadFile}
-          >
-            Unload
-          </button>
+        <div className="row mt-1">
+          <div className="col-12 text-muted">
+            {inputMode === 'file' ? (
+              <p className="mb-0">
+                {selectedFile && (
+                  <>
+                    <div>Selected file: {selectedFile.name}</div>
+                    <div>File size: {bytesToSize(selectedFile.size)}</div>
+                  </>
+                )}
+              </p>
+            ) : (
+              <p className="mb-0">{!!rs && bedUrl && <div>Source: {bedUrl}</div>}</p>
+            )}
+            {!(!!rs || !!selectedFile || !!bedUrl.trim()) && (
+              <p className="mb-0">
+                No input provided. Try this{' '}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const exampleUrl =
+                      'https://api.bedbase.org/v1/files/files/d/c/dcc005e8761ad5599545cc538f6a2a4d.bed.gz';
+                    setInputMode('url');
+                    setBedUrl(exampleUrl);
+
+                    const params = new URLSearchParams(searchParams);
+                    params.set('bedUrl', exampleUrl);
+                    navigate(`?${params.toString()}`);
+                    setTriggerSearch(triggerSearch + 1);
+                  }}
+                >
+                  example file
+                </a>
+                .
+              </p>
+            )}
+
+            {rs && !!totalProcessingTime && (
+              <p className="mb-0">Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s</p>
+            )}
+          </div>
         </div>
+
 
         <div className="mt-4">
           {loadingRS && (
