@@ -11,6 +11,7 @@ import { BBCONF_SNIPPETS } from '../const';
 import toast from 'react-hot-toast';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
+import { motion } from 'framer-motion';
 
 type FileBadgeProps = {
   children?: React.ReactNode;
@@ -126,51 +127,87 @@ export const Home = () => {
         <div
           className="d-flex flex-row w-100 landing-animation-container hidden large-flex justify-content-center my-1">
           <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
-            <div className="d=flex flex-column">
+            {/*Added everywhere motion div for better visualization */}
+            <motion.div
+              className="d=flex flex-column"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               <p className="mb-0 fw-bold text-center">Search</p>
               <div className="p-1">
                 <Image src="/search.svg" alt="Search icon" width="75px" className="ms-2" />
               </div>
-            </div>
-            <div className="d=flex flex-column">
+            </motion.div>
+            <motion.div
+              className="d=flex flex-column"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
               <p className="mb-0 fw-bold text-center">Analyzer</p>
               <div className="p-1">
                 <Image src="/analyzer_icon.svg" alt="Analyzer icon" height="70px" className="ms-2" />
               </div>
-            </div>
-            <div className="d=flex flex-column">
+            </motion.div>
+            <motion.div
+              className="d=flex flex-column"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               <p className="mb-0 fw-bold text-center">API and Clients</p>
               <div className="p-1">
                 <Image src="/api_icon.svg" alt="API icon" height="75px" className="ms-2" />
               </div>
-            </div>
+            </motion.div>
           </div>
           <InPaths />
-          <div className="d-flex flex column h-100 align-items-center">
+          <motion.div
+            className="d-flex flex column h-100 align-items-center"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+          >
             <div className="p-2 border border-primary rounded rounded border-2 landing-main-logo-shadow">
               <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="100px" className="landing-animation-logo" />
             </div>
-          </div>
+          </motion.div>
           <OutPaths />
           <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
-            <div className="d=flex flex-column">
+            <motion.div
+              className="d=flex flex-column"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
               <p className="mb-0 fw-bold text-center">Statistics</p>
               <div className="p-1">
                 <Image src="/stats_icon.svg" alt="Statistics icon" width="75px" className="ms-2" />
               </div>
-            </div>
-            <div className="d=flex flex-column">
+            </motion.div>
+            <motion.div
+              className="d=flex flex-column"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+            >
               <p className="mb-0 fw-bold text-center">BED sets</p>
               <div className="p-1">
                 <Image src="/bedset.svg" alt="Statistics icon" height="70px" className="ms-2" />
               </div>
-            </div>
-            <div className="d=flex flex-column">
+            </motion.div>
+            <motion.div
+              className="d=flex flex-column"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+            >
               <p className="mb-0 fw-bold text-center">Embeddings</p>
               <div className="p-1">
                 <Image src="/embeddings.svg" alt="Statistics icon" height="75px" className="ms-2" />
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
         <div className="my-2 w-100">
