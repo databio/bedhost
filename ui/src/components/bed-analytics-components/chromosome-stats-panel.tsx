@@ -91,7 +91,7 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
                           width={barWidth}
                           height={barH}
                           rx={3}
-                          fill="#0d6efd"
+                          fill="#008000ff"
                           stroke="#0856d1"
                           strokeWidth="0.5"
                         />

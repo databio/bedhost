@@ -404,12 +404,14 @@ export const Home = () => {
                 You can upload your own file or provide a URL, and the analyzer will generate key
                 statistics, summary tables, and visualizations. It gives you an instant overview of
                 region counts, lengths, genome coverage, and other useful properties. Analyze your file: <a
-                href="/analyze"> Analyzer</a>
+                href="/analyze"> Analyzer</a>.
               </p>
             </Col>
             <Col>
+              <a href="/analyze">
               <Image src="/bed_analyzer.svg" alt="BED analyzer" height="300px"
                      className="mb-3 mx-auto d-block img-fluid" />
+              </a>
             </Col>
           </Row>
           <Row className="w-100 align-items-center">
