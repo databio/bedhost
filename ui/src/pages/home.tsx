@@ -13,14 +13,14 @@ import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
 import { motion } from 'framer-motion';
 
-type FileBadgeProps = {
-  children?: React.ReactNode;
-};
+// type FileBadgeProps = {
+//   children?: React.ReactNode;
+// };
 
-const FileBadge = (props: FileBadgeProps) => {
-  const { children } = props;
-  return <div className="w-100 py-1 px-3 text-center rounded-pill border border-dark bg-light">{children}</div>;
-};
+// const FileBadge = (props: FileBadgeProps) => {
+//   const { children } = props;
+//   return <div className="w-100 py-1 px-3 text-center rounded-pill border border-dark bg-light">{children}</div>;
+// };
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -134,10 +134,12 @@ export const Home = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="mb-0 fw-bold text-center">Search</p>
-              <div className="p-1">
-                <Image src="/search.svg" alt="Search icon" width="75px" className="ms-2" />
-              </div>
+              <a href="/search" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">Search</p>
+                <div className="p-1">
+                  <Image src="/search.svg" alt="Search icon" width="75px" className="ms-2" />
+                </div>
+              </a>
             </motion.div>
             <motion.div
               className="d=flex flex-column"
@@ -145,10 +147,12 @@ export const Home = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <p className="mb-0 fw-bold text-center">Analyzer</p>
-              <div className="p-1">
-                <Image src="/analyzer_icon.svg" alt="Analyzer icon" height="70px" className="ms-2" />
-              </div>
+              <a href="/analyze" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">Analyzer</p>
+                <div className="p-1">
+                  <Image src="/analyzer_icon.svg" alt="Analyzer icon" height="70px" className="ms-2" />
+                </div>
+              </a>
             </motion.div>
             <motion.div
               className="d=flex flex-column"
@@ -156,10 +160,12 @@ export const Home = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <p className="mb-0 fw-bold text-center">API and Clients</p>
-              <div className="p-1">
-                <Image src="/api_icon.svg" alt="API icon" height="75px" className="ms-2" />
-              </div>
+              <a href="https://docs.bedbase.org/bedbase/" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">API and Clients</p>
+                <div className="p-1">
+                  <Image src="/api_icon.svg" alt="API icon" height="75px" className="ms-2" />
+                </div>
+              </a>
             </motion.div>
           </div>
           <InPaths />
@@ -181,10 +187,12 @@ export const Home = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="mb-0 fw-bold text-center">Statistics</p>
-              <div className="p-1">
-                <Image src="/stats_icon.svg" alt="Statistics icon" width="75px" className="ms-2" />
-              </div>
+              <a href="/bed/dcc005e8761ad5599545cc538f6a2a4d" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">Statistics</p>
+                <div className="p-1">
+                  <Image src="/stats_icon.svg" alt="Statistics icon" width="75px" className="ms-2" />
+                </div>
+              </a>
             </motion.div>
             <motion.div
               className="d=flex flex-column"
@@ -192,10 +200,12 @@ export const Home = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
             >
-              <p className="mb-0 fw-bold text-center">BED sets</p>
-              <div className="p-1">
-                <Image src="/bedset.svg" alt="Statistics icon" height="70px" className="ms-2" />
-              </div>
+              <a href="/search?view=t2bs" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">BED sets</p>
+                <div className="p-1">
+                  <Image src="/bedset.svg" alt="Statistics icon" height="70px" className="ms-2" />
+                </div>
+              </a>
             </motion.div>
             <motion.div
               className="d=flex flex-column"
@@ -203,10 +213,12 @@ export const Home = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.6 }}
             >
-              <p className="mb-0 fw-bold text-center">Embeddings</p>
-              <div className="p-1">
-                <Image src="/embeddings.svg" alt="Statistics icon" height="75px" className="ms-2" />
-              </div>
+              <a href="/umap" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">Embeddings</p>
+                <div className="p-1">
+                  <Image src="/embeddings.svg" alt="Statistics icon" height="75px" className="ms-2" />
+                </div>
+              </a>
             </motion.div>
           </div>
         </div>
