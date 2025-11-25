@@ -12,6 +12,7 @@ type LayoutProps = {
   fullWidth?: boolean;
   footer?: boolean;
   fullHeight?: boolean;
+  flexLayout?: boolean;
 };
 
 const Footer = () => {
@@ -67,16 +68,40 @@ const Footer = () => {
 };
 
 export const Layout = (props: LayoutProps) => {
-  const { children, title, description, image, footer, fullHeight } = props;
-  const mainContainerClass = fullHeight ? 'container min-h-screen' : 'container';
+  const { children, title, description, image, footer, fullHeight, fullWidth, flexLayout } = props;
+
+  if (flexLayout) {
+    return (
+      <Fragment>
+        <SEO title={title} description={description} image={image} />
+        <div className='d-flex flex-column vh-100 bg-body-tertiary bg-opacity-75'>
+          <header>
+            <Nav />
+          </header>
+          <main className='flex-fill container-fluid' style={{ minHeight: 0 }}>
+            {children}
+          </main>
+          {!!footer && <Footer />}
+        </div>
+      </Fragment>
+    );
+  }
+
+  const fluidContainer = `${fullWidth ? 'container-fluid' : 'container'}`;
   return (
     <Fragment>
       <SEO title={title} description={description} image={image} />
-      <header>
-        <Nav />
-      </header>
-      <main className={mainContainerClass}>{children}</main>
-      {footer === true && <Footer />}
+      <div className='min-vh-100 bg-body-tertiary bg-opacity-75 d-flex flex-column'>
+        <header>
+          <Nav />
+        </header>
+        <main
+          className={`${fullHeight ? fluidContainer + ' min-h-screen flex-grow-1' : fluidContainer + ' flex-grow-1'}`}
+        >
+          {children}
+        </main>
+        {!!footer && <Footer />}
+      </div>
     </Fragment>
   );
 };
