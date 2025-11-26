@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { PRIMARY_COLOR } from '../const';
 
-const STROKE_WIDTH = 2;
+const STROKE_WIDTH = 2.5;
 const STROKE_SPEAD = 0;
 
 export const InPaths = () => {
