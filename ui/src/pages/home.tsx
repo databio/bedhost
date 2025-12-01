@@ -76,12 +76,12 @@ export const Home = () => {
             interact with the data via an OpenAPI-compatible API.
           </p>
         </div>
-        <div className="col-12 col-lg-10 d-flex gap-2">
+        <div className="col-12 col-lg-9 d-flex gap-2">
           <div className="input-group bg-white">
             {searchType === 'b2b' ? (
               <input
                 key="file-input"
-                className="form-control border"
+                className="form-control border fs-5"
                 type="file"
                 accept=".bed,.gz,application/gzip,application/x-gzip"
                 onChange={(e) => {
@@ -94,7 +94,7 @@ export const Home = () => {
             ) : (
               <input
                 key="text-input"
-                className="form-control border"
+                className="form-control border fs-5"
                 type="text"
                 placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
                 value={searchTerm}
@@ -105,7 +105,7 @@ export const Home = () => {
 
             <select
               className="form-select"
-              style={{ maxWidth: '163px' }}
+              style={{ maxWidth: '159px' }}
               aria-label="search type selector"
               value={searchType}
               onChange={(e) => setSearchType(e.target.value)}
@@ -409,8 +409,8 @@ export const Home = () => {
             </Col>
             <Col>
               <a href="/analyze">
-              <Image src="/bed_analyzer.svg" alt="BED analyzer" height="300px"
-                     className="mb-3 mx-auto d-block img-fluid" />
+                <Image src="/bed_analyzer.svg" alt="BED analyzer" height="300px"
+                       className="mb-3 mx-auto d-block img-fluid" />
               </a>
             </Col>
           </Row>
