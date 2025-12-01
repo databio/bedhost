@@ -74,14 +74,16 @@ export const SearchBar = (props: Props) => {
         </select>
         {searchView === 't2b' && (
           <button
-            className="btn btn-warning"
+            className="btn btn-outline-secondary d-flex align-items-center gap-1"
             onClick={() => setShowOptions(!showOptions)}
+            title="Toggle search options"
           >
-            Options
+            <i className="bi bi-sliders"></i>
+            <span className="d-none d-md-inline">Filters</span>
           </button>
         )}
         <button
-          className="btn btn-primary"
+          className="btn btn-primary d-flex align-items-center gap-1"
           onClick={() => {
             if (value === '') {
               toast.error('Please enter a search term', {
@@ -92,7 +94,8 @@ export const SearchBar = (props: Props) => {
             onSearch();
           }}
         >
-          Search
+          <i className="bi bi-search"></i>
+          <span>Search</span>
         </button>
       </div>
       {showOptions && (

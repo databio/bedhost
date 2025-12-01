@@ -75,7 +75,8 @@ export const Text2BedSet = () => {
               </div>
             ) : (
               <div className="d-flex flex-column align-items-center justify-content-center mt-5 fst-italic">
-                Try searching for some BEDsets! e.g. K562 or excluderanges
+                Find collections of BED files by entering a text query above.<br />
+                For example, try searching for "excluderanges" or "a562".
               </div>
             )}
           </div>

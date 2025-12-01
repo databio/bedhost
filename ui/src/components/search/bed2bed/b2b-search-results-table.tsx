@@ -14,7 +14,7 @@ import {
 } from '@tanstack/react-table';
 import { useState } from 'react';
 import { components } from '../../../../bedbase-types';
-import { OverlayTrigger, ProgressBar, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { roundToTwoDecimals } from '../../../utils';
 import YAML from 'js-yaml';
 import { useBedCart } from '../../../contexts/bedcart-context';
@@ -126,16 +126,22 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
       id: 'info',
     }),
     columnHelper.accessor('score', {
-      cell: (info) => (
-        <span className="min-cell-width text-truncate d-inline-block">
-          <ProgressBar
-            min={5}
-            now={(info.getValue() ?? 0) * 100}
-            label={`${roundToTwoDecimals((info.getValue() ?? 0) * 100)}`}
-            variant="primary"
-          />
-        </span>
-      ),
+      cell: (info) => {
+        const scoreValue = (info.getValue() ?? 0) * 100;
+        const getScoreColor = (score: number) => {
+          if (score >= 80) return 'text-success';
+          // if (score >= 60) return 'text-warning';
+          // if (score >= 40) return 'text-info';
+          // return 'text-danger';
+          return 'text-success';
+        };
+
+        return (
+          <span className={`fw-bold ${getScoreColor(scoreValue)}`}>
+        {roundToTwoDecimals(scoreValue)}%
+      </span>
+        );
+      },
       footer: (info) => info.column.id,
       header: () => scoreTooltip,
       id: 'score',
@@ -144,7 +150,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
       cell: (info) => {
         const bedId = info.getValue();
         const rowData = info.row.original; // Get the full row data
-        
+
         return (
           <div>
             {cart[bedId || ''] ? (
@@ -167,12 +173,12 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
-                  
+
                   if (bedId === undefined) {
                     toast.error('No bed ID found', { position: 'top-center' });
                     return;
                   }
-                  
+
                   const bedItem = {
                     id: bedId,
                     name: rowData.metadata?.name || 'No name',
@@ -183,7 +189,7 @@ export const Bed2BedSearchResultsTable = (props: Props) => {
                     description: rowData.metadata?.description || '',
                     assay: rowData.metadata?.annotation?.assay || 'N/A',
                   };
-                  
+
                   addBedToCart(bedItem);
                 }}
               >

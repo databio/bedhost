@@ -1,3 +1,5 @@
+import * as pako from 'pako';
+
 type ObjectType = 'bed' | 'bedset';
 
 export const makeHttpDownloadLink = (md5: string) => {
@@ -29,7 +31,26 @@ export const makePDFImageLink = (md5: string, plotName: string, type: ObjectType
 };
 
 export const formatDateTime = (date: string) => {
-  return new Date(date).toLocaleString();
+  const d = new Date(date);
+  const day = String(d.getDate()).padStart(2, '0');
+  const months = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'Sepptember',
+    'October',
+    'November',
+    'December',
+  ];
+  const month = months[d.getMonth()];
+  const year = d.getFullYear();
+  const time = d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+  return `${month} ${day}, ${year} at ${time}`;
 };
 
 export const bytesToSize = (bytes: number) => {
@@ -52,7 +73,6 @@ export const generateBEDsetPEPDownloadRaw = (md5List: string[]) => {
   const script = `sample_name\n${md5List.join('\n')}`;
   return script;
 };
-
 
 export const generateCurlScriptForCartDownloadMd = (md5List: string[]) => {
   const wgetCommands = md5List.map((md5, index) => {
@@ -134,4 +154,101 @@ export const convertStatusCodeToMessage = (statusCode: number | undefined) => {
     default:
       return 'Unknown Error';
   }
+};
+
+// gtars bedfile handler
+export type BedEntry = [string, number, number, string];
+
+export async function parseBedFile(file: File): Promise<BedEntry[]> {
+  let text: string;
+  if (file.name.endsWith('.gz')) {
+    const arrayBuffer = await file.arrayBuffer();
+    const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
+    text = decompressed;
+  } else {
+    text = await file.text();
+  }
+  const lines = text.split('\n');
+  const bedEntries: BedEntry[] = [];
+
+// export async function parseBedFile(file: File): Promise<BedEntry[]> {
+//   const text = await file.text();
+//   const lines = text.split('\n');
+//   const bedEntries: BedEntry[] = [];
+
+  for (const line of lines) {
+    const trimmedLine = line.trim();
+
+    // skip!
+    if (!trimmedLine || trimmedLine.startsWith('#')) {
+      continue;
+    }
+
+    const columns = trimmedLine.split('\t');
+
+    // check for at least 3 columns (chr, start, end)
+    if (columns.length >= 3) {
+      const chr = columns[0];
+      const start = parseInt(columns[1], 10);
+      const end = parseInt(columns[2], 10);
+      const rest = columns.slice(3).join('\t'); // join remaining columns if any
+
+      // Validate that start and end are valid numbers
+      if (!isNaN(start) && !isNaN(end)) {
+        bedEntries.push([chr, start, end, rest]);
+      }
+    }
+  }
+
+  return bedEntries;
+}
+
+// helper function to handle file input change event
+export function handleBedFileInput(event: Event, callback: (entries: BedEntry[]) => void): void {
+  const input = event.target as HTMLInputElement;
+  const file = input.files?.[0];
+
+  if (file) {
+    parseBedFile(file)
+      .then(callback)
+      .catch((error) => console.error('Error parsing BED file:', error));
+  }
+}
+
+export const tableau20 = [
+  '#1f77b4',
+  '#aec7e8',
+  '#ff7f0e',
+  '#ffbb78',
+  '#2ca02c',
+  '#98df8a',
+  '#d62728',
+  '#ff9896',
+  '#9467bd',
+  '#c5b0d5',
+  '#8c564b',
+  '#c49c94',
+  '#e377c2',
+  '#f7b6d3',
+  '#7f7f7f',
+  '#c7c7c7',
+  '#bcbd22',
+  '#dbdb8d',
+  '#17becf',
+  '#9edae5',
+];
+
+// Point-in-polygon test using ray casting algorithm
+export const isPointInPolygon = (point: { x: number; y: number }, polygon: { x: number; y: number }[]) => {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x,
+      yi = polygon[i].y;
+    const xj = polygon[j].x,
+      yj = polygon[j].y;
+
+    const intersect = yi > point.y !== yj > point.y && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
 };
