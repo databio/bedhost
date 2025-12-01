@@ -4,6 +4,7 @@ path:
   # region2vec: databio/r2v-pretrained-for-search
   region2vec: databio/r2v-encode-hg38
   vec2vec: "databio/v2v-sentencetransformers-encode"
+  umap_model: "https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap_umap_model.joblib"
 database:
   host: $POSTGRES_HOST
   port: 5432
