@@ -33,7 +33,7 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
     }
 
     const coordinator = getCoordinator();
-    const url = 'https://raw.githubusercontent.com/databio/bedbase-loader/master/umap/hg38_umap.json';
+    const url = 'https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap.json';
 
     await coordinator.exec([
       vg.sql`CREATE OR REPLACE TABLE data AS
