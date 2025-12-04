@@ -21,7 +21,7 @@ export interface BEDEmbeddingPlotRef {
   handleFileRemove: () => Promise<void>;
 }
 
-export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, ref) => {
+export const EmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, ref) => {
   const { bedIds, height, preselectPoint, stickyBaseline, customCoordinates, customFilename } = props;
   const { coordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus } = useMosaicCoordinator();
 
@@ -147,56 +147,50 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
       ) : (
         <>
           {isReady ? (
-            <>
-              {/* <button className='btn btn-primary'>
-                test
-              </button> */}
-              <div className='w-100 bg-white' ref={containerRef}>
-                <EmbeddingViewMosaic
-                  key={`embedding`}
-                  coordinator={coordinator}
-                  table='data'
-                  x='x'
-                  y='y'
-                  identifier='id'
-                  text='name'
-                  category={colorGrouping}
-                  categoryColors={tableau20}
-                  additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
-                  height={height || 500}
-                  width={containerWidth}
-                  config={{
-                    autoLabelEnabled: false,
-                  }}
-                  filter={filter}
-                  viewportState={viewportState}
-                  onViewportState={setViewportState}
-                  tooltip={tooltipPoint}
-                  customTooltip={{
-                    class: AtlasTooltip,
-                    props: {
-                      showLink: true,
-                    },
-                  }}
-                  selection={selectedPoints}
-                  onSelection={(dataPoints) => {
-                    if (!dataPoints || (dataPoints.length === 0 && stickyBaseline)) {
-                      setTimeout(() => {
-                        if (baselinePointsRef.current.length > 0) {
-                          setSelectedPoints([...baselinePointsRef.current]);
-                        }
-                      }, 0);
-                      return;
-                    }
-                    setSelectedPoints(dataPoints);
-                  }}
-                  theme={{
-                    statusBar: false,
-                  }}
-                />
-              </div>
-              
-            </>
+            <div className='w-100' ref={containerRef}>
+              <EmbeddingViewMosaic
+                key={`embedding`}
+                coordinator={coordinator}
+                table='data'
+                x='x'
+                y='y'
+                identifier='id'
+                text='name'
+                category={colorGrouping}
+                categoryColors={tableau20}
+                additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
+                height={height || 500}
+                width={containerWidth}
+                config={{
+                  autoLabelEnabled: false,
+                }}
+                filter={filter}
+                viewportState={viewportState}
+                onViewportState={setViewportState}
+                tooltip={tooltipPoint}
+                customTooltip={{
+                  class: AtlasTooltip,
+                  props: {
+                    showLink: true,
+                  },
+                }}
+                selection={selectedPoints}
+                onSelection={(dataPoints) => {
+                  if (!dataPoints || (dataPoints.length === 0 && stickyBaseline)) {
+                    setTimeout(() => {
+                      if (baselinePointsRef.current.length > 0) {
+                        setSelectedPoints([...baselinePointsRef.current]);
+                      }
+                    }, 0);
+                    return;
+                  }
+                  setSelectedPoints(dataPoints);
+                }}
+                theme={{
+                  statusBar: false,
+                }}
+              />
+            </div>
           ) : (
             <div
               className='w-100 d-flex align-items-center justify-content-center bg-white'

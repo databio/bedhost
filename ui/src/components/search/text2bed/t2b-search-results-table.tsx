@@ -37,27 +37,11 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 navigate(`/bed/${result.metadata?.id}`);
               }}
             >
-              <div className='d-flex justify-content-between align-items-center mb-2 pt-1'>
+              <div className='d-flex align-items-center mb-2 pt-1'>
                 <div className='d-flex gap-2 align-items-center'>
                   <p className='fw-semibold mb-0 flex-grow-1'>{result?.metadata?.name || 'No name'}</p>
-                  <OverlayTrigger
-                    placement={layout === 'split' ? 'left' : 'right'}
-                    overlay={
-                      <Tooltip id={`tooltip-${result.id}`} className='moreinfo-tooltip'>
-                        <pre className='text-start m-0' style={{ fontSize: '11px' }}>
-                          {YAML.dump(result?.metadata, {
-                            indent: 2,
-                            noRefs: true,
-                          }) || 'No metadata'}
-                        </pre>
-                      </Tooltip>
-                    }
-                  >
-                    <i className='bi bi-three-dots cursor-pointer' onClick={(e) => e.stopPropagation()}></i>
-                  </OverlayTrigger>
                 </div>
-
-                <div className='d-flex gap-1 align-items-center text-sm'>
+                <div className='d-flex gap-1 align-items-center text-sm ms-2'>
                   {result.id === (search_query || '') && <i className='bi bi-check-all text-primary' />}
                   <OverlayTrigger
                     placement='top'
@@ -74,8 +58,25 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                     </span>
                   </OverlayTrigger>
                 </div>
+                <div className='d-flex gap-2 align-items-center ms-auto'>
+                  <OverlayTrigger
+                    placement={layout === 'split' ? 'left' : 'left'}
+                    overlay={
+                      <Tooltip id={`tooltip-${result.id}`} className='moreinfo-tooltip'>
+                        <pre className='text-start m-0' style={{ fontSize: '11px' }}>
+                          {YAML.dump(result?.metadata, {
+                            indent: 2,
+                            noRefs: true,
+                          }) || 'No metadata'}
+                        </pre>
+                      </Tooltip>
+                    }
+                  >
+                    <i className='bi bi-three-dots' onClick={(e) => e.stopPropagation()}></i>
+                  </OverlayTrigger>
+                </div>
               </div>
-              <p className='text-xs text-muted fst-italic mb-2 pb-1 text-start'>
+              <p className='text-sm text-muted fst-italic mb-2 pb-1 text-start'>
                 {result?.metadata?.description || 'No description'}
               </p>
 

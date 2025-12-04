@@ -8,6 +8,8 @@ import { components } from '../../../bedbase-types';
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 import { useBedUmap } from '../../queries/useBedUmap';
+import { EmbeddingLegend } from './embedding-legend';
+import { EmbeddingTable } from './embedding-table';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
@@ -512,91 +514,20 @@ export const BEDEmbeddingView = (props: Props) => {
             </div>
 
             <div className='card border overflow-hidden' style={{ height: `calc(100vh - ${embeddingHeight + 140}px)` }}>
-              <div className='card-body table-responsive p-0'>
-                <table className='table table-striped table-hover text-xs'>
-                  <thead>
-                    <tr className='text-nowrap'>
-                      <th scope='col'>BED Name</th>
-                      <th scope='col'>Assay</th>
-                      <th scope='col'>Cell Line</th>
-                      <th scope='col'>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {getSortedSelectedPoints().map((point: any, index: number) => (
-                      <tr
-                        className='text-nowrap cursor-pointer'
-                        onClick={() => centerOnPoint(point, 0.3)}
-                        key={point.identifier + '_' + index}
-                      >
-                        <td>{point.text}</td>
-                        <td>{point.fields.Assay}</td>
-                        <td>{point.fields['Cell Line']}</td>
-                        <td>{point.fields.Description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <EmbeddingTable
+                getSortedSelectedPoints={getSortedSelectedPoints}
+                centerOnPoint={centerOnPoint}
+              />
             </div>
           </div>
           <div className='col-sm-2'>
-            <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(100vh - 93.6px)` }}>
-              <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
-                <span>Legend</span>
-                <div className='btn-group btn-group-xs' role='group'>
-                  <input
-                    type='radio'
-                    className='btn-check'
-                    name='color_legend'
-                    id='color_legend_1'
-                    value='cell_line_category'
-                    autoComplete='off'
-                    checked={colorGrouping === 'cell_line_category'}
-                    onChange={(e) => setColorGrouping(e.target.value)}
-                  />
-                  <label className='btn btn-outline-secondary' htmlFor={'color_legend_1'}>
-                    Cell Line
-                  </label>
-                  <input
-                    type='radio'
-                    className='btn-check'
-                    name='color_legend'
-                    id='color_legend_2'
-                    value='assay_category'
-                    autoComplete='off'
-                    checked={colorGrouping === 'assay_category'}
-                    onChange={(e) => setColorGrouping(e.target.value)}
-                  />
-                  <label className='btn btn-outline-secondary' htmlFor={'color_legend_2'}>
-                    Assay
-                  </label>
-                </div>
-              </div>
-              <div className='card-body table-responsive p-0'>
-                <table className='table table-hover text-xs mb-2'>
-                  <tbody>
-                    {legendItems?.map((item: any) => (
-                      <tr
-                        className={`text-nowrap cursor-pointer ${filterSelection?.category === item.category ? 'table-active' : ''}`}
-                        onClick={() => handleLegendClick(item)}
-                        key={item.category}
-                      >
-                        <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
-                          <span>
-                            <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
-                            {item.name}
-                          </span>
-                          {filterSelection?.category === item.category && (
-                            <button className='btn btn-danger btn-xs'>Clear</button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <EmbeddingLegend 
+              legendItems={legendItems} 
+              filterSelection={filterSelection} 
+              handleLegendClick={handleLegendClick}
+              colorGrouping={colorGrouping}
+              setColorGrouping={setColorGrouping}
+            />
           </div>
         </div>
       ) : (

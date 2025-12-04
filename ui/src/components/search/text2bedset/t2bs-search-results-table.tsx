@@ -32,7 +32,7 @@ export const SearchBedSetResultTable = (props: Props) => {
                   </div>
                 )}
               </div>
-              <p className='text-xs text-muted fst-italic mb-0 pb-0 text-start'>
+              <p className='text-sm text-muted fst-italic mb-0 pb-0 text-start'>
                 {result?.description || 'No description'}
               </p>
 

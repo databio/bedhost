@@ -77,7 +77,7 @@ export const Bed2BedSearchResultsCards = (props: Props) => {
                   </OverlayTrigger>
                 </div>
               </div>
-              <p className='text-xs text-muted fst-italic mb-2 pb-1 text-start'>
+              <p className='text-sm text-muted fst-italic mb-2 pb-1 text-start'>
                 {result?.metadata?.description || 'No description'}
               </p>
 
