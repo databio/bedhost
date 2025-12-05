@@ -18,13 +18,18 @@ type Props = {
   height?: number;
   preselectPoint?: boolean;
   stickyInitial?: boolean;
+  centerInitial?: boolean;
+  tooltipInitial?: boolean;
   customCoordinates?: number[] | null;
   customFilename?: string;
+  simpleTooltip?: boolean;
   initialState?: EmbeddingState;
+  blockCompact?: boolean;
+  showBorder?: boolean;
 };
 
 export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((props, ref) => {
-  const { bedIds, height, preselectPoint, stickyInitial, customCoordinates, customFilename, initialState } = props;
+  const { bedIds, height, preselectPoint, stickyInitial, centerInitial, tooltipInitial, customCoordinates, customFilename, simpleTooltip, initialState, blockCompact, showBorder = true } = props;
 
   const contentRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
@@ -192,7 +197,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
 
   const content = (
     <div
-      className="expandable-card-container"
+      className='expandable-card-container'
       style={getContainerStyles()}
     >
       <div
@@ -200,10 +205,15 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
         className={`expandable-card expandable-card--${state} ${state === 'compact' ? 'rounded' : ''} overflow-hidden`}
         style={getInnerCardStyles()}
       >
-        <div className="expandable-card__layout">
-          <div className="expandable-card__main">
-            <div className='border bg-white rounded position-relative overflow-hidden'>
-              {state === 'compact' ? (
+        <div className='expandable-card__layout'>
+          <div className='expandable-card__main' onClick={state === 'compact' && blockCompact ? handleExpand : undefined} style={state === 'compact' && blockCompact ? { cursor: 'pointer' } : undefined}>
+            <div className={`position-relative overflow-hidden bg-white ${state !== 'compact' || showBorder ? 'border rounded' : ''}`}>
+              {state === 'compact' && blockCompact && (
+                <div className='position-absolute w-100 h-100' style={{top: 0, left: 0, zIndex: 1}} />
+              )}
+              {state === 'compact' ? blockCompact ? (
+                <></>
+              ) : (
                 <span className='badge rounded-2 text-bg-primary position-absolute cursor-pointer' style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} onClick={handleExpand}>
                   <i className='bi bi-fullscreen'></i>
                 </span>
@@ -212,8 +222,8 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                   <i className='bi bi-x-lg'></i>
                 </span>
               ) : (
-                <span className='badge rounded-2 text-bg-primary position-absolute cursor-pointer' style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} onClick={handleCollapse}>
-                  <i className='bi bi-fullscreen-exit'></i>
+                <span className='badge rounded-2 text-bg-danger position-absolute cursor-pointer' style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} onClick={handleCollapse}>
+                  <i className='bi bi-x-lg'></i>
                 </span>
               )}
               <EmbeddingPlot
@@ -221,10 +231,13 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                 bedIds={bedIds}
                 showStatus={state === 'expanded'}
                 height={state === 'compact' ? height : undefined}
-                preselectPoint={preselectPoint}
-                stickyInitial={stickyInitial}
+                preselectPoint={state === 'compact' ? preselectPoint : true}
+                stickyInitial={state === 'compact' ? stickyInitial : true}
+                centerInitial={state === 'compact' ? centerInitial : false}
+                tooltipInitial={state === 'compact' ? tooltipInitial : true}
                 customCoordinates={customCoordinates}
                 customFilename={customFilename}
+                simpleTooltip={state === 'compact' ? simpleTooltip : false}
                 colorGrouping={colorGrouping}
                 onLegendItemsChange={setLegendItems}
                 filterSelection={filterSelection}
@@ -235,7 +248,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                 onEmbeddingHeightChange={setEmbeddingHeight}
               />
             </div>
-            <div className="expandable-card__secondary">
+            <div className='expandable-card__secondary'>
               <div className='card border overflow-hidden mt-2' style={{ height: `calc(100vh - ${embeddingHeight + 26}px)` }}>
                 <EmbeddingTable
                   selectedPoints={selectedPoints}
@@ -244,7 +257,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
               </div>
             </div>
           </div>
-          <div className="expandable-card__sidebar">
+          <div className='expandable-card__sidebar'>
             <div className='expandable-card__extra-content'>
               {embeddingPlotRef && (
                 <EmbeddingLegend
@@ -255,7 +268,6 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                   setColorGrouping={setColorGrouping}
                 />
               )}
-              
             </div>
           </div>
         </div>
@@ -271,7 +283,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
       <>
         <div
           ref={placeholderRef}
-          className="expandable-card-placeholder bg-body-secondary border-2 rounded"
+          className='expandable-card-placeholder bg-body-secondary border-2 rounded'
           style={{
             width: '100%',
             height: shouldShowPlaceholder ? (originRect?.height || 330) : 0,

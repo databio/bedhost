@@ -19,6 +19,7 @@ import type { components } from '../../bedbase-types.d.ts';
 // import { BEDEmbeddingView } from '../components/umap/bed-embedding-view.tsx';
 // import { useState } from 'react';
 import { SearchBedSetResultTable } from '../components/search/text2bedset/t2bs-search-results-table.tsx';
+import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
 
 // Use the response type to properly type the metadata
 type BedMetadata = components['schemas']['BedMetadataAll'];
@@ -283,11 +284,16 @@ export const BedSplash = () => {
             </div>
           </div>
 
-          {/* {bedId && metadata?.name?.includes('encode') && (
-            <>
-              <BEDEmbeddingView bedId={bedId} neighbors={neighbours} showNeighbors={showNeighbors} enableUpload={false}/>
-            </>
-          )} */}
+          {bedId && metadata?.name?.includes('encode') && (
+            <div className='row mb-3'>
+              <div className='col-12'>
+                <h5 className='fw-bold'>Region Embedding Map</h5>
+                <div className='rounded border embedding-card transition-all'>
+                  <EmbeddingContainer bedIds={[bedId]} height={330} preselectPoint={true} centerInitial={true} tooltipInitial={true} simpleTooltip={true} blockCompact={true} showBorder={false} />
+                </div>
+              </div>
+            </div>
+          )}
 
           {metadata?.bedsets && metadata.bedsets.length > 0 && (
             <div className='row mb-3'>

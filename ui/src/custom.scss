@@ -388,3 +388,10 @@ td {
   animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }
 
+.fade-in-fast {
+  animation: fadeIn 100ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.embedding-card:hover {
+  outline: 4px solid $primary !important;
+}

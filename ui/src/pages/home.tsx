@@ -1,24 +1,28 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Layout } from '../components/layout';
 import { useNavigate } from 'react-router-dom';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import toast from 'react-hot-toast';
-import { CODE_SNIPPETS, BBCONF_SNIPPETS } from '../const';
+import { BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
-// import { BEDEmbeddingPlot } from '../components/umap/bed-embedding-plot.tsx';
 import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
+import type { EmbeddingContainerRef } from '../components/umap/embedding-container.tsx';
+
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const [copiedAPI, setCopiedAPI] = useState(false);
+  // const [copiedAPI, setCopiedAPI] = useState(false);
   const [copiedClient, setCopiedClient] = useState(false);
   const [searchType, setSearchType] = useState('t2b');
-  const [activeApiTab, setActiveApiTab] = useState(CODE_SNIPPETS[0].language);
+  // const [activeApiTab, setActiveApiTab] = useState(CODE_SNIPPETS[0].language);
   const [activeClientTab, setActiveClientTab] = useState(BBCONF_SNIPPETS[0].language);
+
+  const embeddingContainerRef = useRef<EmbeddingContainerRef>(null)
+  
 
   const navigate = useNavigate();
 
@@ -38,13 +42,13 @@ export const Home = () => {
   return (
     <Layout footer title='BEDbase' fullHeight>
       <div className='d-flex flex-column w-100 align-items-center p-2'>
-        <div className='mt-4 mb-3'></div>
+        <div className='mt-4 mb-5'></div>
         <h1 className='fw-lighter text-primary text-6xl mb-3'>BEDbase</h1>
         <div className='col-12 col-lg-10 text-muted'>
           <p className='text-center mb-0'>
             The open access platform for aggregating, analyzing, and serving genomic region data.
           </p>
-          <p className='text-center mb-4 pb-3'>
+          <p className='text-center mb-5'>
             Explore thousands of BED files (including{' '}
             <a
               href='https://genome.ucsc.edu/FAQ/FAQformat.html#format1'
@@ -93,6 +97,7 @@ export const Home = () => {
             ) from ENCODE, GEO, and more.
           </p>
         </div>
+        
         <div className='col-12 col-lg-10 d-flex gap-2'>
           <div className='input-group bg-white'>
             {searchType === 'b2b' ? (
@@ -137,18 +142,17 @@ export const Home = () => {
           </button>
         </div>
 
-        <div className='col-12 col-lg-10 mt-2'>
-          <EmbeddingContainer bedIds={[exampleBedId]} height={330} preselectPoint={true} />
-        </div>
         <div className='text-sm text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
           <span>
-            explore the BED file region embedding space above, or visit a{' '}
-            <a href={`/bed/${exampleBedId}`}>random BED file</a>
+            Or, visit a random{' '}
+            <a href={`/bed/${exampleBedId}`} className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'>BED file</a>
           </span>
           <span>
-            or <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}> BEDset</a>
+            or <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`} className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'> BEDset</a>
           </span>
         </div>
+        
+        <div className='mt-5'></div>
 
         <div className='d-flex flex-row gap-4 justify-content-center mb-5 text-muted'>
           <span>
@@ -174,8 +178,8 @@ export const Home = () => {
 
         <div className='col-12 col-lg-10 mb-5'>
           <div className='row g-2'>
-            
-            <div className='col-md-12'>
+
+            {/* <div className='col-md-12'>
               <div className='card h-100 border overflow-hidden'>
                 <div className='d-flex flex-column w-100'>
                   <div className='border-bottom position-relative' style={{ height: '220px' }}>
@@ -235,16 +239,50 @@ export const Home = () => {
                   </div>
                 </div>
               </div>
+            </div> */}
+            
+            <div className='col-md-12'>
+              <div className='card h-100 border w-100'>
+                <div className='d-flex flex-column w-100'>
+                  <div className='border-bottom position-relative embedding-card rounded-top transition-all' style={{ height: '220px' }}>
+                    <EmbeddingContainer
+                      ref={embeddingContainerRef} 
+                      bedIds={undefined} 
+                      height={219} 
+                      preselectPoint={false} 
+                      centerInitial={false} 
+                      tooltipInitial={false} 
+                      simpleTooltip={false} 
+                      blockCompact={true} 
+                      showBorder={false} 
+                    />
+                  </div>
+                  <div className='card-body'>
+                    <div className='d-flex align-items-center mb-2'>
+                      <i className='bi bi-map fs-5 text-primary me-2'></i>
+                      <h6 className='mb-0 fw-semibold'>Region Embeddings</h6>
+                    </div>
+                    <p className='text-muted text-sm mb-3'>
+                      We provide a UMAP of the BEDbase genomic region embedding space, where embeddings are calculated from the genomic regions contained in each hg38 BED file.
+                      Distances between BED files can provide insights on the inherent similarities of their contained genomic regions. 
+                      The plot is interactive and allows for dynamic selections for exports and filtering based on metadata categories.
+                    </p>
+                    <button className='btn btn-outline-primary btn-sm align-self-start' onClick={() => embeddingContainerRef.current?.handleShow()}>
+                      Region Embeddings
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className='col-lg-6'>
-              <div className='card border overflow-hidden flex-fill' style={{ minHeight: '220px' }}>
+              <div className='card border overflow-hidden flex-fill' style={{ minHeight: '200px' }}>
                 <div className='card-body d-flex flex-column h-100'>
                   <div className='d-flex align-items-center mb-2'>
                     <i className='bi bi-body-text fs-5 text-primary me-2'></i>
                     <h6 className='mb-0 fw-semibold'>Vector Search</h6>
                   </div>
-                  <p className='text-muted flex-grow-1'>
+                  <p className='text-muted text-sm flex-grow-1'>
                     BEDbase offers a robust vector search of BED files or BEDsets using their contained genomic regions instead of unstructured metadata, 
                     which can often be ambiguous and unreliable.
                     Search for BED files by providing a query string or a BED file.
@@ -253,22 +291,19 @@ export const Home = () => {
                     <a href='/search' className='btn btn-outline-primary btn-sm align-self-start'>
                       Search
                     </a>
-                    <a href='/umap' className='btn btn-outline-primary btn-sm align-self-start'>
-                      Embedding Atlas
-                    </a>
                   </div>
                 </div>
               </div>
             </div>
 
             <div className='col-lg-6'>
-              <div className='card border overflow-hidden flex-fill' style={{ minHeight: '220px' }}>
+              <div className='card border overflow-hidden flex-fill' style={{ minHeight: '200px' }}>
                 <div className='card-body d-flex flex-column h-100'>
                   <div className='d-flex align-items-center mb-2'>
                     <i className='bi bi-graph-up fs-5 text-primary me-2'></i>
                     <h6 className='mb-0 fw-semibold'>BED Analyzer</h6>
                   </div>
-                  <p className='text-muted flex-grow-1'>
+                  <p className='text-muted text-sm flex-grow-1'>
                     BEDbase integrates a web implementation of <a
                       href='https://github.com/databio/gtars'
                       target='_blank'
@@ -334,7 +369,7 @@ export const Home = () => {
                       <i className='bi bi-terminal fs-5 text-primary me-2'></i>
                       <h6 className='mb-0 fw-semibold'>BEDbase Clients</h6>
                     </div>
-                    <p className='text-muted mb-3'>
+                    <p className='text-muted text-sm mb-3'>
                       BEDbase provides Python and R clients for interacting with the BEDbase API, allowing users to download, cache, and analyze BED files natively without the need to interact with the API.
                       BBclient is available on PyPI in <a
                         href='https://github.com/databio/geniml'
@@ -367,6 +402,7 @@ export const Home = () => {
             </div>
           </div>
         </div>
+        
       </div>
     </Layout>
   );

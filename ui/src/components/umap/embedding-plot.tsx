@@ -13,10 +13,13 @@ type Props = {
   bedIds?: string[];
   showStatus?: boolean;
   height?: number;
-  preselectPoint?: boolean;
-  stickyInitial?: boolean;
+  preselectPoint?: boolean; // preselect an initial point that is provided either as bedId[0] or a file with custom points
+  stickyInitial?: boolean; // forces initial point to remain selected as you select other points
+  centerInitial?: boolean; // centers initial point on load
+  tooltipInitial?: boolean; // show tooltip for initial selected point
   customCoordinates?: number[] | null;
   customFilename?: string;
+  simpleTooltip?: boolean;
   colorGrouping?: string;
   onLegendItemsChange?: (items: any[]) => void;
   filterSelection?: any;
@@ -40,8 +43,11 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     height,
     preselectPoint,
     stickyInitial,
+    centerInitial,
+    tooltipInitial,
     customCoordinates,
     customFilename,
+    simpleTooltip,
     colorGrouping = 'cell_line_category',
     onLegendItemsChange,
     filterSelection,
@@ -69,8 +75,12 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
 
-  const centerOnPoint = (point: any, scale: number = 1) => {
-    setTooltipPoint(point);
+  const centerOnPoint = (point: any, scale: number = 1, tooltip: boolean = true) => {
+    if (tooltip) {
+      setTimeout(() => {
+        setTooltipPoint(point);
+      }, 300)
+    }
     setViewportState({
       x: point.x,
       y: point.y,
@@ -263,15 +273,17 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
           : currentBed[0];
         setInitialPoint(pointToSelect);
         if (preselectPoint) {
-          if (!!customCoordinates) {
-            centerOnPoint(pointToSelect);
-          } else {
-            setTooltipPoint(pointToSelect);
+          if (!!customCoordinates || centerInitial) {
+            centerOnPoint(pointToSelect, 0.2, tooltipInitial);
+          } else if (tooltipInitial) {
+            setTimeout(() => {
+              setTooltipPoint(pointToSelect);
+            }, 300)
           }
         }
         baselinePointsRef.current = currentBed;
         onSelectedPointsChange?.(currentBed)
-      }, 200);
+      }, 50);
     }
   }, [isReady, bedIds, coordinator, colorGrouping, customCoordinates]);
 
@@ -335,6 +347,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
                   class: AtlasTooltip,
                   props: {
                     showLink: true,
+                    simpleTooltip: simpleTooltip
                   },
                 }}
                 selection={selectedPoints}

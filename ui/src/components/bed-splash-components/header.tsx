@@ -1,13 +1,13 @@
 import { useBedCart } from '../../contexts/bedcart-context';
 import toast from 'react-hot-toast';
-import { Fragment, useState, useRef } from 'react';
+import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
 import { bytesToSize } from '../../utils';
 import { Dropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { RefGenomeModal } from './refgenome-modal';
-import { EmbeddingContainer } from '../umap/embedding-container.tsx';
-import type { EmbeddingContainerRef } from '../umap/embedding-container.tsx';
+// import { EmbeddingContainer } from '../umap/embedding-container.tsx';
+// import type { EmbeddingContainerRef } from '../umap/embedding-container.tsx';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -28,13 +28,14 @@ export const BedSplashHeader = (props: Props) => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [showRefGenomeModal, setShowRefGenomeModal] = useState(false);
-  const embeddingContainerRef = useRef<EmbeddingContainerRef>(null)
+
+  // const embeddingContainerRef = useRef<EmbeddingContainerRef>(null)
 
   const noFilesToDownload = !metadata.files?.bed_file && !metadata.files?.bigbed_file;
 
   return (
     <div className='border-bottom py-2'>
-      {record_identifier && (
+      {/* {record_identifier && (
         <EmbeddingContainer 
           ref={embeddingContainerRef}
           bedIds={[record_identifier]} 
@@ -43,7 +44,7 @@ export const BedSplashHeader = (props: Props) => {
           stickyInitial={true} 
           initialState='hidden' 
         />
-      )}
+      )} */}
       <div className='d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-0'>
         <div className='d-flex align-items-center overflow-x-auto w-100 mb-3'>
           <h5 className='fw-light d-flex align-items-center flex-nowrap mb-0'>
@@ -79,14 +80,17 @@ export const BedSplashHeader = (props: Props) => {
         )}
 
         <div className='d-flex flex-wrap align-items-center gap-1 flex-shrink-0'>
-          {metadata?.processed && metadata?.genome_alias == 'hg38' && (
-            // <a href={`/umap?searchId=${record_identifier}`}>
-              <button className='btn btn-outline-primary btn-sm text-nowrap' onClick={() => embeddingContainerRef.current?.handleShow()}>
+          {/* {metadata?.processed && metadata?.genome_alias == 'hg38' && (
+            <a href={`/umap?searchId=${record_identifier}`}>
+              <button 
+                className='btn btn-outline-primary btn-sm text-nowrap' 
+                // onClick={() => embeddingContainerRef.current?.handleShow()}
+              >
                 <i className='bi bi-pin-map me-1' />
                 Embeddings
               </button>
-            // </a>
-          )}
+            </a>
+          )} */}
           <a href={`/analyze?bedUrl=${record_identifier}`}>
             <button className='btn btn-outline-primary btn-sm text-nowrap'>
               <i className='bi bi-bar-chart-steps me-1' />
