@@ -8,7 +8,8 @@ import { CODE_SNIPPETS, BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
-import { BEDEmbeddingPlot } from '../components/umap/bed-embedding-plot.tsx';
+// import { BEDEmbeddingPlot } from '../components/umap/bed-embedding-plot.tsx';
+import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -136,8 +137,8 @@ export const Home = () => {
           </button>
         </div>
 
-        <div className='d-flex flex-row align-items-center col-12 col-lg-10 mt-2 border rounded overflow-hidden'>
-          <BEDEmbeddingPlot bedIds={[exampleBedId]} height={330} preselectPoint={true} />
+        <div className='col-12 col-lg-10 mt-2'>
+          <EmbeddingContainer bedIds={[exampleBedId]} height={330} preselectPoint={true} />
         </div>
         <div className='text-sm text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
           <span>

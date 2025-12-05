@@ -9,13 +9,13 @@ import { Text2BedSet } from '../components/search/text2bedset/text2bedset.tsx';
 import { Layout } from '../components/layout';
 import { SearchViewProvider } from '../contexts/search-view-context.tsx';
 import { useBedUmap } from '../queries/useBedUmap.ts';
-import { BEDEmbeddingPlotRef } from '../components/umap/bed-embedding-plot.tsx';
+import { EmbeddingPlotRef } from '../components/umap/embedding-plot.tsx';
 
 type SearchView = 't2b' | 'b2b' | 't2bs';
 
 export const SearchPage = () => {
   const location = useLocation();
-  const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
+  const embeddingPlotRef = useRef<EmbeddingPlotRef>(null);
   const uploadedFile = location.state?.file as File | undefined;
 
   const [searchParams, setSearchParams] = useSearchParams();

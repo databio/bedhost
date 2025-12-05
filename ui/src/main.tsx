@@ -19,6 +19,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'highlight.js/styles/a11y-light.min.css';
 import './custom.scss';
+import './components/umap/embedding-styles.scss';
 
 // import the pages
 import { BedSplash } from './pages/bed-splash.tsx';

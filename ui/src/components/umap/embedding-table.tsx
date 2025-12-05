@@ -1,10 +1,10 @@
 type Props = {
-  getSortedSelectedPoints: () => any;
-  centerOnPoint: (point: any, scale: number) => void;
+  selectedPoints: any[];
+  centerOnBedId?: (bedId: string, scale?: number) => void;
 };
 
 export const EmbeddingTable = (props: Props) => {
-  const { getSortedSelectedPoints, centerOnPoint } = props;
+  const { selectedPoints, centerOnBedId } = props;
 
   return (
     <div className='card-body table-responsive p-0'>
@@ -18,10 +18,10 @@ export const EmbeddingTable = (props: Props) => {
           </tr>
         </thead>
         <tbody>
-          {getSortedSelectedPoints().map((point: any, index: number) => (
+          {selectedPoints.map((point: any, index: number) => (
             <tr
               className='text-nowrap cursor-pointer'
-              onClick={() => centerOnPoint(point, 0.3)}
+              onClick={() => centerOnBedId?.(point.identifier, 1)}
               key={point.identifier + '_' + index}
             >
               <td>{point.text}</td>

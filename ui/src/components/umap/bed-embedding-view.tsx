@@ -9,7 +9,7 @@ import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 import { useBedUmap } from '../../queries/useBedUmap';
 import { EmbeddingLegend } from './embedding-legend';
-import { EmbeddingTable } from './embedding-table';
+// import { EmbeddingTable } from './embedding-table';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
@@ -137,23 +137,23 @@ export const BEDEmbeddingView = (props: Props) => {
     fileInputRef.current?.click();
   };
 
-  const getSortedSelectedPoints = () => {
-    if (!selectedPoints || selectedPoints.length === 0) return [];
+  // const getSortedSelectedPoints = () => {
+  //   if (!selectedPoints || selectedPoints.length === 0) return [];
 
-    const currentBed = selectedPoints.find((p: any) => p.identifier === bedId);
-    const others = selectedPoints.filter((p: any) => p.identifier !== bedId);
+  //   const currentBed = selectedPoints.find((p: any) => p.identifier === bedId);
+  //   const others = selectedPoints.filter((p: any) => p.identifier !== bedId);
 
-    if (neighbors?.results && neighbors.results.length > 0) {
-      const scoreMap = new Map(neighbors.results.map((n) => [n.id, n.score]));
-      others.sort((a: any, b: any) => {
-        const scoreA = scoreMap.get(a.identifier) || 0;
-        const scoreB = scoreMap.get(b.identifier) || 0;
-        return scoreB - scoreA; // Descending order
-      });
-    }
+  //   if (neighbors?.results && neighbors.results.length > 0) {
+  //     const scoreMap = new Map(neighbors.results.map((n) => [n.id, n.score]));
+  //     others.sort((a: any, b: any) => {
+  //       const scoreA = scoreMap.get(a.identifier) || 0;
+  //       const scoreB = scoreMap.get(b.identifier) || 0;
+  //       return scoreB - scoreA; // Descending order
+  //     });
+  //   }
 
-    return currentBed ? [currentBed, ...others] : others;
-  };
+  //   return currentBed ? [currentBed, ...others] : others;
+  // };
 
   const handleLegendClick = (item: any) => {
     if (filterSelection?.category === item.category) {
@@ -514,10 +514,10 @@ export const BEDEmbeddingView = (props: Props) => {
             </div>
 
             <div className='card border overflow-hidden' style={{ height: `calc(100vh - ${embeddingHeight + 140}px)` }}>
-              <EmbeddingTable
+              {/* <EmbeddingTable
                 getSortedSelectedPoints={getSortedSelectedPoints}
-                centerOnPoint={centerOnPoint}
-              />
+                centerOnBedId={centerOnPoint}
+              /> */}
             </div>
           </div>
           <div className='col-sm-2'>
