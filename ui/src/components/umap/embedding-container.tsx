@@ -6,6 +6,7 @@ import { EmbeddingLegend } from './embedding-legend.tsx';
 import { EmbeddingTable } from './embedding-table.tsx';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { useBedUmap } from '../../queries/useBedUmap.ts';
+import { EmbeddingStats } from './embedding-stats.tsx';
 
 export type EmbeddingState = 'compact' | 'expanding' | 'expanded' | 'collapsing' | 'hidden';
 export type EmbeddingContainerRef = {
@@ -381,6 +382,11 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                   colorGrouping={colorGrouping}
                   setColorGrouping={setColorGrouping}
                 />
+              )}
+            </div>
+            <div className='expandable-card__extra-content'>
+              {embeddingPlotRef && (
+                <EmbeddingStats selectedPoints={selectedPoints} colorGrouping={colorGrouping} />
               )}
             </div>
           </div>

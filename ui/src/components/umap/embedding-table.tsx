@@ -9,7 +9,7 @@ export const EmbeddingTable = (props: Props) => {
   return (
     <div className='card-body table-responsive p-0'>
       <table className='table table-striped table-hover text-xs'>
-        <thead>
+        <thead className='sticky-top'>
           <tr className='text-nowrap'>
             <th scope='col'>BED Name</th>
             <th scope='col'>Assay</th>

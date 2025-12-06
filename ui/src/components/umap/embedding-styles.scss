@@ -59,20 +59,20 @@
     }
 
     .expandable-card__main {
-      flex: 1 1 84%;
+      flex: 1 1 80%;
       opacity: 0;
       transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .expandable-card__secondary {
-      flex: 1 1 84%;
+      flex: 1 1 80%;
       opacity: 0;
       transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .expandable-card__sidebar {
-      flex: 0 0 16%;
-      max-width: 16%;
+      flex: 0 0 20%;
+      max-width: 20%;
       opacity: 0;
       transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
     }
@@ -88,18 +88,18 @@
     }
 
     .expandable-card__main {
-      flex: 1 1 84%;
+      flex: 1 1 80%;
       opacity: 1;
     }
 
     .expandable-card__secondary {
-      flex: 1 1 84%;
+      flex: 1 1 80%;
       opacity: 1;
     }
 
     .expandable-card__sidebar {
-      flex: 0 0 16%;
-      max-width: 16%;
+      flex: 0 0 20%;
+      max-width: 20%;
       opacity: 1;
       pointer-events: auto;
     }
@@ -114,20 +114,20 @@
     }
 
     .expandable-card__main {
-      flex: 1 1 84%;
+      flex: 1 1 80%;
       opacity: 0;
       transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .expandable-card__secondary {
-      flex: 1 1 84%;
+      flex: 1 1 80%;
       opacity: 0;
       transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     .expandable-card__sidebar {
-      flex: 0 0 16%;
-      max-width: 16%;
+      flex: 0 0 20%;
+      max-width: 20%;
       opacity: 0;
       transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
     }
