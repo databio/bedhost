@@ -96,8 +96,6 @@ export const BEDEmbeddingView = (props: Props) => {
         const updatedLegend = await fetchLegendItems(coordinator);
         setLegendItems(updatedLegend);
 
-        // await new Promise(resolve => setTimeout(resolve, 150));
-
         // Query the uploaded point
         const customPoint: any = await coordinator.query(
           `SELECT

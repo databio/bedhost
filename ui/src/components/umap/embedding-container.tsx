@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
 import { EmbeddingPlot } from './embedding-plot.tsx';
-import { EmbeddingLegend } from './embedding-legend.tsx';
 import type { EmbeddingPlotRef } from './embedding-plot.tsx';
+import { EmbeddingLegend } from './embedding-legend.tsx';
 import { EmbeddingTable } from './embedding-table.tsx';
+import { useBedCart } from '../../contexts/bedcart-context';
+import { useBedUmap } from '../../queries/useBedUmap.ts';
 
 export type EmbeddingState = 'compact' | 'expanding' | 'expanded' | 'collapsing' | 'hidden';
 export type EmbeddingContainerRef = {
@@ -20,20 +22,35 @@ type Props = {
   stickyInitial?: boolean;
   centerInitial?: boolean;
   tooltipInitial?: boolean;
-  customCoordinates?: number[] | null;
-  customFilename?: string;
   simpleTooltip?: boolean;
   initialState?: EmbeddingState;
   blockCompact?: boolean;
   showBorder?: boolean;
+  uploadedFile?: File;
 };
 
 export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((props, ref) => {
-  const { bedIds, height, preselectPoint, stickyInitial, centerInitial, tooltipInitial, customCoordinates, customFilename, simpleTooltip, initialState, blockCompact, showBorder = true } = props;
+  const { 
+    bedIds, 
+    height, 
+    preselectPoint, 
+    stickyInitial, 
+    centerInitial, 
+    tooltipInitial, 
+    simpleTooltip, 
+    initialState, 
+    blockCompact, 
+    showBorder = true, 
+    uploadedFile 
+  } = props;
 
+  const { addMultipleBedsToCart } = useBedCart();
+  const { mutateAsync: getUmapCoordinates } = useBedUmap();
+  
   const contentRef = useRef<HTMLDivElement>(null);
   const placeholderRef = useRef<HTMLDivElement>(null);
   const embeddingPlotRef = useRef<EmbeddingPlotRef>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [state, setState] = useState<EmbeddingState>(initialState || 'compact');
   const [originRect, setOriginRect] = useState<DOMRect | null>(null);
@@ -43,6 +60,9 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
   const [filterSelection, setFilterSelection] = useState<any>(null);
   const [colorGrouping, setColorGrouping] = useState('cell_line_category');
   const [selectedPoints, setSelectedPoints] = useState<any[]>([]);
+  const [addedToCart, setAddedToCart] = useState(false);
+  const [file, setFile] = useState<File | null>(uploadedFile || null);
+  const [customCoordinates, setCustomCoordinates] = useState<number[] | null>(null);
 
   const handleExpand = () => {
     if (state !== 'compact' && state !== 'hidden') return;
@@ -188,6 +208,14 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
     }
   }, [state]);
 
+  useEffect(() => {
+    if (!file) return;
+    (async () => {
+      const coordinates = await getUmapCoordinates(file);
+      setCustomCoordinates(coordinates);
+    })();
+  }, [file]);
+
   useImperativeHandle(ref, () => ({
     handleExpand,
     handleShow,
@@ -214,17 +242,103 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
               {state === 'compact' ? blockCompact ? (
                 <></>
               ) : (
-                <span className='badge rounded-2 text-bg-primary position-absolute cursor-pointer' style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} onClick={handleExpand}>
-                  <i className='bi bi-fullscreen'></i>
+                <span 
+                  className='badge rounded-2 text-bg-primary position-absolute cursor-pointer border border-primary' 
+                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} 
+                  title='Expand Embeddings'
+                  onClick={handleExpand}
+                >
+                  <i className='bi bi-fullscreen' />
                 </span>
               ) : initialState === 'hidden' ? (
-                <span className='badge rounded-2 text-bg-danger position-absolute cursor-pointer' style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} onClick={handleHide}>
-                  <i className='bi bi-x-lg'></i>
+                <span 
+                  className='badge rounded-2 text-bg-danger position-absolute cursor-pointer border border-danger' 
+                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} 
+                  onClick={handleHide}
+                  title='Hide Embeddings'
+                >
+                  <i className='bi bi-x-lg' />
                 </span>
               ) : (
-                <span className='badge rounded-2 text-bg-danger position-absolute cursor-pointer' style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} onClick={handleCollapse}>
-                  <i className='bi bi-x-lg'></i>
+                <span 
+                  className='badge rounded-2 text-bg-danger position-absolute cursor-pointer border border-danger' 
+                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} 
+                  onClick={handleCollapse}
+                  title='Collapse Embeddings'
+                >
+                  <i className='bi bi-x-lg' />
                 </span>
+              )}
+              {state === 'expanded' ? (
+                <span className='position-absolute p-0 m-0 d-flex gap-1' style={{top: '0.5rem', right: '0.5rem', zIndex: 9999}}>
+                  {!!file && (
+                    <span 
+                      className='badge rounded-2 text-bg-light border cursor-pointer fw-normal'
+                      title='Locate Uploaded File'
+                      onClick={() => embeddingPlotRef.current?.centerOnBedId('custom_point', 1, true)}
+                    >
+                      <i className='bi bi-pin-map'></i>
+                    </span>
+                  )}
+                  <span
+                    className='badge rounded-2 text-bg-secondary border border-secondary cursor-pointer fw-normal'
+                    title='Remove File'
+                    onClick={() => {
+                      if (!!file) {
+                        embeddingPlotRef.current?.handleFileRemove();
+                        setFile(null);
+                        setCustomCoordinates(null);
+                        if (fileInputRef.current) {
+                          fileInputRef.current.value = '';
+                        }
+                      } else {
+                        fileInputRef.current?.click();
+                      }
+                    }}
+                  >
+                    {!!file ? <>{file.name} <i className='bi bi-x-lg' /></> : 'Upload BED'}
+                  </span>
+                  <input
+                    ref={fileInputRef}
+                    className='d-none'
+                    type='file'
+                    accept='.bed,.gz,application/gzip,application/x-gzip'
+                    onChange={(e) => {
+                      const selectedFile = e.target.files?.[0];
+                      if (selectedFile) {
+                        setFile(selectedFile);
+                        
+                      }
+                    }}
+                  />
+                  <span
+                    className='badge rounded-2 text-bg-primary border border-primary cursor-pointer fw-normal'
+                    title='Add Selection to Cart'
+                    onClick={() => {
+                      const bedItems = selectedPoints
+                        .filter((point: any) => point.identifier !== 'custom_point')
+                        .map((point: any) => ({
+                          id: point.identifier,
+                          name: point.text || 'No name',
+                          genome: point.genome_alias || 'N/A',
+                          tissue: point.annotation?.tissue || 'N/A',
+                          cell_line: point.fields?.['Cell Line'] || 'N/A',
+                          cell_type: point.annotation?.cell_type || 'N/A',
+                          description: point.fields?.Description || '',
+                          assay: point.fields?.Assay || 'N/A',
+                        }));
+                      addMultipleBedsToCart(bedItems);
+                      setAddedToCart(true);
+                      setTimeout(() => {
+                        setAddedToCart(false);
+                      }, 500);
+                    }}
+                  >
+                    {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
+                  </span>
+                </span>
+              ) : (
+                <></>
               )}
               <EmbeddingPlot
                 ref={embeddingPlotRef}
@@ -236,7 +350,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                 centerInitial={state === 'compact' ? centerInitial : false}
                 tooltipInitial={state === 'compact' ? tooltipInitial : true}
                 customCoordinates={customCoordinates}
-                customFilename={customFilename}
+                customFilename={file?.name || undefined}
                 simpleTooltip={state === 'compact' ? simpleTooltip : false}
                 colorGrouping={colorGrouping}
                 onLegendItemsChange={setLegendItems}
@@ -276,7 +390,6 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
   );
 
   if (state === 'expanding' || state === 'expanded' || state === 'collapsing') {
-    // When collapsing to hidden (initialState is hidden), don't show placeholder
     const shouldShowPlaceholder = !(state === 'collapsing' && initialState === 'hidden');
 
     return (
@@ -310,5 +423,4 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
   }
 
   return content;
-  
 });

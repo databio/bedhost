@@ -104,7 +104,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <BedCartProvider>
             <MosaicCoordinatorProvider>
               <RouterProvider router={router} />
-              <Toaster position='top-center' />
+              <Toaster position='top-center' containerStyle={{zIndex: 999999}} />
             </MosaicCoordinatorProvider>
           </BedCartProvider>
           <ReactQueryDevtools initialIsOpen={true} />

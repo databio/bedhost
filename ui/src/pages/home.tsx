@@ -152,7 +152,7 @@ export const Home = () => {
           </span>
         </div>
         
-        <div className='mt-5'></div>
+        <div className='mt-4 pt-3'></div>
 
         <div className='d-flex flex-row gap-4 justify-content-center mb-5 text-muted'>
           <span>

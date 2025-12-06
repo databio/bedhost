@@ -32,6 +32,7 @@ type Props = {
 
 export type EmbeddingPlotRef = {
   centerOnBedId: (bedId: string, scale?: number, reselect?: boolean) => Promise<void>;
+  handleFileUpload: () => Promise<void>;
   handleFileRemove: () => Promise<void>;
   handleLegendClick: (item: any) => void;
 }
@@ -67,19 +68,18 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   const [tooltipPoint, setTooltipPoint] = useState<any>(null);
   const [viewportState, setViewportState] = useState<any>(null);
   const [initialPoint, setInitialPoint] = useState<any>(null);
-  // const [addedToCart, setAddedToCart] = useState(false);
-  // const [uploadedFilename, setUploadedFilename] = useState('');
-  // const [dataVersion, setDataVersion] = useState(0);
-  // const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
+  const [dataVersion, setDataVersion] = useState(0);
+  const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
 
   const centerOnPoint = (point: any, scale: number = 1, tooltip: boolean = true) => {
     if (tooltip) {
+      setTooltipPoint(null);
       setTimeout(() => {
         setTooltipPoint(point);
-      }, 300)
+      }, 300);
     }
     setViewportState({
       x: point.x,
@@ -104,10 +104,44 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     );
 
     if (bedData && bedData.length > 0) {
-      centerOnPoint(bedData[0], scale);
+      centerOnPoint(bedData[0], scale, true);
       if (reselect) onSelectedPointsChange?.([bedData[0]]);
     } else {
       toast.error('Error: BED file not present in embeddings.');
+    }
+  };
+
+  const handleFileUpload = async () => {
+    try {
+      if (customCoordinates && customCoordinates.length >= 2) {
+        await addCustomPoint(customCoordinates[0], customCoordinates[1], customFilename);
+
+        coordinator.clear();
+        const updatedLegend = await fetchLegendItems(coordinator);
+        onLegendItemsChange?.(updatedLegend);
+
+        const customPoint: any = await coordinator.query(
+          `SELECT
+            x, y,
+            ${colorGrouping} as category,
+            name as text,
+            id as identifier,
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            FROM data
+            WHERE id = 'custom_point'`,
+          { type: 'json' },
+        );
+
+        if (customPoint && customPoint.length > 0) {
+          const newSelection = selectedPoints?.filter((p: any) => p.identifier !== 'custom_point') || [];
+          newSelection.push(customPoint[0]);
+          setPendingSelection(newSelection);
+          setDataVersion((v) => v + 1);
+        }
+      }
+    } catch (error) {
+      console.error('Error getting UMAP coordinates:', error);
+      toast.error('Error: Failed to add uploaded file to plot.');
     }
   };
 
@@ -115,6 +149,12 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     try {
       await deleteCustomPoint();
       coordinator.clear();
+      const updatedLegend = await fetchLegendItems(coordinator);
+      onLegendItemsChange?.(updatedLegend);
+
+      const newSelection = selectedPoints?.filter((p: any) => p.identifier !== 'custom_point');
+      setPendingSelection(newSelection || []);
+      setDataVersion((v) => v + 1);
     } catch (error) {
       console.error('Error removing file');
     }
@@ -132,6 +172,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   };
 
   const handleLegendClick = (item: any) => {
+    setPendingSelection(selectedPoints || []);
     if (filterSelection?.category === item.category) {
       onFilterSelectionChange?.(null);
       filter.update({
@@ -154,11 +195,14 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
       setTimeout(() => {
         if (baselinePointsRef.current.length > 0) {
           onSelectedPointsChange?.([...baselinePointsRef.current])
+        } else {
+          onSelectedPointsChange?.([])
         }
       }, 0);
       return;
     }
-    onSelectedPointsChange?.(dataPoints)
+    const validPoints = dataPoints.filter(point => point != null);
+    onSelectedPointsChange?.(validPoints)
   };
 
   const handleRangeSelection = async (coordinator: any, value: any) => {
@@ -227,9 +271,33 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     const resultArray = result || [];
     // const hasInitialPoint = resultArray.length > 0 && resultArray.some((p: any) => p.identifier === initialPoint?.identifier);
     let finalPoints = stickyInitial ? [initialPoint, ...resultArray] : resultArray;
+    finalPoints = finalPoints.filter(point => point != null);
 
     onSelectedPointsChange?.(finalPoints)
   };
+
+  useEffect(() => {
+    // apply pending selection after dataVersion change
+    if (pendingSelection !== null) {
+      setTimeout(() => {
+        onSelectedPointsChange?.(pendingSelection);
+        // If there's an uploaded file, center on it and set tooltip
+        if (customFilename) {
+          const uploadedPoint = pendingSelection.find((point: any) => point.identifier === 'custom_point');
+          if (uploadedPoint) {
+            centerOnPoint(uploadedPoint, 0.3);
+          }
+        }
+        setPendingSelection(null);
+      }, 100);
+    }
+  }, [dataVersion, pendingSelection]);
+
+  useEffect(() => {
+    if (isReady && customCoordinates && !pendingSelection) {
+      handleFileUpload();
+    }
+  }, [customCoordinates, isReady]);
 
   useEffect(() => {
     // set legend items
@@ -255,7 +323,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     // fetch provided bed ids
     if (isReady && bedIds && bedIds.length > 0) {
       setTimeout(async () => {
-        const idsToQuery = customCoordinates ? ['custom_point', ...bedIds] : bedIds;
+        const idsToQuery = customCoordinates && !bedIds ? ['custom_point', ...bedIds] : bedIds;
         const currentBed: any = await coordinator.query(
           `SELECT
             x, y,
@@ -306,6 +374,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
 
   useImperativeHandle(ref, () => ({
     centerOnBedId,
+    handleFileUpload,
     handleFileRemove,
     handleLegendClick,
   }), [filterSelection, colorGrouping, selectedPoints, initialPoint]);
@@ -325,6 +394,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
           {isReady ? (
             <div className='w-100 fade-in' ref={containerRef} style={height ? { height: `${height}px`, overflow: 'hidden' } : {}}>
               <EmbeddingViewMosaic
+                key={`embedding-${dataVersion}`}
                 coordinator={coordinator}
                 table='data'
                 x='x'

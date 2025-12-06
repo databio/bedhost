@@ -18,16 +18,16 @@ export const EmbeddingTable = (props: Props) => {
           </tr>
         </thead>
         <tbody>
-          {selectedPoints.map((point: any, index: number) => (
+          {selectedPoints.filter(point => point != null).map((point: any, index: number) => (
             <tr
               className='text-nowrap cursor-pointer'
               onClick={() => centerOnBedId?.(point.identifier, 1)}
               key={point.identifier + '_' + index}
             >
               <td>{point.text}</td>
-              <td>{point.fields.Assay}</td>
-              <td>{point.fields['Cell Line']}</td>
-              <td>{point.fields.Description}</td>
+              <td>{point.fields?.Assay}</td>
+              <td>{point.fields?.['Cell Line']}</td>
+              <td>{point.fields?.Description}</td>
             </tr>
           ))}
         </tbody>
