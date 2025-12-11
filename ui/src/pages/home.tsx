@@ -244,7 +244,7 @@ export const Home = () => {
             <div className='col-md-12'>
               <div className='card h-100 border w-100'>
                 <div className='d-flex flex-column w-100'>
-                  <div className='border-bottom position-relative embedding-card rounded-top transition-all' style={{ height: '220px' }}>
+                  <div className='border-bottom position-relative embedding-card rounded-top' style={{ height: '220px' }}>
                     <EmbeddingContainer
                       ref={embeddingContainerRef} 
                       bedIds={undefined} 
@@ -264,8 +264,7 @@ export const Home = () => {
                     </div>
                     <p className='text-muted text-sm mb-3'>
                       We provide a UMAP of the BEDbase genomic region embedding space, where embeddings are calculated from the genomic regions contained in each hg38 BED file.
-                      Distances between BED files can provide insights on the inherent similarities of their contained genomic regions. 
-                      The plot is interactive and allows for dynamic selections for exports and filtering based on metadata categories.
+                      Distances between BED files represent inherent similarities between their contained genomic regions, providing a visual means to compare the contents of all hg38 BED files on BEDbase at once.
                     </p>
                     <button className='btn btn-outline-primary btn-sm align-self-start' onClick={() => embeddingContainerRef.current?.handleShow()}>
                       Region Embeddings

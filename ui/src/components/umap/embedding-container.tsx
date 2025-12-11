@@ -14,6 +14,7 @@ export type EmbeddingContainerRef = {
   handleShow: () => void;
   handleCollapse: () => void;
   handleHide: () => void;
+  centerOnBedId: (bedId: string, scale?: number, smooth?: boolean) => void;
 }
 
 type Props = {
@@ -221,7 +222,10 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
     handleExpand,
     handleShow,
     handleCollapse,
-    handleHide
+    handleHide,
+    centerOnBedId: (bedId: string, scale?: number, smooth?: boolean) => {
+      embeddingPlotRef.current?.centerOnBedId(bedId, scale, smooth);
+    }
   }));
 
   const content = (

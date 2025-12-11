@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Text2BedSearchResultsTable } from './t2b-search-results-table';
+import { Text2BedSearchResultsCards } from './t2b-search-results-cards';
 import { SearchingJumper } from '../searching-jumper';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import { useText2BedSearch } from '../../../queries/useText2BedSearch';
@@ -116,7 +116,7 @@ export const Text2Bed = (props: Props) => {
                   )}
                   <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column`}>
                     {results ? (
-                      <Text2BedSearchResultsTable
+                      <Text2BedSearchResultsCards
                         results={results || []}
                         search_query={searchTerm}
                         layout={layout}

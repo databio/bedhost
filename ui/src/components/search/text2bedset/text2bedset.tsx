@@ -4,7 +4,7 @@ import { useText2BedSetSearch } from '../../../queries/useText2BedSetSearch.ts';
 import { ErrorPage } from '../../common/error-page.tsx';
 // import { TableToolbar } from '../table-toolbar.tsx';
 import { PaginationBar } from '../pagination-bar.tsx';
-import { SearchBedSetResultTable } from './t2bs-search-results-table.tsx';
+import { SearchBedSetResultCards } from './t2bs-search-results-cards.tsx';
 import { AxiosError } from 'axios';
 
 type Props = {
@@ -71,7 +71,7 @@ export const Text2BedSet = (props: Props) => {
             {hasLoaded ? (
               <div className='pb-3'>
                 {results ? (
-                  <SearchBedSetResultTable results={results} showBEDCount={true} />
+                  <SearchBedSetResultCards results={results} showBEDCount={true} />
                 ) : (
                   <div style={{ height: '660px' }}>
                     <SearchingJumper />

@@ -5,30 +5,28 @@ import { Layout } from '../components/layout';
 import { BedSplashHeader } from '../components/bed-splash-components/header';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { ErrorPage } from '../components/common/error-page';
-import { NoRegionsCard } from '../components/bed-splash-components/cards/no-regions-card';
-import { MedianTssDistCard } from '../components/bed-splash-components/cards/median-tss-dist-card';
-import { MeanRegionWidthCard } from '../components/bed-splash-components/cards/mean-region-width-card';
-import { GenomicFeatureBar } from '../components/bed-splash-components/charts/genomic-feature-bar';
 import { Plots } from '../components/bed-splash-components/plots';
 import { AxiosError } from 'axios';
-import { GCContentCard } from '../components/bed-splash-components/cards/gc-content-card';
-import { snakeToTitleCase, formatDateTime } from '../utils';
+import { snakeToTitleCase } from '../utils';
 import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-search-results-table';
 import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
-// import { BEDEmbeddingView } from '../components/umap/bed-embedding-view.tsx';
-// import { useState } from 'react';
 import { SearchBedSetResultTable } from '../components/search/text2bedset/t2bs-search-results-table.tsx';
 import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
+import { useState, useRef } from 'react';
+import type { EmbeddingContainerRef } from '../components/umap/embedding-container.tsx';
+import { Text2BedSearchResultsCards } from '../components/search/text2bed/t2b-search-results-cards.tsx';
+import { SearchBedSetResultCards } from '../components/search/text2bedset/t2bs-search-results-cards.tsx';
 
-// Use the response type to properly type the metadata
 type BedMetadata = components['schemas']['BedMetadataAll'];
 
 export const BedSplash = () => {
   const params = useParams();
   const bedId = params.id;
 
-  // const [showNeighbors, setShowNeighbors] = useState(false);
+  const [similarTabular, setSimilarTabular] = useState(true);
+  const [bedsetsTabular, setBedsetsTabular] = useState(true);
+  const embeddingPlotRef = useRef<EmbeddingContainerRef>(null);
 
   const {
     isLoading,
@@ -46,7 +44,7 @@ export const BedSplash = () => {
 
   const { data: neighbours } = useBedNeighbours({
     md5: bedId,
-    limit: 5,
+    limit: 9,
     offset: 0,
   });
 
@@ -65,43 +63,15 @@ export const BedSplash = () => {
   };
 
   const filteredKeys = getFilteredKeys(metadata);
-  // Add created and updated at the end
-  const allKeys = [...filteredKeys, '_created', '_updated'];
-  const midpoint = Math.ceil(allKeys.length / 2);
-  const leftKeys = allKeys.slice(0, midpoint);
-  const rightKeys = allKeys.slice(midpoint);
 
   const metadataRow = (k: string) => {
-    if (k === '_created') {
-      return (
-        <tr key={k}>
-          <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
-            File Created
-          </td>
-          <td className='py-0'>{metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'N/A'}</td>
-        </tr>
-      );
-    }
-
-    if (k === '_updated') {
-      return (
-        <tr key={k}>
-          <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
-            File Updated
-          </td>
-          <td className='pt-0 pb-1'>
-            {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'N/A'}
-          </td>
-        </tr>
-      );
-    }
-
     const value = getAnnotationValue(metadata, k);
     if (!value) return null;
 
     return (
       <tr key={k}>
-        <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1'>
+        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>
+        {/* <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1 text-end'> */}
           {snakeToTitleCase(k)}
         </td>
         <td
@@ -113,11 +83,23 @@ export const BedSplash = () => {
               ? value
                   .map((v, i) =>
                     v.includes('encode:') ? (
-                      <a key={i} href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}>
+                      <a 
+                        className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic' 
+                        key={i} 
+                        href={'https://www.encodeproject.org/files/' + v.replace('encode:', '')}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
                         {v}
                       </a>
                     ) : v.includes('geo:') ? (
-                      <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>
+                      <a 
+                        className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'
+                        key={i} 
+                        href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}
+                        target='_blank'
+                        rel='noopener noreferrer'
+                      >
                         {v}
                       </a>
                     ) : (
@@ -135,11 +117,23 @@ export const BedSplash = () => {
                 ? value
                     .map((v, i) =>
                       v.includes('encode') ? (
-                        <a key={i} href={'https://www.encodeproject.org'}>
+                        <a 
+                          className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'
+                          key={i} 
+                          href={'https://www.encodeproject.org'}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
                           {v}
                         </a>
                       ) : v.includes('geo:') ? (
-                        <a key={i} href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}>
+                        <a 
+                          className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'
+                          key={i} 
+                          href={'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=' + v.replace('geo:', '')}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                        >
                           {v}
                         </a>
                       ) : (
@@ -241,40 +235,60 @@ export const BedSplash = () => {
             </div>
           </div>
           <div className='row mt-1 mb-3 g-2'>
-            <div className='col-12'>
-              <h5 className='fw-bold'>Metadata</h5>
+            <div className='col-12 col-xl-6'>
+              <h5 className='fw-bold'>Overview</h5>
               <div className='row'>
-                <div className='col-12 col-xl-6 mt-0 ps-4'>
+                <div className='col-12 mt-0'>
                   <div className='text-sm'>
                     <table className='table table-sm table-borderless table-transparent mb-0'>
-                      <tbody>{leftKeys.map(metadataRow)}</tbody>
+                      <tbody>{filteredKeys.map(metadataRow)}</tbody>
                     </table>
                   </div>
                 </div>
-                <div className='col-12 col-xl-6 mt-0 ps-4'>
-                  <div className='text-sm'>
-                    <table className='table table-sm table-borderless table-transparent mb-0'>
-                      <tbody>{rightKeys.map(metadataRow)}</tbody>
-                    </table>
-                  </div>
-                </div>
+                
               </div>
             </div>
-          </div>
-
-          <div className='row mb-4 g-2'>
-            <h5 className='fw-bold'>Statistics</h5>
-            {metadata && (
-              <div className='col-sm-12 col-md-3 d-flex flex-column mt-0 gap-2'>
-                <NoRegionsCard metadata={metadata} />
-                <MedianTssDistCard metadata={metadata} />
-                <MeanRegionWidthCard metadata={metadata} />
-                <GCContentCard metadata={metadata} />
+            {bedId && metadata?.name?.includes('encode') && (
+              <div className='col-md-6 gap-2'>
+                <div className='border rounded bg-white overflow-hidden embedding-card'>
+                  <EmbeddingContainer 
+                    ref={embeddingPlotRef}
+                    bedIds={[bedId]} 
+                    height={filteredKeys.length * 24} 
+                    preselectPoint={true} 
+                    centerInitial={true} 
+                    tooltipInitial={true} 
+                    simpleTooltip={true} 
+                    blockCompact={true} 
+                    showBorder={false} 
+                  />
+                  <div className='text-center'>
+                    <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>Region Embeddings Location</p>
+                  </div>
+                </div>
               </div>
             )}
-            <div className='col-sm-12 col-md-9 d-flex flex-column mt-2 mt-md-0'>
-              <GenomicFeatureBar metadata={metadata!} />
+          </div>
+
+          <div className='row mb-0 g-2'>
+            <div className='d-flex flex-row gap-4 justify-content-center mt-5 mb-4 pb-2 text-muted'>
+              <span>
+                <strong className='text-primary'>{(metadata?.stats?.number_of_regions || 0).toLocaleString()}</strong> regions
+              </span>
+              <span>•</span>
+              <span>
+                <strong className='text-success'>{(metadata?.stats?.median_tss_dist  || 0).toLocaleString()} bp</strong> median TSS distance
+              </span>
+              <span>•</span>
+              <span>
+                <strong className='text-info'>{(metadata?.stats?.mean_region_width  || 0).toLocaleString()} bp</strong> mean region width
+              </span>
+              <span>•</span>
+              <span>
+                <strong className='text-secondary'>{(metadata?.stats?.gc_content  || 0).toLocaleString()}</strong> GC content
+              </span>
             </div>
+            
           </div>
 
           <div className='row mb-4'>
@@ -284,62 +298,89 @@ export const BedSplash = () => {
             </div>
           </div>
 
-          {bedId && metadata?.name?.includes('encode') && (
-            <div className='row mb-3'>
-              <div className='col-12'>
-                <h5 className='fw-bold'>Region Embedding Map</h5>
-                <div className='rounded border embedding-card transition-all'>
-                  <EmbeddingContainer bedIds={[bedId]} height={330} preselectPoint={true} centerInitial={true} tooltipInitial={true} simpleTooltip={true} blockCompact={true} showBorder={false} />
-                </div>
-              </div>
-            </div>
-          )}
-
           {metadata?.bedsets && metadata.bedsets.length > 0 && (
-            <div className='row mb-3'>
+            <div className={`row ${bedsetsTabular ? 'mb-4' : 'mb-3'}`}>
               <div className='col-12'>
-                <h5 className='fw-bold'>BEDsets</h5>
-                <SearchBedSetResultTable
-                  results={{
-                    count: metadata.bedsets.length,
-                    limit: metadata.bedsets.length,
-                    offset: 0,
-                    results: metadata.bedsets.map((bedset) => ({
-                      id: bedset.id,
-                      name: bedset.name || '',
-                      description: bedset.description || '',
-                      md5sum: '',
-                      bed_ids: [],
-                    })),
-                  }}
-                  showBEDCount={false}
-                />
+                <div className='d-flex justify-content-between align-items-center px-0'>
+                  <h5 className='fw-bold px-0'>BEDsets</h5>
+                  <div className='form-check form-switch form-switch-sm'>
+                    <input
+                      className='form-check-input'
+                      type='checkbox'
+                      checked={bedsetsTabular}
+                      id='bedsetsTabular'
+                      onChange={() => setBedsetsTabular(!bedsetsTabular)}
+                    />
+                    <label
+                      className='form-check-label fw-medium text-sm'
+                      htmlFor='bedsetsTabular'
+                    >
+                      Tabular View
+                    </label>
+                  </div>
+                </div>
+                {bedsetsTabular ? (
+                  <SearchBedSetResultTable
+                    results={{
+                      count: metadata.bedsets.length,
+                      limit: metadata.bedsets.length,
+                      offset: 0,
+                      results: metadata.bedsets.map((bedset) => ({
+                        id: bedset.id,
+                        name: bedset.name || '',
+                        description: bedset.description || '',
+                        md5sum: '',
+                        bed_ids: [],
+                      })),
+                    }}
+                  />
+                ) : (
+                  <SearchBedSetResultCards
+                    results={{
+                      count: metadata.bedsets.length,
+                      limit: metadata.bedsets.length,
+                      offset: 0,
+                      results: metadata.bedsets.map((bedset) => ({
+                        id: bedset.id,
+                        name: bedset.name || '',
+                        description: bedset.description || '',
+                        md5sum: '',
+                        bed_ids: [],
+                      })),
+                    }}
+                    showBEDCount={true}
+                  />
+                )}
               </div>
             </div>
           )}
 
           {neighbours && (
-            <div className='row mb-3'>
+            <div className={`row ${similarTabular ? 'mb-4' : 'mb-3'}`}>
               <div className='col-12'>
                 <div className='d-flex justify-content-between align-items-center px-0'>
                   <h5 className='fw-bold px-0'>Similar BED Files</h5>
-                  {/* <div className='form-check form-switch form-switch-sm'>
+                  <div className='form-check form-switch form-switch-sm'>
                     <input
                       className='form-check-input'
                       type='checkbox'
-                      checked={showNeighbors}
-                      id='showNeighbors'
-                      onChange={() => setShowNeighbors(!showNeighbors)}
+                      checked={similarTabular}
+                      id='similarTabular'
+                      onChange={() => setSimilarTabular(!similarTabular)}
                     />
                     <label
                       className='form-check-label fw-medium text-sm'
-                      htmlFor='showNeighbors'
+                      htmlFor='similarTabular'
                     >
-                      Show in Atlas
+                      Tabular View
                     </label>
-                  </div> */}
+                  </div>
                 </div>
-                <Text2BedSearchResultsTable results={neighbours} />
+                {similarTabular ? (
+                  <Text2BedSearchResultsTable results={neighbours} />
+                ) : (
+                  <Text2BedSearchResultsCards results={neighbours} />
+                )}
               </div>
             </div>
           )}

@@ -30,16 +30,13 @@ const Plot = (props: PlotProps) => {
           setShow(true);
         }
       }}
-      className='h-100 border rounded p-2 hover-border-primary transition-all bg-white'
+      className='h-100 border rounded bg-white overflow-hidden embedding-card'
     >
-      <div className='p-1 text-center'>
-        <p className='fw-medium text-xs mb-2'>{title}</p>
-        {/* <button onClick={() => setShow(true)} className='btn btn-sm btn-outline-primary text-xs'>
-          <i className='bi bi-eye' />
-        </button> */}
+      <div className='p-2 mt-2 text-center'>
+        <Image height='250px' src={src} alt={alt} />
       </div>
       <div className='text-center'>
-        <Image height='250px' src={src} alt={alt} />
+        <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>{title}</p>
       </div>
       <FigureModal
         show={show}
@@ -58,8 +55,11 @@ const Plot = (props: PlotProps) => {
 export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
 
+  // console.log(Object.keys(metadata?.plots ?? {}).map((name: string) => name));
+
   // comment out partitions because we already have it in statistics section
-  const plotNames = metadata.plots ? Object.keys(metadata.plots).filter((name: string) => name != 'partitions') : [];
+  const plotNames = metadata.plots ? Object.keys(metadata.plots).filter((name: string) => name != 'chrombins') : [];
+  // const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
   return (
     <Fragment>
       <Row className='row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2'>
