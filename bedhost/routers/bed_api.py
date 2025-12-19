@@ -65,7 +65,9 @@ async def get_example_bed_record():
     response_model=BedListResult,
 )
 async def list_beds(
-    limit: int = 1000,
+    limit: int = Query(
+        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+    ),
     offset: int = 0,
     genome: str = Query(
         default=None, description="filter by genome of the bed file. e.g. 'hg38'"
@@ -77,6 +79,7 @@ async def list_beds(
     """
     Returns list of BED files in the database with optional filters.
     """
+
     return bbagent.bed.get_ids_list(
         limit=limit, offset=offset, genome=genome, bed_compliance=bed_compliance
     )
