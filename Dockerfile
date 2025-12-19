@@ -31,7 +31,7 @@ RUN pip install uv
 # Install CPU-only pytorch, eliminating huge nvidia dependencies
 #pip install torch==2.3.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
 RUN uv pip install torch --index-url https://download.pytorch.org/whl/cpu --system
-RUN uv pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip --system
+# RUN uv pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip --system
 
 RUN uv pip install -r requirements/requirements-all.txt --no-cache-dir --system
 
