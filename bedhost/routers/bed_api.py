@@ -65,7 +65,9 @@ async def get_example_bed_record():
     response_model=BedListResult,
 )
 async def list_beds(
-    limit: int = 1000,
+    limit: int = Query(
+        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+    ),
     offset: int = 0,
     genome: str = Query(
         default=None, description="filter by genome of the bed file. e.g. 'hg38'"
@@ -77,6 +79,7 @@ async def list_beds(
     """
     Returns list of BED files in the database with optional filters.
     """
+
     return bbagent.bed.get_ids_list(
         limit=limit, offset=offset, genome=genome, bed_compliance=bed_compliance
     )
@@ -388,7 +391,7 @@ async def text_to_bed_search(
     assay: Optional[Union[str, None]] = None,
     limit: int = 10,
     offset: int = 0,
-    test_request: bool = test_query_parameter,
+    test_request: bool = test_query_parameter,  # needed for usage tracking in @count_requests
 ):
     """
     Search for a BedFile by a text query.
@@ -398,31 +401,8 @@ async def text_to_bed_search(
     """
 
     _LOGGER.info(
-        f"Searching for: '{query}' with limit='{limit}' and offset='{offset}' and genome='{genome}'"
+        f"Searching for: '{query}' with limit='{limit}' and offset='{offset}' and genome='{genome}' and assay='{assay}'"
     )
-    #
-    # # results_sql = bbagent.bed.sql_search(
-    # #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
-    # # )
-    # #
-    # # if results_sql.count > results_sql.offset:
-    # #     qdrant_offset = offset - results_sql.offset
-    # # else:
-    # #     qdrant_offset = offset - results_sql.count
-    # #
-    # # results_qdr = bbagent.bed.text_to_bed_search(
-    # #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
-    # # )
-    # #
-    # # results = BedListSearchResult(
-    # #     count=results_qdr.count,
-    # #     limit=limit,
-    # #     offset=offset,
-    # #     results=(results_sql.results + results_qdr.results)[0:limit],
-    # # )
-    # query = query.strip()
-    #
-    # if not genome or genome == "hg38":
 
     spaceless_query = query.replace(" ", "")
     if len(spaceless_query) == 32 and spaceless_query == query:
@@ -483,17 +463,54 @@ async def text_to_bed_search(
             if result.count != 0:
                 return result
 
-    results = bbagent.bed.semantic_search(
+    # # Basic semantic search
+    # results = bbagent.bed.semantic_search(
+    #     query,
+    #     genome_alias=genome,
+    #     assay=assay,
+    #     limit=limit,
+    #     offset=offset,
+    # )
+
+    # # Hybrid search
+    results = bbagent.bed.hybrid_search(
         query,
         genome_alias=genome,
         assay=assay,
         limit=limit,
         offset=offset,
     )
+    return results
 
-    if results:
-        return results
-    raise HTTPException(status_code=404, detail="No records found")
+    # # # Bi-vec search
+    #
+    # # This is disabled for now, as it is sql search mix, which we don't want to mix
+    # # results_sql = bbagent.bed.sql_search(
+    # #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
+    # # )
+    # #
+    # # if results_sql.count > results_sql.offset:
+    # #     qdrant_offset = offset - results_sql.offset
+    # # else:
+    # #     qdrant_offset = offset - results_sql.count
+    # # results_qdr = bbagent.bed.text_to_bed_search(
+    # #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
+    # # )
+    # # results = BedListSearchResult(
+    # #     count=results_qdr.count,
+    # #     limit=limit,
+    # #     offset=offset,
+    # # )
+    # # print("results:", results_qdr)
+    # #
+    # # raise HTTPException(status_code=404, detail="No records found")
+    #
+    #
+    # results_qdr = bbagent.bed.text_to_bed_search(
+    #     query, limit=limit, offset=offset
+    # )
+
+    return results_qdr
 
 
 @router.get(

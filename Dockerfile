@@ -1,4 +1,4 @@
-FROM python:3.10-slim
+FROM python:3.13-slim
 LABEL authors="Oleksandr Khoroshevskyi, Nathan Sheffield"
 
 RUN apt-get update
@@ -29,8 +29,9 @@ RUN apt-get install -y build-essential
 RUN pip install uv
 
 # Install CPU-only pytorch, eliminating huge nvidia dependencies
-RUN pip install torch==2.3.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
-RUN pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip
+#pip install torch==2.3.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
+RUN uv pip install torch --index-url https://download.pytorch.org/whl/cpu --system
+# RUN uv pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip --system
 
 RUN uv pip install -r requirements/requirements-all.txt --no-cache-dir --system
 

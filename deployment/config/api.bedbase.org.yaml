@@ -1,10 +1,11 @@
 path:
   remote_url_base: http://data.bedbase.org/
-  text2vec: "sentence-transformers/all-MiniLM-L6-v2"
+  text2vec: 'sentence-transformers/all-MiniLM-L6-v2'
   # region2vec: databio/r2v-pretrained-for-search
   region2vec: databio/r2v-encode-hg38
-  vec2vec: "databio/v2v-sentencetransformers-encode"
-  umap_model: "https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap_umap_model.joblib"
+  vec2vec: 'databio/v2v-sentencetransformers-encode'
+  umap_model: "https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap_umap_model_3_13.joblib"
+  sparse_model: "prithivida/Splade_PP_en_v2"
 database:
   host: $POSTGRES_HOST
   port: 5432
@@ -17,6 +18,7 @@ qdrant:
   api_key: $QDRANT_API_KEY
   file_collection: bedbase
   text_collection: bed_text
+  hybrid_collection: bedbase_sparse_collection
 server:
   host: 0.0.0.0
   port: 8000
