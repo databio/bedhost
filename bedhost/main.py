@@ -10,6 +10,8 @@ from bbconf.exceptions import (
     MissingObjectError,
     MissingThumbnailError,
 )
+from bedboss.refgenome_validator.main import ReferenceValidator
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -142,6 +144,11 @@ def main():
 
         global bbagent
         bbagent = configure(bbconf_file_path)
+
+        _LOGGER.info("Initializing reference genome validator...")
+        global ref_validator
+        ref_validator = ReferenceValidator()
+
         attach_routers(app)
         uvicorn.run(
             app,
@@ -158,12 +165,15 @@ if __name__ != "__main__":
         _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
         global bbagent
-
         global usage_data
-        usage_data = init_model_usage()
+        global ref_validator
+
         bbagent = configure(
             bbconf_file_path
         )  # configure before attaching routers to avoid circular imports
+        usage_data = init_model_usage()
+
+        ref_validator = ReferenceValidator()
 
         scheduler = BackgroundScheduler()
 

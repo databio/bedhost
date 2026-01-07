@@ -29,6 +29,7 @@ from bbconf.models.bed_models import (
     TokenizedPathResponse,
     QdrantSearchResult,
     RefGenValidReturnModel,
+    RefGenValidModel,
 )
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile, Request
 from fastapi.responses import PlainTextResponse
@@ -36,8 +37,13 @@ from gtars.models import RegionSet
 
 from .. import _LOGGER
 from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WIDTH
-from ..data_models import CROM_NUMBERS, BaseListResponse, BedDigest
-from ..main import bbagent, usage_data
+from ..data_models import (
+    CROM_NUMBERS,
+    BaseListResponse,
+    BedDigest,
+    ChromLengthUploadModel,
+)
+from ..main import bbagent, usage_data, ref_validator
 from ..helpers import count_requests, test_query_parameter
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
@@ -289,6 +295,54 @@ async def embed_bed_file(
 
             embedding = bbagent.bed._get_umap_file(region_set)
     return embedding.tolist()[0]
+
+
+@router.post(
+    "/analyze-genome",
+    summary="Analyze reference genome for bed file",
+    response_model=RefGenValidReturnModel,
+)
+async def analyze_reference_genome(
+    chrom_lengths: ChromLengthUploadModel,
+):
+    """
+    Provide length of the chromosomes for a reference genome, and
+    return reference genome validation results for a bed file
+    """
+
+    try:
+        genome_aliases = bbagent.get_reference_genomes()
+        result = ref_validator.determine_compatibility(
+            chrom_lengths.bed_file, concise=True
+        )
+
+        compared_genomes: List[RefGenValidModel] = []
+        for genome, value in result.items():
+            if value.tier_ranking < 4:
+                compared_genomes.append(
+                    RefGenValidModel(
+                        provided_genome="Not Provided",
+                        compared_genome=genome_aliases.get(genome, "Unknown genome"),
+                        genome_digest=genome,
+                        xs=value.xs,
+                        oobr=value.oobr,
+                        sequence_fit=value.sequence_fit,
+                        assigned_points=value.assigned_points,
+                        tier_ranking=value.tier_ranking,
+                    )
+                )
+        return RefGenValidReturnModel(
+            id="No ID",
+            provided_genome="Not Provided",
+            compared_genome=compared_genomes,
+        )
+
+    except BedBaseConfError as e:
+        _LOGGER.error(e)
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unable to process request. Check loggs",
+        )
 
 
 @router.get(
