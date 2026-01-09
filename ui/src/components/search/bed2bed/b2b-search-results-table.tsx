@@ -31,7 +31,7 @@ const IsUnique = (name: string, found_id: string, search_id: string) => {
             </div>
           }
         >
-          <div className="bi bi-patch-check-fill text-success">
+          <div className="bi bi-patch-check-fill text-primary">
           </div>
         </OverlayTrigger>
       </div>

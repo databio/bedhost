@@ -31,7 +31,7 @@ const IsUnique = (name: string, found_id: string, search_id: string) => {
             </div>
           }
         >
-          <div className="bi bi-patch-check-fill text-success">
+          <div className="bi bi-patch-check-fill text-primary">
           </div>
         </OverlayTrigger>
       </div>
@@ -121,7 +121,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 // if (scoreValue >= 60) return 'text-warning';
                 // if (scoreValue >= 40) return 'text-info';
                 // return 'text-danger';
-                return 'text-success';
+                return 'text-primary';
               })()}`}>
                 {roundToTwoDecimals((result.score ?? 0) * 100)}%
               </span>
