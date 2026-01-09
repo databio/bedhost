@@ -30,6 +30,9 @@ export const useText2BedSearch = (query: SearchQuery) => {
     },
     enabled: enabled,
     staleTime: 0,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
     // placeholderData: (previousData) => previousData,
   });
 };

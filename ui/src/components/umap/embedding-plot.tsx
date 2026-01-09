@@ -323,7 +323,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     // fetch provided bed ids
     if (isReady && bedIds && bedIds.length > 0) {
       setTimeout(async () => {
-        const idsToQuery = customCoordinates && !bedIds ? ['custom_point', ...bedIds] : bedIds;
+        const idsToQuery = customCoordinates ? ['custom_point', ...bedIds] : bedIds;
         const currentBed: any = await coordinator.query(
           `SELECT
             x, y,

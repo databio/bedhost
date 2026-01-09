@@ -4,7 +4,7 @@ import { useMemo, useState, useRef, RefObject } from 'react';
 import { useSearchView } from '../../contexts/search-view-context.tsx';
 import { useAvailableGenomes } from '../../queries/useAvailableGenomes.ts';
 import { useAvailableAssays } from '../../queries/useAvailableAssays.ts';
-import { BEDEmbeddingPlotRef } from '../umap/bed-embedding-plot.tsx';
+import type { EmbeddingContainerRef } from '../umap/embedding-container.tsx';
 
 type Props = {
   value: string;
@@ -18,9 +18,9 @@ type Props = {
   onChange: (value: string) => void;
   onSearch: () => void;
   setLayout?: (layout: string) => void;
-  file: File | null;
-  setFile: (file: File | null) => void;
-  embeddingPlotRef: RefObject<BEDEmbeddingPlotRef>;
+  file: File | undefined;
+  setFile: (file: File | undefined) => void;
+  embeddingPlotRef: RefObject<EmbeddingContainerRef>;
 };
 
 const placeholders = [
@@ -88,7 +88,7 @@ export const SearchBar = (props: Props) => {
                   <button
                     className='btn btn-outline-secondary border'
                     onClick={() => {
-                      setFile(null);
+                      setFile(undefined);
                       if (fileInputRef.current) {
                         fileInputRef.current.value = '';
                       }
@@ -100,12 +100,12 @@ export const SearchBar = (props: Props) => {
                   >
                     <i className='bi bi-x-circle' />
                   </button>
-                  {layout === 'split' && (
+                  {layout === 'cards' && (
                     <button
                       className='btn btn-outline-secondary border'
                       onClick={() => {
                         if (typeof embeddingPlotRef.current?.centerOnBedId === 'function') {
-                          embeddingPlotRef.current.centerOnBedId('custom_point');
+                          embeddingPlotRef.current.centerOnBedId('custom_point', undefined, true);
                         }
                       }}
                       title='Locate in embeddings'
@@ -204,8 +204,8 @@ export const SearchBar = (props: Props) => {
                 value={layout}
                 onChange={(e) => setLayout(e.target.value)}
               >
-                <option value={'split'}>Show Embeddings</option>
-                <option value={'table'}>Hide Embeddings</option>
+                <option value={'cards'}>Cards</option>
+                <option value={'table'}>Table</option>
               </select>
 
               {searchView === 't2b' && (

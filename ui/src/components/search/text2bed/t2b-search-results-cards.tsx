@@ -30,10 +30,10 @@ export const Text2BedSearchResultsCards = (props: Props) => {
             <div
               className={`card-body position-relative flex-1 pt-2 mb-0 ${'cursor-pointer btn-card btn-outline-primary border-0 rounded-0'}`}
               onClick={() => {
-                if (layout === 'split') {
-                  onCardClick?.(result.metadata?.id || '');
-                  return;
-                }
+                // if (layout === 'cards') {
+                //   onCardClick?.(result.metadata?.id || '');
+                //   return;
+                // }
                 navigate(`/bed/${result.metadata?.id}`);
               }}
             >
@@ -77,7 +77,7 @@ export const Text2BedSearchResultsCards = (props: Props) => {
                 </div>
                 <div className='d-flex gap-2 align-items-center ms-auto'>
                   <OverlayTrigger
-                    placement={layout === 'split' ? 'left' : 'left'}
+                    placement={layout === 'cards' ? 'left' : 'left'}
                     overlay={
                       <Tooltip id={`tooltip-${result.id}`} className='moreinfo-tooltip'>
                         <pre className='text-start m-0' style={{ fontSize: '11px' }}>

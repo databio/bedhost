@@ -23,10 +23,10 @@ export const SearchBedSetResultTable = (props: Props) => {
       <table className="table table-hover text-sm">
         <thead>
           <tr>
-            <th scope="col">BEDset ID</th>
-            <th scope="col">Name</th>
-            <th scope="col">Description</th>
-            <th scope={'col'}>Number of BEDs</th>
+            <th className='text-nowrap' scope="col">BEDset ID</th>
+            <th className='text-nowrap' scope="col">Name</th>
+            <th className='text-nowrap' scope="col">Description</th>
+            <th className='text-nowrap' scope={'col'}>Number of BEDs</th>
 
           </tr>
         </thead>

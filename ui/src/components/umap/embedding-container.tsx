@@ -14,7 +14,8 @@ export type EmbeddingContainerRef = {
   handleShow: () => void;
   handleCollapse: () => void;
   handleHide: () => void;
-  centerOnBedId: (bedId: string, scale?: number, smooth?: boolean) => void;
+  handleFileRemove: () => void;
+  centerOnBedId: (bedId: string, scale?: number, reselect?: boolean) => void;
 }
 
 type Props = {
@@ -168,6 +169,15 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
     }, 200);
   };
 
+  const handleFileRemove = () => {
+    embeddingPlotRef.current?.handleFileRemove();
+    setFile(null);
+    setCustomCoordinates(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }
+
   // Container styles (full screen instantly when expanding)
   const getContainerStyles = (): React.CSSProperties => {
     if (state === 'compact') {
@@ -223,8 +233,9 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
     handleShow,
     handleCollapse,
     handleHide,
-    centerOnBedId: (bedId: string, scale?: number, smooth?: boolean) => {
-      embeddingPlotRef.current?.centerOnBedId(bedId, scale, smooth);
+    handleFileRemove,
+    centerOnBedId: (bedId: string, scale?: number, reselect?: boolean) => {
+      embeddingPlotRef.current?.centerOnBedId(bedId, scale, reselect);
     }
   }));
 
@@ -286,22 +297,17 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                     </span>
                   )}
                   <span
-                    className='badge rounded-2 text-bg-secondary border border-secondary cursor-pointer fw-normal'
+                    className={`badge rounded-2 text-bg-secondary border border-secondary fw-normal ${!!file ? '' : 'cursor-pointer'}`}
                     title='Remove File'
                     onClick={() => {
                       if (!!file) {
-                        embeddingPlotRef.current?.handleFileRemove();
-                        setFile(null);
-                        setCustomCoordinates(null);
-                        if (fileInputRef.current) {
-                          fileInputRef.current.value = '';
-                        }
+                        handleFileRemove;
                       } else {
                         fileInputRef.current?.click();
                       }
                     }}
                   >
-                    {!!file ? <>{file.name} <i className='bi bi-x-lg' /></> : 'Upload BED'}
+                    {!!file ? <>{file.name}{!uploadedFile && <i className='ms-1 bi bi-x-lg cursor-pointer' />}</> : 'Upload BED'}
                   </span>
                   <input
                     ref={fileInputRef}

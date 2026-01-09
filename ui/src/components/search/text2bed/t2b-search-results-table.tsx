@@ -5,6 +5,7 @@ import { useBedCart } from '../../../contexts/bedcart-context';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import YAML from 'js-yaml';
+import { useNavigate } from 'react-router-dom';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 // type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
@@ -12,6 +13,8 @@ type SearchResponse = components['schemas']['BedListSearchResult'];
 type Props = {
   results: SearchResponse;
   search_query?: string | undefined;
+  layout?: string;
+  onCardClick?: (bedId: string) => void;
 };
 
 const IsUnique = (name: string, found_id: string, search_id: string) => {
@@ -41,12 +44,7 @@ const IsUnique = (name: string, found_id: string, search_id: string) => {
 export const Text2BedSearchResultsTable = (props: Props) => {
   const { results, search_query } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
-
-  const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
-    if (!(e.target as HTMLElement).closest('button')) {
-      window.location.href = `/bed/${id}`;
-    }
-  };
+  const navigate = useNavigate();
 
   return (
     <div className="table-responsive border bg-white rounded">
@@ -87,7 +85,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
         {results.results?.map((result) => (
           <tr
             key={result.id}
-            onClick={handleRowClick(result.metadata?.id)}
+            onClick={() => navigate(`/bed/${result.metadata?.id}`)}
             className="cursor-pointer position-relative"
           >
             <td>{IsUnique(result?.metadata?.name || 'No name', result.id, search_query || '') || 'No name'}</td>

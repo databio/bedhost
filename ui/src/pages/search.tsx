@@ -8,14 +8,13 @@ import { Bed2Bed } from '../components/search/bed2bed/bed2bed';
 import { Text2BedSet } from '../components/search/text2bedset/text2bedset.tsx';
 import { Layout } from '../components/layout';
 import { SearchViewProvider } from '../contexts/search-view-context.tsx';
-import { useBedUmap } from '../queries/useBedUmap.ts';
-import { EmbeddingPlotRef } from '../components/umap/embedding-plot.tsx';
+import type { EmbeddingContainerRef } from '../components/umap/embedding-container.tsx';
 
 type SearchView = 't2b' | 'b2b' | 't2bs';
 
 export const SearchPage = () => {
   const location = useLocation();
-  const embeddingPlotRef = useRef<EmbeddingPlotRef>(null);
+  const embeddingPlotRef = useRef<EmbeddingContainerRef>(null);
   const uploadedFile = location.state?.file as File | undefined;
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -28,18 +27,16 @@ export const SearchPage = () => {
   const [t2bOffset, setT2bOffset] = useState(0);
   const [t2bLimit, setT2bLimit] = useState(20);
 
-  const [b2bLayout, setB2bLayout] = useState('split');
+  const [b2bLayout, setB2bLayout] = useState('cards');
   const [b2bOffset, setB2bOffset] = useState(0);
   const [b2bLimit, setB2bLimit] = useState(20);
 
+  const [t2bsLayout, setT2bsLayout] = useState('table');
   const [t2bsOffset, setT2bsOffset] = useState(0);
   const [t2bsLimit, setT2bsLimit] = useState(20);
 
   const [triggerSearch, setTriggerSearch] = useState(0);
-  const [file, setFile] = useState<File | null>(uploadedFile || null);
-  const [customCoordinates, setCustomCoordinates] = useState<number[] | null>(null);
-
-  const { mutateAsync: getUmapCoordinates } = useBedUmap();
+  const [file, setFile] = useState<File | undefined>(uploadedFile || undefined);
 
   const handleSearch = () => {
     setT2bOffset(0);
@@ -58,14 +55,6 @@ export const SearchPage = () => {
     }
     setSearchParams(params);
   }, [searchTerm, genome, assay, searchView, setSearchParams]);
-
-  useEffect(() => {
-    if (!file) return;
-    (async () => {
-      const coordinates = await getUmapCoordinates(file);
-      setCustomCoordinates(coordinates);
-    })();
-  }, [file]);
 
   return (
     <Layout title='BEDbase | Search' footer fullHeight>
@@ -86,8 +75,8 @@ export const SearchPage = () => {
           setAssay={setAssay}
           limit={searchView === 't2b' ? t2bLimit : searchView === 'b2b' ? b2bLimit : t2bsLimit}
           setLimit={searchView === 't2b' ? setT2bLimit : searchView === 'b2b' ? setB2bLimit : setT2bsLimit}
-          layout={searchView === 't2b' ? t2bLayout : searchView === 'b2b' ? b2bLayout : 'table'}
-          setLayout={searchView === 't2b' ? setT2bLayout : searchView === 'b2b' ? setB2bLayout : () => null}
+          layout={searchView === 't2b' ? t2bLayout : searchView === 'b2b' ? b2bLayout : t2bsLayout}
+          setLayout={searchView === 't2b' ? setT2bLayout : searchView === 'b2b' ? setB2bLayout : setT2bsLayout}
           onSearch={handleSearch}
           file={file}
           setFile={setFile}
@@ -111,7 +100,6 @@ export const SearchPage = () => {
             setOffset={setB2bOffset}
             layout={b2bLayout}
             file={file}
-            customCoordinates={customCoordinates}
             embeddingPlotRef={embeddingPlotRef}
           />
         ) : searchView === 't2bs' ? (
@@ -122,6 +110,7 @@ export const SearchPage = () => {
             offset={t2bsOffset}
             setOffset={setT2bsOffset}
             triggerSearch={triggerSearch}
+            layout={t2bsLayout}
           />
         ) : (
           <div>Unknown searchView selected.</div>

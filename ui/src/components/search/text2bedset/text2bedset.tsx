@@ -6,6 +6,7 @@ import { ErrorPage } from '../../common/error-page.tsx';
 import { PaginationBar } from '../pagination-bar.tsx';
 import { SearchBedSetResultCards } from './t2bs-search-results-cards.tsx';
 import { AxiosError } from 'axios';
+import { SearchBedSetResultTable } from './t2bs-search-results-table.tsx';
 
 type Props = {
   searchTerm: string;
@@ -14,10 +15,11 @@ type Props = {
   offset: number;
   setOffset: (offset: number) => void;
   triggerSearch: number;
+  layout: string;
 };
 
 export const Text2BedSet = (props: Props) => {
-  const { searchTerm, limit, offset, setOffset, triggerSearch } = props;
+  const { searchTerm, limit, offset, setOffset, triggerSearch, layout } = props;
 
   const [hasLoaded, setHasLoaded] = useState(false);
   const [resultsCount, setResultsCount] = useState(0);
@@ -71,7 +73,11 @@ export const Text2BedSet = (props: Props) => {
             {hasLoaded ? (
               <div className='pb-3'>
                 {results ? (
-                  <SearchBedSetResultCards results={results} showBEDCount={true} />
+                  layout === 'cards' ? (
+                    <SearchBedSetResultCards results={results} showBEDCount={true} />
+                  ) : (
+                    <SearchBedSetResultTable results={results} />
+                  )
                 ) : (
                   <div style={{ height: '660px' }}>
                     <SearchingJumper />

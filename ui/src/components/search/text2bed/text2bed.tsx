@@ -1,12 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Text2BedSearchResultsCards } from './t2b-search-results-cards';
 import { SearchingJumper } from '../searching-jumper';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useText2BedSearch } from '../../../queries/useText2BedSearch';
 import { PaginationBar } from '../pagination-bar';
 import { SearchError } from '../search-error';
 import { AxiosError } from 'axios';
-import { BEDEmbeddingPlot, BEDEmbeddingPlotRef } from '../../../components/umap/bed-embedding-plot.tsx';
+import { Text2BedSearchResultsTable } from './t2b-search-results-table.tsx';
 
 type Props = {
   searchTerm: string;
@@ -21,11 +21,10 @@ type Props = {
 
 export const Text2Bed = (props: Props) => {
   const { searchTerm, genome, assay, limit, offset, setOffset, layout, triggerSearch } = props;
-  const [containerHeight, setContainerHeight] = useState(660);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [resultsCount, setResultsCount] = useState(0);
+  const [queryTerm, setQueryTerm] = useState(searchTerm);
 
-  const embeddingPlotRef = useRef<BEDEmbeddingPlotRef>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const {
@@ -34,17 +33,13 @@ export const Text2Bed = (props: Props) => {
     error,
     refetch: onSearch,
   } = useText2BedSearch({
-    q: searchTerm,
+    q: queryTerm,
     genome: genome,
     assay: assay,
     limit: limit,
     offset: offset,
     autoRun: false,
   });
-
-  const bedIds = useMemo(() => {
-    return results?.results?.map((result: any) => result.id);
-  }, [results?.results]);
 
   useEffect(() => {
     if (results?.results) {
@@ -53,30 +48,26 @@ export const Text2Bed = (props: Props) => {
     }
   }, [results?.results]);
 
+  // Initial search on mount if there's a searchTerm from URL params
+  useEffect(() => {
+    if (queryTerm && triggerSearch === 0) {
+      onSearch();
+    }
+  }, []);
+
+  // When user triggers search, update the query term which will cause refetch
   useEffect(() => {
     if (triggerSearch > 0) {
+      setQueryTerm(searchTerm);
+    }
+  }, [triggerSearch]);
+
+  // Refetch when query term or filters change
+  useEffect(() => {
+    if (queryTerm || genome || assay) {
       onSearch();
     }
-  }, [triggerSearch, onSearch]);
-
-  useEffect(() => {
-    if (searchTerm || genome || assay) {
-      onSearch();
-    }
-  }, [limit, offset, genome, assay, onSearch]);
-
-  useEffect(() => {
-    const calculateHeight = () => {
-      if (containerRef.current) {
-        const availableHeight = window.innerHeight * 0.9;
-        setContainerHeight(Math.max(400, Math.min(availableHeight, 800)));
-      }
-    };
-
-    calculateHeight();
-    window.addEventListener('resize', calculateHeight);
-    return () => window.removeEventListener('resize', calculateHeight);
-  }, []);
+  }, [queryTerm, limit, offset, genome, assay]);
 
   if (error) {
     if (error) {
@@ -93,49 +84,36 @@ export const Text2Bed = (props: Props) => {
           <div className='my-2' ref={containerRef}>
             {hasLoaded ? (
               <>
-                <div className='row gx-2'>
-                  {layout === 'split' && (
-                    <div className='col-6'>
-                      <div
-                        className='d-flex border rounded overflow-hidden mb-2'
-                        style={{
-                          position: 'sticky',
-                          top: `calc(50vh - ${containerHeight / 2}px)`,
-                          height: `${containerHeight}px`,
-                        }}
-                      >
-                        <BEDEmbeddingPlot
-                          ref={embeddingPlotRef}
-                          bedIds={bedIds}
-                          height={containerHeight}
-                          preselectPoint={false}
-                          stickyBaseline={true}
-                        />
+                {results ? (
+                  <>
+                    <div className='row gx-2'>
+                      <div className={`col-12 d-flex flex-column`}>
+                        {layout === 'cards' ? (
+                          <Text2BedSearchResultsCards
+                            results={results || []}
+                            search_query={queryTerm}
+                            layout={layout}
+                          />
+                        ) : (
+                          <Text2BedSearchResultsTable
+                            results={results || []}
+                            search_query={queryTerm}
+                            layout={layout}
+                          />
+                        )}
                       </div>
                     </div>
-                  )}
-                  <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column`}>
-                    {results ? (
-                      <Text2BedSearchResultsCards
-                        results={results || []}
-                        search_query={searchTerm}
-                        layout={layout}
-                        onCardClick={(bedId) => {
-                          embeddingPlotRef.current?.centerOnBedId(bedId);
-                        }}
-                      />
-                    ) : (
-                      <div style={{ height: '660px' }}>
-                        <SearchingJumper />
+                    <div className='row'>
+                      <div className='col-12'>
+                        <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
                       </div>
-                    )}
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ height: '660px' }}>
+                    <SearchingJumper />
                   </div>
-                </div>
-                <div className='row'>
-                  <div className='col-12'>
-                    <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
-                  </div>
-                </div>
+                )}
               </>
             ) : (
               <div className='d-flex flex-column align-items-center justify-content-center mt-5 fst-italic'>

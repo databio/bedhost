@@ -3,7 +3,7 @@ import toast from 'react-hot-toast';
 import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { bytesToSize } from '../../utils';
+import { bytesToSize, formatDateShort } from '../../utils';
 import { Dropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { RefGenomeModal } from './refgenome-modal';
 // import { EmbeddingContainer } from '../umap/embedding-container.tsx';
@@ -22,6 +22,7 @@ type Props = {
 
 export const BedSplashHeader = (props: Props) => {
   const { metadata, record_identifier, genomeStats } = props;
+  // console.log(metadata);
 
   const [, copyToClipboard] = useCopyToClipboard();
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
@@ -307,6 +308,12 @@ export const BedSplashHeader = (props: Props) => {
               </div>
             </OverlayTrigger>
           )}
+          <div className='badge text-muted mt-1 fw-medium' style={{ boxShadow: 'inset 0 0 0 1px rgba(33, 37, 41, 0.75)'}}>
+            {'Created: ' + formatDateShort(metadata?.submission_date || '')}
+          </div>
+          <div className='badge text-muted mt-1 fw-medium' style={{ boxShadow: 'inset 0 0 0 1px rgba(33, 37, 41, 0.75)'}}>
+            {'Updated: ' + formatDateShort(metadata?.last_update_date || '')}
+          </div>
         </div>
       </div>
 

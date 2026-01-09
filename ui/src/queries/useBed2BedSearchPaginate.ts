@@ -4,7 +4,7 @@ import { components } from '../../bedbase-types';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 type SearchQuery = {
-  q: File | null;
+  q: File | undefined;
   limit?: number;
   offset?: number;
   autoRun?: boolean;

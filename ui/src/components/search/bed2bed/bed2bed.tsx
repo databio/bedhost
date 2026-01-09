@@ -3,22 +3,23 @@ import { SearchingJumper } from '../searching-jumper';
 // import { useBed2BedSearch } from '../../../queries/useBed2BedSearch';
 import { useBed2BedSearchPaginate } from '../../../queries/useBed2BedSearchPaginate.ts';
 // import { Bed2BedSearchResultsTable } from './b2b-search-results-table';
-import { BEDEmbeddingPlot, BEDEmbeddingPlotRef } from '../../../components/umap/bed-embedding-plot.tsx';
 import { Bed2BedSearchResultsCards } from './b2b-search-results-cards.tsx';
 import { PaginationBar } from '../pagination-bar';
+import { EmbeddingContainer } from '../../umap/embedding-container.tsx';
+import type { EmbeddingContainerRef } from '../../umap/embedding-container.tsx';
+import { Bed2BedSearchResultsTable } from './b2b-search-results-table.tsx';
 
 type Props = {
   limit: number;
   offset: number;
   setOffset: (offset: number) => void;
   layout: string;
-  file: File | null;
-  customCoordinates: number[] | null;
-  embeddingPlotRef: RefObject<BEDEmbeddingPlotRef>;
+  file: File | undefined;
+  embeddingPlotRef: RefObject<EmbeddingContainerRef>;
 };
 
 export const Bed2Bed = (props: Props) => {
-  const { limit, offset, setOffset, layout, file, customCoordinates, embeddingPlotRef } = props;
+  const { limit, offset, setOffset, layout, file, embeddingPlotRef } = props;
   const [containerHeight, setContainerHeight] = useState(660);
   const [hasLoaded, setHasLoaded] = useState(false);
   const [resultsCount, setResultsCount] = useState(0);
@@ -78,47 +79,64 @@ export const Bed2Bed = (props: Props) => {
           <SearchingJumper />
         ) : (
           <div className='my-2' ref={containerRef}>
-            {hasLoaded ? (
+            {file && hasLoaded ? (
               <>
-                <div className='row gx-2'>
-                  {layout === 'split' && (
-                    <div className='col-6'>
-                      <div
-                        className='d-flex border rounded overflow-hidden mb-2'
-                        style={{
-                          position: 'sticky',
-                          top: `calc(50vh - ${containerHeight / 2}px)`,
-                          height: `${containerHeight}px`,
-                        }}
-                      >
-                        <BEDEmbeddingPlot
-                          ref={embeddingPlotRef}
-                          bedIds={bedIds}
-                          height={containerHeight}
-                          preselectPoint={true}
-                          stickyBaseline={true}
-                          customCoordinates={customCoordinates}
-                          customFilename={file?.name || undefined}
-                        />
-                      </div>
-                    </div>
-                  )}
-                  <div className={`${layout === 'split' ? 'col-6' : 'col-12'} d-flex flex-column`}>
-                    {results ? (
-                      <Bed2BedSearchResultsCards
-                        results={results.results || []}
-                        layout={'split'}
-                        onCardClick={(bedId) => {
-                          embeddingPlotRef.current?.centerOnBedId(bedId);
-                        }}
-                      />
-                    ) : (
-                      <div style={{ height: '660px' }}>
-                        <SearchingJumper />
+                {results ? (
+                  <div className='row gx-2'>
+                    {layout === 'cards' && (
+                      <div className='col-6'>
+                        <div
+                          className='d-flex border rounded overflow-hidden mb-2'
+                          style={{
+                            position: 'sticky',
+                            top: `calc(50vh - ${containerHeight / 2}px)`,
+                            height: `${containerHeight}px`,
+                          }}
+                        >
+                          <EmbeddingContainer 
+                            ref={embeddingPlotRef}
+                            bedIds={bedIds} 
+                            height={containerHeight} 
+                            preselectPoint={false} 
+                            stickyInitial={true}
+                            centerInitial={true} 
+                            tooltipInitial={true} 
+                            simpleTooltip={false} 
+                            blockCompact={false} 
+                            showBorder={false} 
+                            uploadedFile={file}
+                          />
+                        </div>
                       </div>
                     )}
+                    {layout === 'cards' ? (
+                      <div className={`col-6 d-flex flex-column`}>
+                        <Bed2BedSearchResultsCards
+                          results={results.results || []}
+                          layout={'cards'}
+                          onCardClick={(bedId) => {
+                            embeddingPlotRef.current?.centerOnBedId(bedId, undefined, true);
+                          }}
+                        />
+                      </div>
+                    ) : (
+                      <div className={`col-12 d-flex flex-column`}>
+                        <Bed2BedSearchResultsTable
+                          results={results.results || []}
+                          layout={'cards'}
+                          onCardClick={(bedId) => {
+                            embeddingPlotRef.current?.centerOnBedId(bedId, undefined, true);
+                          }}
+                        />
+                      </div>
+                    )}
+                    
                   </div>
-                </div>
+                ) : (
+                  <div style={{ height: '660px' }}>
+                    <SearchingJumper />
+                  </div>
+                )}
                 <div className='row'>
                   <div className='col-12'>
                     <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
