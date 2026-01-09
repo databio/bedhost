@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useRef, ReactNode, useState, useEffect } from 'react';
 import * as vg from '@uwdata/vgplot';
+import { UMAP_URL } from '../const.ts'
 
 interface MosaicCoordinatorContextType {
   getCoordinator: () => vg.Coordinator;
@@ -33,13 +34,12 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
     }
 
     const coordinator = getCoordinator();
-    const url = 'https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap.json';
 
     await coordinator.exec([
       vg.sql`CREATE OR REPLACE TABLE data AS
             SELECT
               unnest(nodes, recursive := true)
-            FROM read_json_auto('${url}')`,
+            FROM read_json_auto('${UMAP_URL}')`,
       vg.sql`CREATE OR REPLACE TABLE data AS
             SELECT
               *,

@@ -4,6 +4,8 @@ const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const EXAMPLE_URL = `${API_BASE}/bed/example`;
 
+export const UMAP_URL = 'https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap.json';
+
 export const BEDBASE_PYTHON_CODE_MD = `
 \`\`\`python
 import requests
@@ -127,6 +129,18 @@ print(bed_granges)
 \`\`\`
 `;
 
+export const CLIENT_RUST_CODE_RAW = `
+\`\`\`python
+use gtars::bbclient::BBClient;
+
+let mut bbc = BBClient::new(Some(cache_folder.clone()), None).expect("Failed to create BBClient");
+
+let bed_id: String = bbc
+            .add_local_bed_to_cache(PathBuf::from(_path/to.bed.gz), None)
+            .unwrap();
+\`\`\`
+`;
+
 export const BBCONF_SNIPPETS = [
   {
     language: 'Python',
@@ -137,5 +151,10 @@ export const BBCONF_SNIPPETS = [
     language: 'R',
     code: CLIENT_R_CODE_RAW,
     raw: CLIENT_R_CODE_RAW,
+  },
+  {
+    language: 'Rust',
+    code: CLIENT_RUST_CODE_RAW,
+    raw: CLIENT_RUST_CODE_RAW,
   },
 ];

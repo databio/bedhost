@@ -1,4 +1,4 @@
-import { ProgressBar } from 'react-bootstrap';
+// import { ProgressBar } from 'react-bootstrap';
 import { components } from '../../../../bedbase-types';
 import { roundToTwoDecimals } from '../../../utils';
 import { useBedCart } from '../../../contexts/bedcart-context';
@@ -115,12 +115,16 @@ export const Text2BedSearchResultsTable = (props: Props) => {
               </OverlayTrigger>
             </td>
             <td>
-              <ProgressBar
-                min={5}
-                now={(result.score ?? 0) * 100}
-                label={`${roundToTwoDecimals((result.score ?? 0) * 100)}`}
-                variant="primary"
-              />
+              <span className={`fw-bold ${(() => {
+                // const scoreValue = (result.score ?? 0) * 100;
+                // if (scoreValue >= 80) return 'text-success';
+                // if (scoreValue >= 60) return 'text-warning';
+                // if (scoreValue >= 40) return 'text-info';
+                // return 'text-danger';
+                return 'text-success';
+              })()}`}>
+                {roundToTwoDecimals((result.score ?? 0) * 100)}%
+              </span>
             </td>
             <td className='p-0 position-relative' style={{ width: '42px' }}>
               {cart[result?.metadata?.id || ''] ? (

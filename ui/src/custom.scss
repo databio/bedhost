@@ -310,6 +310,31 @@ td {
   outline: 1px solid $primary !important;
 }
 
+.btn-group-xs > .btn {
+  padding: 0.125rem 0.6rem;
+  font-size: 0.7rem;
+  line-height: 1.2;
+  border-radius: 0.25rem;
+}
+
+.btn-card {
+  transition:
+    color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+}
+
+.table-transparent {
+  background-color: transparent; /* Makes the table background completely transparent */
+  --bs-table-bg: transparent;
+}
+
+.table-transparent tbody tr {
+  background-color: transparent;
+  --bs-table-bg: transparent;
+}
+
 .transparent-btn {
   //pointer-events: none;
   cursor: default;
@@ -341,6 +366,7 @@ td {
   font-size: 0.7rem !important;
   line-height: 1.2 !important;
   border-radius: 0.25rem !important;
+  height: auto;
 }
 
 .btn-xs > .bi {

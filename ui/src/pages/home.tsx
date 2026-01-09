@@ -22,7 +22,6 @@ export const Home = () => {
   const [activeClientTab, setActiveClientTab] = useState(BBCONF_SNIPPETS[0].language);
 
   const embeddingContainerRef = useRef<EmbeddingContainerRef>(null)
-  
 
   const navigate = useNavigate();
 
