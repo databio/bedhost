@@ -35,7 +35,6 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
 
     const coordinator = getCoordinator();
 
-
     await coordinator.exec([
       vg.sql`CREATE OR REPLACE TABLE data AS
             SELECT

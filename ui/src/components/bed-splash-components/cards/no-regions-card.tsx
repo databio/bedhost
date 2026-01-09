@@ -11,9 +11,9 @@ export const NoRegionsCard = (props: Props) => {
   const { metadata } = props;
   return (
     <StatCard
-      title="Number of Regions"
+      title='Number of Regions'
       stat={`${formatNumberWithCommas(metadata.stats?.number_of_regions || 0)}`}
-      tooltip="The number of regions in the bed file."
+      tooltip='The number of regions in the bed file.'
     />
   );
 };

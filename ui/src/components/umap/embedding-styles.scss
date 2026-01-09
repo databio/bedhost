@@ -1,0 +1,156 @@
+.expandable-card-container {
+  width: 100%;
+}
+
+.expandable-card {
+  z-index: 1;
+  width: 100%;
+
+  &__layout {
+    display: flex;
+    gap: 0;
+    padding: 0;
+    transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &__main {
+    flex: 1 1 100%;
+    min-width: 0;
+    transition: flex 200ms cubic-bezier(0.4, 0, 0.2, 1); 
+  }
+
+  &__sidebar {
+    flex: 0 0 0%;
+    opacity: 0;
+    pointer-events: none;
+    overflow: hidden;
+    transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1),
+                flex 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  &--compact {
+    position: relative;
+    width: 100%;
+
+    .expandable-card__layout {
+      gap: 0;
+      padding: 0;
+    }
+
+    .expandable-card__main {
+      flex: 1 1 100%;
+    }
+
+    .expandable-card__secondary {
+      display: none;
+    }
+
+    .expandable-card__sidebar {
+      display: none;
+    }
+  }
+
+  &--expanding {
+    z-index: 10000;
+
+    .expandable-card__layout {
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+
+    .expandable-card__main {
+      flex: 1 1 80%;
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .expandable-card__secondary {
+      flex: 1 1 80%;
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .expandable-card__sidebar {
+      flex: 0 0 20%;
+      max-width: 20%;
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+  }
+
+  &--expanded {
+    z-index: 10000;
+
+    .expandable-card__layout {
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+
+    .expandable-card__main {
+      flex: 1 1 80%;
+      opacity: 1;
+    }
+
+    .expandable-card__secondary {
+      flex: 1 1 80%;
+      opacity: 1;
+    }
+
+    .expandable-card__sidebar {
+      flex: 0 0 20%;
+      max-width: 20%;
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  &--collapsing {
+    z-index: 10000;
+
+    .expandable-card__layout {
+      gap: 0.5rem;
+      padding: 0.5rem;
+    }
+
+    .expandable-card__main {
+      flex: 1 1 80%;
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .expandable-card__secondary {
+      flex: 1 1 80%;
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .expandable-card__sidebar {
+      flex: 0 0 20%;
+      max-width: 20%;
+      opacity: 0;
+      transition: opacity 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+
+  &__extra-content {
+    animation: fadeIn 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+.expandable-card-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(0px);
+  z-index: 9999;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+
+  &--visible {
+    background: rgba(255, 255, 255, 0.67);
+    backdrop-filter: blur(4px);
+    pointer-events: all;
+    cursor: pointer;
+  }
+}

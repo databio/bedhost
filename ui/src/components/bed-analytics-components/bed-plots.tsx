@@ -96,7 +96,7 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
       },
       x: {
         axis: {
-          labelExpr: 'datum.value == 0 ? \'start\' : datum.value == 300 ? \'end\' : \'\'',
+          labelExpr: "datum.value == 0 ? 'start' : datum.value == 300 ? 'end' : ''",
           values: [0, 300.0],
         },
         field: 'withinGroupID',
@@ -175,10 +175,10 @@ export const RegionDistributionPlot = (props: BedPlotsProps) => {
 
   return (
     <div
-      className="d-flex w-100 border justify-content-between overflow-auto bg-white rounded"
+      className='d-flex w-100 border justify-content-between overflow-auto bg-white rounded'
       style={{ maxHeight: '800px', minWidth: 0 }}
     >
-      <div className="my-3 mx-4 pt-4 pb-1 w-100" ref={plotRef} />
+      <div className='my-3 mx-4 pt-4 pb-1 w-100' ref={plotRef} />
     </div>
   );
 };

@@ -1,23 +1,31 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Col, Row } from 'react-bootstrap';
-import { SearchBar } from '../search-bar';
-import { Text2BedSearchResultsTable } from './t2b-search-results-table';
+import { Text2BedSearchResultsCards } from './t2b-search-results-cards';
 import { SearchingJumper } from '../searching-jumper';
-import { useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useText2BedSearch } from '../../../queries/useText2BedSearch';
-import { TableToolbar } from '../table-toolbar';
 import { PaginationBar } from '../pagination-bar';
 import { SearchError } from '../search-error';
 import { AxiosError } from 'axios';
+import { Text2BedSearchResultsTable } from './t2b-search-results-table.tsx';
 
-export const Text2Bed = () => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(searchParams.get('q') || '');
-  const [genome, setGenome] = useState(searchParams.get('genome') || '');
-  const [assay, setAssay] = useState(searchParams.get('assay') || '');
-  const [limit, setLimit] = useState(20);
-  const [offset, setOffset] = useState(0);
+type Props = {
+  searchTerm: string;
+  genome: string;
+  assay: string;
+  limit: number;
+  offset: number;
+  setOffset: (offset: number) => void;
+  layout: string;
+  triggerSearch: number;
+};
+
+export const Text2Bed = (props: Props) => {
+  const { searchTerm, genome, assay, limit, offset, setOffset, layout, triggerSearch } = props;
+  const [hasLoaded, setHasLoaded] = useState(false);
+  const [resultsCount, setResultsCount] = useState(0);
+  const [queryTerm, setQueryTerm] = useState(searchTerm);
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const {
     isFetching: isSearching,
@@ -25,69 +33,90 @@ export const Text2Bed = () => {
     error,
     refetch: onSearch,
   } = useText2BedSearch({
-    q: searchTerm,
+    q: queryTerm,
     genome: genome,
     assay: assay,
-    limit: limit, // TODO: make this a variable
+    limit: limit,
     offset: offset,
     autoRun: false,
   });
 
   useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchTerm) params.set('q', searchTerm);
-    if (genome) params.set('genome', genome);
-    if (assay) params.set('assay', assay);
-    setSearchParams(params);
-  }, [searchTerm, genome, assay]);
+    if (results?.results) {
+      setHasLoaded(true);
+      setResultsCount(results.count);
+    }
+  }, [results?.results]);
 
+  // Initial search on mount if there's a searchTerm from URL params
   useEffect(() => {
-    if (searchTerm || genome || assay) {
+    if (queryTerm && triggerSearch === 0) {
       onSearch();
     }
-  }, [limit, offset, genome, assay, onSearch]);
+  }, []);
+
+  // When user triggers search, update the query term which will cause refetch
+  useEffect(() => {
+    if (triggerSearch > 0) {
+      setQueryTerm(searchTerm);
+    }
+  }, [triggerSearch]);
+
+  // Refetch when query term or filters change
+  useEffect(() => {
+    if (queryTerm || genome || assay) {
+      onSearch();
+    }
+  }, [queryTerm, limit, offset, genome, assay]);
 
   if (error) {
     if (error) {
-      return <SearchError title="BEDbase | Search" error={error as AxiosError} />;
+      return <SearchError title='BEDbase | Search' error={error as AxiosError} />;
     }
   }
 
   return (
-    <div className="my-2">
-      <Row>
-        <Col sm={12} md={12}>
-          <SearchBar
-            limit={limit}
-            setLimit={setLimit}
-            value={searchTerm}
-            onChange={setSearchTerm}
-            genome={genome}
-            setGenome={setGenome}
-            assay={assay}
-            setAssay={setAssay}
-            onSearch={() => {
-              setOffset(0);
-              setTimeout(() => {
-                onSearch();
-              }, 100);
-            }}
-          />
-        </Col>
-      </Row>
+    <div className='my-2'>
       <div>
-        {isSearching ? (
+        {isSearching && !hasLoaded ? (
           <SearchingJumper />
         ) : (
-          <div className="my-2">
-            {results ? (
-              <div className="p-0 pt-1 pb-3 border rounded rounded-2 shadow-sm">
-                <TableToolbar limit={limit} setLimit={setLimit} total={results.count} />
-                <Text2BedSearchResultsTable results={results || []} search_query={searchTerm} />{' '}
-                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={results.count} />
-              </div>
+          <div className='my-2' ref={containerRef}>
+            {hasLoaded ? (
+              <>
+                {results ? (
+                  <>
+                    <div className='row gx-2'>
+                      <div className={`col-12 d-flex flex-column`}>
+                        {layout === 'cards' ? (
+                          <Text2BedSearchResultsCards
+                            results={results || []}
+                            search_query={queryTerm}
+                            layout={layout}
+                          />
+                        ) : (
+                          <Text2BedSearchResultsTable
+                            results={results || []}
+                            search_query={queryTerm}
+                            layout={layout}
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <div className='row'>
+                      <div className='col-12'>
+                        <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div style={{ height: '660px' }}>
+                    <SearchingJumper />
+                  </div>
+                )}
+              </>
             ) : (
-              <div className="d-flex flex-column align-items-center justify-content-center mt-5 fst-italic">
+              <div className='d-flex flex-column align-items-center justify-content-center mt-5 fst-italic'>
                 Try searching for some BED files! e.g. K562
               </div>
             )}

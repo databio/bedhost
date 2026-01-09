@@ -13,7 +13,6 @@ type SearchQuery = {
 };
 
 export const useText2BedSearch = (query: SearchQuery) => {
-
   const { api } = useBedbaseApi();
 
   const { q, limit, offset, autoRun, genome, assay } = query;
@@ -21,15 +20,19 @@ export const useText2BedSearch = (query: SearchQuery) => {
   if (autoRun !== undefined && autoRun === true && !!q) {
     enabled = true;
   }
-  console.log(assay)
   return useQuery({
     queryKey: ['search', q, limit, offset, genome, assay],
     queryFn: async () => {
-      const { data } = await api.get<SearchResponse>(`/bed/search/text?query=${q}&limit=${limit}&offset=${offset}&genome=${genome}&assay=${assay}`);
+      const { data } = await api.get<SearchResponse>(
+        `/bed/search/text?query=${q}&limit=${limit}&offset=${offset}&genome=${genome}&assay=${assay}`,
+      );
       return data;
     },
     enabled: enabled,
     staleTime: 0,
-    placeholderData: (previousData) => previousData,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    // placeholderData: (previousData) => previousData,
   });
 };
