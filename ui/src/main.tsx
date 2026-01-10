@@ -17,6 +17,7 @@ import { MosaicCoordinatorProvider } from './contexts/mosaic-coordinator-context
 
 // css stuff
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'highlight.js/styles/a11y-light.min.css';
 import './custom.scss';

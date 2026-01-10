@@ -30,6 +30,7 @@ type Props = {
   blockCompact?: boolean;
   showBorder?: boolean;
   uploadedFile?: File;
+  rounded?: string;
 };
 
 export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((props, ref) => {
@@ -44,7 +45,8 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
     initialState, 
     blockCompact, 
     showBorder = true, 
-    uploadedFile 
+    uploadedFile,
+    rounded = 'rounded'
   } = props;
 
   const { addMultipleBedsToCart } = useBedCart();
@@ -246,7 +248,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
     >
       <div
         ref={contentRef}
-        className={`expandable-card expandable-card--${state} ${state === 'compact' ? 'rounded' : ''} overflow-hidden`}
+        className={`expandable-card expandable-card--${state} ${state === 'compact' ? rounded : ''} overflow-hidden`}
         style={getInnerCardStyles()}
       >
         <div className='expandable-card__layout'>

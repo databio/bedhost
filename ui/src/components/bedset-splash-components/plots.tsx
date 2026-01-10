@@ -29,16 +29,13 @@ const Plot = (props: PlotProps) => {
           setShow(true);
         }
       }}
-      className='h-100 border rounded p-1 hover-border-primary transition-all bg-white'
+      className='h-100 border rounded bg-white overflow-hidden embedding-card'
     >
-      <div className='p-1 text-center'>
-        <span className='fw-medium text-xs mb-2'>{title}</span>
-        {/* <button onClick={() => setShow(true)} className="btn btn-sm btn-outline-primary text-xs">
-          <i className="bi bi-eye" />
-        </button> */}
+      <div className='p-2 mt-2 text-center'>
+        <Image height='250px' src={src} alt={alt} />
       </div>
       <div className='text-center'>
-        <Image height='250px' src={src} alt={alt} />
+        <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>{title}</p>
       </div>
       <FigureModal
         show={show}
@@ -56,6 +53,7 @@ const Plot = (props: PlotProps) => {
 export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
+
   return (
     <Fragment>
       <Row className='row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2'>
