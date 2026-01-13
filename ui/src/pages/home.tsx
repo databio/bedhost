@@ -13,14 +13,6 @@ import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
 import { motion } from 'framer-motion';
 
-// type FileBadgeProps = {
-//   children?: React.ReactNode;
-// };
-
-// const FileBadge = (props: FileBadgeProps) => {
-//   const { children } = props;
-//   return <div className="w-100 py-1 px-3 text-center rounded-pill border border-dark bg-light">{children}</div>;
-// };
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,40 +34,27 @@ export const Home = () => {
   // const { data: exampleBedMetadata } = useExampleBed(); # if example will be dynamic again
   const { data: exampleBedSetMetadata } = useExampleBedSet();
   const { data: bedbaseStats } = useStats();
+  const apiDocsUrl = import.meta.env.VITE_API_BASE;
 
   return (
     <Layout footer title="BEDbase" fullHeight>
       <div className="d-flex flex-column w-100 align-items-center p-2">
         <div className="my-5"></div>
-        {/*<div className="d-flex flex-row align-items-center mt-5 gap-2 mb-2 mb-4">*/}
-        {/*  <a href="https://github.com/databio/bedhost">*/}
-        {/*    <span className="badge bg-primary text-sm bg-opacity-10 text-primary border border-primary">*/}
-        {/*      <i className="bi bi-github me-2" />*/}
-        {/*      GitHub*/}
-        {/*    </span>*/}
-        {/*  </a>*/}
-        {/*  <a href="https://docs.bedbase.org">*/}
-        {/*    <span className="badge bg-primary text-sm bg-opacity-10 text-primary border border-primary">*/}
-        {/*      <i className="bi bi-file-earmark-text-fill me-2" />*/}
-        {/*      Documentation*/}
-        {/*    </span>*/}
-        {/*  </a>*/}
-        {/*</div>*/}
         <h1 className="fw-bolder text-primary text-6xl mb-4">BEDbase</h1>
-        <h3 className="text-primary text-2xl mt-2 mb-0">Find, analyze, and understand genomic region data - all in one
+        <h3 className="text-primary text-2xl mt-2 mb-3">Find, analyze, and understand genomic region data - all in one
           place</h3>
 
         <div className="my-2"></div>
-        <div className="col-12 col-lg-9">
-          <p className="text-md-center text-base mb-5">
-            BEDbase is a unified platform for searching, analyzing, visualizing and serving genomic region data.
-            BEDbase redefines the way to manage genomic region data and allows users to search for BED files of
-            interest, visualize them, and create
-            collections tailored to research needs. Users can explore
-            comprehensive descriptions of specific BED files via a user-oriented web interface and programmatically
-            interact with the data via an OpenAPI-compatible API.
-          </p>
-        </div>
+        {/*<div className="col-12 col-lg-9">*/}
+        {/*  <p className="text-md-center text-base mb-5">*/}
+        {/*    BEDbase is a unified platform for searching, analyzing, visualizing and serving genomic region data.*/}
+        {/*    BEDbase redefines the way to manage genomic region data and allows users to search for BED files of*/}
+        {/*    interest, visualize them, and create*/}
+        {/*    collections tailored to research needs. Users can explore*/}
+        {/*    comprehensive descriptions of specific BED files via a user-oriented web interface and programmatically*/}
+        {/*    interact with the data via an OpenAPI-compatible API.*/}
+        {/*  </p>*/}
+        {/*</div>*/}
         <div className="col-12 col-lg-9 d-flex gap-2">
           <div className="input-group bg-white">
             {searchType === 'b2b' ? (
@@ -125,14 +104,15 @@ export const Home = () => {
         </div>
 
         <div
-          className="d-flex flex-row w-100 landing-animation-container hidden large-flex justify-content-center my-1">
+          className="d-flex flex-row w-100 landing-animation-container hidden large-flex justify-content-center my-0">
           <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
             {/*Added everywhere motion div for better visualization */}
             <motion.div
               className="d=flex flex-column"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+              transition={{ duration: 1, delay: 0.0 }}
             >
               <a href="/search" className="text-decoration-none text-dark">
                 <p className="mb-0 fw-bold text-center">Search</p>
@@ -145,10 +125,11 @@ export const Home = () => {
               className="d=flex flex-column"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+              transition={{ duration: 1, delay: 0.0 }}
             >
               <a href="/analyze" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">Analyzer</p>
+                <p className="mb-0 fw-bold text-center">Analyze</p>
                 <div className="p-1">
                   <Image src="/analyzer_icon.svg" alt="Analyzer icon" height="70px" className="ms-2" />
                 </div>
@@ -158,12 +139,13 @@ export const Home = () => {
               className="d=flex flex-column"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+              transition={{ duration: 1, delay: 0.0 }}
             >
-              <a href="https://docs.bedbase.org/bedbase/" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">API and Clients</p>
+              <a href="/umap" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">Visualize</p>
                 <div className="p-1">
-                  <Image src="/api_icon.svg" alt="API icon" height="75px" className="ms-2" />
+                  <Image src="/embeddings.svg" alt="Statistics icon" height="75px" className="ms-2" />
                 </div>
               </a>
             </motion.div>
@@ -185,12 +167,13 @@ export const Home = () => {
               className="d=flex flex-column"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+              transition={{ duration: 1, delay: 0.0 }}
             >
-              <a href="/bed/dcc005e8761ad5599545cc538f6a2a4d" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">Statistics</p>
+              <a href={apiDocsUrl} className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">API</p>
                 <div className="p-1">
-                  <Image src="/stats_icon.svg" alt="Statistics icon" width="75px" className="ms-2" />
+                  <Image src="/api_icon.svg" alt="API icon" height="75px" className="ms-2" />
                 </div>
               </a>
             </motion.div>
@@ -198,7 +181,22 @@ export const Home = () => {
               className="d=flex flex-column"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+              transition={{ duration: 1, delay: 0.0 }}
+            >
+              <a href="https://docs.bedbase.org" className="text-decoration-none text-dark">
+                <p className="mb-0 fw-bold text-center">Tools</p>
+                <div className="p-1">
+                  <Image src="/tools_icon.svg" alt="Tools icon" width="75px" className="ms-2" />
+                </div>
+              </a>
+            </motion.div>
+            <motion.div
+              className="d=flex flex-column"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
+              transition={{ duration: 0.5, delay: 0.0 }}
             >
               <a href="/search?view=t2bs" className="text-decoration-none text-dark">
                 <p className="mb-0 fw-bold text-center">BED sets</p>
@@ -207,21 +205,31 @@ export const Home = () => {
                 </div>
               </a>
             </motion.div>
-            <motion.div
-              className="d=flex flex-column"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-            >
-              <a href="/umap" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">Embeddings</p>
-                <div className="p-1">
-                  <Image src="/embeddings.svg" alt="Statistics icon" height="75px" className="ms-2" />
-                </div>
-              </a>
-            </motion.div>
           </div>
         </div>
+
+        <div className='d-flex flex-row gap-4 justify-content-center mb-5 pb-2 text-muted'>
+          <span>
+            <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
+          </span>
+          <span>•</span>
+          <span>
+            <strong className='text-success'>{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</strong> BEDsets
+          </span>
+          <span>•</span>
+          <span>
+            <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
+          </span>
+          <span>•</span>
+          <a
+            className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+            href={`/metrics`}
+          >
+            <strong>more</strong> metrics
+            <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
+          </a>
+        </div>
+
         <div className="my-2 w-100">
           <Row className="w-100 align-items-center mb-5">
             <Col sm={6} md={6}>
