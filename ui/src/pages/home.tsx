@@ -231,129 +231,24 @@ export const Home = () => {
         </div>
 
         <div className="my-2 w-100">
-          <Row className="w-100 align-items-center mb-5">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">Web Server and API</h2>
-              <p className="text-balance pe-4">
-                The BEDbase web server and API are designed to provide a user-friendly interface for exploring and
-                working with genomic region data. The web server allows users to search for BED files and BED sets, view
-                detailed information about specific files, and create collections of files.
-              </p>
-            </Col>
-            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div
-                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
-                <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
-                  <div className="d-flex flex-row align-items-center text-sm">
-                    <Nav variant="pills" className="flex-row">
-                      {CODE_SNIPPETS.map((snippet) => (
-                        <Nav.Item key={snippet.language}>
-                          <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
-                            {snippet.language}
-                          </Nav.Link>
-                        </Nav.Item>
-                      ))}
-                    </Nav>
-                  </div>
-                  <Tab.Content className="w-100 h-100">
-                    {CODE_SNIPPETS.map((snippet) => (
-                      <Tab.Pane key={snippet.language} eventKey={snippet.language}>
-                        <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
-                          {snippet.code}
-                        </Markdown>
-                        <div className="position-absolute top-0 end-0 me-2">
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(snippet.raw);
-                              setCopied(true);
-                              setTimeout(() => {
-                                setCopied(false);
-                              }, 2000);
-                            }}
-                            className="btn btn-outline-primary btn-sm mt-2"
-                          >
-                            {copied ? 'Copied!' : 'Copy'}
-                          </button>
-                        </div>
-                      </Tab.Pane>
-                    ))}
-                  </Tab.Content>
-                </Tab.Container>
-              </div>
-            </Col>
-          </Row>
-          <Row className="w-100 align-items-center mb-3">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">BED Embedding Visualization</h2>
-              <p className="text-balance pe-4">
-                BEDbase provides visualization of UMAP of hg38 BED embeddings. It allows users to explore the
-                similarity of genomic regions based on their embeddings, and
-                providing insights into the relationships between different BED files.
-                The visualization is available on the <a href="/umap">UMAP visualization</a>.
-              </p>
-            </Col>
-            <Col>
-              <a href="/umap">
-                <Image src="/bed_umap.svg" alt="UMAP visualization" height="400px"
-                       className="mb-0 mx-auto d-block img-fluid" />
-              </a>
-            </Col>
-          </Row>
-          <Row className="w-100 mb-5">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">Search for BED Files</h2>
-              <p className="text-balance pe-4">
-                BEDbase offers three search endpoints for discovering BED files and BEDsets, distinguishing itself from
-                other platforms by utilizing vector search to index and search through bed file regions. This approach
-                enhances search accuracy and efficiency compared to platforms relying on unstructured user-provided
-                metadata, which can be ambiguous and less reliable. User can search for BED files by providing a query
-                string, or a BED file.
-              </p>
-            </Col>
-            <Col sm={6} md={6}>
-              <div className="d-flex flex-row align-items-center width-100 justify-content-center h-100 gap-1">
-                <input
-                  value={searchTermSmall}
-                  onChange={(e) => setSearchTermSmall(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      if (searchTermSmall.length === 0) {
-                        return;
-                      }
-                      navigate(`/search?q=${searchTermSmall}`);
-                    }
-                  }}
-                  className="p-2 rounded border w-100 shadow-sm"
-                />
-                <button
-                  onClick={() => {
-                    if (searchTermSmall.length === 0) {
-                      return;
-                    }
-                    navigate(`/search?q=${searchTermSmall}&view=t2b`);
-                  }}
-                  className="btn btn-primary btn-lg"
-                >
-                  <i className="bi bi-search"></i>
-                </button>
-              </div>
-            </Col>
-          </Row>
-          {/* <div className="my-5"></div> */}
-          <Row className="w-100 align-items-center mb-5 mb-md-2">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">BEDbase Client </h2>
-              <p className="text-balance pe-4">
-                BEDbase provides a Python an R client for interacting with the BEDbase API. The client allows users to
-                download, cache, and analyze BED files and BED sets programmatically, without the need to interact with
-                the native API. BBclient is available on PyPI in geniml package with other useful tools for genomic data
-                analysis. Python Geniml package:{' '}
+          <Row className="w-100 align-items-center py-4">
+            <Col xs={12} md={6} className="mb-4 mb-md-0">
+              <h2 className="fw-bold">Download and cache your data locally</h2>
+              <p className="text-balance pe-md-4">
+                Use the BEDbase clients to access BED files and BED sets programmatically.
+                The clients handle downloading and caching, enabling efficient reuse of genomic region
+                data without manual API calls and redundancy.
+                Available in Python: {' '}
                 <a href="https://pypi.org/project/geniml/" className="bi bi-box-fill">
                   {' '}
-                  PyPI geniml
+                  geniml
                 </a>
-                .
-                R package:{' '}
+                , Rust: {' '}
+                <a href="https://crates.io/crates/gtars" className="bi bi-box-fill">
+                  {' '}
+                  gtars
+                </a>
+                , and R: {' '}
                 <a href="https://github.com/waldronlab/bedbaser" className="bi bi-github">
                   {' '}
                   BEDbaser
@@ -361,11 +256,10 @@ export const Home = () => {
                 .
               </p>
             </Col>
-
-            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100 mb-5">
+            <Col xs={12} md={6} className="d-flex flex-column align-items-center justify-content-center h-100 ps-md-4">
               <div
                 className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
-                <Tab.Container id="code-snippets" defaultActiveKey={CODE_SNIPPETS[0].language}>
+                <Tab.Container id="code-snippets-client" defaultActiveKey={BBCONF_SNIPPETS[0].language}>
                   <div className="d-flex flex-row align-items-center text-sm">
                     <Nav variant="pills" className="flex-row">
                       {BBCONF_SNIPPETS.map((snippet) => (
@@ -404,52 +298,79 @@ export const Home = () => {
               </div>
             </Col>
           </Row>
-          <Row className="w-100 align-items-center mb-5">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">BED Analyzer</h2>
-              <p className="text-balance pe-4">
-                BEDbase includes an interactive BED Analyzer that lets you quickly explore any BED file.
-                You can upload your own file or provide a URL, and the analyzer will generate key
-                statistics, summary tables, and visualizations. It gives you an instant overview of
-                region counts, lengths, genome coverage, and other useful properties. Analyze your file: <a
-                href="/analyze"> Analyzer</a>.
+
+          <Row className="w-100 align-items-center py-4">
+            <Col xs={12} md={6} className="order-2 order-md-1 pe-md-4">
+              <div className="d-flex flex-row align-items-center width-100 justify-content-center h-100 gap-1">
+                <input
+                  value={searchTermSmall}
+                  onChange={(e) => setSearchTermSmall(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      if (searchTermSmall.length === 0) {
+                        return;
+                      }
+                      navigate(`/search?q=${searchTermSmall}`);
+                    }
+                  }}
+                  className="p-2 rounded border w-100 shadow-sm"
+                />
+                <button
+                  onClick={() => {
+                    if (searchTermSmall.length === 0) {
+                      return;
+                    }
+                    navigate(`/search?q=${searchTermSmall}&view=t2b`);
+                  }}
+                  className="btn btn-primary btn-lg"
+                >
+                  <i className="bi bi-search"></i>
+                </button>
+              </div>
+            </Col>
+            <Col xs={12} md={6} className="order-1 order-md-2 mb-4 mb-md-0 ps-md-4">
+              <h2 className="fw-bold">Search for BED Files</h2>
+              <p className="text-balance">
+                BEDbase indexes genomic intervals directly, enabling similarity-based search grounded in the actual
+                content of BED files rather than unstructured or inconsistent user-provided metadata.
+                Users can search by submitting a query string or by uploading a BED file, allowing precise
+                and reproducible discovery of relevant genomic region datasets.
               </p>
             </Col>
-            <Col>
-              <a href="/analyze">
-                <Image src="/bed_analyzer.svg" alt="BED analyzer" height="300px"
-                       className="mb-3 mx-auto d-block img-fluid" />
+          </Row>
+
+          <Row className="w-100 align-items-center py-4">
+            <Col xs={12} md={6} className="mb-4 mb-md-0">
+              <h2 className="fw-bold">Visualize BED file similarity</h2>
+              <p className="text-balance pe-md-4">
+                Explore BED file similarity using an interactive UMAP of hg38-based embeddings.
+                Compare existing BEDbase data and upload your own BED file to see how
+                it relates to other genomic region sets in embedding space.
+              </p>
+            </Col>
+            <Col xs={12} md={6} className="d-flex justify-content-center ps-md-4">
+              <a href="/umap">
+                <Image src="/bed_umap.svg" alt="UMAP visualization" height="400px"
+                       className="mb-0 mx-auto d-block img-fluid" />
               </a>
             </Col>
           </Row>
-          <Row className="w-100 align-items-center">
-            <Col sm={6} md={6}>
-              <h2 className="fw-bold">Data Availability Summary</h2>
-              <p className="text-balance pe-4">
-                Comprehensive metrics about BEDbase file statistics is available on the {' '}
-                <a href={`/metrics`}>metrics page</a>.
-              </p>
+
+          <Row className="w-100 align-items-center py-4">
+            <Col xs={12} md={6} className="order-2 order-md-1 d-flex justify-content-center">
+              <a href="/analyze">
+                <Image src="/bed_analyzer.svg" alt="BED analyzer" height="300px"
+                       className="mb-0 mx-auto d-block img-fluid" />
+              </a>
             </Col>
-            <Col sm={6} md={6} className="d-flex flex-column align-items-center justify-content-center h-100">
-              <div className="mt-0 mt-md-5 mb-5 w-100">
-                <ul className="list-group w-100">
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Number of bed files available:
-                    <span
-                      className="badge bg-primary rounded-pill">{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Number of bed sets available:
-                    <span
-                      className="badge bg-success rounded-pill">{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</span>
-                  </li>
-                  <li className="list-group-item d-flex justify-content-between align-items-center">
-                    Number of genomes available:
-                    <span
-                      className="badge bg-info rounded-pill">{(bedbaseStats?.genomes_number || 0).toLocaleString()}</span>
-                  </li>
-                </ul>
-              </div>
+            <Col xs={12} md={6} className="order-1 order-md-2 mb-4 mb-md-0 ps-md-4">
+              <h2 className="fw-bold">Analyze your BED files</h2>
+              <p className="text-balance">
+                Upload a BED file or provide a URL to quickly explore its contents. 
+                The BED Analyzer generates key statistics, summary tables, and visualizations, 
+                giving you an immediate overview of region counts, lengths, genome coverage, 
+                and other essential properties.
+              </p>
             </Col>
           </Row>
         </div>
