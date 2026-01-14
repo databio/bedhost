@@ -5,7 +5,7 @@ import { InPaths, OutPaths } from '../motions/landing-animations';
 import { Col, Image, Nav, Row, Tab } from 'react-bootstrap';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
-import { CODE_SNIPPETS } from '../const';
+// import { CODE_SNIPPETS } from '../const';
 import { BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import toast from 'react-hot-toast';
@@ -233,7 +233,7 @@ export const Home = () => {
         <div className="my-2 w-100">
           <Row className="w-100 align-items-center py-4">
             <Col xs={12} md={6} className="mb-4 mb-md-0">
-              <h2 className="fw-bold">Download and cache your data locally</h2>
+              <h3 className="fw-bold">Download and cache your data locally</h3>
               <p className="text-balance pe-md-4">
                 Use the BEDbase clients to access BED files and BED sets programmatically.
                 The clients handle downloading and caching, enabling efficient reuse of genomic region
@@ -329,7 +329,7 @@ export const Home = () => {
               </div>
             </Col>
             <Col xs={12} md={6} className="order-1 order-md-2 mb-4 mb-md-0 ps-md-4">
-              <h2 className="fw-bold">Search for BED Files</h2>
+              <h3 className="fw-bold">Search for BED Files</h3>
               <p className="text-balance">
                 BEDbase indexes genomic intervals directly, enabling similarity-based search grounded in the actual
                 content of BED files rather than unstructured or inconsistent user-provided metadata.
@@ -341,7 +341,7 @@ export const Home = () => {
 
           <Row className="w-100 align-items-center py-4">
             <Col xs={12} md={6} className="mb-4 mb-md-0">
-              <h2 className="fw-bold">Visualize BED file similarity</h2>
+              <h3 className="fw-bold">Visualize BED file similarity</h3>
               <p className="text-balance pe-md-4">
                 Explore BED file similarity using an interactive UMAP of hg38-based embeddings.
                 Compare existing BEDbase data and upload your own BED file to see how
@@ -350,7 +350,7 @@ export const Home = () => {
             </Col>
             <Col xs={12} md={6} className="d-flex justify-content-center ps-md-4">
               <a href="/umap">
-                <Image src="/bed_umap.svg" alt="UMAP visualization" height="400px"
+                <Image src="/visualizer.svg" alt="UMAP visualization" height="400px"
                        className="mb-0 mx-auto d-block img-fluid" />
               </a>
             </Col>
@@ -364,7 +364,7 @@ export const Home = () => {
               </a>
             </Col>
             <Col xs={12} md={6} className="order-1 order-md-2 mb-4 mb-md-0 ps-md-4">
-              <h2 className="fw-bold">Analyze your BED files</h2>
+              <h3 className="fw-bold">Analyze your BED files</h3>
               <p className="text-balance">
                 Upload a BED file or provide a URL to quickly explore its contents. 
                 The BED Analyzer generates key statistics, summary tables, and visualizations, 
