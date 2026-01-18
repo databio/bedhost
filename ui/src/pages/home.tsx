@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Layout } from '../components/layout';
-import { useNavigate } from 'react-router-dom';
-import { InPaths, OutPaths } from '../motions/landing-animations';
-import { Col, Image, Nav, Row, Tab } from 'react-bootstrap';
+import {useState} from 'react';
+import {Layout} from '../components/layout';
+import {useNavigate} from 'react-router-dom';
+// import {InPaths, OutPaths} from '../motions/landing-animations';
+import {Col, Image, Nav, Row, Tab} from 'react-bootstrap';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 // import { CODE_SNIPPETS } from '../const';
-import { BBCONF_SNIPPETS } from '../const';
+import {BBCONF_SNIPPETS} from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import toast from 'react-hot-toast';
-import { useExampleBedSet } from '../queries/useExampleBedSet';
-import { useStats } from '../queries/useStats.ts';
-import { motion } from 'framer-motion';
+import {useExampleBedSet} from '../queries/useExampleBedSet';
+import {useStats} from '../queries/useStats.ts';
+import {motion} from 'framer-motion';
 
 
 export const Home = () => {
@@ -32,202 +32,117 @@ export const Home = () => {
 
 
   // const { data: exampleBedMetadata } = useExampleBed(); # if example will be dynamic again
-  const { data: exampleBedSetMetadata } = useExampleBedSet();
-  const { data: bedbaseStats } = useStats();
-  const apiDocsUrl = import.meta.env.VITE_API_BASE;
+  const {data: exampleBedSetMetadata} = useExampleBedSet();
+  const {data: bedbaseStats} = useStats();
+  // const apiDocsUrl = import.meta.env.VITE_API_BASE;
 
   return (
     <Layout footer title="BEDbase" fullHeight>
       <div className="d-flex flex-column w-100 align-items-center p-2">
-        <div className="my-5"></div>
-        <h1 className="fw-bolder text-primary text-6xl mb-4">BEDbase</h1>
-        <h3 className="text-primary text-2xl mt-2 mb-3">Find, analyze, and understand genomic region data - all in one
-          place</h3>
-
-        <div className="my-2"></div>
-        {/*<div className="col-12 col-lg-9">*/}
-        {/*  <p className="text-md-center text-base mb-5">*/}
-        {/*    BEDbase is a unified platform for searching, analyzing, visualizing and serving genomic region data.*/}
-        {/*    BEDbase redefines the way to manage genomic region data and allows users to search for BED files of*/}
-        {/*    interest, visualize them, and create*/}
-        {/*    collections tailored to research needs. Users can explore*/}
-        {/*    comprehensive descriptions of specific BED files via a user-oriented web interface and programmatically*/}
-        {/*    interact with the data via an OpenAPI-compatible API.*/}
-        {/*  </p>*/}
-        {/*</div>*/}
-        <div className="col-12 col-lg-9 d-flex gap-2">
-          <div className="input-group bg-white">
-            {searchType === 'b2b' ? (
-              <input
-                key="file-input"
-                className="form-control border fs-5"
-                type="file"
-                accept=".bed,.gz,application/gzip,application/x-gzip"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    navigate(`/search?view=b2b`, { state: { file: file } });
-                  }
-                }}
-              />
-            ) : (
-              <input
-                key="text-input"
-                className="form-control border fs-5"
-                type="text"
-                placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              />
-            )}
-
-            <select
-              className="form-select"
-              style={{ maxWidth: '159px' }}
-              aria-label="search type selector"
-              value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
-            >
-              <option value="t2b">Text-to-BED</option>
-              <option value="b2b">BED-to-BED</option>
-              <option value="t2bs">Text-to-BEDset</option>
-            </select>
-          </div>
-          <button className="btn btn-primary" type="button" onClick={handleSearch}>
-            <i className="bi bi-search" />
-          </button>
-        </div>
-        <div className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-2 mb-0">
-          <span>Or, explore an <a href={`/bed/dcc005e8761ad5599545cc538f6a2a4d`}>example BED file</a></span>
-          <span>or an{' '} <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BEDset</a></span>
-        </div>
-
-        <div
-          className="d-flex flex-row w-100 landing-animation-container hidden large-flex justify-content-center my-0">
-          <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
-            {/*Added everywhere motion div for better visualization */}
-            <motion.div
-              className="d=flex flex-column"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-              transition={{ duration: 1, delay: 0.0 }}
-            >
-              <a href="/search" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">Search</p>
-                <div className="p-1">
-                  <Image src="/search.svg" alt="Search icon" width="75px" className="ms-2" />
-                </div>
-              </a>
-            </motion.div>
-            <motion.div
-              className="d=flex flex-column"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-              transition={{ duration: 1, delay: 0.0 }}
-            >
-              <a href="/analyze" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">Analyze</p>
-                <div className="p-1">
-                  <Image src="/analyzer_icon.svg" alt="Analyzer icon" height="70px" className="ms-2" />
-                </div>
-              </a>
-            </motion.div>
-            <motion.div
-              className="d=flex flex-column"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-              transition={{ duration: 1, delay: 0.0 }}
-            >
-              <a href="/umap" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">Visualize</p>
-                <div className="p-1">
-                  <Image src="/embeddings.svg" alt="Statistics icon" height="75px" className="ms-2" />
-                </div>
-              </a>
-            </motion.div>
-          </div>
-          <InPaths />
-          <motion.div
-            className="d-flex flex column h-100 align-items-center"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.1 }}
+        <div className="d-flex flex-column justify-content-center text-center" style={{minHeight: '80vh'}}>
+          <motion.h1
+            className="fw-bolder text-primary text-6xl mb-4"
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.6}}
           >
-            <div className="p-2 border border-primary rounded rounded border-2 landing-main-logo-shadow">
-              <Image src="/bedbase_icon.svg" alt="BEDbase logo" height="100px" className="landing-animation-logo" />
-            </div>
-          </motion.div>
-          <OutPaths />
-          <div className="d-flex flex-column align-items-center justify-content-center gap-3 px-2">
-            <motion.div
-              className="d=flex flex-column"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-              transition={{ duration: 1, delay: 0.0 }}
-            >
-              <a href={apiDocsUrl} className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">API</p>
-                <div className="p-1">
-                  <Image src="/api_icon.svg" alt="API icon" height="75px" className="ms-2" />
-                </div>
-              </a>
-            </motion.div>
-            <motion.div
-              className="d=flex flex-column"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-              transition={{ duration: 1, delay: 0.0 }}
-            >
-              <a href="https://docs.bedbase.org" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">Tools</p>
-                <div className="p-1">
-                  <Image src="/tools_icon.svg" alt="Tools icon" width="75px" className="ms-2" />
-                </div>
-              </a>
-            </motion.div>
-            <motion.div
-              className="d=flex flex-column"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              whileHover={{ scale: 1.1, transition: { type: 'spring', stiffness: 300, damping: 20 } }}
-              transition={{ duration: 0.5, delay: 0.0 }}
-            >
-              <a href="/search?view=t2bs" className="text-decoration-none text-dark">
-                <p className="mb-0 fw-bold text-center">BED sets</p>
-                <div className="p-1">
-                  <Image src="/bedset.svg" alt="Statistics icon" height="70px" className="ms-2" />
-                </div>
-              </a>
-            </motion.div>
-          </div>
-        </div>
+            BEDbase
+          </motion.h1>
+          <motion.h3
+            className="text-secondary text-3xl mt-2 mb-3"
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.6, delay: 0.1}}
+          >
+            Find, analyze, and understand genomic region data - all in one place
+          </motion.h3>
 
-        <div className='d-flex flex-row gap-4 justify-content-center mb-5 pb-2 text-muted'>
+          <div className="my-2"></div>
+          <motion.div
+            className="col-12 d-flex gap-2 mx-auto"
+            initial={{opacity: 0, y: 20}}
+            animate={{opacity: 1, y: 0}}
+            transition={{duration: 0.6, delay: 0.2}}
+          >
+            <div className="input-group bg-white">
+              {searchType === 'b2b' ? (
+                <input
+                  key="file-input"
+                  className="form-control border fs-5"
+                  type="file"
+                  accept=".bed,.gz,application/gzip,application/x-gzip"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      navigate(`/search?view=b2b`, {state: {file: file}});
+                    }
+                  }}
+                />
+              ) : (
+                <input
+                  key="text-input"
+                  className="form-control border fs-5"
+                  type="text"
+                  placeholder={searchType === 't2b' ? 'Search for BED files' : 'Search for BEDsets'}
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+              )}
+
+              <select
+                className="form-select"
+                style={{maxWidth: '159px'}}
+                aria-label="search type selector"
+                value={searchType}
+                onChange={(e) => setSearchType(e.target.value)}
+              >
+                <option value="t2b">Text-to-BED</option>
+                <option value="b2b">BED-to-BED</option>
+                <option value="t2bs">Text-to-BEDset</option>
+              </select>
+            </div>
+            <button className="btn btn-primary" type="button" onClick={handleSearch}>
+              <i className="bi bi-search"/>
+            </button>
+          </motion.div>
+          <motion.div
+            className="d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-2 mb-5"
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{duration: 0.6, delay: 0.3}}
+          >
+            <span>Or, explore an <a href={`/bed/dcc005e8761ad5599545cc538f6a2a4d`}>example BED file</a></span>
+            <span>or an{' '} <a href={`/bedset/${exampleBedSetMetadata?.id || 'not-found'}`}>example BEDset</a></span>
+          </motion.div>
+
+          <div className="my-4"></div>
+          <motion.div
+            className='d-flex flex-row gap-4 justify-content-center mb-5 pb-2 text-muted'
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            transition={{duration: 0.6, delay: 0.4}}
+          >
           <span>
             <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
           </span>
-          <span>•</span>
-          <span>
+            <span>•</span>
+            <span>
             <strong className='text-success'>{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</strong> BEDsets
           </span>
-          <span>•</span>
-          <span>
+            <span>•</span>
+            <span>
             <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
           </span>
-          <span>•</span>
-          <a
-            className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
-            href={`/metrics`}
-          >
-            <strong>more</strong> metrics
-            <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
-          </a>
+            <span>•</span>
+            <a
+              className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
+              href={`/metrics`}
+            >
+              <strong>more</strong> metrics
+              <i className='bi bi-reply-fill ms-1' style={{transform: 'scale(-1, 1)', display: 'inline-block'}}></i>
+            </a>
+          </motion.div>
         </div>
 
         <div className="my-2 w-100">
@@ -351,7 +266,7 @@ export const Home = () => {
             <Col xs={12} md={6} className="d-flex justify-content-center ps-md-4">
               <a href="/umap">
                 <Image src="/visualizer.svg" alt="UMAP visualization" height="400px"
-                       className="mb-0 mx-auto d-block img-fluid" />
+                       className="mb-0 mx-auto d-block img-fluid"/>
               </a>
             </Col>
           </Row>
@@ -360,15 +275,15 @@ export const Home = () => {
             <Col xs={12} md={6} className="order-2 order-md-1 d-flex justify-content-center">
               <a href="/analyze">
                 <Image src="/bed_analyzer.svg" alt="BED analyzer" height="300px"
-                       className="mb-0 mx-auto d-block img-fluid" />
+                       className="mb-0 mx-auto d-block img-fluid"/>
               </a>
             </Col>
             <Col xs={12} md={6} className="order-1 order-md-2 mb-4 mb-md-0 ps-md-4">
               <h3 className="fw-bold">Analyze your BED files</h3>
               <p className="text-balance">
-                Upload a BED file or provide a URL to quickly explore its contents. 
-                The BED Analyzer generates key statistics, summary tables, and visualizations, 
-                giving you an immediate overview of region counts, lengths, genome coverage, 
+                Upload a BED file or provide a URL to quickly explore its contents.
+                The BED Analyzer generates key statistics, summary tables, and visualizations,
+                giving you an immediate overview of region counts, lengths, genome coverage,
                 and other essential properties.
               </p>
             </Col>
