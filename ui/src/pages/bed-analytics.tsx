@@ -1,11 +1,16 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout.tsx';
-import { RegionSet } from '@databio/gtars';
+import { RegionSet, ChromosomeStatistics } from '@databio/gtars';
 import { handleBedFileInput } from '../utils.ts';
 import { bytesToSize } from '../utils.ts';
 import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
 import RegionDistributionPlot from '../components/bed-analytics-components/bed-plots.tsx';
+import { RefGenomeModal } from '../components/bed-splash-components/refgenome-modal.tsx';
+import { useAnalyzeGenome } from '../queries/useAnalyzeGenome.ts';
+import type { components } from '../../bedbase-types.d.ts';
+
+type BedGenomeStats = components['schemas']['RefGenValidReturnModel'];
 
 export const BEDAnalytics = () => {
   const [rs, setRs] = useState<RegionSet | null>(null);
@@ -17,6 +22,10 @@ export const BEDAnalytics = () => {
   const [triggerSearch, setTriggerSearch] = useState(0);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const [showGenomeModal, setShowGenomeModal] = useState(false);
+  const [genomeStats, setGenomeStats] = useState<BedGenomeStats | null>(null);
+  const analyzeGenomeMutation = useAnalyzeGenome();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -111,6 +120,30 @@ export const BEDAnalytics = () => {
       setTriggerSearch(triggerSearch + 1);
     }
   };
+
+  const handleAnalyzeGenome = () => {
+    if (!rs) return;
+
+    const chromStats = rs.chromosomeStatistics();
+    if (!chromStats) return;
+
+    const bedFileData: Record<string, number> = {};
+    chromStats.forEach((stats: ChromosomeStatistics, chrom: string) => {
+      bedFileData[chrom] = stats.end_nucleotide_position;
+    });
+
+    analyzeGenomeMutation.mutate(bedFileData, {
+      onSuccess: (data) => {
+        setGenomeStats(data);
+        setShowGenomeModal(true);
+      },
+      onError: (error) => {
+        console.error('Error analyzing genome:', error);
+      },
+    });
+  };
+
+  const classify = rs?.classify;
 
   return (
     <Layout footer title="BEDbase" fullHeight>
@@ -316,8 +349,36 @@ export const BEDAnalytics = () => {
                       <th scope="row">Total number of nucleotides</th>
                       <td>{rs.nucleotidesLength}</td>
                     </tr>
+                    {/*<tr>*/}
+                    {/*  <th scope="row">First row</th>*/}
+                    {/*  <td>{rs.first_region}</td>*/}
+                    {/*</tr>*/}
+                    <tr>
+                      <th scope="row">Data Format</th>
+                      <td>{classify?.data_format}</td>
+                    </tr>
+                    <tr>
+                      <th scope="row">BED compliance</th>
+                      <td>{classify?.bed_compliance}</td>
+                    </tr>
                     </tbody>
                   </table>
+                  <div className="mt-3">
+                    <button
+                      className="btn btn-outline-primary"
+                      onClick={handleAnalyzeGenome}
+                      disabled={analyzeGenomeMutation.isPending}
+                    >
+                      {analyzeGenomeMutation.isPending ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          Analyzing...
+                        </>
+                      ) : (
+                        'Analyze reference genome compatibility'
+                      )}
+                    </button>
+                  </div>
                 </div>
                 <div className="mt-5">
                   <h3>Interval chromosome length statistics</h3>
@@ -346,6 +407,16 @@ export const BEDAnalytics = () => {
           </div>
         </div>
       </div>
+      {genomeStats && (
+        <RefGenomeModal
+          show={showGenomeModal}
+          onHide={() => {
+            setShowGenomeModal(false);
+            setGenomeStats(null);
+          }}
+          genomeStats={genomeStats}
+        />
+      )}
     </Layout>
   );
 };
