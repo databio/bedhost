@@ -410,7 +410,10 @@ export const BEDAnalytics = () => {
       {genomeStats && (
         <RefGenomeModal
           show={showGenomeModal}
-          onHide={() => setShowGenomeModal(false)}
+          onHide={() => {
+            setShowGenomeModal(false);
+            setGenomeStats(null);
+          }}
           genomeStats={genomeStats}
         />
       )}

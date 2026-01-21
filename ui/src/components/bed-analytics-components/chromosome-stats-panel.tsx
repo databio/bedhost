@@ -31,7 +31,9 @@ const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
       }
       return row;
     })
-    .sort((a, b) => a.chromosome.localeCompare(b.chromosome));
+    .sort((a, b) =>
+      a.chromosome.localeCompare(b.chromosome, undefined, { numeric: true, sensitivity: 'base' })
+    );
 
   return (
     <div>
