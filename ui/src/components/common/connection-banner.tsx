@@ -12,7 +12,7 @@ export const ConnectionBanner = () => {
 
   return (
     <div className="alert alert-warning text-center mb-0 rounded-0 py-2" role="alert">
-      Sorry, BedBase is currently experiencing connection issues. Some features may be unavailable.
+      Sorry, BEDbase is currently experiencing connection issues. Some features may be unavailable.
     </div>
   );
 };
