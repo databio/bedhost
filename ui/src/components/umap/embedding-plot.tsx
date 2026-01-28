@@ -300,6 +300,16 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   }, [customCoordinates, isReady]);
 
   useEffect(() => {
+    // Clear filter selection when color grouping changes
+    onFilterSelectionChange?.(null);
+    filter.update({
+      source: legendFilterSource,
+      value: null,
+      predicate: null,
+    });
+  }, [colorGrouping]);
+
+  useEffect(() => {
     // set legend items
     if (isReady) {
       fetchLegendItems(coordinator).then((result) => {

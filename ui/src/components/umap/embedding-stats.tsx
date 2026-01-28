@@ -18,6 +18,11 @@ export const EmbeddingStats = (props: Props) => {
   const selection = useMemo(() => vg.Selection.single(), []);
   const selectionSource = useMemo(() => ({}), []);
 
+  const selectedPointsKey = useMemo(
+    () => selectedPoints.map(p => p.identifier).sort().join(','),
+    [selectedPoints]
+  );
+
   useEffect(() => {
     vg.coordinator(coordinator);
 
@@ -41,7 +46,7 @@ export const EmbeddingStats = (props: Props) => {
     if (barPlotRef.current) {
       barPlotRef.current.replaceChildren(barPlot);
     }
-  }, [coordinator, selection, containerWidth, colorGrouping]);
+  }, [coordinator, selection, containerWidth, colorGrouping, selectedPointsKey]);
 
   useEffect(() => {
     if (selectedPoints.length > 0) {

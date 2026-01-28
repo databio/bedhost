@@ -300,16 +300,14 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                   )}
                   <span
                     className={`badge rounded-2 text-bg-secondary border border-secondary fw-normal ${!!file ? '' : 'cursor-pointer'}`}
-                    title='Remove File'
+                    title={!!file ? undefined : 'Upload BED File'}
                     onClick={() => {
-                      if (!!file) {
-                        handleFileRemove;
-                      } else {
+                      if (!file) {
                         fileInputRef.current?.click();
                       }
                     }}
                   >
-                    {!!file ? <>{file.name}{!uploadedFile && <i className='ms-1 bi bi-x-lg cursor-pointer' />}</> : 'Upload BED'}
+                    {!!file ? <>{file.name}{!uploadedFile && <i className='ms-1 bi bi-x-circle cursor-pointer text-danger' title='Remove File' onClick={(e) => { e.stopPropagation(); handleFileRemove(); }} />}</> : 'Upload BED'}
                   </span>
                   <input
                     ref={fileInputRef}
