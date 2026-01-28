@@ -28,6 +28,7 @@ type Props = {
   onSelectedPointsChange?: (points: any[]) => void;
   embeddingHeight?: number;
   onEmbeddingHeightChange?: (embeddingHeight: number) => void;
+  highlightPoints?: any[];
 };
 
 export type EmbeddingPlotRef = {
@@ -35,6 +36,7 @@ export type EmbeddingPlotRef = {
   handleFileUpload: () => Promise<void>;
   handleFileRemove: () => Promise<void>;
   handleLegendClick: (item: any) => void;
+  queryByCategory: (category: string) => Promise<any[]>;
 }
 
 export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) => {
@@ -57,6 +59,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     onSelectedPointsChange,
     embeddingHeight,
     onEmbeddingHeightChange,
+    highlightPoints,
   } = props;
   const { coordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus } = useMosaicCoordinator();
 
@@ -73,6 +76,19 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
+
+  const visualSelection = useMemo(() => {
+    if (!highlightPoints || highlightPoints.length === 0) return selectedPoints || [];
+    if (!selectedPoints || selectedPoints.length === 0) return highlightPoints;
+    const seen = new Set((selectedPoints || []).map((p: any) => p.identifier));
+    const merged = [...(selectedPoints || [])];
+    for (const point of highlightPoints) {
+      if (!seen.has(point.identifier)) {
+        merged.push(point);
+      }
+    }
+    return merged;
+  }, [selectedPoints, highlightPoints]);
 
   const centerOnPoint = (point: any, scale: number = 1, tooltip: boolean = true) => {
     if (tooltip) {
@@ -169,6 +185,22 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
 
     const result = (await coordinator.query(query, { type: 'json' })) as any[];
     return result;
+  };
+
+  const queryByCategory = async (category: string) => {
+    const result: any = await coordinator.query(
+      `SELECT
+        x, y,
+        cell_line_category,
+        assay_category,
+        name as text,
+        id as identifier,
+        {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+       FROM data
+       WHERE ${colorGrouping} = '${category}'`,
+      { type: 'json' },
+    );
+    return result || [];
   };
 
   const handleLegendClick = (item: any) => {
@@ -387,6 +419,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     handleFileUpload,
     handleFileRemove,
     handleLegendClick,
+    queryByCategory,
   }), [filterSelection, colorGrouping, selectedPoints, initialPoint]);
 
   return (
@@ -430,7 +463,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
                     simpleTooltip: simpleTooltip
                   },
                 }}
-                selection={selectedPoints}
+                selection={visualSelection}
                 onSelection={handlePointSelection}
                 onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
                 theme={{

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useState, useRef, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
 import { EmbeddingPlot } from './embedding-plot.tsx';
 import type { EmbeddingPlotRef } from './embedding-plot.tsx';
@@ -7,6 +7,8 @@ import { EmbeddingTable } from './embedding-table.tsx';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { useBedUmap } from '../../queries/useBedUmap.ts';
 import { EmbeddingStats } from './embedding-stats.tsx';
+import { EmbeddingSelections } from './embedding-selections.tsx';
+import type { SelectionBucket } from './embedding-selections.tsx';
 
 export type EmbeddingState = 'compact' | 'expanding' | 'expanded' | 'collapsing' | 'hidden';
 export type EmbeddingContainerRef = {
@@ -68,6 +70,48 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
   const [addedToCart, setAddedToCart] = useState(false);
   const [file, setFile] = useState<File | null>(uploadedFile || null);
   const [customCoordinates, setCustomCoordinates] = useState<number[] | null>(null);
+  const [buckets, setBuckets] = useState<SelectionBucket[]>([]);
+
+  const bucketPoints = useMemo(() => {
+    const enabled = buckets.filter(b => b.enabled);
+    if (enabled.length === 0) return [];
+    const seen = new Set<string>();
+    const points: any[] = [];
+    for (const bucket of enabled) {
+      for (const p of bucket.points) {
+        if (p?.identifier && !seen.has(p.identifier)) {
+          seen.add(p.identifier);
+          points.push({ ...p, category: p[colorGrouping] });
+        }
+      }
+    }
+    return points;
+  }, [buckets, colorGrouping]);
+
+  const effectiveSelection = useMemo(() => {
+    if (bucketPoints.length === 0) return selectedPoints;
+    const seen = new Set(selectedPoints.map((p: any) => p.identifier));
+    const merged = [...selectedPoints];
+    for (const p of bucketPoints) {
+      if (!seen.has(p.identifier)) {
+        merged.push(p);
+      }
+    }
+    return merged;
+  }, [selectedPoints, bucketPoints]);
+
+  const handleSaveCategory = async (item: any) => {
+    const points = await embeddingPlotRef.current?.queryByCategory(item.category);
+    if (points && points.length > 0) {
+      const newBucket: SelectionBucket = {
+        id: crypto.randomUUID(),
+        name: item.name,
+        points,
+        enabled: true,
+      };
+      setBuckets(prev => [...prev, newBucket]);
+    }
+  };
 
   const handleExpand = () => {
     if (state !== 'compact' && state !== 'hidden') return;
@@ -326,7 +370,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                     className='badge rounded-2 text-bg-primary border border-primary cursor-pointer fw-normal'
                     title='Add Selection to Cart'
                     onClick={() => {
-                      const bedItems = selectedPoints
+                      const bedItems = effectiveSelection
                         .filter((point: any) => point.identifier !== 'custom_point')
                         .map((point: any) => ({
                           id: point.identifier,
@@ -345,7 +389,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                       }, 500);
                     }}
                   >
-                    {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
+                    {addedToCart ? 'Adding...' : `Add ${effectiveSelection.length} to Cart`}
                   </span>
                 </span>
               ) : (
@@ -371,12 +415,13 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                 onSelectedPointsChange={setSelectedPoints}
                 embeddingHeight={embeddingHeight}
                 onEmbeddingHeightChange={setEmbeddingHeight}
+                highlightPoints={bucketPoints}
               />
             </div>
             <div className='expandable-card__secondary'>
               <div className='card border overflow-hidden mt-2' style={{ height: `calc(100vh - ${embeddingHeight + 26}px)` }}>
                 <EmbeddingTable
-                  selectedPoints={selectedPoints}
+                  selectedPoints={effectiveSelection}
                   centerOnBedId={(bedId, scale) => embeddingPlotRef.current?.centerOnBedId(bedId, scale)}
                 />
               </div>
@@ -391,12 +436,20 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                   handleLegendClick={(item) => embeddingPlotRef.current?.handleLegendClick(item)}
                   colorGrouping={colorGrouping}
                   setColorGrouping={setColorGrouping}
+                  onSaveCategory={handleSaveCategory}
                 />
               )}
             </div>
             <div className='expandable-card__extra-content'>
+              <EmbeddingSelections
+                buckets={buckets}
+                onBucketsChange={setBuckets}
+                currentSelection={selectedPoints}
+              />
+            </div>
+            <div className='expandable-card__extra-content'>
               {embeddingPlotRef && (
-                <EmbeddingStats selectedPoints={selectedPoints} colorGrouping={colorGrouping} />
+                <EmbeddingStats selectedPoints={effectiveSelection} colorGrouping={colorGrouping} />
               )}
             </div>
           </div>
