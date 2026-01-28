@@ -42,9 +42,9 @@ export const Home = () => {
   return (
     <Layout footer title='BEDbase' fullHeight>
       <div className='d-flex flex-column w-100 align-items-center p-2'>
-        <div className='d-flex flex-column align-items-center justify-content-center text-center w-100' style={{ minHeight: '79vh' }}>
+        <div className='d-flex flex-column align-items-center justify-content-center text-center w-100' style={{ minHeight: '77vh' }}>
           <h1 className='fw-lighter text-primary text-7xl mb-4'>BEDbase</h1>
-          <div className='col-12 col-lg-10 text-muted'>
+          <div className='col-12 col-lg-9 text-muted'>
             <p className='text-center mb-0 text-muted'>
               The open access platform for aggregating, analyzing, and serving genomic region data.
             </p>
@@ -98,7 +98,7 @@ export const Home = () => {
             </p>
           </div>
 
-          <div className='col-12 col-lg-10 d-flex gap-2'>
+          <div className='col-12 col-lg-9 d-flex gap-2'>
             <div className='input-group bg-white'>
               {searchType === 'b2b' ? (
                 <input
@@ -180,24 +180,24 @@ export const Home = () => {
         <div className='col-12 col-lg-12'>
           <div className='row align-items-center py-5'>
             <div className='col-12 col-md-6 mb-4 mb-md-0'>
-              <h5 className='fw-bold'>Download and cache your data locally</h5>
-              <p className='text-balance pe-md-4'>
+              <h5 className='fw-medium'>Download and cache your data locally</h5>
+              <p className='text-balance text-muted pe-md-4'>
                 Use the BEDbase clients to access BED files and BED sets programmatically.
                 The clients handle downloading and caching, enabling efficient reuse of genomic region
                 data without manual API calls and redundancy.
                 Available in Python: {' '}
-                <a href='https://pypi.org/project/geniml/' className='bi bi-box-fill'>
-                  {' '}
+                <a href='https://pypi.org/project/geniml/' className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'>
+                  <i className='bi bi-box-fill me-1' />
                   geniml
                 </a>
                 , Rust: {' '}
-                <a href='https://crates.io/crates/gtars' className='bi bi-box-fill'>
-                  {' '}
+                <a href='https://crates.io/crates/gtars' className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'>
+                  <i className='bi bi-box-fill me-1' />
                   gtars
                 </a>
                 , and R: {' '}
-                <a href='https://github.com/waldronlab/bedbaser' className='bi bi-github'>
-                  {' '}
+                <a href='https://github.com/waldronlab/bedbaser' className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'>
+                  <i className='bi bi-github me-1' />
                   BEDbaser
                 </a>
                 .
@@ -260,8 +260,8 @@ export const Home = () => {
               </div>
             </div>
             <div className='col-12 col-md-6 order-1 order-md-2 mb-4 mb-md-0 ps-md-4'>
-              <h5 className='fw-bold'>Search for BED files</h5>
-              <p className='text-balance'>
+              <h5 className='fw-medium'>Search for BED files</h5>
+              <p className='text-balance text-muted'>
                 BEDbase indexes genomic intervals directly, enabling similarity-based search grounded in the actual
                 content of BED files rather than unstructured or inconsistent user-provided metadata.
                 Users can search by submitting a query string or by uploading a BED file, allowing precise
@@ -272,8 +272,8 @@ export const Home = () => {
 
           <div className='row align-items-center py-5'>
             <div className='col-12 col-md-6 mb-4 mb-md-0'>
-              <h5 className='fw-bold'>Visualize BED file similarity</h5>
-              <p className='text-balance pe-md-4'>
+              <h5 className='fw-medium'>Visualize BED file similarity</h5>
+              <p className='text-balance text-muted pe-md-4'>
                 Explore BED file similarity using an interactive UMAP of hg38-based embeddings.
                 Compare existing BEDbase data and upload your own BED file to see how
                 it relates to other genomic region sets in embedding space.
@@ -304,8 +304,8 @@ export const Home = () => {
               </div>
             </div>
             <div className='col-12 col-md-6 order-1 order-md-2 mb-4 mb-md-0 ps-md-4'>
-              <h5 className='fw-bold'>Analyze your BED files</h5>
-              <p className='text-balance'>
+              <h5 className='fw-medium'>Analyze your BED files</h5>
+              <p className='text-balance text-muted'>
                 Upload a BED file or provide a URL to quickly explore its contents.
                 The BED Analyzer generates key statistics, summary tables, and visualizations,
                 giving you an immediate overview of region counts, lengths, genome coverage,
