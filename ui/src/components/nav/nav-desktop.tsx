@@ -21,32 +21,25 @@ export const NavDesktop = () => {
           Analyze
         </span>
       </li>
-      <li className='nav-item dropdown'>
-        <button className='btn btn-link text-decoration-none dropdown-toggle px-1' data-bs-toggle='dropdown' aria-expanded='false'>
-          Resources
-        </button>
-        <ul className='dropdown-menu'>
-          <li className='dropdown-item link-primary fs-6'>
-            <a className='nav-link' href='https://github.com/databio/bedhost' target='_blank'>
-              <i className='bi bi-github fs-6 me-1' />
-              GitHub
-            </a>
-          </li>
-          <li className='dropdown-item link-primary fs-6'>
-            <a className='nav-link' href='https://docs.bedbase.org/bedbase/' target='_blank'>
-              <i className='bi bi-file-earmark-text fs-6 me-1' />
-              Docs
-            </a>
-          </li>
-          <li className='dropdown-item link-primary fs-6'>
-            <a className='nav-link' href={`${API_BASE}`} target='_blank'>
-              <i className='bi bi-hdd-stack fs-6 me-1' />
-              API
-            </a>
-          </li>
-        </ul>
+      <li className='link-primary mx-2 my-0 nav-item fs-6'>
+        <a className='nav-link' href='https://github.com/databio/bedhost' target='_blank'>
+          <i className='bi bi-github fs-6 me-1' />
+          GitHub
+        </a>
       </li>
-      
+      <li className='link-primary mx-2 my-0 nav-item fs-6'>
+        <a className='nav-link' href='https://docs.bedbase.org/bedbase/' target='_blank'>
+          <i className='bi bi-file-earmark-text fs-6 me-1' />
+          Docs
+        </a>
+      </li>
+      <li className='link-primary mx-2 my-0 nav-item fs-6'>
+        <a className='nav-link' href={`${API_BASE}`} target='_blank'>
+          <i className='bi bi-hdd-stack fs-6 me-1' />
+          API
+        </a>
+      </li>
+
       <li className='link-primary mx-2 my-0 nav-item fs-6'>
         <span className='nav-link position-relative' onClick={() => navigate('/cart')}>
           <i className='bi bi-cart-fill'></i>

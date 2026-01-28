@@ -1,22 +1,31 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/layout.tsx';
-import { RegionSet } from '@databio/gtars';
+import { RegionSet, ChromosomeStatistics } from '@databio/gtars';
 import { handleBedFileInput } from '../utils.ts';
 import { bytesToSize } from '../utils.ts';
 import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
 import RegionDistributionPlot from '../components/bed-analytics-components/bed-plots.tsx';
+import { RefGenomeModal } from '../components/bed-splash-components/refgenome-modal.tsx';
+import { useAnalyzeGenome } from '../queries/useAnalyzeGenome.ts';
+import type { components } from '../../bedbase-types.d.ts';
+
+type BedGenomeStats = components['schemas']['RefGenValidReturnModel'];
 
 export const BEDAnalytics = () => {
   const [rs, setRs] = useState<RegionSet | null>(null);
   const [loadingRS, setLoadingRS] = useState(false);
   const [totalProcessingTime, setTotalProcessingTime] = useState<number | null>(null);
-  const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [inputMode, setInputMode] = useState<'file' | 'url'>('file');
   const [bedUrl, setBedUrl] = useState<string>('');
   const [triggerSearch, setTriggerSearch] = useState(0);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  const [showGenomeModal, setShowGenomeModal] = useState(false);
+  const [genomeStats, setGenomeStats] = useState<BedGenomeStats | null>(null);
+  const analyzeGenomeMutation = useAnalyzeGenome();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -94,7 +103,7 @@ export const BEDAnalytics = () => {
   const unloadFile = () => {
     setRs(null);
     setTotalProcessingTime(null);
-    setSelectedFile(undefined);
+    setSelectedFile(null);
     setBedUrl('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -111,6 +120,30 @@ export const BEDAnalytics = () => {
       setTriggerSearch(triggerSearch + 1);
     }
   };
+
+  const handleAnalyzeGenome = () => {
+    if (!rs) return;
+
+    const chromStats = rs.chromosomeStatistics();
+    if (!chromStats) return;
+
+    const bedFileData: Record<string, number> = {};
+    chromStats.forEach((stats: ChromosomeStatistics, chrom: string) => {
+      bedFileData[chrom] = stats.end_nucleotide_position;
+    });
+
+    analyzeGenomeMutation.mutate(bedFileData, {
+      onSuccess: (data) => {
+        setGenomeStats(data);
+        setShowGenomeModal(true);
+      },
+      onError: (error) => {
+        console.error('Error analyzing genome:', error);
+      },
+    });
+  };
+
+  const classify = rs?.classify;
 
   return (
     <Layout footer title='BEDbase' fullHeight>
@@ -274,73 +307,91 @@ export const BEDAnalytics = () => {
           </div>
         </div>
 
+
         <div className='mt-4'>
           {loadingRS && (
-            <div className='d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill'>
+            <div
+              className='d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill'>
               <div className='spinner-border spinner-border-sm text-success'>
                 <span className='visually-hidden'>Loading...</span>
               </div>
-              <span className='small text-success fw-medium'>Loading and analyzing...</span>
+              <span className='small text-success fw-medium'>
+                Loading and analyzing...
+              </span>
             </div>
           )}
 
           {rs && !loadingRS && (
-            <div className='d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill'>
+            <div
+              className='d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill'>
               <div className='bg-primary rounded-circle p-1' />
-              <span className='small text-primary fw-medium'>Results ready</span>
+              <span className='small text-primary fw-medium'>
+                Results ready
+              </span>
             </div>
           )}
 
           <div className='mt-3'>
             {rs && (
               <div>
-                <h5 className='fw-bolder mt-3'>Metrics</h5>
-                <div className='p-3 overflow-hidden text-sm bg-white rounded border'>
-                  <table className='table table-sm table-borderless table-transparent mb-0'>
+                <div className='mt-3 p-0 border rounded bg-white overflow-hidden'>
+                  <table className='table table-sm text-sm mb-0'>
                     <tbody>
-                      <tr>
-                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0 pb-1'>
-                          Identifier
-                        </td>
-                        <td className='py-0'>{rs.identifier}</td>
-                      </tr>
-                      <tr>
-                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0 pb-1'>
-                          Mean region width
-                        </td>
-                        <td className='py-0'>{rs.meanRegionWidth}</td>
-                      </tr>
-                      <tr>
-                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0 pb-1'>
-                          Total number of regions
-                        </td>
-                        <td className='py-0'>{rs.numberOfRegions}</td>
-                      </tr>
-                      <tr>
-                        <td style={{ width: '240px' }} className='fst-italic text-muted p-0'>
-                          Total number of nucleotides
-                        </td>
-                        <td className='py-0'>{rs.nucleotidesLength}</td>
-                      </tr>
+                    <tr>
+                      <th scope='row'>Identifier</th>
+                      <td>{rs.identifier}</td>
+                    </tr>
+                    <tr>
+                      <th scope='row'>Mean region width</th>
+                      <td>{rs.meanRegionWidth}</td>
+                    </tr>
+                    <tr>
+                      <th scope='row'>Total number of regions</th>
+                      <td>{rs.numberOfRegions}</td>
+                    </tr>
+                    <tr>
+                      <th scope='row'>Total number of nucleotides</th>
+                      <td>{rs.nucleotidesLength}</td>
+                    </tr>
+                    <tr>
+                      <th scope='row'>Data Format</th>
+                      <td>{classify?.data_format}</td>
+                    </tr>
+                    <tr>
+                      <th scope='row'>BED compliance</th>
+                      <td>{classify?.bed_compliance}</td>
+                    </tr>
                     </tbody>
                   </table>
+                  <div className='p-3'>
+                    <button
+                      className='btn btn-sm btn-secondary'
+                      onClick={handleAnalyzeGenome}
+                      disabled={analyzeGenomeMutation.isPending}
+                    >
+                      {analyzeGenomeMutation.isPending ? (
+                        <>
+                          <span className='spinner-border spinner-border-sm me-2' role='status' aria-hidden='true'></span>
+                          Analyzing...
+                        </>
+                      ) : (
+                        'Analyze reference genome compatibility'
+                      )}
+                    </button>
+                  </div>
                 </div>
-                <div className='mt-4'>
-                  <h5 className='fw-bolder'>Interval Chromosome Length Statistics</h5>
-                  {rs && <ChromosomeStatsPanel rs={rs} selectedFile={selectedFile} />}
-                </div>
-                <div className='mt-4'>
+                <div className='mt-5'>
+                  <h3>Interval chromosome length statistics</h3>
                   {rs && (
-                    // <div className="mt-3 p-3 border rounded bg-light">
-                    //   <h5>Region Distribution Data</h5>
-                    //   <pre className="bg-white p-3 rounded border"
-                    //        style={{ fontSize: '0.875rem', maxHeight: '400px', overflow: 'auto' }}>
-                    //     {JSON.stringify(rs.calculateRegionDistribution(300), null, 2)}
-                    //   </pre>
-                    // </div>
+                    <ChromosomeStatsPanel rs={rs} selectedFile={selectedFile} />
+                  )}
+                </div>
+                <div className='mt-5'>
+                  {rs && (
                     <div className='mb-3'>
-                      <h5 className='fw-bolder'>Region Distribution Plot</h5>
-                      <RegionDistributionPlot data={rs.regionDistribution(300)} />
+                      <RegionDistributionPlot
+                        data={rs.regionDistribution(300)}
+                      />
                     </div>
                   )}
                 </div>
@@ -349,6 +400,16 @@ export const BEDAnalytics = () => {
           </div>
         </div>
       </div>
+      {genomeStats && (
+        <RefGenomeModal
+          show={showGenomeModal}
+          onHide={() => {
+            setShowGenomeModal(false);
+            setGenomeStats(null);
+          }}
+          genomeStats={genomeStats}
+        />
+      )}
     </Layout>
   );
 };
