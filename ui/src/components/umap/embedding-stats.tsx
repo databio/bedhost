@@ -18,10 +18,8 @@ export const EmbeddingStats = (props: Props) => {
   const selection = useMemo(() => vg.Selection.single(), []);
   const selectionSource = useMemo(() => ({}), []);
 
-  const selectedPointsKey = useMemo(
-    () => selectedPoints.map(p => p.identifier).sort().join(','),
-    [selectedPoints]
-  );
+  const selectedPointsRef = useRef(selectedPoints);
+  selectedPointsRef.current = selectedPoints;
 
   useEffect(() => {
     vg.coordinator(coordinator);
@@ -46,7 +44,20 @@ export const EmbeddingStats = (props: Props) => {
     if (barPlotRef.current) {
       barPlotRef.current.replaceChildren(barPlot);
     }
-  }, [coordinator, selection, containerWidth, colorGrouping, selectedPointsKey]);
+
+    // Re-apply current selection after plot connects to coordinator
+    requestAnimationFrame(() => {
+      const points = selectedPointsRef.current;
+      if (points.length > 0) {
+        const ids = points.map(p => `'${p.identifier}'`).join(', ');
+        selection.update({
+          source: selectionSource,
+          value: ids,
+          predicate: vg.sql`id IN (${ids})`
+        });
+      }
+    });
+  }, [coordinator, selection, containerWidth, colorGrouping]);
 
   useEffect(() => {
     if (selectedPoints.length > 0) {
