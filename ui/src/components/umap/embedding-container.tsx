@@ -81,7 +81,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
       for (const p of bucket.points) {
         if (p?.identifier && !seen.has(p.identifier)) {
           seen.add(p.identifier);
-          points.push({ ...p, category: p[colorGrouping] });
+          points.push({ ...p, category: p[colorGrouping] ?? p.category });
         }
       }
     }

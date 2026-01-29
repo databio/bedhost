@@ -112,6 +112,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     const bedData: any = await coordinator.query(
       `SELECT
         x, y,
+        cell_line_category, assay_category,
         ${colorGrouping} as category,
         name as text,
         id as identifier,
@@ -141,6 +142,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         const customPoint: any = await coordinator.query(
           `SELECT
             x, y,
+            cell_line_category, assay_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
@@ -260,6 +262,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
       result = (await coordinator.query(
         `SELECT
           x, y,
+          cell_line_category, assay_category,
           ${colorGrouping} as category,
           name as text,
           id as identifier,
@@ -296,6 +299,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         result = (await coordinator.query(
           `SELECT
             x, y,
+            cell_line_category, assay_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
@@ -378,6 +382,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         const currentBed: any = await coordinator.query(
           `SELECT
             x, y,
+            cell_line_category, assay_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
