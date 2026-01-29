@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export type SelectionBucket = {
   id: string;
   name: string;
@@ -13,6 +15,9 @@ type Props = {
 
 export const EmbeddingSelections = (props: Props) => {
   const { buckets, onBucketsChange, currentSelection } = props;
+
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
 
   const handleAdd = () => {
     const newBucket: SelectionBucket = {
@@ -34,8 +39,26 @@ export const EmbeddingSelections = (props: Props) => {
     onBucketsChange(buckets.filter((b) => b.id !== id));
   };
 
+  const handleStartEdit = (bucket: SelectionBucket) => {
+    setEditingId(bucket.id);
+    setEditValue(bucket.name);
+  };
+
+  const handleConfirmEdit = () => {
+    if (editingId && editValue.trim()) {
+      onBucketsChange(
+        buckets.map((b) => (b.id === editingId ? { ...b, name: editValue.trim() } : b))
+      );
+    }
+    setEditingId(null);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+  };
+
   return (
-    <div className="card mb-2 border overflow-hidden">
+    <div className="card mb-2 border">
       <div className="card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center">
         <span>Selections</span>
         <button
@@ -66,10 +89,35 @@ export const EmbeddingSelections = (props: Props) => {
                         checked={bucket.enabled}
                         onChange={() => handleToggle(bucket.id)}
                       />
-                      <span>
-                        {bucket.name}{' '}
-                        <span className="text-muted">({bucket.points.length})</span>
-                      </span>
+                      {editingId === bucket.id ? (
+                        <span className="d-flex align-items-center gap-1">
+                          <input
+                            className="form-control form-control-sm py-0 px-1"
+                            style={{ fontSize: 'inherit', lineHeight: 1, minHeight: 0, height: 22, width: 100, outline: 'none', boxShadow: '0 0 0 2.5px #00808088' }}
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onBlur={handleCancelEdit}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') handleConfirmEdit();
+                              if (e.key === 'Escape') handleCancelEdit();
+                            }}
+                            autoFocus
+                          />
+                          <i
+                            className="bi bi-check-lg text-success cursor-pointer"
+                            onMouseDown={(e) => { e.preventDefault(); handleConfirmEdit(); }}
+                          />
+                          <i
+                            className="bi bi-x-lg text-danger cursor-pointer"
+                            onMouseDown={(e) => { e.preventDefault(); handleCancelEdit(); }}
+                          />
+                        </span>
+                      ) : (
+                        <span className="cursor-pointer" onClick={() => handleStartEdit(bucket)}>
+                          {bucket.name}{' '}
+                          <span className="text-muted">({bucket.points.length})</span>
+                        </span>
+                      )}
                     </span>
                     <i
                       className="bi bi-trash3-fill text-danger cursor-pointer"
