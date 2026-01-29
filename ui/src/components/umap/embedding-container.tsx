@@ -342,17 +342,26 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                       <i className='bi bi-pin-map'></i>
                     </span>
                   )}
-                  <span
-                    className={`badge rounded-2 text-bg-secondary border border-secondary fw-normal ${!!file ? '' : 'cursor-pointer'}`}
-                    title={!!file ? undefined : 'Upload BED File'}
-                    onClick={() => {
-                      if (!file) {
-                        fileInputRef.current?.click();
-                      }
-                    }}
-                  >
-                    {!!file ? <>{file.name}{!uploadedFile && <i className='ms-1 bi bi-x-circle cursor-pointer text-danger' title='Remove File' onClick={(e) => { e.stopPropagation(); handleFileRemove(); }} />}</> : 'Upload BED'}
-                  </span>
+                  {!!file && !uploadedFile ? (
+                    <span className='d-inline-flex align-items-stretch rounded-2 overflow-hidden' style={{ lineHeight: 1 }}>
+                      <span className='badge text-bg-secondary border border-secondary fw-normal rounded-0 cursor-default'>{file.name}</span>
+                      <span className='badge text-bg-danger border border-danger rounded-0 cursor-pointer d-inline-flex align-items-center' title='Remove File' onClick={() => handleFileRemove()}>
+                        <i className='bi bi-x-lg' />
+                      </span>
+                    </span>
+                  ) : (
+                    <span
+                      className={`badge rounded-2 text-bg-secondary border border-secondary fw-normal ${!!file ? '' : 'cursor-pointer'}`}
+                      title={!!file ? undefined : 'Upload BED File'}
+                      onClick={() => {
+                        if (!file) {
+                          fileInputRef.current?.click();
+                        }
+                      }}
+                    >
+                      {!!file ? file.name : 'Upload BED'}
+                    </span>
+                  )}
                   <input
                     ref={fileInputRef}
                     className='d-none'
