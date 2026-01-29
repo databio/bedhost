@@ -39,11 +39,11 @@ export const EmbeddingSelections = (props: Props) => {
       <div className="card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center">
         <span>Selections</span>
         <button
-          className="btn btn-primary btn-xs"
+          className="btn btn-secondary btn-xs"
           disabled={currentSelection.length === 0}
           onClick={handleAdd}
         >
-          Add ({currentSelection.length})
+          Save ({currentSelection.length})
         </button>
       </div>
 
@@ -51,7 +51,7 @@ export const EmbeddingSelections = (props: Props) => {
         {buckets.length === 0 ? (
           <p className="text-muted text-center text-xs mb-0 py-2">No saved selections</p>
         ) : (
-          <table className="table table-hover text-xs mb-0">
+          <table className="table table-hover text-xs mb-2">
             <tbody>
               {buckets.map((bucket) => (
                 <tr key={bucket.id}>
