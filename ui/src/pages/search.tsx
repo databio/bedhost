@@ -27,7 +27,7 @@ export const SearchPage = () => {
   const [t2bOffset, setT2bOffset] = useState(0);
   const [t2bLimit, setT2bLimit] = useState(20);
 
-  const [b2bLayout, setB2bLayout] = useState('cards');
+  const [b2bLayout, setB2bLayout] = useState('table');
   const [b2bOffset, setB2bOffset] = useState(0);
   const [b2bLimit, setB2bLimit] = useState(20);
 

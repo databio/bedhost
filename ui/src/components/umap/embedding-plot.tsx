@@ -28,6 +28,7 @@ type Props = {
   onSelectedPointsChange?: (points: any[]) => void;
   embeddingHeight?: number;
   onEmbeddingHeightChange?: (embeddingHeight: number) => void;
+  highlightPoints?: any[];
 };
 
 export type EmbeddingPlotRef = {
@@ -35,6 +36,8 @@ export type EmbeddingPlotRef = {
   handleFileUpload: () => Promise<void>;
   handleFileRemove: () => Promise<void>;
   handleLegendClick: (item: any) => void;
+  queryByCategory: (category: string) => Promise<any[]>;
+  clearRangeSelection: () => void;
 }
 
 export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) => {
@@ -57,11 +60,13 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     onSelectedPointsChange,
     embeddingHeight,
     onEmbeddingHeightChange,
+    highlightPoints,
   } = props;
   const { coordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus } = useMosaicCoordinator();
 
   const containerRef = useRef<HTMLDivElement>(null);
   const baselinePointsRef = useRef<any[]>([]);
+  const skipNextSelectionRef = useRef(false);
 
   const [containerWidth, setContainerWidth] = useState(900);
   const [isReady, setIsReady] = useState(false);
@@ -70,9 +75,24 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   const [initialPoint, setInitialPoint] = useState<any>(null);
   const [dataVersion, setDataVersion] = useState(0);
   const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
+  const [selectionVersion, setSelectionVersion] = useState(0);
+  const [rangeSelectionValue, setRangeSelectionValue] = useState<any>(undefined);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
+
+  const visualSelection = useMemo(() => {
+    if (!highlightPoints || highlightPoints.length === 0) return selectedPoints || [];
+    if (!selectedPoints || selectedPoints.length === 0) return [...highlightPoints];
+    const seen = new Set((selectedPoints || []).map((p: any) => p.identifier));
+    const merged = [...(selectedPoints || [])];
+    for (const point of highlightPoints) {
+      if (!seen.has(point.identifier)) {
+        merged.push(point);
+      }
+    }
+    return merged;
+  }, [selectedPoints, highlightPoints, selectionVersion]);
 
   const centerOnPoint = (point: any, scale: number = 1, tooltip: boolean = true) => {
     if (tooltip) {
@@ -94,6 +114,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     const bedData: any = await coordinator.query(
       `SELECT
         x, y,
+        cell_line_category, assay_category,
         ${colorGrouping} as category,
         name as text,
         id as identifier,
@@ -123,6 +144,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         const customPoint: any = await coordinator.query(
           `SELECT
             x, y,
+            cell_line_category, assay_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
@@ -171,8 +193,30 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     return result;
   };
 
+  const queryByCategory = async (category: string) => {
+    const result: any = await coordinator.query(
+      `SELECT
+        x, y,
+        cell_line_category,
+        assay_category,
+        name as text,
+        id as identifier,
+        {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+       FROM data
+       WHERE ${colorGrouping} = '${category}'`,
+      { type: 'json' },
+    );
+    return result || [];
+  };
+
   const handleLegendClick = (item: any) => {
-    setPendingSelection(selectedPoints || []);
+    skipNextSelectionRef.current = true;
+    setTimeout(() => {
+      skipNextSelectionRef.current = false;
+      setSelectionVersion(v => v + 1);
+    }, 50);
+    setRangeSelectionValue(null);
+    onSelectedPointsChange?.([]);
     if (filterSelection?.category === item.category) {
       onFilterSelectionChange?.(null);
       filter.update({
@@ -191,6 +235,9 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   };
 
   const handlePointSelection = (dataPoints: any[] | null) => {
+    if (skipNextSelectionRef.current) {
+      return;
+    }
     if (!dataPoints || (dataPoints.length === 0 && stickyInitial)) {
       setTimeout(() => {
         if (baselinePointsRef.current.length > 0) {
@@ -219,6 +266,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
       result = (await coordinator.query(
         `SELECT
           x, y,
+          cell_line_category, assay_category,
           ${colorGrouping} as category,
           name as text,
           id as identifier,
@@ -255,6 +303,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         result = (await coordinator.query(
           `SELECT
             x, y,
+            cell_line_category, assay_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
@@ -300,6 +349,16 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   }, [customCoordinates, isReady]);
 
   useEffect(() => {
+    // Clear filter selection when color grouping changes
+    onFilterSelectionChange?.(null);
+    filter.update({
+      source: legendFilterSource,
+      value: null,
+      predicate: null,
+    });
+  }, [colorGrouping]);
+
+  useEffect(() => {
     // set legend items
     if (isReady) {
       fetchLegendItems(coordinator).then((result) => {
@@ -327,6 +386,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         const currentBed: any = await coordinator.query(
           `SELECT
             x, y,
+            cell_line_category, assay_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
@@ -377,6 +437,8 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     handleFileUpload,
     handleFileRemove,
     handleLegendClick,
+    queryByCategory,
+    clearRangeSelection: () => setRangeSelectionValue(null),
   }), [filterSelection, colorGrouping, selectedPoints, initialPoint]);
 
   return (
@@ -420,9 +482,10 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
                     simpleTooltip: simpleTooltip
                   },
                 }}
-                selection={selectedPoints}
+                selection={visualSelection}
                 onSelection={handlePointSelection}
-                onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
+                rangeSelectionValue={rangeSelectionValue}
+                onRangeSelection={(e) => { setRangeSelectionValue(e); handleRangeSelection(coordinator, e); }}
                 theme={{
                   statusBar: showStatus,
                 }}

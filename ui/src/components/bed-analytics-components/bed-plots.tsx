@@ -15,6 +15,29 @@ interface BedPlotsProps {
   data: DistributionSpecDataPoint[];
 }
 
+const STANDARD_CHR_ORDER = [
+  'chr1', 'chr2', 'chr3', 'chr4', 'chr5', 'chr6', 'chr7', 'chr8', 'chr9', 'chr10',
+  'chr11', 'chr12', 'chr13', 'chr14', 'chr15', 'chr16', 'chr17', 'chr18', 'chr19',
+  'chr20', 'chr21', 'chr22', 'chrX', 'chrY', 'chrM',
+];
+
+const getChromosomeSort = (data: DistributionSpecDataPoint[]): string[] => {
+  const uniqueChrs = [...new Set(data.map((d) => d.chr))];
+  const standardSet = new Set(STANDARD_CHR_ORDER);
+
+  // Separate known and unknown chromosomes
+  const knownChrs = uniqueChrs.filter((chr) => standardSet.has(chr));
+  const unknownChrs = uniqueChrs.filter((chr) => !standardSet.has(chr));
+
+  // Sort known chromosomes by standard order
+  knownChrs.sort((a, b) => STANDARD_CHR_ORDER.indexOf(a) - STANDARD_CHR_ORDER.indexOf(b));
+
+  // Sort unknown chromosomes alphabetically with numeric awareness
+  unknownChrs.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+
+  return [...knownChrs, ...unknownChrs];
+};
+
 const distributionSpec = (data: DistributionSpecDataPoint[]) => {
   const transformedData = data.map((item: DistributionSpecDataPoint) => ({
     chr: item.chr,
@@ -23,6 +46,7 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
     start: item.start,
     end: item.end,
   }));
+  const sortOrder = getChromosomeSort(data);
   return {
     $schema: 'https://vega-github.io/schema/vega-lite/v6.json',
     // title: {
@@ -62,33 +86,7 @@ const distributionSpec = (data: DistributionSpecDataPoint[]) => {
           labelBaseline: 'top',
           labelFontSize: 9,
         },
-        sort: [
-          'chr1',
-          'chr2',
-          'chr3',
-          'chr4',
-          'chr5',
-          'chr6',
-          'chr7',
-          'chr8',
-          'chr9',
-          'chr10',
-          'chr11',
-          'chr12',
-          'chr13',
-          'chr14',
-          'chr15',
-          'chr16',
-          'chr17',
-          'chr18',
-          'chr19',
-          'chr20',
-          'chr21',
-          'chr22',
-          'chrX',
-          'chrY',
-          'chrM',
-        ],
+        sort: sortOrder,
         type: 'ordinal',
         color: {
           value: COLOR,

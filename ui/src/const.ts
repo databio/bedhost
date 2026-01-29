@@ -4,7 +4,7 @@ const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const EXAMPLE_URL = `${API_BASE}/bed/example`;
 
-export const UMAP_URL = 'https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap.json';
+export const UMAP_URL = 'https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap_3_13.json';
 
 export const BEDBASE_PYTHON_CODE_MD = `
 \`\`\`python

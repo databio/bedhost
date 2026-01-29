@@ -6,10 +6,11 @@ type Props = {
   handleLegendClick: (item: any) => void;
   colorGrouping: string;
   setColorGrouping: (colorGrouping: string) => void;
+  onSaveCategory?: (item: any) => void;
 };
 
 export const EmbeddingLegend = (props: Props) => {
-  const { legendItems, filterSelection, handleLegendClick, colorGrouping, setColorGrouping } = props;
+  const { legendItems, filterSelection, handleLegendClick, colorGrouping, setColorGrouping, onSaveCategory } = props;
 
   return (
     <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(100vh - 93.6px)` }}>
@@ -60,7 +61,10 @@ export const EmbeddingLegend = (props: Props) => {
                     {item.name}
                   </span>
                   {filterSelection?.category === item.category && (
-                    <button className='btn btn-danger btn-xs'>Clear</button>
+                    <span className='d-flex gap-1'>
+                      <button className='btn btn-danger btn-xs'>Clear</button>
+                      <button className='btn btn-secondary btn-xs' onClick={(e) => { e.stopPropagation(); onSaveCategory?.(item); }}>Save Selection</button>
+                    </span>
                   )}
                 </td>
               </tr>

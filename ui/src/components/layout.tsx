@@ -3,6 +3,7 @@ import { useServiceInfo } from '../queries/useServiceInfo';
 import { StatusCircle } from './badges/status-circles';
 import { SEO } from './seo';
 import { Nav } from './nav/nav';
+import { ConnectionBanner } from './common/connection-banner';
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -78,6 +79,7 @@ export const Layout = (props: LayoutProps) => {
           <header>
             <Nav />
           </header>
+          <ConnectionBanner />
           <main className='flex-fill container-fluid' style={{ minHeight: 0 }}>
             {children}
           </main>
@@ -95,6 +97,7 @@ export const Layout = (props: LayoutProps) => {
         <header>
           <Nav />
         </header>
+        <ConnectionBanner />
         <main
           className={`${fullHeight ? fluidContainer + ' min-h-screen flex-grow-1' : fluidContainer + ' flex-grow-1'}`}
         >

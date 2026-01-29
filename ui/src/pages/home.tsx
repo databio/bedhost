@@ -10,6 +10,8 @@ import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
 import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
 import type { EmbeddingContainerRef } from '../components/umap/embedding-container.tsx';
+import { FileSearchGraphic } from '../components/graphics/file-search-graphic.tsx';
+import { BedAnalyzerGraphic } from '../components/graphics/bed-analyzer-graphic.tsx';
 
 
 export const Home = () => {
@@ -41,13 +43,13 @@ export const Home = () => {
   return (
     <Layout footer title='BEDbase' fullHeight>
       <div className='d-flex flex-column w-100 align-items-center p-2'>
-        <div className='mt-4 mb-5'></div>
-        <h1 className='fw-lighter text-primary text-6xl mb-3'>BEDbase</h1>
+        <div className='d-flex flex-column align-items-center justify-content-center text-center w-100' style={{ minHeight: '67vh' }}>
+        <h1 className='fw-lighter text-primary text-7xl mb-4'>BEDbase</h1>
         <div className='col-12 col-lg-10 text-muted'>
           <p className='text-center mb-0'>
             The open access platform for aggregating, analyzing, and serving genomic region data.
           </p>
-          <p className='text-center mb-5'>
+          <p className='text-center mb-5 pb-2'>
             Explore thousands of BED files (including{' '}
             <a
               href='https://genome.ucsc.edu/FAQ/FAQformat.html#format1'
@@ -141,7 +143,7 @@ export const Home = () => {
           </button>
         </div>
 
-        <div className='text-sm text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
+        <div className='text-muted d-flex flex-column flex-md-row align-items-center justify-content-center gap-1 mt-1 mb-5'>
           <span>
             Or, visit a random{' '}
             <a href={`/bed/${exampleBedId}`} className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'>BED file</a>
@@ -151,9 +153,7 @@ export const Home = () => {
           </span>
         </div>
         
-        <div className='mt-4 pt-3'></div>
-
-        <div className='d-flex flex-row gap-4 justify-content-center mb-5 text-muted'>
+        <div className='d-flex flex-row gap-4 justify-content-center mb-4 mt-5 text-muted'>
           <span>
             <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
           </span>
@@ -174,151 +174,13 @@ export const Home = () => {
             <i className='bi bi-reply-fill ms-1' style={{ transform: 'scale(-1, 1)', display: 'inline-block' }}></i>
           </a>
         </div>
+        </div>
 
         <div className='col-12 col-lg-10 mb-5'>
-          <div className='row g-2'>
-
-            {/* <div className='col-md-12'>
-              <div className='card h-100 border overflow-hidden'>
-                <div className='d-flex flex-column w-100'>
-                  <div className='border-bottom position-relative' style={{ height: '220px' }}>
-                    <div className='d-flex flex-row align-items-center text-sm p-1'>
-                      <ul className='nav nav-pills flex-row'>
-                        {CODE_SNIPPETS.map((snippet) => (
-                          <li className='nav-item' key={snippet.language}>
-                            <button
-                              className={`nav-link py-0 px-2 m-1 ${activeApiTab === snippet.language ? 'active' : ''}`}
-                              onClick={() => setActiveApiTab(snippet.language)}
-                              style={{ fontSize: '0.7rem' }}
-                            >
-                              {snippet.language}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className='w-100 h-100 overflow-auto' style={{ maxHeight: '220px' }}>
-                      {CODE_SNIPPETS.map((snippet) => (
-                        <div key={snippet.language} className={activeApiTab === snippet.language ? '' : 'd-none'}>
-                          <Markdown className='h-100' rehypePlugins={[rehypeHighlight]}>
-                            {snippet.code}
-                          </Markdown>
-                        </div>
-                      ))}
-                    </div>
-                    <div className='position-absolute top-0 end-0 me-2 mt-1'>
-                      <button
-                        onClick={() => {
-                          const activeSnippet = CODE_SNIPPETS.find((s) => s.language === activeApiTab);
-                          if (activeSnippet) {
-                            navigator.clipboard.writeText(activeSnippet.raw);
-                            setCopiedAPI(true);
-                            setTimeout(() => setCopiedAPI(false), 2000);
-                          }
-                        }}
-                        className='btn btn-outline-primary py-0 px-2 m-1'
-                        style={{ fontSize: '0.7rem' }}
-                      >
-                        {copiedAPI ? 'Copied!' : 'Copy'}
-                      </button>
-                    </div>
-                  </div>
-                  <div className='card-body'>
-                    <div className='d-flex align-items-center mb-2'>
-                      <i className='bi bi-hdd-stack-fill fs-5 text-primary me-2'></i>
-                      <h6 className='mb-0 fw-semibold'>Web Server and API</h6>
-                    </div>
-                    <p className='text-muted mb-3'>
-                      The BEDbase web server and API provide a user-friendly interface for exploring and working with genomic region data. 
-                      The web server allows users to search for BED files and BED sets, view detailed information about specific files, and create collections of files.
-                    </p>
-                    <a href='/api' className='btn btn-outline-primary btn-sm'>
-                      API Docs
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div> */}
-            
-            <div className='col-md-12'>
-              <div className='card h-100 border w-100'>
-                <div className='d-flex flex-column w-100'>
-                  <div className='border-bottom position-relative embedding-card rounded-top' style={{ height: '220px' }}>
-                    <EmbeddingContainer
-                      ref={embeddingContainerRef} 
-                      bedIds={undefined} 
-                      height={219} 
-                      preselectPoint={false} 
-                      centerInitial={false} 
-                      tooltipInitial={false} 
-                      simpleTooltip={false} 
-                      blockCompact={true} 
-                      showBorder={false} 
-                    />
-                  </div>
-                  <div className='card-body'>
-                    <div className='d-flex align-items-center mb-2'>
-                      <i className='bi bi-map fs-5 text-primary me-2'></i>
-                      <h6 className='mb-0 fw-semibold'>Region Embeddings</h6>
-                    </div>
-                    <p className='text-muted text-sm mb-3'>
-                      We provide a UMAP of the BEDbase genomic region embedding space, where embeddings are calculated from the genomic regions contained in each hg38 BED file.
-                      Distances between BED files represent inherent similarities between their contained genomic regions, providing a visual means to compare the contents of all hg38 BED files on BEDbase at once.
-                    </p>
-                    <button className='btn btn-outline-primary btn-sm align-self-start' onClick={() => embeddingContainerRef.current?.handleShow()}>
-                      Region Embeddings
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className='col-lg-6'>
-              <div className='card border overflow-hidden flex-fill' style={{ minHeight: '200px' }}>
-                <div className='card-body d-flex flex-column h-100'>
-                  <div className='d-flex align-items-center mb-2'>
-                    <i className='bi bi-body-text fs-5 text-primary me-2'></i>
-                    <h6 className='mb-0 fw-semibold'>Vector Search</h6>
-                  </div>
-                  <p className='text-muted text-sm flex-grow-1'>
-                    BEDbase offers a robust vector search of BED files or BEDsets using their contained genomic regions instead of unstructured metadata, 
-                    which can often be ambiguous and unreliable.
-                    Search for BED files by providing a query string or a BED file.
-                  </p>
-                  <div className='d-flex gap-2'>
-                    <a href='/search' className='btn btn-outline-primary btn-sm align-self-start'>
-                      Search
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className='col-lg-6'>
-              <div className='card border overflow-hidden flex-fill' style={{ minHeight: '200px' }}>
-                <div className='card-body d-flex flex-column h-100'>
-                  <div className='d-flex align-items-center mb-2'>
-                    <i className='bi bi-graph-up fs-5 text-primary me-2'></i>
-                    <h6 className='mb-0 fw-semibold'>BED Analyzer</h6>
-                  </div>
-                  <p className='text-muted text-sm flex-grow-1'>
-                    BEDbase integrates a web implementation of <a
-                      href='https://github.com/databio/gtars'
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'
-                    >gtars</a> to allow for interactive analyses your BED files. 
-                    Upload a file or provide a URL to a BED file to obtain region counts, lengths, genome coverage, and other useful properties instantly.
-                  </p>
-                  <a href='/analyze' className='btn btn-outline-primary btn-sm align-self-start'>
-                    BED Analyzer
-                  </a>
-                </div>
-              </div>
-            </div>
+          <div className='row g-3'>
 
             <div className='col-md-12'>
-              <div className='card h-100 border overflow-hidden'>
+              <div className='card h-100 border overflow-hidden rounded-3'>
                 <div className='d-flex flex-column'>
                   <div className='border-bottom position-relative' style={{ height: '210px' }}>
                     <div className='d-flex flex-row align-items-center text-sm p-1'>
@@ -393,7 +255,92 @@ export const Home = () => {
                       >
                         <i className='bi bi-github me-1'></i> R
                       </a>
+                      <a
+                        href='https://crates.io/crates/gtars'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='btn btn-outline-primary btn-sm'
+                      >
+                        <i className='bi bi-box-fill me-1'></i> Rust
+                      </a>
                     </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className='col-lg-6'>
+              <div className='card border overflow-hidden flex-fill rounded-3'>
+                <div className='d-flex flex-column w-100'>
+                  <div className='border-bottom position-relative cursor-pointer' style={{ height: '220px' }} onClick={() => navigate('/search')}>
+                    <FileSearchGraphic />
+                  </div>
+                  <div className='card-body'>
+                    <div className='d-flex align-items-center mb-2'>
+                      <i className='bi bi-body-text fs-5 text-primary me-2'></i>
+                      <h6 className='mb-0 fw-semibold'>Vector Search</h6>
+                    </div>
+                    <p className='text-muted text-sm mb-1'>
+                      BEDbase offers a robust vector search of BED files or BEDsets using their contained genomic regions instead of unstructured metadata,
+                      which can often be ambiguous and unreliable.
+                      Search for BED files by providing a query string or a BED file.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className='col-lg-6'>
+              <div className='card border overflow-hidden flex-fill rounded-3'>
+                <div className='d-flex flex-column w-100'>
+                  <div className='border-bottom position-relative cursor-pointer' style={{ height: '220px' }} onClick={() => navigate('/analyze')}>
+                    <BedAnalyzerGraphic />
+                  </div>
+                  <div className='card-body'>
+                    <div className='d-flex align-items-center mb-2'>
+                      <i className='bi bi-graph-up fs-5 text-primary me-2'></i>
+                      <h6 className='mb-0 fw-semibold'>BED Analyzer</h6>
+                    </div>
+                    <p className='text-muted text-sm mb-1'>
+                      BEDbase integrates a web implementation of <a
+                        href='https://github.com/databio/gtars'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'
+                      >gtars</a> to allow for interactive analyses your BED files.
+                      Upload a file or provide a URL to a BED file to obtain region counts, lengths, genome coverage, and other useful properties instantly.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className='col-md-12'>
+              <div className='card h-100 border w-100 rounded-3'>
+                <div className='d-flex flex-column w-100'>
+                  <div className='border-bottom position-relative embedding-card rounded-top' style={{ height: '220px' }}>
+                    <EmbeddingContainer
+                      ref={embeddingContainerRef}
+                      bedIds={undefined}
+                      height={219}
+                      preselectPoint={false}
+                      centerInitial={false}
+                      tooltipInitial={false}
+                      simpleTooltip={false}
+                      blockCompact={true}
+                      showBorder={false}
+                      rounded={'rounded-3'}
+                    />
+                  </div>
+                  <div className='card-body'>
+                    <div className='d-flex align-items-center mb-2'>
+                      <i className='bi bi-map fs-5 text-primary me-2'></i>
+                      <h6 className='mb-0 fw-semibold'>Region Embeddings</h6>
+                    </div>
+                    <p className='text-muted text-sm mb-1'>
+                      We provide a UMAP of the BEDbase genomic region embedding space, where embeddings are calculated from the genomic regions contained in each hg38 BED file.
+                      Distances between BED files represent inherent similarities between their contained genomic regions, providing a visual means to compare the contents of all hg38 BED files on BEDbase at once.
+                    </p>
                   </div>
                 </div>
               </div>

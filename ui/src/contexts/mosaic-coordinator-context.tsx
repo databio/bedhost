@@ -78,7 +78,6 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
       vg.sql`INSERT INTO data VALUES (
         ${x},
         ${y},
-        0,
         'custom_point',
         'Your uploaded file',
         '${description}',

@@ -4,7 +4,7 @@ import { components } from '../../../bedbase-types';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { DownloadBedSetModal } from '../modals/download-bedset-modal';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { formatDateTime } from '../../utils.ts';
+import { formatDateShort } from '../../utils.ts';
 
 type Bed = components['schemas']['BedSetBedFiles']['results'][number];
 
@@ -26,7 +26,7 @@ export const BedsetSplashHeader = (props: Props) => {
   const [copiedId, setCopiedId] = useState(false);
 
   return (
-    <div className='border-bottom py-2'>
+    <div className='py-2'>
       <div className='d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-0'>
         <div className='d-flex align-items-center overflow-x-auto w-100 mb-3'>
           <h5 className='fw-bolder d-flex align-items-center flex-nowrap mb-0'>
@@ -125,46 +125,30 @@ export const BedsetSplashHeader = (props: Props) => {
           </Dropdown>
         </div>
       </div>
-      <div className='text-body-secondary fst-italic'>
+      <div className='d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-1 overflow-x-auto'>
+        <div className='d-flex flex-column flex-md-row gap-1'>
+          <div className='badge bg-primary'>
+            <i className='bi bi-hash me-1' />
+            {metadata.md5sum}
+          </div>
+          {metadata.bed_ids && (
+            <div className='badge bg-primary'>
+              <i className='bi bi-file-earmark-text me-1' />
+              {metadata.bed_ids?.length} BED files
+            </div>
+          )}
+          <div className='badge text-muted fw-medium' style={{ boxShadow: 'inset 0 0 0 1px rgba(33, 37, 41, 0.75)'}}>
+            {'Created: ' + formatDateShort(metadata?.submission_date || '')}
+          </div>
+          <div className='badge text-muted fw-medium' style={{ boxShadow: 'inset 0 0 0 1px rgba(33, 37, 41, 0.75)'}}>
+            {'Updated: ' + formatDateShort(metadata?.last_update_date || '')}
+          </div>
+        </div>
+      </div>
+      <div className='text-muted fst-italic mt-2'>
         <p className='mb-0 text-sm'>{metadata?.description || 'No description available'}</p>
         <p className='mb-0 text-sm'>Author: {metadata?.author || 'None'}</p>
         <p className='text-sm'>Source: {metadata?.source || 'None'}</p>
-      </div>
-      <div className='d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto'>
-        <div className='d-flex flex-column flex-md-row gap-1 text-lg'>
-          <p className='mb-0'>
-            <div className='badge bg-primary'>
-              <i className='bi bi-hash me-1' />
-              {metadata.md5sum}
-            </div>
-          </p>
-          {metadata.bed_ids && (
-            <p className='mb-0'>
-              <div className='badge bg-primary'>
-                <i className='bi bi-file-earmark-text me-1' />
-                {metadata.bed_ids?.length} BED files
-              </div>
-            </p>
-          )}
-        </div>
-
-        <div className='d-flex flex-column flex-md-row justify-content-xl-between align-items-start align-items-xl-end text-sm'>
-          <div className='d-flex flex-row text-muted'>
-            <i className='bi bi-calendar4-event me-1' />
-            <p className='mb-0'>
-              <span>Created:</span>{' '}
-              {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
-            </p>
-          </div>
-
-          <div className='d-flex flex-row text-muted ms-lg-4'>
-            <i className='bi bi-calendar4-event me-1' />
-            <p className='mb-0'>
-              <span>Updated:</span>{' '}
-              {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
-            </p>
-          </div>
-        </div>
       </div>
       <DownloadBedSetModal id={metadata.id} show={showDownloadModal} setShow={setShowDownloadModal} />
     </div>

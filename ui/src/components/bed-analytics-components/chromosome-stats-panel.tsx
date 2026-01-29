@@ -4,7 +4,7 @@ import { RegionCountsPlot } from './region-counts-plot';
 
 interface Props {
   rs: RegionSet;
-  selectedFile: File | undefined;
+  selectedFile: File | null;
 }
 
 const ChromosomeStatsPanel = ({ rs, selectedFile }: Props) => {
@@ -27,26 +27,30 @@ const ChromosomeStatsPanel = ({ rs, selectedFile }: Props) => {
     return () => window.removeEventListener('resize', updateWidth);
   }, []);
 
-  const statsEntries = Array.from(calc.entries()).map((entry) => {
-    const [chrom, stats] = entry as [unknown, ChromosomeStatistics];
-    const cs = stats as ChromosomeStatistics;
-    const row = {
-      chromosome: String(chrom),
-      count: cs.number_of_regions,
-      minimum: cs.minimum_region_length,
-      maximum: cs.maximum_region_length,
-      mean: cs.mean_region_length.toFixed(2),
-      median: cs.median_region_length.toFixed(2),
-      start: cs.start_nucleotide_position,
-      end: cs.end_nucleotide_position,
-    };
-    try {
-      (cs as unknown as { free?: () => void }).free?.();
-    } catch (e) {
-      /* ignore */
-    }
-    return row;
-  });
+  const statsEntries = Array.from(calc.entries())
+    .map((entry) => {
+      const [chrom, stats] = entry as [unknown, ChromosomeStatistics];
+      const cs = stats as ChromosomeStatistics;
+      const row = {
+        chromosome: String(chrom),
+        count: cs.number_of_regions,
+        minimum: cs.minimum_region_length,
+        maximum: cs.maximum_region_length,
+        mean: cs.mean_region_length.toFixed(2),
+        median: cs.median_region_length.toFixed(2),
+        start: cs.start_nucleotide_position,
+        end: cs.end_nucleotide_position,
+      };
+      try {
+        (cs as unknown as { free?: () => void }).free?.();
+      } catch (e) {
+        /* ignore */
+      }
+      return row;
+    })
+    .sort((a, b) =>
+      a.chromosome.localeCompare(b.chromosome, undefined, { numeric: true, sensitivity: 'base' })
+    );
 
   return (
     <div>
@@ -106,7 +110,7 @@ const ChromosomeStatsPanel = ({ rs, selectedFile }: Props) => {
         </div>
         <div className='p-0 border rounded bg-white overflow-hidden'>
           <div className='table-responsive overflow-auto' style={{ maxHeight: '500px' }}>
-            <table className='table table-sm text-sm mb-2'>
+            <table className='table table-sm text-sm mb-0'>
               <thead>
                 <tr>
                   <th className='text-nowrap'>Chromosome name</th>
