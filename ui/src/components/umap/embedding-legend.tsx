@@ -62,8 +62,8 @@ export const EmbeddingLegend = (props: Props) => {
                   </span>
                   {filterSelection?.category === item.category && (
                     <span className='d-flex gap-1'>
-                      <button className='btn btn-secondary btn-xs' onClick={(e) => { e.stopPropagation(); onSaveCategory?.(item); }}>Save Selection</button>
                       <button className='btn btn-danger btn-xs'>Clear</button>
+                      <button className='btn btn-secondary btn-xs' onClick={(e) => { e.stopPropagation(); onSaveCategory?.(item); }}>Save Selection</button>
                     </span>
                   )}
                 </td>

@@ -65,6 +65,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
 
   const containerRef = useRef<HTMLDivElement>(null);
   const baselinePointsRef = useRef<any[]>([]);
+  const skipNextSelectionRef = useRef(false);
 
   const [containerWidth, setContainerWidth] = useState(900);
   const [isReady, setIsReady] = useState(false);
@@ -73,13 +74,14 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   const [initialPoint, setInitialPoint] = useState<any>(null);
   const [dataVersion, setDataVersion] = useState(0);
   const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
+  const [selectionVersion, setSelectionVersion] = useState(0);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
 
   const visualSelection = useMemo(() => {
     if (!highlightPoints || highlightPoints.length === 0) return selectedPoints || [];
-    if (!selectedPoints || selectedPoints.length === 0) return highlightPoints;
+    if (!selectedPoints || selectedPoints.length === 0) return [...highlightPoints];
     const seen = new Set((selectedPoints || []).map((p: any) => p.identifier));
     const merged = [...(selectedPoints || [])];
     for (const point of highlightPoints) {
@@ -88,7 +90,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
       }
     }
     return merged;
-  }, [selectedPoints, highlightPoints]);
+  }, [selectedPoints, highlightPoints, selectionVersion]);
 
   const centerOnPoint = (point: any, scale: number = 1, tooltip: boolean = true) => {
     if (tooltip) {
@@ -204,7 +206,11 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   };
 
   const handleLegendClick = (item: any) => {
-    setPendingSelection(selectedPoints || []);
+    skipNextSelectionRef.current = true;
+    setTimeout(() => {
+      skipNextSelectionRef.current = false;
+      setSelectionVersion(v => v + 1);
+    }, 50);
     if (filterSelection?.category === item.category) {
       onFilterSelectionChange?.(null);
       filter.update({
@@ -223,6 +229,9 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   };
 
   const handlePointSelection = (dataPoints: any[] | null) => {
+    if (skipNextSelectionRef.current) {
+      return;
+    }
     if (!dataPoints || (dataPoints.length === 0 && stickyInitial)) {
       setTimeout(() => {
         if (baselinePointsRef.current.length > 0) {

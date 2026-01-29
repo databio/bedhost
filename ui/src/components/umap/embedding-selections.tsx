@@ -43,7 +43,7 @@ export const EmbeddingSelections = (props: Props) => {
           disabled={currentSelection.length === 0}
           onClick={handleAdd}
         >
-          Save ({currentSelection.length})
+          Save Selection ({currentSelection.length})
         </button>
       </div>
 
