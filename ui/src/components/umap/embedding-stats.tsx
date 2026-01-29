@@ -5,10 +5,11 @@ type Props = {
   selectedPoints: any[];
   colorGrouping: string;
   legendItems: any[];
+  filterSelection: any;
 };
 
 export const EmbeddingStats = (props: Props) => {
-  const { selectedPoints, colorGrouping, legendItems } = props;
+  const { selectedPoints, colorGrouping, legendItems, filterSelection } = props;
   const { coordinator } = useMosaicCoordinator();
 
   const [totalCounts, setTotalCounts] = useState<Map<string, number>>(new Map());
@@ -28,26 +29,33 @@ export const EmbeddingStats = (props: Props) => {
   const hasSelection = selectedPoints.length > 0;
 
   const rows = useMemo(() => {
-    if (!hasSelection) {
+    if (hasSelection) {
+      const counts = new Map<string, number>();
+      for (const p of selectedPoints) {
+        const cat = p[colorGrouping] ?? p.category;
+        if (cat != null) {
+          counts.set(cat, (counts.get(cat) || 0) + 1);
+        }
+      }
       return legendItems.map((item) => ({
         name: item.name,
         category: item.category,
-        count: totalCounts.get(item.category) ?? 0,
+        count: counts.get(item.category) || 0,
       }));
     }
-    const counts = new Map<string, number>();
-    for (const p of selectedPoints) {
-      const cat = p[colorGrouping] ?? p.category;
-      if (cat != null) {
-        counts.set(cat, (counts.get(cat) || 0) + 1);
-      }
+    if (filterSelection) {
+      return legendItems.map((item) => ({
+        name: item.name,
+        category: item.category,
+        count: item.category === filterSelection.category ? (totalCounts.get(item.category) ?? 0) : 0,
+      }));
     }
     return legendItems.map((item) => ({
       name: item.name,
       category: item.category,
-      count: counts.get(item.category) || 0,
+      count: totalCounts.get(item.category) ?? 0,
     }));
-  }, [selectedPoints, colorGrouping, legendItems, hasSelection, totalCounts]);
+  }, [selectedPoints, colorGrouping, legendItems, hasSelection, totalCounts, filterSelection]);
 
   const maxCount = useMemo(() => Math.max(1, ...rows.map((r) => r.count)), [rows]);
 

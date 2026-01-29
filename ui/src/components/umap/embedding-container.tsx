@@ -466,7 +466,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
             </div>
             <div className='expandable-card__extra-content'>
               {embeddingPlotRef && (
-                <EmbeddingStats selectedPoints={effectiveSelection} colorGrouping={colorGrouping} legendItems={legendItems} />
+                <EmbeddingStats selectedPoints={effectiveSelection} colorGrouping={colorGrouping} legendItems={legendItems} filterSelection={filterSelection} />
               )}
             </div>
           </div>

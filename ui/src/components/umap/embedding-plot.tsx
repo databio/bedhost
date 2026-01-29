@@ -215,6 +215,8 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
       skipNextSelectionRef.current = false;
       setSelectionVersion(v => v + 1);
     }, 50);
+    setRangeSelectionValue(null);
+    onSelectedPointsChange?.([]);
     if (filterSelection?.category === item.category) {
       onFilterSelectionChange?.(null);
       filter.update({
