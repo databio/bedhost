@@ -14,7 +14,7 @@ import { FileSearchGraphic } from '../components/graphics/file-search-graphic.ts
 import { BedAnalyzerGraphic } from '../components/graphics/bed-analyzer-graphic.tsx';
 
 
-export const Home = () => {
+export const HomeAlt2 = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   // const [copiedAPI, setCopiedAPI] = useState(false);
@@ -179,68 +179,6 @@ export const Home = () => {
 
         <div className='col-12 col-lg-10 mb-5'>
           <div className='row g-3'>
-
-            {/* <div className='col-md-12'>
-              <div className='card h-100 border overflow-hidden'>
-                <div className='d-flex flex-column w-100'>
-                  <div className='border-bottom position-relative' style={{ height: '220px' }}>
-                    <div className='d-flex flex-row align-items-center text-sm p-1'>
-                      <ul className='nav nav-pills flex-row'>
-                        {CODE_SNIPPETS.map((snippet) => (
-                          <li className='nav-item' key={snippet.language}>
-                            <button
-                              className={`nav-link py-0 px-2 m-1 ${activeApiTab === snippet.language ? 'active' : ''}`}
-                              onClick={() => setActiveApiTab(snippet.language)}
-                              style={{ fontSize: '0.7rem' }}
-                            >
-                              {snippet.language}
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                    <div className='w-100 h-100 overflow-auto' style={{ maxHeight: '220px' }}>
-                      {CODE_SNIPPETS.map((snippet) => (
-                        <div key={snippet.language} className={activeApiTab === snippet.language ? '' : 'd-none'}>
-                          <Markdown className='h-100' rehypePlugins={[rehypeHighlight]}>
-                            {snippet.code}
-                          </Markdown>
-                        </div>
-                      ))}
-                    </div>
-                    <div className='position-absolute top-0 end-0 me-2 mt-1'>
-                      <button
-                        onClick={() => {
-                          const activeSnippet = CODE_SNIPPETS.find((s) => s.language === activeApiTab);
-                          if (activeSnippet) {
-                            navigator.clipboard.writeText(activeSnippet.raw);
-                            setCopiedAPI(true);
-                            setTimeout(() => setCopiedAPI(false), 2000);
-                          }
-                        }}
-                        className='btn btn-outline-primary py-0 px-2 m-1'
-                        style={{ fontSize: '0.7rem' }}
-                      >
-                        {copiedAPI ? 'Copied!' : 'Copy'}
-                      </button>
-                    </div>
-                  </div>
-                  <div className='card-body'>
-                    <div className='d-flex align-items-center mb-2'>
-                      <i className='bi bi-hdd-stack-fill fs-5 text-primary me-2'></i>
-                      <h6 className='mb-0 fw-semibold'>Web Server and API</h6>
-                    </div>
-                    <p className='text-muted mb-3'>
-                      The BEDbase web server and API provide a user-friendly interface for exploring and working with genomic region data. 
-                      The web server allows users to search for BED files and BED sets, view detailed information about specific files, and create collections of files.
-                    </p>
-                    <a href='/api' className='btn btn-outline-primary btn-sm'>
-                      API Docs
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div> */}
             
             <div className='col-md-12'>
               <div className='card h-100 border w-100 rounded-3'>

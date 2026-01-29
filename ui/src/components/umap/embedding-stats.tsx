@@ -35,10 +35,25 @@ export const EmbeddingStats = (props: Props) => {
           inset: 1.2
         }
       ),
+      vg.text(
+        vg.from('data', { filterBy: selection }),
+        {
+          y: colorGrouping.replace('_category', ''),
+          text: vg.count(),
+          frameAnchor: 'right',
+          textAnchor: 'end',
+          dx: 36,
+          fill: '#6c757d',
+          fontSize: 11
+        }
+      ),
       vg.width(containerWidth),
       vg.height(280),
       vg.marginLeft(80),
-      vg.marginTop(0)
+      vg.marginTop(12),
+      vg.marginRight(40),
+      vg.yLabelAnchor('top'),
+      vg.yLabelArrow('none')
     );
 
     if (barPlotRef.current) {

@@ -9,7 +9,7 @@ export const NavDesktop = () => {
 
   return (
     <ul className='mb-0 ms-auto d-flex align-items-center gap-2 list-none me-5'>
-      <li className='link-primary mx-2 my-0 nav-item fs-6 cursor-pointer'>
+      {/* <li className='link-primary mx-2 my-0 nav-item fs-6 cursor-pointer'>
         <span className='nav-link' onClick={() => navigate('/search')}>
           <i className='bi bi-search fs-6 me-1' />
           Search
@@ -20,7 +20,7 @@ export const NavDesktop = () => {
           <i className='bi bi-graph-up fs-6 me-1' />
           Analyze
         </span>
-      </li>
+      </li> */}
       <li className='link-primary mx-2 my-0 nav-item fs-6'>
         <a className='nav-link' href='https://github.com/databio/bedhost' target='_blank'>
           <i className='bi bi-github fs-6 me-1' />

@@ -7,7 +7,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BedCartProvider } from './contexts/bedcart-context.tsx';
 import toast, { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
-// import { HomeAlt } from './pages/home_alt.tsx';
+import { HomeAlt } from './pages/home_alt.tsx';
+import { HomeAlt2 } from './pages/home_alt2.tsx';
 import { Metrics } from './pages/metrics.tsx';
 import { BEDUmap } from './pages/bed-umap.tsx';
 import { BEDAnalytics } from './pages/bed-analytics.tsx';
@@ -60,10 +61,14 @@ const router = createBrowserRouter([
     path: '/',
     element: <Home />,
   },
-  // {
-  //   path: '/home_alt',
-  //   element: <HomeAlt />,
-  // },
+  {
+    path: '/home_alt',
+    element: <HomeAlt />,
+  },
+  {
+    path: '/home_alt2',
+    element: <HomeAlt2 />,
+  },
   {
     path: '/bed/:id',
     element: <BedSplash />,
