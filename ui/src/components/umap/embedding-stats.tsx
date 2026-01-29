@@ -57,7 +57,10 @@ export const EmbeddingStats = (props: Props) => {
     }));
   }, [selectedPoints, colorGrouping, legendItems, hasSelection, totalCounts, filterSelection]);
 
-  const maxCount = useMemo(() => Math.max(1, ...rows.map((r) => r.count)), [rows]);
+  const showBackground = hasSelection || !!filterSelection;
+  const maxTotal = useMemo(() => Math.max(1, ...legendItems.map((item) => totalCounts.get(item.category) ?? 0)), [legendItems, totalCounts]);
+  const maxRows = useMemo(() => Math.max(1, ...rows.map((r) => r.count)), [rows]);
+  const maxCount = showBackground ? maxTotal : maxRows;
 
   return (
     <div className='border card bg-white'>
@@ -66,50 +69,66 @@ export const EmbeddingStats = (props: Props) => {
       </div>
       <div className='card-body' style={{ padding: '12px 12px 12px 12px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-          {rows.map((row) => (
-            <div
-              key={row.category}
-              style={{ display: 'flex', alignItems: 'center', gap: 6, height: 20 }}
-            >
-              <span
-                style={{
-                  width: 80,
-                  flexShrink: 0,
-                  fontSize: 11,
-                  textAlign: 'right',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                }}
-                title={row.name}
+          {rows.map((row) => {
+            const total = totalCounts.get(row.category) ?? 0;
+            return (
+              <div
+                key={row.category}
+                style={{ display: 'flex', alignItems: 'center', gap: 6, height: 20 }}
               >
-                {row.name}
-              </span>
-              <div style={{ flex: 1, height: 16, position: 'relative' }}>
-                {row.count > 0 && (
-                  <div
-                    style={{
-                      width: `${(row.count / maxCount) * 100}%`,
-                      height: '100%',
-                      backgroundColor: 'steelblue',
-                      borderRadius: 2.2,
-                    }}
-                  />
-                )}
+                <span
+                  style={{
+                    width: 80,
+                    flexShrink: 0,
+                    fontSize: 11,
+                    textAlign: 'right',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                  title={row.name}
+                >
+                  {row.name}
+                </span>
+                <div style={{ flex: 1, height: 16, position: 'relative' }}>
+                  {showBackground && total > 0 && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        width: `${(total / maxTotal) * 100}%`,
+                        height: '100%',
+                        backgroundColor: 'steelblue',
+                        opacity: 0.15,
+                        borderRadius: 2.2,
+                      }}
+                    />
+                  )}
+                  {row.count > 0 && (
+                    <div
+                      style={{
+                        position: 'absolute',
+                        width: `${(row.count / maxCount) * 100}%`,
+                        height: '100%',
+                        backgroundColor: 'steelblue',
+                        borderRadius: 2.2,
+                      }}
+                    />
+                  )}
+                </div>
+                <span
+                  style={{
+                    flexShrink: 0,
+                    fontSize: 10,
+                    color: '#6c757d',
+                    textAlign: 'right',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {row.count} / {total}
+                </span>
               </div>
-              <span
-                style={{
-                  width: 36,
-                  flexShrink: 0,
-                  fontSize: 11,
-                  color: '#6c757d',
-                  textAlign: 'right',
-                }}
-              >
-                {row.count}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>
