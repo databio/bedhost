@@ -37,6 +37,7 @@ export type EmbeddingPlotRef = {
   handleFileRemove: () => Promise<void>;
   handleLegendClick: (item: any) => void;
   queryByCategory: (category: string) => Promise<any[]>;
+  clearRangeSelection: () => void;
 }
 
 export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) => {
@@ -75,6 +76,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   const [dataVersion, setDataVersion] = useState(0);
   const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
   const [selectionVersion, setSelectionVersion] = useState(0);
+  const [rangeSelectionValue, setRangeSelectionValue] = useState<any>(undefined);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -434,6 +436,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     handleFileRemove,
     handleLegendClick,
     queryByCategory,
+    clearRangeSelection: () => setRangeSelectionValue(null),
   }), [filterSelection, colorGrouping, selectedPoints, initialPoint]);
 
   return (
@@ -479,7 +482,8 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
                 }}
                 selection={visualSelection}
                 onSelection={handlePointSelection}
-                onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
+                rangeSelectionValue={rangeSelectionValue}
+                onRangeSelection={(e) => { setRangeSelectionValue(e); handleRangeSelection(coordinator, e); }}
                 theme={{
                   statusBar: showStatus,
                 }}

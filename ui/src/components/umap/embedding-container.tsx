@@ -110,6 +110,8 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
         enabled: true,
       };
       setBuckets(prev => [...prev, newBucket]);
+      embeddingPlotRef.current?.clearRangeSelection();
+      setSelectedPoints([]);
     }
   };
 
@@ -452,7 +454,13 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
             <div className='expandable-card__extra-content'>
               <EmbeddingSelections
                 buckets={buckets}
-                onBucketsChange={setBuckets}
+                onBucketsChange={(newBuckets) => {
+                  setBuckets(newBuckets);
+                  if (newBuckets.length > buckets.length) {
+                    embeddingPlotRef.current?.clearRangeSelection();
+                    setSelectedPoints([]);
+                  }
+                }}
                 currentSelection={selectedPoints}
               />
             </div>
