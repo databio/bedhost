@@ -43,7 +43,7 @@ export const Home = () => {
   return (
     <Layout footer title='BEDbase' fullHeight>
       <div className='d-flex flex-column w-100 align-items-center p-2'>
-        <div className='d-flex flex-column align-items-center justify-content-center text-center w-100' style={{ minHeight: '65vh' }}>
+        <div className='d-flex flex-column align-items-center justify-content-center text-center w-100' style={{ minHeight: '67vh' }}>
         <h1 className='fw-lighter text-primary text-7xl mb-4'>BEDbase</h1>
         <div className='col-12 col-lg-10 text-muted'>
           <p className='text-center mb-0'>
@@ -153,7 +153,7 @@ export const Home = () => {
           </span>
         </div>
         
-        <div className='d-flex flex-row gap-4 justify-content-center mb-4 mt-4 text-muted'>
+        <div className='d-flex flex-row gap-4 justify-content-center mb-4 mt-5 text-muted'>
           <span>
             <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
           </span>

@@ -243,7 +243,7 @@ export const BedSplashHeader = (props: Props) => {
                     }
                   }}
                 >
-                  <i className='bi bi-info-circle-fill' />
+                  <i className='bi bi-info-circle-fill' style={{fontSize: '0.74rem'}}/>
                 </div>
               </OverlayTrigger>
             )}
