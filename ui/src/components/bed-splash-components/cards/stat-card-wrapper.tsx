@@ -12,18 +12,15 @@ export const StatCard = (props: Props) => {
   const renderTooltip = () => <Tooltip id={`tooltip-${title}`}>{tooltip || 'No tooltip available'}</Tooltip>;
 
   return (
-    <div className="border rounded p-2 shadow-sm bed-splash-stat-card-height">
-      <div className="d-flex flex-column align-items-center justify-content-between h-100">
-        <h4 className="fw-bold text-sm text-center">{title}</h4>
-        <div className="d-flex w-100 text-center">
-          <h2 className="text-center text-primary fw-bolder w-100 mb-0 text-2xl">{stat}</h2>
-        </div>
-        <div className="text-end">
-          <OverlayTrigger placement="left" overlay={renderTooltip()} delay={{ show: 250, hide: 400 }}>
-            <i className="text-sm bi bi-info-circle text-primary"></i>
-          </OverlayTrigger>
+    <OverlayTrigger placement='right' overlay={renderTooltip()} delay={{ show: 200, hide: 200 }}>
+      <div className='border rounded p-2 bed-splash-stat-card-height bg-white'>
+        <div className='d-flex flex-column align-items-start justify-content-center h-100 ms-3'>
+          <h6 className='text-sm'>{title}</h6>
+          <div className='d-flex w-100'>
+            <h4 className='text-primary fw-bolder w-100 mb-0'>{stat}</h4>
+          </div>
         </div>
       </div>
-    </div>
+    </OverlayTrigger>
   );
 };

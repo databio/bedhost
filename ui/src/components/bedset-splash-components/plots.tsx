@@ -29,16 +29,13 @@ const Plot = (props: PlotProps) => {
           setShow(true);
         }
       }}
-      className="h-100 border rounded p-1 shadow-sm hover-border-primary transition-all"
+      className='h-100 border rounded bg-white overflow-hidden embedding-card'
     >
-      <div className="px-1 d-flex flex-row justify-content-between w-100 mb-1">
-        <span className="fw-bold text-sm text-center w-100 mb-1">{title}</span>
-        {/* <button onClick={() => setShow(true)} className="btn btn-sm btn-outline-primary text-xs">
-          <i className="bi bi-eye" />
-        </button> */}
+      <div className='p-2 mt-2 text-center'>
+        <Image height='250px' src={src} alt={alt} />
       </div>
-      <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-        <Image height="300px" src={src} alt={alt} />
+      <div className='text-center'>
+        <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>{title}</p>
       </div>
       <FigureModal
         show={show}
@@ -56,9 +53,10 @@ const Plot = (props: PlotProps) => {
 export const Plots = (props: PlotsProps) => {
   const { metadata } = props;
   const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
+
   return (
     <Fragment>
-      <Row className="mb-2 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2">
+      <Row className='row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2'>
         {metadata.plots &&
           chunkArray(plotNames, 3).map((chunk, idx) => (
             <Fragment key={idx}>
@@ -73,7 +71,7 @@ export const Plots = (props: PlotsProps) => {
                     metadata.plots[plotNameKey]?.description || metadata.plots[plotNameKey].title
                   : plotName;
                 return (
-                  <Col key={plotName} sm={12} md={4} className="px-1">
+                  <Col key={plotName} sm={12} md={4} className='px-1'>
                     <Plot
                       key={plotName}
                       src={plotExists ? makeThumbnailImageLink(metadata.id, plotName, 'bedset') : '/fignotavl_png.svg'}

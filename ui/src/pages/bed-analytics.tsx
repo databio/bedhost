@@ -146,28 +146,32 @@ export const BEDAnalytics = () => {
   const classify = rs?.classify;
 
   return (
-    <Layout footer title="BEDbase" fullHeight>
-      <h1 className="text-center mt-4">BED analyzer</h1>
-      <div className="container-fluid d-flex flex-column p-3">
-        <div className="row">
-          <div className="col-12 d-flex gap-2">
-            <div className="input-group bg-white">
+    <Layout footer title='BEDbase' fullHeight>
+      <div className='container-fluid d-flex flex-column p-3'>
+        <div className='row'>
+          <div className='col-12'>
+            <h4 className='text-center mt-2 mb-3 fw-bolder'>BED Analyzer</h4>
+          </div>
+        </div>
+        <div className='row'>
+          <div className='col-12 d-flex gap-2'>
+            <div className='input-group bg-white'>
               {inputMode === 'file' ? (
                 <>
                   {!!selectedFile ? (
                     <>
                       <input
-                        className="form-control border cursor-pointer"
-                        type="text"
+                        className='form-control border cursor-pointer'
+                        type='text'
                         value={selectedFile.name}
                         onClick={() => fileInputRef.current?.click()}
                         readOnly
                       />
                       <input
                         ref={fileInputRef}
-                        className="d-none"
-                        type="file"
-                        accept=".bed,.gz,application/gzip,application/x-gzip"
+                        className='d-none'
+                        type='file'
+                        accept='.bed,.gz,application/gzip,application/x-gzip'
                         onChange={(e) => {
                           const file = e.target.files?.[0];
                           if (file) {
@@ -181,10 +185,10 @@ export const BEDAnalytics = () => {
                   ) : (
                     <input
                       ref={fileInputRef}
-                      key="file-input"
-                      className="form-control border"
-                      type="file"
-                      accept=".bed,.gz,application/gzip,application/x-gzip"
+                      key='file-input'
+                      className='form-control border'
+                      type='file'
+                      accept='.bed,.gz,application/gzip,application/x-gzip'
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
@@ -198,10 +202,10 @@ export const BEDAnalytics = () => {
                 </>
               ) : (
                 <input
-                  key="text-input"
-                  className="form-control border"
-                  type="text"
-                  placeholder="https://example.com/file.bed"
+                  key='text-input'
+                  className='form-control border'
+                  type='text'
+                  placeholder='https://example.com/file.bed'
                   value={bedUrl}
                   onChange={(e) => {
                     const newUrl = e.target.value;
@@ -213,32 +217,32 @@ export const BEDAnalytics = () => {
               )}
               {(!!rs || !!selectedFile || !!bedUrl.trim()) && (
                 <button
-                  className="btn btn-outline-secondary border"
+                  className='btn btn-outline-secondary border'
                   onClick={() => {
                     unloadFile();
                   }}
-                  title="Remove file"
+                  title='Remove file'
                 >
-                  <i className="bi bi-x-circle" />
+                  <i className='bi bi-x-circle' />
                 </button>
               )}
               <select
-                className="form-select"
+                className='form-select'
                 style={{ maxWidth: '163px' }}
-                aria-label="analyzer input selector"
+                aria-label='analyzer input selector'
                 value={inputMode}
                 onChange={(e) => {
                   unloadFile();
                   setInputMode(e.target.value as 'file' | 'url');
                 }}
               >
-                <option value="file">File Upload</option>
-                <option value="url">URL</option>
+                <option value='file'>File Upload</option>
+                <option value='url'>URL</option>
               </select>
             </div>
             <button
-              className="btn btn-primary"
-              type="button"
+              className='btn btn-primary'
+              type='button'
               onClick={() => {
                 if (inputMode === 'url') {
                   const params = new URLSearchParams(searchParams);
@@ -259,10 +263,10 @@ export const BEDAnalytics = () => {
           </div>
         </div>
 
-        <div className="row mt-1">
-          <div className="col-12 text-muted">
+        <div className='row mt-1'>
+          <div className='col-12 text-muted text-sm text-center'>
             {inputMode === 'file' ? (
-              <p className="mb-0">
+              <p className='mb-0'>
                 {selectedFile && (
                   <>
                     <div>Selected file: {selectedFile.name}</div>
@@ -271,13 +275,13 @@ export const BEDAnalytics = () => {
                 )}
               </p>
             ) : (
-              <p className="mb-0">{!!rs && bedUrl && <div>Source: {bedUrl}</div>}</p>
+              <p className='mb-0'>{!!rs && bedUrl && <div>Source: {bedUrl}</div>}</p>
             )}
             {!(!!rs || !!selectedFile || !!bedUrl.trim()) && (
-              <p className="mb-0">
+              <p className='mb-0'>
                 No input provided. Try this{' '}
                 <a
-                  href="#"
+                  href='#'
                   onClick={(e) => {
                     e.preventDefault();
                     const exampleUrl =
@@ -298,20 +302,20 @@ export const BEDAnalytics = () => {
             )}
 
             {rs && !!totalProcessingTime && (
-              <p className="mb-0">Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s</p>
+              <p className='mb-0'>Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s</p>
             )}
           </div>
         </div>
 
 
-        <div className="mt-4">
+        <div className='mt-4'>
           {loadingRS && (
             <div
-              className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill">
-              <div className="spinner-border spinner-border-sm text-success">
-                <span className="visually-hidden">Loading...</span>
+              className='d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill'>
+              <div className='spinner-border spinner-border-sm text-success'>
+                <span className='visually-hidden'>Loading...</span>
               </div>
-              <span className="small text-success fw-medium">
+              <span className='small text-success fw-medium'>
                 Loading and analyzing...
               </span>
             </div>
@@ -319,59 +323,55 @@ export const BEDAnalytics = () => {
 
           {rs && !loadingRS && (
             <div
-              className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill">
-              <div className="bg-primary rounded-circle p-1" />
-              <span className="small text-primary fw-medium">
+              className='d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill'>
+              <div className='bg-primary rounded-circle p-1' />
+              <span className='small text-primary fw-medium'>
                 Results ready
               </span>
             </div>
           )}
 
-          <div className="mt-3">
+          <div className='mt-3'>
             {rs && (
               <div>
-                <div className="mt-3 p-3 border rounded shadow-sm bg-white">
-                  <table className="table table-sm mb-0">
+                <div className='mt-3 p-0 border rounded bg-white overflow-hidden'>
+                  <table className='table table-sm text-sm mb-0'>
                     <tbody>
                     <tr>
-                      <th scope="row">Identifier</th>
+                      <th scope='row'>Identifier</th>
                       <td>{rs.identifier}</td>
                     </tr>
                     <tr>
-                      <th scope="row">Mean region width</th>
+                      <th scope='row'>Mean region width</th>
                       <td>{rs.meanRegionWidth}</td>
                     </tr>
                     <tr>
-                      <th scope="row">Total number of regions</th>
+                      <th scope='row'>Total number of regions</th>
                       <td>{rs.numberOfRegions}</td>
                     </tr>
                     <tr>
-                      <th scope="row">Total number of nucleotides</th>
+                      <th scope='row'>Total number of nucleotides</th>
                       <td>{rs.nucleotidesLength}</td>
                     </tr>
-                    {/*<tr>*/}
-                    {/*  <th scope="row">First row</th>*/}
-                    {/*  <td>{rs.first_region}</td>*/}
-                    {/*</tr>*/}
                     <tr>
-                      <th scope="row">Data Format</th>
+                      <th scope='row'>Data Format</th>
                       <td>{classify?.data_format}</td>
                     </tr>
                     <tr>
-                      <th scope="row">BED compliance</th>
+                      <th scope='row'>BED compliance</th>
                       <td>{classify?.bed_compliance}</td>
                     </tr>
                     </tbody>
                   </table>
-                  <div className="mt-3">
+                  <div className='p-3'>
                     <button
-                      className="btn btn-outline-primary"
+                      className='btn btn-sm btn-secondary'
                       onClick={handleAnalyzeGenome}
                       disabled={analyzeGenomeMutation.isPending}
                     >
                       {analyzeGenomeMutation.isPending ? (
                         <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          <span className='spinner-border spinner-border-sm me-2' role='status' aria-hidden='true'></span>
                           Analyzing...
                         </>
                       ) : (
@@ -380,22 +380,15 @@ export const BEDAnalytics = () => {
                     </button>
                   </div>
                 </div>
-                <div className="mt-5">
+                <div className='mt-5'>
                   <h3>Interval chromosome length statistics</h3>
                   {rs && (
                     <ChromosomeStatsPanel rs={rs} selectedFile={selectedFile} />
                   )}
                 </div>
-                <div className="mt-5">
+                <div className='mt-5'>
                   {rs && (
-                    // <div className="mt-3 p-3 border rounded shadow-sm bg-light">
-                    //   <h5>Region Distribution Data</h5>
-                    //   <pre className="bg-white p-3 rounded border"
-                    //        style={{ fontSize: '0.875rem', maxHeight: '400px', overflow: 'auto' }}>
-                    //     {JSON.stringify(rs.calculateRegionDistribution(300), null, 2)}
-                    //   </pre>
-                    // </div>
-                    <div className="mb-3">
+                    <div className='mb-3'>
                       <RegionDistributionPlot
                         data={rs.regionDistribution(300)}
                       />

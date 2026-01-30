@@ -24,8 +24,8 @@ export const BedMetadataModal = (props: Props) => {
       animation={false}
       show={show}
       onHide={() => setShow(false)}
-      size="xl"
-      aria-labelledby="contained-modal-title-vcenter"
+      size='xl'
+      aria-labelledby='contained-modal-title-vcenter'
       centered
     >
       <Modal.Header closeButton>

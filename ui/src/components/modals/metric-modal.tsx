@@ -4,7 +4,7 @@ import { MetricPlot, MetricPlotType } from '../metrics/metric-plot';
 
 type Props = {
   title: string;
-  type: MetricPlotType,
+  type: MetricPlotType;
   data: [string, number][];
   median?: number;
   xlab?: string;
@@ -35,34 +35,32 @@ export const MetricModal = (props: Props) => {
     >
       <Modal.Header closeButton>{title}</Modal.Header>
       <Modal.Body>
-        <div className='d-flex justify-content-center' style={{maxHeight: '500px'}}>
-        <MetricPlot 
-          type={plotType}
-          data={data} 
-          median={median}
-          xlab={xlab}
-          ylab={ylab}
-          height={height}
-          color={color}
-          angle={angle}
-        />
+        <div className='d-flex justify-content-center' style={{ maxHeight: '500px' }}>
+          <MetricPlot
+            type={plotType}
+            data={data}
+            median={median}
+            xlab={xlab}
+            ylab={ylab}
+            height={height}
+            color={color}
+            angle={angle}
+          />
         </div>
-        
       </Modal.Body>
       <Modal.Footer className='d-flex justify-content-between'>
-
         {type !== 'hist' && (
-          <select 
-            className="form-select w-auto ms-auto" 
-            aria-label="Plot Type" 
+          <select
+            className='form-select w-auto ms-auto'
+            aria-label='Plot Type'
             onChange={(e) => checkHandler(e.target.value as MetricPlotType)}
             value={plotType}
           >
-            <option value="bar">Bar Chart</option>
-            <option value="pie">Pie Chart</option>
+            <option value='bar'>Bar Chart</option>
+            <option value='pie'>Pie Chart</option>
           </select>
         )}
-        
+
         <button onClick={() => onHide()} className={`btn btn-primary ${type === 'hist' && 'ms-auto'}`}>
           Close
         </button>

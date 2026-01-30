@@ -25,7 +25,7 @@
     "chart.js": "^4.4.2",
     "chartjs-chart-error-bars": "^4.4.0",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "embedding-atlas": "^0.13.0",
+    "embedding-atlas": "^0.15.0",
     "framer-motion": "^11.0.20",
     "js-yaml": "^4.1.1",
     "pako": "^2.1.0",

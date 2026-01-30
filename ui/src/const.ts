@@ -141,7 +141,6 @@ let bed_id: String = bbc
 \`\`\`
 `;
 
-
 export const BBCONF_SNIPPETS = [
   {
     language: 'Python',

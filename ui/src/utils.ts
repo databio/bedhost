@@ -53,6 +53,14 @@ export const formatDateTime = (date: string) => {
   return `${month} ${day}, ${year} at ${time}`;
 };
 
+export const formatDateShort = (date: Date | string) => {
+  const d = typeof date === 'string' ? new Date(date) : date;
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const bytesToSize = (bytes: number) => {
   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
   if (bytes === 0) return '0 Byte';
@@ -138,6 +146,14 @@ export const snakeToTitleCase = (str: string) => {
     .join(' ');
 };
 
+export const toTitleCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(' ')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 export const convertStatusCodeToMessage = (statusCode: number | undefined) => {
   if (statusCode === undefined) {
     return 'Unknown Error';
@@ -156,6 +172,43 @@ export const convertStatusCodeToMessage = (statusCode: number | undefined) => {
   }
 };
 
+export const tableau20 = [
+  '#1f77b4',
+  '#aec7e8',
+  '#ff7f0e',
+  '#ffbb78',
+  '#2ca02c',
+  '#98df8a',
+  '#d62728',
+  '#ff9896',
+  '#9467bd',
+  '#c5b0d5',
+  '#8c564b',
+  '#c49c94',
+  '#e377c2',
+  '#f7b6d3',
+  '#7f7f7f',
+  '#c7c7c7',
+  '#bcbd22',
+  '#dbdb8d',
+  '#17becf',
+  '#9edae5',
+];
+
+// Point-in-polygon test using ray casting algorithm
+export const isPointInPolygon = (point: { x: number; y: number }, polygon: { x: number; y: number }[]) => {
+  let inside = false;
+  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+    const xi = polygon[i].x,
+      yi = polygon[i].y;
+    const xj = polygon[j].x,
+      yj = polygon[j].y;
+
+    const intersect = yi > point.y !== yj > point.y && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
+    if (intersect) inside = !inside;
+  }
+  return inside;
+};
 // gtars bedfile handler
 export type BedEntry = [string, number, number, string];
 
@@ -171,10 +224,10 @@ export async function parseBedFile(file: File): Promise<BedEntry[]> {
   const lines = text.split('\n');
   const bedEntries: BedEntry[] = [];
 
-// export async function parseBedFile(file: File): Promise<BedEntry[]> {
-//   const text = await file.text();
-//   const lines = text.split('\n');
-//   const bedEntries: BedEntry[] = [];
+  // export async function parseBedFile(file: File): Promise<BedEntry[]> {
+  //   const text = await file.text();
+  //   const lines = text.split('\n');
+  //   const bedEntries: BedEntry[] = [];
 
   for (const line of lines) {
     const trimmedLine = line.trim();
@@ -214,41 +267,3 @@ export function handleBedFileInput(event: Event, callback: (entries: BedEntry[])
       .catch((error) => console.error('Error parsing BED file:', error));
   }
 }
-
-export const tableau20 = [
-  '#1f77b4',
-  '#aec7e8',
-  '#ff7f0e',
-  '#ffbb78',
-  '#2ca02c',
-  '#98df8a',
-  '#d62728',
-  '#ff9896',
-  '#9467bd',
-  '#c5b0d5',
-  '#8c564b',
-  '#c49c94',
-  '#e377c2',
-  '#f7b6d3',
-  '#7f7f7f',
-  '#c7c7c7',
-  '#bcbd22',
-  '#dbdb8d',
-  '#17becf',
-  '#9edae5',
-];
-
-// Point-in-polygon test using ray casting algorithm
-export const isPointInPolygon = (point: { x: number; y: number }, polygon: { x: number; y: number }[]) => {
-  let inside = false;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x,
-      yi = polygon[i].y;
-    const xj = polygon[j].x,
-      yj = polygon[j].y;
-
-    const intersect = yi > point.y !== yj > point.y && point.x < ((xj - xi) * (point.y - yi)) / (yj - yi) + xi;
-    if (intersect) inside = !inside;
-  }
-  return inside;
-};

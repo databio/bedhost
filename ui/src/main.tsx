@@ -7,6 +7,8 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BedCartProvider } from './contexts/bedcart-context.tsx';
 import toast, { Toaster } from 'react-hot-toast';
 import { Home } from './pages/home.tsx';
+import { HomeAlt } from './pages/home_alt.tsx';
+import { HomeAlt2 } from './pages/home_alt2.tsx';
 import { Metrics } from './pages/metrics.tsx';
 import { BEDUmap } from './pages/bed-umap.tsx';
 import { BEDAnalytics } from './pages/bed-analytics.tsx';
@@ -16,9 +18,11 @@ import { MosaicCoordinatorProvider } from './contexts/mosaic-coordinator-context
 
 // css stuff
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'highlight.js/styles/a11y-light.min.css';
 import './custom.scss';
+import './components/umap/embedding-styles.scss';
 
 // import the pages
 import { BedSplash } from './pages/bed-splash.tsx';
@@ -56,6 +60,14 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <Home />,
+  },
+  {
+    path: '/home_alt',
+    element: <HomeAlt />,
+  },
+  {
+    path: '/home_alt2',
+    element: <HomeAlt2 />,
   },
   {
     path: '/bed/:id',
@@ -103,7 +115,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <BedCartProvider>
             <MosaicCoordinatorProvider>
               <RouterProvider router={router} />
-              <Toaster position='top-center' />
+              <Toaster position='top-center' containerStyle={{zIndex: 999999}} />
             </MosaicCoordinatorProvider>
           </BedCartProvider>
           <ReactQueryDevtools initialIsOpen={true} />
