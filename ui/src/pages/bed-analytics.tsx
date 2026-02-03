@@ -1,19 +1,56 @@
-import { useState, useRef, useEffect } from 'react';
-import { useSearchParams, useNavigate } from 'react-router-dom';
-import { Layout } from '../components/layout.tsx';
-import { RegionSet, ChromosomeStatistics } from '@databio/gtars';
-import { handleBedFileInput } from '../utils.ts';
-import { bytesToSize } from '../utils.ts';
+import {useState, useRef, useEffect} from 'react';
+import {useSearchParams, useNavigate} from 'react-router-dom';
+import {Layout} from '../components/layout.tsx';
+import {bytesToSize} from '../utils.ts';
 import ChromosomeStatsPanel from '../components/bed-analytics-components/chromosome-stats-panel.tsx';
 import RegionDistributionPlot from '../components/bed-analytics-components/bed-plots.tsx';
-import { RefGenomeModal } from '../components/bed-splash-components/refgenome-modal.tsx';
-import { useAnalyzeGenome } from '../queries/useAnalyzeGenome.ts';
-import type { components } from '../../bedbase-types.d.ts';
+import {RefGenomeModal} from '../components/bed-splash-components/refgenome-modal.tsx';
+import {useAnalyzeGenome} from '../queries/useAnalyzeGenome.ts';
+import type {components} from '../../bedbase-types.d.ts';
 
 type BedGenomeStats = components['schemas']['RefGenValidReturnModel'];
 
+// Type for pre-computed analysis result from worker
+interface BedAnalysisResult {
+  number_of_regions: number;
+  mean_region_width: number;
+  nucleotides_length: number;
+  identifier: string;
+  chromosome_statistics: Record<string, {
+    chromosome: string;
+    number_of_regions: number;
+    minimum_region_length: number;
+    maximum_region_length: number;
+    mean_region_length: number;
+    median_region_length: number;
+    start_nucleotide_position: number;
+    end_nucleotide_position: number;
+  }>;
+  region_distribution: Array<{
+    chr: string;
+    start: number;
+    end: number;
+    n: number;
+    rid: number;
+  }>;
+  classify: {
+    bed_compliance: string;
+    data_format: string;
+    compliant_columns: number;
+    non_compliant_columns: number;
+  };
+}
+
+interface WorkerProgress {
+  bytesProcessed: number;
+  totalSize: number;
+  percent: number;
+  regionsFound: number;
+  linesProcessed: number;
+}
+
 export const BEDAnalytics = () => {
-  const [rs, setRs] = useState<RegionSet | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<BedAnalysisResult | null>(null);
   const [loadingRS, setLoadingRS] = useState(false);
   const [totalProcessingTime, setTotalProcessingTime] = useState<number | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -23,11 +60,51 @@ export const BEDAnalytics = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  // Worker state
+  const workerRef = useRef<Worker | null>(null);
+  const [status, setStatus] = useState<string | null>(null);
+  const [progress, setProgress] = useState<WorkerProgress | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const startTimeRef = useRef<number>(0);
+
   const [showGenomeModal, setShowGenomeModal] = useState(false);
   const [genomeStats, setGenomeStats] = useState<BedGenomeStats | null>(null);
   const analyzeGenomeMutation = useAnalyzeGenome();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize worker on mount
+  useEffect(() => {
+    workerRef.current = new Worker(
+      new URL('../workers/bedAnalyzerWorker.js', import.meta.url),
+      {type: 'module'}
+    );
+
+    workerRef.current.onmessage = (e) => {
+      const {type, result, message, bytesProcessed, totalSize, percent, regionsFound, linesProcessed} = e.data;
+
+      if (type === 'status') {
+        setStatus(message);
+      } else if (type === 'progress') {
+        setProgress({bytesProcessed, totalSize, percent, regionsFound, linesProcessed});
+      } else if (type === 'result') {
+        const endTime = performance.now();
+        setAnalysisResult(result);
+        setTotalProcessingTime(endTime - startTimeRef.current);
+        setStatus(null);
+        setProgress(null);
+        setLoadingRS(false);
+      } else if (type === 'error') {
+        setError(message);
+        setStatus(null);
+        setProgress(null);
+        setLoadingRS(false);
+        console.error('Worker error:', message);
+      }
+    };
+
+    return () => workerRef.current?.terminate();
+  }, []);
 
   useEffect(() => {
     const urlParam = searchParams.get('bedUrl');
@@ -41,70 +118,50 @@ export const BEDAnalytics = () => {
     initializeRegionSet();
   }, [triggerSearch]);
 
-  const fetchBedFromUrl = async (url: string): Promise<File> => {
-    // console.log(`${url[0]}, ${url[1]}, ${url}`);
-    const fetchUrl =
-      url.length === 32 && !url.startsWith('http')
-        ? `https://api.bedbase.org/v1/files/files/${url[0]}/${url[1]}/${url}.bed.gz`
-        : url;
-    // console.log(`${fetchUrl}`);
-    const response = await fetch(fetchUrl);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch BED file: ${response.statusText}`);
-    }
-    const blob = await response.blob();
-    const fileName = fetchUrl.split('/').pop() || 'remote-bed-file.bed';
-    return new File([blob], fileName, { type: 'text/plain' });
-  };
-
   const initializeRegionSet = async () => {
+    if (!workerRef.current) return;
+
+    let shouldProcess = false;
     let fileToProcess: File | null = null;
+    let urlToProcess: string | null = null;
 
     if (inputMode === 'file' && selectedFile) {
       fileToProcess = selectedFile;
+      shouldProcess = true;
     } else if (inputMode === 'url' && bedUrl.trim()) {
-      try {
-        fileToProcess = await fetchBedFromUrl(bedUrl.trim());
-      } catch (error) {
-        console.error('Error fetching URL:', error);
-        return;
-      }
+      // Convert bedbase ID to URL if needed
+      const url = bedUrl.trim();
+      urlToProcess = url.length === 32 && !url.startsWith('http')
+        ? `https://api.bedbase.org/v1/files/files/${url[0]}/${url[1]}/${url}.bed.gz`
+        : url;
+      shouldProcess = true;
     }
 
-    if (fileToProcess) {
+    if (shouldProcess) {
       setLoadingRS(true);
+      setAnalysisResult(null);
       setTotalProcessingTime(null);
+      setProgress(null);
+      setError(null);
+      setStatus('Starting...');
+      startTimeRef.current = performance.now();
 
-      try {
-        const startTime = performance.now();
-
-        const syntheticEvent = {
-          target: { files: [fileToProcess] },
-        } as unknown as Event;
-
-        await handleBedFileInput(syntheticEvent, (entries) => {
-          setTimeout(() => {
-            const rs = new RegionSet(entries);
-            const endTime = performance.now();
-            const totalTimeMs = endTime - startTime;
-
-            setRs(rs);
-            setTotalProcessingTime(totalTimeMs);
-            setLoadingRS(false);
-          }, 10);
-        });
-      } catch (error) {
-        setLoadingRS(false);
-        console.error('Error loading file:', error);
+      if (fileToProcess) {
+        workerRef.current.postMessage({type: 'analyze', file: fileToProcess});
+      } else if (urlToProcess) {
+        workerRef.current.postMessage({type: 'analyze', url: urlToProcess});
       }
     }
   };
 
   const unloadFile = () => {
-    setRs(null);
+    setAnalysisResult(null);
     setTotalProcessingTime(null);
     setSelectedFile(null);
     setBedUrl('');
+    setProgress(null);
+    setStatus(null);
+    setError(null);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -122,13 +179,13 @@ export const BEDAnalytics = () => {
   };
 
   const handleAnalyzeGenome = () => {
-    if (!rs) return;
+    if (!analysisResult) return;
 
-    const chromStats = rs.chromosomeStatistics();
+    const chromStats = analysisResult.chromosome_statistics;
     if (!chromStats) return;
 
     const bedFileData: Record<string, number> = {};
-    chromStats.forEach((stats: ChromosomeStatistics, chrom: string) => {
+    Object.entries(chromStats).forEach(([chrom, stats]) => {
       bedFileData[chrom] = stats.end_nucleotide_position;
     });
 
@@ -143,7 +200,14 @@ export const BEDAnalytics = () => {
     });
   };
 
-  const classify = rs?.classify;
+  const classify = analysisResult?.classify;
+
+  const formatSize = (bytes: number) => {
+    if (bytes >= 1e9) return `${(bytes / 1e9).toFixed(1)} GB`;
+    if (bytes >= 1e6) return `${(bytes / 1e6).toFixed(1)} MB`;
+    if (bytes >= 1e3) return `${(bytes / 1e3).toFixed(1)} KB`;
+    return `${bytes} bytes`;
+  };
 
   return (
     <Layout footer title="BEDbase" fullHeight>
@@ -206,12 +270,12 @@ export const BEDAnalytics = () => {
                   onChange={(e) => {
                     const newUrl = e.target.value;
                     setBedUrl(newUrl);
-                    if (rs) unloadFile();
+                    if (analysisResult) unloadFile();
                   }}
                   onKeyDown={handleOnKeyDown}
                 />
               )}
-              {(!!rs || !!selectedFile || !!bedUrl.trim()) && (
+              {(!!analysisResult || !!selectedFile || !!bedUrl.trim()) && (
                 <button
                   className="btn btn-outline-secondary border"
                   onClick={() => {
@@ -219,12 +283,12 @@ export const BEDAnalytics = () => {
                   }}
                   title="Remove file"
                 >
-                  <i className="bi bi-x-circle" />
+                  <i className="bi bi-x-circle"/>
                 </button>
               )}
               <select
                 className="form-select"
-                style={{ maxWidth: '163px' }}
+                style={{maxWidth: '163px'}}
                 aria-label="analyzer input selector"
                 value={inputMode}
                 onChange={(e) => {
@@ -250,7 +314,7 @@ export const BEDAnalytics = () => {
               disabled={
                 (inputMode === 'file' && !selectedFile) ||
                 (inputMode === 'url' && !bedUrl.trim()) ||
-                rs !== null ||
+                analysisResult !== null ||
                 loadingRS
               }
             >
@@ -271,9 +335,9 @@ export const BEDAnalytics = () => {
                 )}
               </p>
             ) : (
-              <p className="mb-0">{!!rs && bedUrl && <div>Source: {bedUrl}</div>}</p>
+              <p className="mb-0">{!!analysisResult && bedUrl && <div>Source: {bedUrl}</div>}</p>
             )}
-            {!(!!rs || !!selectedFile || !!bedUrl.trim()) && (
+            {!(!!analysisResult || !!selectedFile || !!bedUrl.trim()) && (
               <p className="mb-0">
                 No input provided. Try this{' '}
                 <a
@@ -297,7 +361,7 @@ export const BEDAnalytics = () => {
               </p>
             )}
 
-            {rs && !!totalProcessingTime && (
+            {analysisResult && !!totalProcessingTime && (
               <p className="mb-0">Total processing time: {(totalProcessingTime / 1000).toFixed(3)}s</p>
             )}
           </div>
@@ -305,22 +369,60 @@ export const BEDAnalytics = () => {
 
 
         <div className="mt-4">
+          {/* Progress display */}
           {loadingRS && (
-            <div
-              className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-success bg-opacity-10 border border-success border-opacity-25 rounded-pill">
-              <div className="spinner-border spinner-border-sm text-success">
-                <span className="visually-hidden">Loading...</span>
+            <div className="mb-3">
+              <div className="d-flex align-items-center mb-2">
+                <div className="spinner-border spinner-border-sm text-success me-2">
+                  <span className="visually-hidden">Loading...</span>
+                </div>
+                <span className="small text-success fw-medium">
+                  {status || 'Processing...'}
+                </span>
               </div>
-              <span className="small text-success fw-medium">
-                Loading and analyzing...
-              </span>
+
+              {progress && progress.totalSize > 0 && (
+                <>
+                  <div className="progress" style={{height: '20px'}}>
+                    <div
+                      className="progress-bar progress-bar-striped progress-bar-animated bg-success"
+                      role="progressbar"
+                      style={{width: `${progress.percent}%`}}
+                      aria-valuenow={progress.percent}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                    >
+                      {progress.percent}%
+                    </div>
+                  </div>
+                  <small className="text-muted">
+                    {formatSize(progress.bytesProcessed)} / {formatSize(progress.totalSize)}
+                    {progress.regionsFound > 0 && ` - ${progress.regionsFound.toLocaleString()} regions found`}
+                  </small>
+                </>
+              )}
+
+              {progress && progress.totalSize === 0 && progress.regionsFound > 0 && (
+                <small className="text-muted">
+                  {formatSize(progress.bytesProcessed)} processed - {progress.regionsFound.toLocaleString()} regions
+                  found
+                </small>
+              )}
             </div>
           )}
 
-          {rs && !loadingRS && (
+          {/* Error display */}
+          {error && (
+            <div className="alert alert-danger" role="alert">
+              <i className="bi bi-exclamation-triangle me-2"></i>
+              {error}
+            </div>
+          )}
+
+          {analysisResult && !loadingRS && (
             <div
               className="d-inline-flex align-items-center gap-2 px-3 py-2 bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded-pill">
-              <div className="bg-primary rounded-circle p-1" />
+              <div className="bg-primary rounded-circle p-1"/>
               <span className="small text-primary fw-medium">
                 Results ready
               </span>
@@ -328,31 +430,27 @@ export const BEDAnalytics = () => {
           )}
 
           <div className="mt-3">
-            {rs && (
+            {analysisResult && (
               <div>
                 <div className="mt-3 p-3 border rounded shadow-sm bg-white">
                   <table className="table table-sm mb-0">
                     <tbody>
                     <tr>
                       <th scope="row">Identifier</th>
-                      <td>{rs.identifier}</td>
+                      <td>{analysisResult.identifier}</td>
                     </tr>
                     <tr>
                       <th scope="row">Mean region width</th>
-                      <td>{rs.meanRegionWidth}</td>
+                      <td>{analysisResult.mean_region_width}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of regions</th>
-                      <td>{rs.numberOfRegions}</td>
+                      <td>{analysisResult.number_of_regions.toLocaleString()}</td>
                     </tr>
                     <tr>
                       <th scope="row">Total number of nucleotides</th>
-                      <td>{rs.nucleotidesLength}</td>
+                      <td>{analysisResult.nucleotides_length.toLocaleString()}</td>
                     </tr>
-                    {/*<tr>*/}
-                    {/*  <th scope="row">First row</th>*/}
-                    {/*  <td>{rs.first_region}</td>*/}
-                    {/*</tr>*/}
                     <tr>
                       <th scope="row">Data Format</th>
                       <td>{classify?.data_format}</td>
@@ -371,7 +469,8 @@ export const BEDAnalytics = () => {
                     >
                       {analyzeGenomeMutation.isPending ? (
                         <>
-                          <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                          <span className="spinner-border spinner-border-sm me-2" role="status"
+                                aria-hidden="true"></span>
                           Analyzing...
                         </>
                       ) : (
@@ -382,22 +481,18 @@ export const BEDAnalytics = () => {
                 </div>
                 <div className="mt-5">
                   <h3>Interval chromosome length statistics</h3>
-                  {rs && (
-                    <ChromosomeStatsPanel rs={rs} selectedFile={selectedFile} />
+                  {analysisResult && (
+                    <ChromosomeStatsPanel
+                      chromosomeStatistics={analysisResult.chromosome_statistics}
+                      selectedFile={selectedFile}
+                    />
                   )}
                 </div>
                 <div className="mt-5">
-                  {rs && (
-                    // <div className="mt-3 p-3 border rounded shadow-sm bg-light">
-                    //   <h5>Region Distribution Data</h5>
-                    //   <pre className="bg-white p-3 rounded border"
-                    //        style={{ fontSize: '0.875rem', maxHeight: '400px', overflow: 'auto' }}>
-                    //     {JSON.stringify(rs.calculateRegionDistribution(300), null, 2)}
-                    //   </pre>
-                    // </div>
+                  {analysisResult && (
                     <div className="mb-3">
                       <RegionDistributionPlot
-                        data={rs.regionDistribution(300)}
+                        data={analysisResult.region_distribution}
                       />
                     </div>
                   )}

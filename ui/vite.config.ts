@@ -9,6 +9,10 @@ export default defineConfig({
   build: {
     target: 'esnext', // Ensure ESNext target for WASM support
   },
+  worker: {
+    format: 'es', // Use ES modules for workers to support code splitting and WASM
+    plugins: () => [wasm(), topLevelAwait()],
+  },
   server: {
     fs: {
       allow: ['..'], // Allow serving files from one level up to the project root

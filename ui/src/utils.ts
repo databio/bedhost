@@ -1,4 +1,5 @@
-import * as pako from 'pako';
+// DEPRECATED: pako import no longer needed - BED parsing moved to WASM streaming worker
+// import * as pako from 'pako';
 
 type ObjectType = 'bed' | 'bedset';
 
@@ -156,64 +157,62 @@ export const convertStatusCodeToMessage = (statusCode: number | undefined) => {
   }
 };
 
-// gtars bedfile handler
-export type BedEntry = [string, number, number, string];
+// DEPRECATED: BED parsing functions moved to WASM streaming worker (bedAnalyzerWorker.js)
+// The worker handles gzip decompression in Rust for better performance and non-blocking UI.
+// Keeping these commented out for reference.
 
-export async function parseBedFile(file: File): Promise<BedEntry[]> {
-  let text: string;
-  if (file.name.endsWith('.gz')) {
-    const arrayBuffer = await file.arrayBuffer();
-    const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
-    text = decompressed;
-  } else {
-    text = await file.text();
-  }
-  const lines = text.split('\n');
-  const bedEntries: BedEntry[] = [];
-
+// export type BedEntry = [string, number, number, string];
+//
 // export async function parseBedFile(file: File): Promise<BedEntry[]> {
-//   const text = await file.text();
+//   let text: string;
+//   if (file.name.endsWith('.gz')) {
+//     const arrayBuffer = await file.arrayBuffer();
+//     const decompressed = pako.ungzip(new Uint8Array(arrayBuffer), { to: 'string' });
+//     text = decompressed;
+//   } else {
+//     text = await file.text();
+//   }
 //   const lines = text.split('\n');
 //   const bedEntries: BedEntry[] = [];
-
-  for (const line of lines) {
-    const trimmedLine = line.trim();
-
-    // skip!
-    if (!trimmedLine || trimmedLine.startsWith('#')) {
-      continue;
-    }
-
-    const columns = trimmedLine.split('\t');
-
-    // check for at least 3 columns (chr, start, end)
-    if (columns.length >= 3) {
-      const chr = columns[0];
-      const start = parseInt(columns[1], 10);
-      const end = parseInt(columns[2], 10);
-      const rest = columns.slice(3).join('\t'); // join remaining columns if any
-
-      // Validate that start and end are valid numbers
-      if (!isNaN(start) && !isNaN(end)) {
-        bedEntries.push([chr, start, end, rest]);
-      }
-    }
-  }
-
-  return bedEntries;
-}
-
-// helper function to handle file input change event
-export function handleBedFileInput(event: Event, callback: (entries: BedEntry[]) => void): void {
-  const input = event.target as HTMLInputElement;
-  const file = input.files?.[0];
-
-  if (file) {
-    parseBedFile(file)
-      .then(callback)
-      .catch((error) => console.error('Error parsing BED file:', error));
-  }
-}
+//
+//   for (const line of lines) {
+//     const trimmedLine = line.trim();
+//
+//     // skip!
+//     if (!trimmedLine || trimmedLine.startsWith('#')) {
+//       continue;
+//     }
+//
+//     const columns = trimmedLine.split('\t');
+//
+//     // check for at least 3 columns (chr, start, end)
+//     if (columns.length >= 3) {
+//       const chr = columns[0];
+//       const start = parseInt(columns[1], 10);
+//       const end = parseInt(columns[2], 10);
+//       const rest = columns.slice(3).join('\t'); // join remaining columns if any
+//
+//       // Validate that start and end are valid numbers
+//       if (!isNaN(start) && !isNaN(end)) {
+//         bedEntries.push([chr, start, end, rest]);
+//       }
+//     }
+//   }
+//
+//   return bedEntries;
+// }
+//
+// // helper function to handle file input change event
+// export function handleBedFileInput(event: Event, callback: (entries: BedEntry[]) => void): void {
+//   const input = event.target as HTMLInputElement;
+//   const file = input.files?.[0];
+//
+//   if (file) {
+//     parseBedFile(file)
+//       .then(callback)
+//       .catch((error) => console.error('Error parsing BED file:', error));
+//   }
+// }
 
 export const tableau20 = [
   '#1f77b4',
