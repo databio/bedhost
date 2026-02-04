@@ -467,12 +467,18 @@ async def text_to_bed_search(
                 score=1.0,
                 metadata=bbagent.bed.get(query),
             )
+            if result.metadata is None:
+                raise BEDFileNotFoundError(f"Bed file with id {query} not found")
+
             try:
                 similar_results = bbagent.bed.get_neighbours(
                     query, limit=limit, offset=offset
                 )
                 if similar_results.results and offset == 0:
                     similar_results.results.insert(0, result)
+                    return similar_results
+                else:
+                    raise BEDFileNotFoundError(f"Similar beds not found")
             except Exception as _:
                 similar_results = BedListSearchResult(
                     count=1,
