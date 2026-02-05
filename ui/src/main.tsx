@@ -6,8 +6,8 @@ import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-qu
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { BedCartProvider } from './contexts/bedcart-context.tsx';
 import toast, { Toaster } from 'react-hot-toast';
+import { Home_alt3 } from './pages/home_alt3.tsx';
 import { Home } from './pages/home.tsx';
-import { HomeAlt } from './pages/home_alt.tsx';
 import { HomeAlt2 } from './pages/home_alt2.tsx';
 import { Metrics } from './pages/metrics.tsx';
 import { BEDUmap } from './pages/bed-umap.tsx';
@@ -63,7 +63,7 @@ const router = createBrowserRouter([
   },
   {
     path: '/home_alt',
-    element: <HomeAlt />,
+    element: <Home_alt3 />,
   },
   {
     path: '/home_alt2',

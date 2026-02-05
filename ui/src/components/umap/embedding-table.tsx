@@ -31,8 +31,8 @@ export const EmbeddingTable = (props: Props) => {
               <td>{point.fields?.Description}</td>
               <td className='text-center' onClick={(e) => e.stopPropagation()}>
                 {point.identifier !== 'custom_point' && (
-                  <a href={`/bed/${point.identifier}`} className='text-primary' title='View BED page'>
-                    <i className='bi bi-box-arrow-up-right' />
+                  <a href={`/bed/${point.identifier}`} className='text-primary text-decoration-none' title='View BED page'>
+                    <i className='bi bi-box-arrow-up-right' /> View
                   </a>
                 )}
               </td>

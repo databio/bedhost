@@ -62,15 +62,15 @@ const TooltipContent = ({ tooltip, showLink, simpleTooltip }: { tooltip: Tooltip
               </div>
             </>
           )}
-          {showLink && tooltip.identifier !== 'custom_point' && (
-            <a
-              href={`/bed/${tooltip.identifier}`}
-              className='btn btn-xs btn-primary mt-2'
-              style={{ pointerEvents: 'auto' }}
-            >
-              Go!
-            </a>
-          )}
+          {/*{showLink && tooltip.identifier !== 'custom_point' && (*/}
+          {/*  <a*/}
+          {/*    href={`/bed/${tooltip.identifier}`}*/}
+          {/*    className='btn btn-xs btn-primary mt-2'*/}
+          {/*    style={{ pointerEvents: 'auto' }}*/}
+          {/*  >*/}
+          {/*    Go!*/}
+          {/*  </a>*/}
+          {/*)}*/}
         </div>
       )}
       
