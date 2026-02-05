@@ -15,6 +15,7 @@ export const EmbeddingTable = (props: Props) => {
             <th scope='col'>Assay</th>
             <th scope='col'>Cell Line</th>
             <th scope='col'>Description</th>
+            <th scope='col'></th>
           </tr>
         </thead>
         <tbody>
@@ -28,6 +29,13 @@ export const EmbeddingTable = (props: Props) => {
               <td>{point.fields?.Assay}</td>
               <td>{point.fields?.['Cell Line']}</td>
               <td>{point.fields?.Description}</td>
+              <td className='text-center' onClick={(e) => e.stopPropagation()}>
+                {point.identifier !== 'custom_point' && (
+                  <a href={`/bed/${point.identifier}`} className='text-primary' title='View BED page'>
+                    <i className='bi bi-box-arrow-up-right' />
+                  </a>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
