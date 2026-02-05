@@ -12,9 +12,8 @@ import { Text2BedSearchResultsTable } from '../components/search/text2bed/t2b-se
 import { useBedNeighbours } from '../queries/useBedNeighbours';
 import type { components } from '../../bedbase-types.d.ts';
 import { SearchBedSetResultTable } from '../components/search/text2bedset/t2bs-search-results-table.tsx';
-import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
-import { useState, useRef } from 'react';
-import type { EmbeddingContainerRef } from '../components/umap/embedding-container.tsx';
+import { EmbeddingPlot } from '../components/umap/embedding-plot.tsx';
+import { useState } from 'react';
 import { Text2BedSearchResultsCards } from '../components/search/text2bed/t2b-search-results-cards.tsx';
 import { SearchBedSetResultCards } from '../components/search/text2bedset/t2bs-search-results-cards.tsx';
 
@@ -26,7 +25,6 @@ export const BedSplash = () => {
 
   const [similarTabular, setSimilarTabular] = useState(true);
   const [bedsetsTabular, setBedsetsTabular] = useState(true);
-  const embeddingPlotRef = useRef<EmbeddingContainerRef>(null);
 
   const {
     isLoading,
@@ -250,22 +248,25 @@ export const BedSplash = () => {
             </div>
             {bedId && metadata?.name?.includes('encode') && (
               <div className='col-md-6 gap-2'>
-                <div className='border rounded bg-white overflow-hidden embedding-card'>
-                  <EmbeddingContainer 
-                    ref={embeddingPlotRef}
-                    bedIds={[bedId]} 
-                    height={filteredKeys.length * 24} 
-                    preselectPoint={true} 
-                    centerInitial={true} 
-                    tooltipInitial={true} 
-                    simpleTooltip={true} 
-                    blockCompact={true} 
-                    showBorder={false} 
-                  />
-                  <div className='text-center'>
-                    <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>Region Embeddings Location</p>
+                <a href={`/umap?searchId=${bedId}`} className='text-decoration-none text-reset'>
+                  <div className='border rounded bg-white overflow-hidden embedding-card'>
+                    <div className='position-relative' style={{ overflow: 'hidden' }}>
+                      <div className='position-absolute w-100 h-100' style={{ top: 0, left: 0, zIndex: 1, cursor: 'pointer' }} />
+                      <EmbeddingPlot
+                        bedIds={[bedId]}
+                        height={filteredKeys.length * 24}
+                        preselectPoint={true}
+                        centerInitial={true}
+                        tooltipInitial={true}
+                        simpleTooltip={true}
+                        showStatus={false}
+                      />
+                    </div>
+                    <div className='text-center'>
+                      <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>Region Embeddings Location</p>
+                    </div>
                   </div>
-                </div>
+                </a>
               </div>
             )}
           </div>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Layout } from '../components/layout';
 import { useNavigate } from 'react-router-dom';
 import Markdown from 'react-markdown';
@@ -8,8 +8,7 @@ import { BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
-import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
-import type { EmbeddingContainerRef } from '../components/umap/embedding-container.tsx';
+import { EmbeddingPlot } from '../components/umap/embedding-plot.tsx';
 import { FileSearchGraphic } from '../components/graphics/file-search-graphic.tsx';
 import { BedAnalyzerGraphic } from '../components/graphics/bed-analyzer-graphic.tsx';
 
@@ -22,8 +21,6 @@ export const Home = () => {
   const [searchType, setSearchType] = useState('t2b');
   // const [activeApiTab, setActiveApiTab] = useState(CODE_SNIPPETS[0].language);
   const [activeClientTab, setActiveClientTab] = useState(BBCONF_SNIPPETS[0].language);
-
-  const embeddingContainerRef = useRef<EmbeddingContainerRef>(null)
 
   const navigate = useNavigate();
 
@@ -316,34 +313,34 @@ export const Home = () => {
             </div>
 
             <div className='col-md-12'>
-              <div className='card h-100 border w-100 rounded-3'>
-                <div className='d-flex flex-column w-100'>
-                  <div className='border-bottom position-relative embedding-card rounded-top' style={{ height: '220px' }}>
-                    <EmbeddingContainer
-                      ref={embeddingContainerRef}
-                      bedIds={undefined}
-                      height={219}
-                      preselectPoint={false}
-                      centerInitial={false}
-                      tooltipInitial={false}
-                      simpleTooltip={false}
-                      blockCompact={true}
-                      showBorder={false}
-                      rounded={'rounded-3'}
-                    />
-                  </div>
-                  <div className='card-body'>
-                    <div className='d-flex align-items-center mb-2'>
-                      <i className='bi bi-map fs-5 text-primary me-2'></i>
-                      <h6 className='mb-0 fw-semibold'>Region Embeddings</h6>
+              <a href='/umap' className='text-decoration-none text-reset'>
+                <div className='card h-100 border w-100 rounded-3'>
+                  <div className='d-flex flex-column w-100'>
+                    <div className='border-bottom position-relative embedding-card rounded-top' style={{ height: '220px', overflow: 'hidden' }}>
+                      <div className='position-absolute w-100 h-100' style={{ top: 0, left: 0, zIndex: 1 }} />
+                      <EmbeddingPlot
+                        bedIds={undefined}
+                        height={219}
+                        preselectPoint={false}
+                        centerInitial={false}
+                        tooltipInitial={false}
+                        simpleTooltip={false}
+                        showStatus={false}
+                      />
                     </div>
-                    <p className='text-muted text-sm mb-1'>
-                      We provide a UMAP of the BEDbase genomic region embedding space, where embeddings are calculated from the genomic regions contained in each hg38 BED file.
-                      Distances between BED files represent inherent similarities between their contained genomic regions, providing a visual means to compare the contents of all hg38 BED files on BEDbase at once.
-                    </p>
+                    <div className='card-body'>
+                      <div className='d-flex align-items-center mb-2'>
+                        <i className='bi bi-map fs-5 text-primary me-2'></i>
+                        <h6 className='mb-0 fw-semibold'>Region Embeddings</h6>
+                      </div>
+                      <p className='text-muted text-sm mb-1'>
+                        We provide a UMAP of the BEDbase genomic region embedding space, where embeddings are calculated from the genomic regions contained in each hg38 BED file.
+                        Distances between BED files represent inherent similarities between their contained genomic regions, providing a visual means to compare the contents of all hg38 BED files on BEDbase at once.
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </a>
             </div>
           </div>
         </div>

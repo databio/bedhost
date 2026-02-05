@@ -140,6 +140,34 @@
   }
 }
 
+// Standalone UMAP page layout (non-modal)
+.embedding-page {
+  width: 100%;
+  height: calc(100vh - 56px);
+
+  &__layout {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    height: 100%;
+  }
+
+  &__main {
+    flex: 1 1 77.5%;
+    min-width: 0;
+  }
+
+  &__secondary {
+    // table below plot
+  }
+
+  &__sidebar {
+    flex: 0 0 22.5%;
+    max-width: 22.5%;
+    overflow-y: auto;
+  }
+}
+
 .expandable-card-backdrop {
   position: fixed;
   inset: 0;

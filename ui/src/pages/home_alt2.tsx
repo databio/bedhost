@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Layout } from '../components/layout';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,8 +9,7 @@ import { BBCONF_SNIPPETS } from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import { useExampleBedSet } from '../queries/useExampleBedSet';
 import { useStats } from '../queries/useStats.ts';
-import { EmbeddingContainer } from '../components/umap/embedding-container.tsx';
-import type { EmbeddingContainerRef } from '../components/umap/embedding-container.tsx';
+import { EmbeddingPlot } from '../components/umap/embedding-plot.tsx';
 import { FileSearchGraphic } from '../components/graphics/file-search-graphic.tsx';
 import { BedAnalyzerGraphic } from '../components/graphics/bed-analyzer-graphic.tsx';
 
@@ -21,8 +20,6 @@ export const HomeAlt2 = () => {
   const [copiedClient, setCopiedClient] = useState(false);
   const [searchType, setSearchType] = useState('t2b');
   const [activeClientTab, setActiveClientTab] = useState(BBCONF_SNIPPETS[0].language);
-
-  const embeddingContainerRef = useRef<EmbeddingContainerRef>(null);
 
   const navigate = useNavigate();
 
@@ -280,20 +277,20 @@ export const HomeAlt2 = () => {
               </p>
             </div>
             <div className='col-12 col-md-6 d-flex justify-content-center ps-md-4'>
-              <div className='w-100 border rounded-3 overflow-hidden' style={{ height: '220px' }}>
-                <EmbeddingContainer
-                  ref={embeddingContainerRef}
-                  bedIds={undefined}
-                  height={219}
-                  preselectPoint={false}
-                  centerInitial={false}
-                  tooltipInitial={false}
-                  simpleTooltip={false}
-                  blockCompact={true}
-                  showBorder={false}
-                  rounded={'rounded-3'}
-                />
-              </div>
+              <a href='/umap' className='text-decoration-none text-reset w-100'>
+                <div className='w-100 border rounded-3 overflow-hidden position-relative' style={{ height: '220px' }}>
+                  <div className='position-absolute w-100 h-100' style={{ top: 0, left: 0, zIndex: 1, cursor: 'pointer' }} />
+                  <EmbeddingPlot
+                    bedIds={undefined}
+                    height={219}
+                    preselectPoint={false}
+                    centerInitial={false}
+                    tooltipInitial={false}
+                    simpleTooltip={false}
+                    showStatus={false}
+                  />
+                </div>
+              </a>
             </div>
           </div>
 
