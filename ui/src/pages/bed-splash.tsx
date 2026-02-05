@@ -68,14 +68,10 @@ export const BedSplash = () => {
 
     return (
       <tr key={k}>
-        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>
-        {/* <td style={{ width: '200px' }} className='fst-italic text-muted p-0 pb-1 text-end'> */}
+        <td style={{ maxWidth: '50px' }} className='fst-italic'>
           {snakeToTitleCase(k)}
         </td>
-        <td
-          style={{ maxWidth: '0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}
-          className='pt-0 pb-1'
-        >
+        <td style={{ maxWidth: '120px' }} className='truncate'>
           {k === 'global_sample_id'
             ? Array.isArray(value) && value.length > 0
               ? value
@@ -190,10 +186,10 @@ export const BedSplash = () => {
           >
             <h1 className='fw-bold text-center mb-3'>Oh no!</h1>
             <div className='d-flex flex-row align-items-center w-100 justify-content-center'>
-              <h5 className='text-2xl text-center'>
+              <h4 className='text-2xl text-center'>
                 We could not find BED with record identifier: <br />
                 <span className='fw-bold'>{bedId}</span>
-              </h5>
+              </h4>
             </div>
             <div className='w-50'>
               <p className='fst-italic text-center mt-3'>
@@ -234,37 +230,57 @@ export const BedSplash = () => {
           </div>
           <div className='row mt-1 mb-3 g-2'>
             <div className='col-12 col-xl-6 d-flex flex-column'>
-              <h5 className='fw-bold'>Overview</h5>
-              <div className='border rounded p-3 bg-white flex-grow-1'>
-                <div className='text-sm'>
-                  <table className='table table-sm table-borderless table-transparent mb-0'>
-                    <tbody>{filteredKeys.map(metadataRow)}</tbody>
+              <h4 className='fw-bold'>Summary</h4>
+              <div className='border rounded px-0 pt-1 shadow-sm flex-grow-1'>
+                <div className='table-responsive'>
+                  <table className='table table-sm table-striped text-truncate text-sm'>
+                    <thead>
+                      <tr>
+                        <th scope='col'>Key</th>
+                        <th scope='col'>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody className='text-sm'>{filteredKeys.map(metadataRow)}</tbody>
                   </table>
                 </div>
               </div>
             </div>
             <div className='col-12 col-xl-6 d-flex flex-column'>
-              <h5 className='fw-bold'>Statistics</h5>
-              <div className='border rounded p-3 bg-white flex-grow-1'>
-                <div className='text-sm'>
-                  <table className='table table-sm table-borderless table-transparent mb-0'>
-                    <tbody>
+              <h4 className='fw-bold'>Statistics</h4>
+              <div className='border rounded px-0 pt-1 shadow-sm flex-grow-1'>
+                <div className='table-responsive'>
+                  <table className='table table-sm table-striped text-sm w-100'>
+                    <thead>
                       <tr>
-                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>Number of Regions</td>
-                        <td className='pt-0 pb-1'>{(metadata?.stats?.number_of_regions || 0).toLocaleString()}</td>
+                        <th scope='col' style={{ width: '200px' }}>Key</th>
+                        <th scope='col'>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody className='text-sm'>
+                      <tr>
+                        <td className='fst-italic' style={{ width: '200px' }}>Number of Regions</td>
+                        <td>{(metadata?.stats?.number_of_regions || 0).toLocaleString()}</td>
                       </tr>
                       <tr>
-                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>Median TSS Distance</td>
-                        <td className='pt-0 pb-1'>{(metadata?.stats?.median_tss_dist || 0).toLocaleString()} bp</td>
+                        <td className='fst-italic'>Median TSS Distance</td>
+                        <td>{(metadata?.stats?.median_tss_dist || 0).toLocaleString()} bp</td>
                       </tr>
                       <tr>
-                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>Mean Region Width</td>
-                        <td className='pt-0 pb-1'>{(metadata?.stats?.mean_region_width || 0).toLocaleString()} bp</td>
+                        <td className='fst-italic'>Mean Region Width</td>
+                        <td>{(metadata?.stats?.mean_region_width || 0).toLocaleString()} bp</td>
                       </tr>
                       <tr>
-                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>GC Content</td>
-                        <td className='pt-0 pb-1'>{(metadata?.stats?.gc_content || 0).toLocaleString()}</td>
+                        <td className='fst-italic'>GC Content</td>
+                        <td>{(metadata?.stats?.gc_content || 0).toLocaleString()}</td>
                       </tr>
+                      {Array(Math.max(0, filteredKeys.length - 4))
+                        .fill(null)
+                        .map((_, index) => (
+                          <tr key={`empty-${index}`}>
+                            <td>&nbsp;</td>
+                            <td>&nbsp;</td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>
@@ -272,10 +288,10 @@ export const BedSplash = () => {
             </div>
           </div>
 
-          {bedId && metadata?.name?.includes('encode') && (
+          {bedId && metadata?.genome_alias === 'hg38' && (
             <div className='row mb-3 g-2'>
               <div className='col-12'>
-                <h5 className='fw-bold'>Embeddings</h5>
+                <h4 className='fw-bold'>Interactive Embeddings UMAP</h4>
                 <a href={`/umap?searchId=${bedId}`} className='text-decoration-none text-reset'>
                   <div className='border rounded bg-white overflow-hidden embedding-card'>
                     <div className='position-relative' style={{ overflow: 'hidden' }}>
@@ -300,7 +316,7 @@ export const BedSplash = () => {
           )}
 
           <div className='row mb-4'>
-            <h5 className='fw-bold'>Plots</h5>
+            <h4 className='fw-bold'>Plots</h4>
             <div className='col-sm-12'>
               <Plots metadata={metadata!} />
             </div>
@@ -310,7 +326,7 @@ export const BedSplash = () => {
             <div className={`row ${bedsetsTabular ? 'mb-4' : 'mb-3'}`}>
               <div className='col-12'>
                 <div className='d-flex justify-content-between align-items-center px-0'>
-                  <h5 className='fw-bold px-0'>BEDsets</h5>
+                  <h4 className='fw-bold px-0'>BEDsets</h4>
                   <div className='form-check form-switch form-switch-sm'>
                     <input
                       className='form-check-input'
@@ -367,7 +383,7 @@ export const BedSplash = () => {
             <div className={`row ${similarTabular ? 'mb-4' : 'mb-3'}`}>
               <div className='col-12'>
                 <div className='d-flex justify-content-between align-items-center px-0'>
-                  <h5 className='fw-bold px-0'>Similar BED Files</h5>
+                  <h4 className='fw-bold px-0'>Similar BED Files</h4>
                   <div className='form-check form-switch form-switch-sm'>
                     <input
                       className='form-check-input'

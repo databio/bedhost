@@ -181,143 +181,168 @@ export const BedSplashHeader = (props: Props) => {
           </Dropdown>
         </div>
       </div>
-      
-      
-      <div className='d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between overflow-x-auto mt-3'>
-        <div className='d-md-flex flex-row gap-1 mb-xl-0 align-items-start'>
-          <h5 className='fw-bold' style={{marginTop: '1px'}}>{metadata.name}</h5>
-          <div className='d-flex align-items-center ms-2 mt-1'>
-            {metadata?.genome_digest ? (
+      <div>
+        <h5 className="fw-semibold mb-1">{metadata.name}</h5>
+        <p className="text-body-secondary fst-italic">{metadata?.description || 'No description available'}</p>
+      </div>
+      <div
+        className="d-flex flex-column flex-xl-row align-items-start align-items-xl-end justify-content-xl-between mt-2 overflow-x-auto">
+        <div className="d-md-flex flex-row gap-1 text-lg mb-2 mb-xl-0">
+          <div className="d-flex flex-row">
+            <div className="mb-0">
               <OverlayTrigger
-                placement='top'
+                placement="top"
                 overlay={
-                  <div className='tooltip'>
-                    <div className='tooltip-arrow' />
-                    <div className='tooltip-inner'>Genome assembly</div>
+                  <div className="tooltip">
+                    <div className="tooltip-arrow" />
+                    <div className="tooltip-inner">Genome assembly</div>
                   </div>
                 }
               >
-                <a
-                  href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`}
-                  target='_blank'
-                  className='d-inline-flex'
+                {metadata?.genome_digest ? (
+                  <>
+                    <a href={`https://api.refgenie.org/v4/page/genome/${metadata.genome_digest}`}
+                       target="_blank">
+                      <div
+                        className={genomeStats?.compared_genome ? 'badge bg-primary rounded-end-0' : 'badge bg-primary'}>
+                        <i className="bi bi-database-fill me-2" />
+                        {metadata.genome_alias || 'No assembly available'}
+                      </div>
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <div className="badge bg-primary rounded-end-0">
+                      <i className="bi bi-database-fill me-2" />
+                      {metadata.genome_alias || 'No assembly available'}
+                    </div>
+                  </>
+                )}
+              </OverlayTrigger>
+              {genomeStats?.compared_genome &&
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <div className="tooltip">
+                      <div className="tooltip-arrow" />
+                      <div className="tooltip-inner">Genome compatibility details</div>
+                    </div>
+                  }
                 >
                   <div
-                    className={`${genomeStats?.compared_genome ? 'rounded-end-0' : ''} badge bg-primary`}
+                    className="badge bg-primary border-start border-light rounded-start-0"
+                    role="button"
+                    onClick={() => {
+                      if (showRefGenomeModal !== true) {
+                        setShowRefGenomeModal(true);
+                      }
+                    }}
                   >
-                    {metadata.genome_alias || 'No assembly available'}
+                    <i className="bi bi-info-circle-fill" />
                   </div>
-                </a>
-              </OverlayTrigger>
-            ) : (
+                </OverlayTrigger>
+              }
+            </div>
+          </div>
+          <div className="d-flex flex-row">
+            <div className="mb-0">
               <OverlayTrigger
-                placement='top'
+                placement="top"
                 overlay={
-                  <div className='tooltip'>
-                    <div className='tooltip-arrow' />
-                    <div className='tooltip-inner'>Genome assembly</div>
+                  <div className="tooltip">
+                    <div className="tooltip-arrow" />
+                    <div className="tooltip-inner">BED compliance</div>
                   </div>
                 }
               >
-                <div className='badge bg-primary rounded-end-0'>
-                  {metadata.genome_alias || 'No assembly available'}
+                <div className="badge bg-primary">
+                  <i className="bi bi-file-earmark-text-fill me-1" />
+                  {metadata?.bed_compliance || 'No compliance available'}
                 </div>
               </OverlayTrigger>
-            )}
-            {genomeStats?.compared_genome && (
+            </div>
+          </div>
+          <div className="d-flex flex-row">
+            <div className="mb-0">
               <OverlayTrigger
-                placement='top'
+                placement="top"
                 overlay={
-                  <div className='tooltip'>
-                    <div className='tooltip-arrow' />
-                    <div className='tooltip-inner'>Genome compatibility details</div>
+                  <div className="tooltip">
+                    <div className="tooltip-arrow" />
+                    <div className="tooltip-inner">Data Format</div>
                   </div>
                 }
               >
-                <div
-                  className='badge bg-primary border-start border-light rounded-start-0'
-                  role='button'
-                  onClick={() => {
-                    if (showRefGenomeModal !== true) {
-                      setShowRefGenomeModal(true);
-                    }
-                  }}
+                <div className="badge bg-primary">
+                  <i className="bi bi-folder-fill me-1" />
+                  {metadata?.data_format || 'No data format available'}
+                </div>
+              </OverlayTrigger>
+            </div>
+          </div>
+          <div className="d-flex flex-row">
+            <div className="mb-0">
+              <a
+                href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`}
+                target="_blank"
+              >
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <div className="tooltip">
+                      <div className="tooltip-arrow" />
+                      <div className="tooltip-inner">License</div>
+                    </div>
+                  }
                 >
-                  <i className='bi bi-info-circle-fill' style={{fontSize: '0.74rem'}}/>
-                </div>
-              </OverlayTrigger>
-            )}
+                  <div className="badge bg-primary">
+                    <i className="bi bi-award-fill me-1" />
+                    {metadata?.license_id || 'DUO:0000042'}
+                  </div>
+                </OverlayTrigger>
+              </a>
+            </div>
           </div>
-          <OverlayTrigger
-            placement='top'
-            overlay={
-              <div className='tooltip'>
-                <div className='tooltip-arrow' />
-                <div className='tooltip-inner'>BED compliance</div>
-              </div>
-            }
-          >
-            <div className='badge bg-primary mt-1'>
-              {metadata?.bed_compliance || 'No compliance available'}
-            </div>
-          </OverlayTrigger>
-          <OverlayTrigger
-            placement='top'
-            overlay={
-              <div className='tooltip'>
-                <div className='tooltip-arrow' />
-                <div className='tooltip-inner'>Data Format</div>
-              </div>
-            }
-          >
-            <div className='badge bg-primary mt-1'>
-              {metadata?.data_format || 'No data format available'}
-            </div>
-          </OverlayTrigger>
-          <a
-            href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`}
-            target='_blank'
-            className='d-inline-flex'
-          >
-            <OverlayTrigger
-              placement='top'
-              overlay={
-                <div className='tooltip'>
-                  <div className='tooltip-arrow' />
-                  <div className='tooltip-inner'>License</div>
-                </div>
-              }
-            >
-              <div className='badge bg-primary mt-1'>
-                {metadata?.license_id || 'DUO:0000042'}
-              </div>
-            </OverlayTrigger>
-          </a>
           {metadata?.is_universe && (
-            <OverlayTrigger
-              placement='top'
-              overlay={
-                <div className='tooltip'>
-                  <div className='tooltip-arrow' />
-                  <div className='tooltip-inner'>This BED file is part of the Universe</div>
-                </div>
-              }
-            >
-              <div className='badge bg-secondary cursor-default'>
-                Universe
+            <div className="d-flex flex-row">
+              <div className="mb-0 cursor-default">
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <div className="tooltip">
+                      <div className="tooltip-arrow" />
+                      <div className="tooltip-inner">This BED file is part of the Universe</div>
+                    </div>
+                  }
+                >
+                  <div className="badge bg-secondary">
+                    <i className="bi bi bi-globe2 me-1" />
+                    Universe
+                  </div>
+                </OverlayTrigger>
               </div>
-            </OverlayTrigger>
+            </div>
           )}
-          <div className='badge text-muted mt-1 fw-medium' style={{ boxShadow: 'inset 0 0 0 1px rgba(33, 37, 41, 0.75)'}}>
-            {'Created: ' + formatDateShort(metadata?.submission_date || '')}
+        </div>
+        <div
+          className="d-flex flex-column flex-md-row justify-content-xl-between align-items-start align-items-xl-end text-sm">
+          <div className="d-flex flex-row text-muted">
+            <i className="bi bi-calendar4-event me-1" />
+            <p className="mb-0">
+              <span>Created:</span>{' '}
+              {metadata?.submission_date ? formatDateShort(metadata?.submission_date) : 'No date available'}
+            </p>
           </div>
-          <div className='badge text-muted mt-1 fw-medium' style={{ boxShadow: 'inset 0 0 0 1px rgba(33, 37, 41, 0.75)'}}>
-            {'Updated: ' + formatDateShort(metadata?.last_update_date || '')}
+
+          <div className="d-flex flex-row text-muted ms-md-4">
+            <i className="bi bi-calendar4-event me-1" />
+            <p className="mb-0">
+              <span>Updated:</span>{' '}
+              {metadata?.last_update_date ? formatDateShort(metadata?.last_update_date) : 'No date available'}
+            </p>
           </div>
         </div>
       </div>
-
-      <p className='text-muted fst-italic text-sm mb-4'>{metadata?.description || 'No description available'}</p>
 
       {genomeStats?.compared_genome && (
         <RefGenomeModal
