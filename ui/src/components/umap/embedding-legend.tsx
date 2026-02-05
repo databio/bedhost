@@ -7,15 +7,29 @@ type Props = {
   colorGrouping: string;
   setColorGrouping: (colorGrouping: string) => void;
   onSaveCategory?: (item: any) => void;
+  persistentFilter?: { column: string; category: string; name: string } | null;
+  onPinFilter?: (filter: { column: string; category: string; name: string }) => void;
+  onClearPersistentFilter?: () => void;
 };
 
 export const EmbeddingLegend = (props: Props) => {
-  const { legendItems, filterSelection, handleLegendClick, colorGrouping, setColorGrouping, onSaveCategory } = props;
+  const { legendItems, filterSelection, handleLegendClick, colorGrouping, setColorGrouping, onSaveCategory, persistentFilter, onPinFilter, onClearPersistentFilter } = props;
 
   return (
     <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(100vh - 93.6px)` }}>
       <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
-        <span>Legend</span>
+        <span className='d-flex align-items-center gap-1'>
+          Legend
+          {persistentFilter && (
+            <span className='badge text-bg-primary d-flex align-items-center gap-1 fw-normal'>
+              {persistentFilter.name}
+              <i
+                className='bi bi-x-lg cursor-pointer'
+                onClick={() => onClearPersistentFilter?.()}
+              />
+            </span>
+          )}
+        </span>
         <div className='btn-group btn-group-xs' role='group'>
           <input
             type='radio'
@@ -63,6 +77,12 @@ export const EmbeddingLegend = (props: Props) => {
                   {filterSelection?.category === item.category && (
                     <span className='d-flex gap-1'>
                       <button className='btn btn-danger btn-xs'>Clear</button>
+                      <button
+                        className='btn btn-primary btn-xs'
+                        onClick={(e) => { e.stopPropagation(); onPinFilter?.({ column: colorGrouping, category: item.category, name: item.name }); }}
+                      >
+                        Pin
+                      </button>
                       <button className='btn btn-secondary btn-xs' onClick={(e) => { e.stopPropagation(); onSaveCategory?.(item); }}>Save Selection</button>
                     </span>
                   )}

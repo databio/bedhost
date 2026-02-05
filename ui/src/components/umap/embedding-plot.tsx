@@ -29,6 +29,7 @@ type Props = {
   embeddingHeight?: number;
   onEmbeddingHeightChange?: (embeddingHeight: number) => void;
   highlightPoints?: any[];
+  persistentFilter?: { column: string; category: string; name: string } | null;
 };
 
 export type EmbeddingPlotRef = {
@@ -61,6 +62,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     embeddingHeight,
     onEmbeddingHeightChange,
     highlightPoints,
+    persistentFilter,
   } = props;
   const { coordinator, initializeData, addCustomPoint, deleteCustomPoint, webglStatus } = useMosaicCoordinator();
 
@@ -183,10 +185,13 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   };
 
   const fetchLegendItems = async (coordinator: any) => {
+    const persistentClause = persistentFilter
+      ? ` WHERE ${persistentFilter.column} = '${persistentFilter.category}'`
+      : '';
     const query = `SELECT DISTINCT
         ${colorGrouping.replace('_category', '')} as name,
         ${colorGrouping} as category
-        FROM data
+        FROM data${persistentClause}
         ORDER BY ${colorGrouping}`;
 
     const result = (await coordinator.query(query, { type: 'json' })) as any[];
@@ -194,6 +199,9 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   };
 
   const queryByCategory = async (category: string) => {
+    const persistentClause = persistentFilter
+      ? ` AND ${persistentFilter.column} = '${persistentFilter.category}'`
+      : '';
     const result: any = await coordinator.query(
       `SELECT
         x, y,
@@ -203,7 +211,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         id as identifier,
         {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
        FROM data
-       WHERE ${colorGrouping} = '${category}'`,
+       WHERE ${colorGrouping} = '${category}'${persistentClause}`,
       { type: 'json' },
     );
     return result || [];
@@ -218,19 +226,39 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     setRangeSelectionValue(null);
     onSelectedPointsChange?.([]);
     if (filterSelection?.category === item.category) {
+      // Toggle off legend filter, but keep persistent filter
       onFilterSelectionChange?.(null);
-      filter.update({
-        source: legendFilterSource, // memoized so that mosaic can keep track of source and clear previous selection
-        value: null,
-        predicate: null,
-      });
+      if (persistentFilter) {
+        filter.update({
+          source: legendFilterSource,
+          value: persistentFilter.category,
+          predicate: vg.eq(persistentFilter.column, persistentFilter.category),
+        });
+      } else {
+        filter.update({
+          source: legendFilterSource,
+          value: null,
+          predicate: null,
+        });
+      }
     } else {
+      // Apply legend filter (combined with persistent if active)
       onFilterSelectionChange?.(item);
-      filter.update({
-        source: legendFilterSource,
-        value: item.category,
-        predicate: vg.eq(colorGrouping, item.category),
-      });
+      const legendPredicate = vg.eq(colorGrouping, item.category);
+      if (persistentFilter) {
+        const persistentPredicate = vg.eq(persistentFilter.column, persistentFilter.category);
+        filter.update({
+          source: legendFilterSource,
+          value: item.category,
+          predicate: vg.and(persistentPredicate, legendPredicate),
+        });
+      } else {
+        filter.update({
+          source: legendFilterSource,
+          value: item.category,
+          predicate: legendPredicate,
+        });
+      }
     }
   };
 
@@ -258,8 +286,14 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     }
 
     let result;
-    // filter clause prevents selecting points that are not within a selected legend category
-    const filterClause = filterSelection ? ` AND ${colorGrouping} = '${filterSelection.category}'` : '';
+    // filter clause prevents selecting points that are not within a selected legend/persistent category
+    let filterClause = '';
+    if (persistentFilter) {
+      filterClause += ` AND ${persistentFilter.column} = '${persistentFilter.category}'`;
+    }
+    if (filterSelection) {
+      filterClause += ` AND ${colorGrouping} = '${filterSelection.category}'`;
+    }
 
     // Check if rectangle selection (bounding box)
     if (typeof value === 'object' && 'xMin' in value) {
@@ -349,13 +383,21 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
   }, [customCoordinates, isReady]);
 
   useEffect(() => {
-    // Clear filter selection when color grouping changes
+    // Clear legend filter when color grouping changes, but preserve persistent filter
     onFilterSelectionChange?.(null);
-    filter.update({
-      source: legendFilterSource,
-      value: null,
-      predicate: null,
-    });
+    if (persistentFilter) {
+      filter.update({
+        source: legendFilterSource,
+        value: persistentFilter.category,
+        predicate: vg.eq(persistentFilter.column, persistentFilter.category),
+      });
+    } else {
+      filter.update({
+        source: legendFilterSource,
+        value: null,
+        predicate: null,
+      });
+    }
   }, [colorGrouping]);
 
   useEffect(() => {
@@ -365,7 +407,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         onLegendItemsChange?.(result);
       });
     }
-  }, [isReady, colorGrouping, onLegendItemsChange]);
+  }, [isReady, colorGrouping, persistentFilter, onLegendItemsChange]);
 
   useEffect(() => {
     // initialize data
@@ -439,7 +481,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     handleLegendClick,
     queryByCategory,
     clearRangeSelection: () => setRangeSelectionValue(null),
-  }), [filterSelection, colorGrouping, selectedPoints, initialPoint]);
+  }), [filterSelection, colorGrouping, selectedPoints, initialPoint, persistentFilter]);
 
   return (
     <>

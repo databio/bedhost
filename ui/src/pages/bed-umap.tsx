@@ -30,6 +30,7 @@ export const BEDUmap: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [customCoordinates, setCustomCoordinates] = useState<number[] | null>(null);
   const [buckets, setBuckets] = useState<SelectionBucket[]>([]);
+  const [persistentFilter, setPersistentFilter] = useState<{ column: string; category: string; name: string } | null>(null);
 
   const bucketPoints = useMemo(() => {
     const enabled = buckets.filter(b => b.enabled);
@@ -89,6 +90,14 @@ export const BEDUmap: React.FC = () => {
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
+  };
+
+  const handlePinFilter = (pinFilter: { column: string; category: string; name: string }) => {
+    setPersistentFilter(pinFilter);
+  };
+
+  const handleClearPersistentFilter = () => {
+    setPersistentFilter(null);
   };
 
   const handleAddToCart = () => {
@@ -185,6 +194,7 @@ export const BEDUmap: React.FC = () => {
                 embeddingHeight={embeddingHeight}
                 onEmbeddingHeightChange={setEmbeddingHeight}
                 highlightPoints={bucketPoints}
+                persistentFilter={persistentFilter}
               />
             </div>
             <div className='embedding-page__secondary'>
@@ -204,6 +214,9 @@ export const BEDUmap: React.FC = () => {
               colorGrouping={colorGrouping}
               setColorGrouping={setColorGrouping}
               onSaveCategory={handleSaveCategory}
+              persistentFilter={persistentFilter}
+              onPinFilter={handlePinFilter}
+              onClearPersistentFilter={handleClearPersistentFilter}
             />
             <EmbeddingSelections
               buckets={buckets}
