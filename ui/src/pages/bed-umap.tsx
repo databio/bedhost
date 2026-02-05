@@ -116,7 +116,7 @@ export const BEDUmap: React.FC = () => {
       <div className='embedding-page'>
         <div className='embedding-page__layout'>
           <div className='embedding-page__main'>
-            <div className='position-relative overflow-hidden bg-white border rounded'>
+            <div className='position-relative overflow-hidden bg-white border rounded' style={{ flexShrink: 0 }}>
               {/* Toolbar */}
               <span className='position-absolute p-0 m-0 d-flex gap-1' style={{top: '0.5rem', right: '0.5rem', zIndex: 9999}}>
                 {!!file && (
@@ -188,7 +188,7 @@ export const BEDUmap: React.FC = () => {
               />
             </div>
             <div className='embedding-page__secondary'>
-              <div className='card border overflow-hidden mt-2' style={{ height: `calc(100vh - ${embeddingHeight + 26}px)` }}>
+              <div className='card border overflow-auto mt-2' style={{ height: '100%' }}>
                 <EmbeddingTable
                   selectedPoints={effectiveSelection}
                   centerOnBedId={(bedId, scale) => embeddingPlotRef.current?.centerOnBedId(bedId, scale)}
