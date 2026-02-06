@@ -16,7 +16,7 @@ interface TooltipProps {
   showLink?: boolean;
 }
 
-const TooltipContent = ({ tooltip, showLink }: { tooltip: TooltipProps['tooltip']; showLink?: boolean }) => {
+const TooltipContent = ({ tooltip }: { tooltip: TooltipProps['tooltip']; showLink?: boolean }) => {
   if (!tooltip) return null;
   return (
     <div
