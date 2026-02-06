@@ -372,3 +372,78 @@ td {
   font-size: 0.7rem;
   vertical-align: -0.125em;
 }
+
+// Resize handle styles for UMAP resizable panels
+.umap-resize-handle-vertical {
+  width: 6px;
+  background: transparent;
+  cursor: col-resize;
+  position: relative;
+  transition: background-color 0.15s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 2px;
+    height: 24px;
+    border-radius: 1px;
+    background: #ccc;
+    transition: background-color 0.15s ease, height 0.15s ease;
+  }
+
+  &:hover {
+    background: rgba(0, 128, 128, 0.08);
+    &::after {
+      background: $primary;
+      height: 36px;
+    }
+  }
+
+  &[data-separator][data-state="dragging"] {
+    background: rgba(0, 128, 128, 0.12);
+    &::after {
+      background: $primary;
+      height: 48px;
+    }
+  }
+}
+
+.umap-resize-handle-horizontal {
+  height: 6px;
+  background: transparent;
+  cursor: row-resize;
+  position: relative;
+  transition: background-color 0.15s ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 2px;
+    width: 24px;
+    border-radius: 1px;
+    background: #ccc;
+    transition: background-color 0.15s ease, width 0.15s ease;
+  }
+
+  &:hover {
+    background: rgba(0, 128, 128, 0.08);
+    &::after {
+      background: $primary;
+      width: 36px;
+    }
+  }
+
+  &[data-separator][data-state="dragging"] {
+    background: rgba(0, 128, 128, 0.12);
+    &::after {
+      background: $primary;
+      width: 48px;
+    }
+  }
+}

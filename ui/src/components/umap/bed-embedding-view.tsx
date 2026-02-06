@@ -1,6 +1,7 @@
 import { EmbeddingViewMosaic } from 'embedding-atlas/react';
-import { useEffect, useState, useRef, useMemo } from 'react';
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
 import * as vg from '@uwdata/vgplot';
+import { Group as PanelGroup, Panel, Separator as PanelResizeHandle, useDefaultLayout } from 'react-resizable-panels';
 
 import { isPointInPolygon, tableau20 } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
@@ -25,7 +26,6 @@ export const BEDEmbeddingView = (props: Props) => {
   const { addMultipleBedsToCart } = useBedCart();
   const { mutateAsync: getUmapCoordinates } = useBedUmap();
 
-  const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [containerWidth, setContainerWidth] = useState(900);
@@ -45,6 +45,9 @@ export const BEDEmbeddingView = (props: Props) => {
   const [uploadButtonText, setUploadButtonText] = useState('Upload BED');
   const [pinnedCategories, setPinnedCategories] = useState<Set<any>>(new Set());
   const [pinGrouping, setPinGrouping] = useState<string>(colorGrouping);
+
+  const mainLayout = useDefaultLayout({ id: 'umap-main', storage: localStorage });
+  const leftLayout = useDefaultLayout({ id: 'umap-left', storage: localStorage });
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -367,22 +370,33 @@ export const BEDEmbeddingView = (props: Props) => {
     });
   }, []);
 
+  const embeddingContainerRef = useRef<HTMLDivElement>(null);
+
+  const updateEmbeddingSize = useCallback(() => {
+    if (embeddingContainerRef.current) {
+      const rect = embeddingContainerRef.current.getBoundingClientRect();
+      setContainerWidth(Math.floor(rect.width));
+      setEmbeddingHeight(Math.floor(rect.height));
+    }
+  }, []);
+
   useEffect(() => {
-    // resize width and height of view based on window size
-    const updateDimensions = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth);
-      }
-      // Calculate height: window height minus approximate offset for header/footer/margins
-      const calculatedHeight = Math.max(400, window.innerHeight * 0.6);
-      setEmbeddingHeight(calculatedHeight);
+    if (!embeddingContainerRef.current) return;
+
+    let rafId: number;
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(updateEmbeddingSize);
+    });
+
+    observer.observe(embeddingContainerRef.current);
+    updateEmbeddingSize();
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      observer.disconnect();
     };
-
-    updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-
-    return () => window.removeEventListener('resize', updateDimensions);
-  }, [isReady]);
+  }, [isReady, updateEmbeddingSize]);
 
   useEffect(() => {
     if (!isReady) return;
@@ -464,7 +478,7 @@ export const BEDEmbeddingView = (props: Props) => {
   }, [isReady, bedId, coordinator, colorGrouping, showNeighbors, neighborIDs]);
 
   return (
-    <>
+    <div className='d-flex flex-column h-100'>
       <div className='row mt-2 pt-1'>
         {enableUpload && (
           <div className='col-12'>
@@ -473,239 +487,249 @@ export const BEDEmbeddingView = (props: Props) => {
         )}
       </div>
       {isReady ? (
-        <div className='row mb-4 g-2'>
-          <div className='col-sm-10'>
-            <div className='card mb-2 border overflow-hidden'>
-              <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
-                <span>Region Embeddings</span>
-                <button
-                  className='btn btn-secondary btn-xs ms-auto'
-                  onClick={handleUploadClick}
-                  disabled={uploadButtonText !== 'Upload BED'}
-                >
-                  {uploadButtonText}
-                </button>
-                <input
-                  ref={fileInputRef}
-                  className='d-none'
-                  type='file'
-                  accept='.bed,.gz,application/gzip,application/x-gzip'
-                  onChange={handleFileUpload}
-                />
-                {!!uploadedFilename && (
-                  <span className='btn btn-outline-secondary btn-xs ms-1' onClick={handleFileRemove}>
-                    {uploadedFilename}
-                    <i
-                      className='bi bi-trash3-fill text-danger ms-1 cursor-pointer'
-                      style={{ position: 'relative', top: '-1px' }}
-                    />
-                  </span>
-                )}
-                <button
-                  className='btn btn-primary btn-xs ms-1'
-                  onClick={() => {
-                    const bedItems = selectedPoints
-                      .filter((point: any) => point.identifier !== 'custom_point')
-                      .map((point: any) => ({
-                        id: point.identifier,
-                        name: point.text || 'No name',
-                        genome: point.genome_alias || 'N/A',
-                        tissue: point.annotation?.tissue || 'N/A',
-                        cell_line: point.fields?.['Cell Line'] || 'N/A',
-                        cell_type: point.annotation?.cell_type || 'N/A',
-                        description: point.fields?.Description || '',
-                        assay: point.fields?.Assay || 'N/A',
-                      }));
-
-                    addMultipleBedsToCart(bedItems);
-                    setAddedToCart(true);
-                    setTimeout(() => {
-                      setAddedToCart(false);
-                    }, 500);
-                  }}
-                >
-                  {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
-                </button>
-              </div>
-              <div className='w-100' ref={containerRef}>
-                {webglStatus.error ? (
-                  <div
-                    className='w-100 d-flex align-items-center justify-content-center bg-white'
-                    style={{ height: embeddingHeight || 500 }}
-                    ref={containerRef}
-                  >
-                    <span className='text-muted text-sm'>{webglStatus.error}</span>
-                  </div>
-                ) : (
-                  <EmbeddingViewMosaic
-                    key={`embedding-${dataVersion}`}
-                    coordinator={coordinator}
-                    table='data'
-                    x='x'
-                    y='y'
-                    identifier='id'
-                    text='name'
-                    category={colorGrouping}
-                    categoryColors={tableau20}
-                    additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
-                    height={embeddingHeight}
-                    width={containerWidth}
-                    config={{
-                      autoLabelEnabled: false,
-                    }}
-                    filter={filter}
-                    viewportState={viewportState}
-                    onViewportState={setViewportState}
-                    tooltip={tooltipPoint}
-                    customTooltip={{
-                      class: AtlasTooltip,
-                      props: {
-                        showLink: true,
-                      },
-                    }}
-                    selection={selectedPoints}
-                    onSelection={handlePointSelection}
-                    onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
-                  />
-                )}
-              </div>
-            </div>
-
-            <div className='card border overflow-hidden' style={{ height: `calc(100vh - ${embeddingHeight + 140}px)` }}>
-              <div className='card-body table-responsive p-0'>
-                <table className='table table-striped table-hover text-xs'>
-                  <thead className='sticky-top'>
-                    <tr className='text-nowrap'>
-                      <th scope='col'>BED Name</th>
-                      <th scope='col'>Assay</th>
-                      <th scope='col'>Cell Line</th>
-                      <th scope='col'>Description</th>
-                      <th scope='col'></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {getSortedSelectedPoints().map((point: any, index: number) => (
-                      <tr
-                        className='text-nowrap cursor-pointer'
-                        onClick={() => centerOnPoint(point, 0.3)}
-                        key={point.identifier + '_' + index}
+        <div className='flex-fill' style={{ minHeight: 0 }}>
+          <PanelGroup orientation='horizontal' defaultLayout={mainLayout.defaultLayout} onLayoutChanged={mainLayout.onLayoutChanged}>
+            <Panel id='umap-left' defaultSize='80%' minSize='50%'>
+              <PanelGroup orientation='vertical' defaultLayout={leftLayout.defaultLayout} onLayoutChanged={leftLayout.onLayoutChanged}>
+                <Panel id='umap-embed' defaultSize='60%' minSize='25%'>
+                  <div className='card border overflow-hidden h-100 d-flex flex-column'>
+                    <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
+                      <span>Region Embeddings</span>
+                      <button
+                        className='btn btn-secondary btn-xs ms-auto'
+                        onClick={handleUploadClick}
+                        disabled={uploadButtonText !== 'Upload BED'}
                       >
-                        <td>{point.text}</td>
-                        <td>{point.fields?.Assay}</td>
-                        <td>{point.fields?.['Cell Line']}</td>
-                        <td>{point.fields?.Description}</td>
-                        <td className='text-center' onClick={(e) => e.stopPropagation()}>
-                          {point.identifier !== 'custom_point' && (
-                            <a href={`/bed/${point.identifier}`} className='text-primary text-decoration-none' title='View BED page'>
-                              <i className='bi bi-box-arrow-up-right' /> View
-                            </a>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-          <div className='col-sm-2'>
-            <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(50vh - 50px)` }}>
-              <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
-                <span>Legend</span>
-                <div className='btn-group btn-group-xs' role='group'>
-                  <input
-                    type='radio'
-                    className='btn-check'
-                    name='color_legend'
-                    id='color_legend_1'
-                    value='cell_line_category'
-                    autoComplete='off'
-                    checked={colorGrouping === 'cell_line_category'}
-                    onChange={(e) => setColorGrouping(e.target.value)}
-                  />
-                  <label className='btn btn-outline-secondary' htmlFor={'color_legend_1'}>
-                    Cell Line
-                  </label>
-                  <input
-                    type='radio'
-                    className='btn-check'
-                    name='color_legend'
-                    id='color_legend_2'
-                    value='assay_category'
-                    autoComplete='off'
-                    checked={colorGrouping === 'assay_category'}
-                    onChange={(e) => setColorGrouping(e.target.value)}
-                  />
-                  <label className='btn btn-outline-secondary' htmlFor={'color_legend_2'}>
-                    Assay
-                  </label>
+                        {uploadButtonText}
+                      </button>
+                      <input
+                        ref={fileInputRef}
+                        className='d-none'
+                        type='file'
+                        accept='.bed,.gz,application/gzip,application/x-gzip'
+                        onChange={handleFileUpload}
+                      />
+                      {!!uploadedFilename && (
+                        <span className='btn btn-outline-secondary btn-xs ms-1' onClick={handleFileRemove}>
+                          {uploadedFilename}
+                          <i
+                            className='bi bi-trash3-fill text-danger ms-1 cursor-pointer'
+                            style={{ position: 'relative', top: '-1px' }}
+                          />
+                        </span>
+                      )}
+                      <button
+                        className='btn btn-primary btn-xs ms-1'
+                        onClick={() => {
+                          const bedItems = selectedPoints
+                            .filter((point: any) => point.identifier !== 'custom_point')
+                            .map((point: any) => ({
+                              id: point.identifier,
+                              name: point.text || 'No name',
+                              genome: point.genome_alias || 'N/A',
+                              tissue: point.annotation?.tissue || 'N/A',
+                              cell_line: point.fields?.['Cell Line'] || 'N/A',
+                              cell_type: point.annotation?.cell_type || 'N/A',
+                              description: point.fields?.Description || '',
+                              assay: point.fields?.Assay || 'N/A',
+                            }));
+
+                          addMultipleBedsToCart(bedItems);
+                          setAddedToCart(true);
+                          setTimeout(() => {
+                            setAddedToCart(false);
+                          }, 500);
+                        }}
+                      >
+                        {addedToCart ? 'Adding...' : `Add ${selectedPoints.length} to Cart`}
+                      </button>
+                    </div>
+                    <div className='flex-fill position-relative' style={{ minHeight: 0 }} ref={embeddingContainerRef}>
+                      {webglStatus.error ? (
+                        <div className='w-100 h-100 d-flex align-items-center justify-content-center bg-white'>
+                          <span className='text-muted text-sm'>{webglStatus.error}</span>
+                        </div>
+                      ) : (
+                        containerWidth > 0 && embeddingHeight > 0 && (
+                          <EmbeddingViewMosaic
+                            key={`embedding-${dataVersion}`}
+                            coordinator={coordinator}
+                            table='data'
+                            x='x'
+                            y='y'
+                            identifier='id'
+                            text='name'
+                            category={colorGrouping}
+                            categoryColors={tableau20}
+                            additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
+                            height={embeddingHeight}
+                            width={containerWidth}
+                            config={{
+                              autoLabelEnabled: false,
+                            }}
+                            filter={filter}
+                            viewportState={viewportState}
+                            onViewportState={setViewportState}
+                            tooltip={tooltipPoint}
+                            customTooltip={{
+                              class: AtlasTooltip,
+                              props: {
+                                showLink: true,
+                              },
+                            }}
+                            selection={selectedPoints}
+                            onSelection={handlePointSelection}
+                            onRangeSelection={(e) => handleRangeSelection(coordinator, e)}
+                          />
+                        )
+                      )}
+                    </div>
+                  </div>
+                </Panel>
+
+                <PanelResizeHandle className='umap-resize-handle-horizontal' />
+
+                <Panel id='umap-table' defaultSize='40%' minSize='15%'>
+                  <div className='card border overflow-hidden h-100'>
+                    <div className='card-body table-responsive p-0 h-100'>
+                      <table className='table table-striped table-hover text-xs'>
+                        <thead className='sticky-top'>
+                          <tr className='text-nowrap'>
+                            <th scope='col'>BED Name</th>
+                            <th scope='col'>Assay</th>
+                            <th scope='col'>Cell Line</th>
+                            <th scope='col'>Description</th>
+                            <th scope='col'></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {getSortedSelectedPoints().map((point: any, index: number) => (
+                            <tr
+                              className='text-nowrap cursor-pointer'
+                              onClick={() => centerOnPoint(point, 0.3)}
+                              key={point.identifier + '_' + index}
+                            >
+                              <td>{point.text}</td>
+                              <td>{point.fields?.Assay}</td>
+                              <td>{point.fields?.['Cell Line']}</td>
+                              <td>{point.fields?.Description}</td>
+                              <td className='text-center' onClick={(e) => e.stopPropagation()}>
+                                {point.identifier !== 'custom_point' && (
+                                  <a href={`/bed/${point.identifier}`} className='text-primary text-decoration-none' title='View BED page'>
+                                    <i className='bi bi-box-arrow-up-right' /> View
+                                  </a>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </Panel>
+              </PanelGroup>
+            </Panel>
+
+            <PanelResizeHandle className='umap-resize-handle-vertical' />
+
+            <Panel id='umap-sidebar' defaultSize='20%' minSize='12%' maxSize='35%'>
+              <div className='d-flex flex-column h-100 overflow-auto ps-1'>
+                <div className='card mb-2 border overflow-hidden flex-shrink-0'>
+                  <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
+                    <span>Legend</span>
+                    <div className='btn-group btn-group-xs' role='group'>
+                      <input
+                        type='radio'
+                        className='btn-check'
+                        name='color_legend'
+                        id='color_legend_1'
+                        value='cell_line_category'
+                        autoComplete='off'
+                        checked={colorGrouping === 'cell_line_category'}
+                        onChange={(e) => setColorGrouping(e.target.value)}
+                      />
+                      <label className='btn btn-outline-secondary' htmlFor={'color_legend_1'}>
+                        Cell Line
+                      </label>
+                      <input
+                        type='radio'
+                        className='btn-check'
+                        name='color_legend'
+                        id='color_legend_2'
+                        value='assay_category'
+                        autoComplete='off'
+                        checked={colorGrouping === 'assay_category'}
+                        onChange={(e) => setColorGrouping(e.target.value)}
+                      />
+                      <label className='btn btn-outline-secondary' htmlFor={'color_legend_2'}>
+                        Assay
+                      </label>
+                    </div>
+                  </div>
+                  {pinnedCategories.size > 0 && (
+                    <div className='card-header border-bottom py-1 px-2 d-flex justify-content-between align-items-center'>
+                      <span className='text-xs text-muted'>{pinnedCategories.size} pinned</span>
+                      <button
+                        className='btn btn-outline-danger btn-xs'
+                        onClick={() => {
+                          setPinnedCategories(new Set());
+                          filter.update({ source: legendFilterSource, value: null, predicate: null });
+                        }}
+                      >
+                        Unpin All
+                      </button>
+                    </div>
+                  )}
+                  <div className='card-body table-responsive p-0'>
+                    <table className='table table-hover text-xs mb-2'>
+                      <tbody>
+                        {legendItems?.map((item: any) => {
+                          const isPinned = colorGrouping === pinGrouping && pinnedCategories.has(item.category);
+                          const isFiltered = filterSelection?.category === item.category;
+                          return (
+                            <tr
+                              className={`text-nowrap cursor-pointer ${isFiltered ? 'table-active' : ''} ${isPinned ? 'table-info' : ''}`}
+                              onClick={() => handleLegendClick(item)}
+                              key={item.category}
+                            >
+                              <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
+                                <span>
+                                  <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
+                                  {item.name}
+                                </span>
+                                <span className='d-flex align-items-center gap-1'>
+                                  <i
+                                    className={`bi ${isPinned ? 'bi-pin-fill text-primary' : 'bi-pin text-muted'} cursor-pointer`}
+                                    title={isPinned ? 'Unpin' : 'Pin'}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handlePinToggle(item);
+                                    }}
+                                  />
+                                </span>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
+                <EmbeddingStats
+                  selectedPoints={selectedPoints}
+                  colorGrouping={colorGrouping}
+                  legendItems={legendItems}
+                  filterSelection={filterSelection}
+                />
               </div>
-              {pinnedCategories.size > 0 && (
-                <div className='card-header border-bottom py-1 px-2 d-flex justify-content-between align-items-center'>
-                  <span className='text-xs text-muted'>{pinnedCategories.size} pinned</span>
-                  <button
-                    className='btn btn-outline-danger btn-xs'
-                    onClick={() => {
-                      setPinnedCategories(new Set());
-                      filter.update({ source: legendFilterSource, value: null, predicate: null });
-                    }}
-                  >
-                    Unpin All
-                  </button>
-                </div>
-              )}
-              <div className='card-body table-responsive p-0'>
-                <table className='table table-hover text-xs mb-2'>
-                  <tbody>
-                    {legendItems?.map((item: any) => {
-                      const isPinned = colorGrouping === pinGrouping && pinnedCategories.has(item.category);
-                      const isFiltered = filterSelection?.category === item.category;
-                      return (
-                        <tr
-                          className={`text-nowrap cursor-pointer ${isFiltered ? 'table-active' : ''} ${isPinned ? 'table-info' : ''}`}
-                          onClick={() => handleLegendClick(item)}
-                          key={item.category}
-                        >
-                          <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
-                            <span>
-                              <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
-                              {item.name}
-                            </span>
-                            <span className='d-flex align-items-center gap-1'>
-                              {/*{isFiltered && <button className='btn btn-danger btn-xs'>Clear</button>}*/}
-                              <i
-                                className={`bi ${isPinned ? 'bi-pin-fill text-primary' : 'bi-pin text-muted'} cursor-pointer`}
-                                title={isPinned ? 'Unpin' : 'Pin'}
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handlePinToggle(item);
-                                }}
-                              />
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-            <EmbeddingStats
-              selectedPoints={selectedPoints}
-              colorGrouping={colorGrouping}
-              legendItems={legendItems}
-              filterSelection={filterSelection}
-            />
-          </div>
+            </Panel>
+          </PanelGroup>
         </div>
       ) : (
-        <div className='row mb-4'>
-          <div className='col-12 d-flex align-items-center justify-content-center' style={{ minHeight: '400px' }}>
-            <span>Loading...</span>
-          </div>
+        <div className='flex-fill d-flex align-items-center justify-content-center' style={{ minHeight: '400px' }}>
+          <span>Loading...</span>
         </div>
       )}
-    </>
+    </div>
   );
 };
