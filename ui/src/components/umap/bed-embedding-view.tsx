@@ -673,7 +673,7 @@ export const BEDEmbeddingView = (props: Props) => {
                               {item.name}
                             </span>
                             <span className='d-flex align-items-center gap-1'>
-                              {isFiltered && <button className='btn btn-danger btn-xs'>Clear</button>}
+                              {/*{isFiltered && <button className='btn btn-danger btn-xs'>Clear</button>}*/}
                               <i
                                 className={`bi ${isPinned ? 'bi-pin-fill text-primary' : 'bi-pin text-muted'} cursor-pointer`}
                                 title={isPinned ? 'Unpin' : 'Pin'}
