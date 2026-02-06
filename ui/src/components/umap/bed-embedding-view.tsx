@@ -8,6 +8,7 @@ import { components } from '../../../bedbase-types';
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 import { useBedUmap } from '../../queries/useBedUmap';
+import { EmbeddingStats } from './embedding-stats';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 
@@ -42,6 +43,8 @@ export const BEDEmbeddingView = (props: Props) => {
   const [dataVersion, setDataVersion] = useState(0);
   const [pendingSelection, setPendingSelection] = useState<any[] | null>(null);
   const [uploadButtonText, setUploadButtonText] = useState('Upload BED');
+  const [pinnedCategories, setPinnedCategories] = useState<Set<any>>(new Set());
+  const [pinGrouping, setPinGrouping] = useState<string>(colorGrouping);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -171,6 +174,45 @@ export const BEDEmbeddingView = (props: Props) => {
     }
   };
 
+  const handlePinToggle = (item: any) => {
+    setPinnedCategories((prev) => {
+      // If pinning in a different grouping than existing pins, start fresh
+      if (prev.size > 0 && pinGrouping !== colorGrouping) {
+        const next = new Set([item.category]);
+        setPinGrouping(colorGrouping);
+        filter.update({
+          source: legendFilterSource,
+          value: [item.category],
+          predicate: vg.eq(colorGrouping, item.category),
+        });
+        setFilterSelection(null);
+        return next;
+      }
+
+      const next = new Set(prev);
+      if (next.has(item.category)) {
+        next.delete(item.category);
+      } else {
+        next.add(item.category);
+        setPinGrouping(colorGrouping);
+      }
+
+      if (next.size === 0) {
+        setFilterSelection(null);
+        filter.update({ source: legendFilterSource, value: null, predicate: null });
+      } else {
+        const categories = Array.from(next);
+        const predicate =
+          categories.length === 1
+            ? vg.eq(colorGrouping, categories[0])
+            : vg.or(...categories.map((cat) => vg.eq(colorGrouping, cat)));
+        filter.update({ source: legendFilterSource, value: categories, predicate });
+        setFilterSelection(null);
+      }
+      return next;
+    });
+  };
+
   const handlePointSelection = (dataPoints: any[] | null) => {
     // console.log('Selection changed via onSelection callback:', dataPoints);
     const points = dataPoints || [];
@@ -215,8 +257,14 @@ export const BEDEmbeddingView = (props: Props) => {
 
     let result;
 
-    // filter clause prevents selecting points that are not within a selected legend category
-    const filterClause = filterSelection ? ` AND ${colorGrouping} = '${filterSelection.category}'` : '';
+    // filter clause prevents selecting points that are not within a selected legend category or pinned categories
+    let filterClause = '';
+    if (filterSelection) {
+      filterClause = ` AND ${colorGrouping} = '${filterSelection.category}'`;
+    } else if (pinnedCategories.size > 0) {
+      const pinList = Array.from(pinnedCategories).map((c) => `'${c}'`).join(',');
+      filterClause = ` AND ${pinGrouping} IN (${pinList})`;
+    }
 
     // Check if rectangle selection (bounding box)
     if (typeof value === 'object' && 'xMin' in value) {
@@ -337,12 +385,24 @@ export const BEDEmbeddingView = (props: Props) => {
   }, [isReady]);
 
   useEffect(() => {
-    // set legend items
-    if (isReady) {
-      fetchLegendItems(coordinator).then((result) => {
-        setLegendItems(result);
-      });
-    }
+    if (!isReady) return;
+
+    const refresh = async () => {
+      const newLegend = await fetchLegendItems(coordinator);
+      setLegendItems(newLegend);
+
+      // Re-apply pin filter using the ORIGINAL pinGrouping column
+      if (pinnedCategories.size > 0) {
+        const categories = Array.from(pinnedCategories);
+        const predicate =
+          categories.length === 1
+            ? vg.eq(pinGrouping, categories[0])
+            : vg.or(...categories.map((cat) => vg.eq(pinGrouping, cat)));
+        filter.update({ source: legendFilterSource, value: categories, predicate });
+      }
+    };
+
+    refresh();
   }, [isReady, colorGrouping]);
 
   useEffect(() => {
@@ -514,12 +574,13 @@ export const BEDEmbeddingView = (props: Props) => {
             <div className='card border overflow-hidden' style={{ height: `calc(100vh - ${embeddingHeight + 140}px)` }}>
               <div className='card-body table-responsive p-0'>
                 <table className='table table-striped table-hover text-xs'>
-                  <thead>
+                  <thead className='sticky-top'>
                     <tr className='text-nowrap'>
                       <th scope='col'>BED Name</th>
                       <th scope='col'>Assay</th>
                       <th scope='col'>Cell Line</th>
                       <th scope='col'>Description</th>
+                      <th scope='col'></th>
                     </tr>
                   </thead>
                   <tbody>
@@ -530,9 +591,16 @@ export const BEDEmbeddingView = (props: Props) => {
                         key={point.identifier + '_' + index}
                       >
                         <td>{point.text}</td>
-                        <td>{point.fields.Assay}</td>
-                        <td>{point.fields['Cell Line']}</td>
-                        <td>{point.fields.Description}</td>
+                        <td>{point.fields?.Assay}</td>
+                        <td>{point.fields?.['Cell Line']}</td>
+                        <td>{point.fields?.Description}</td>
+                        <td className='text-center' onClick={(e) => e.stopPropagation()}>
+                          {point.identifier !== 'custom_point' && (
+                            <a href={`/bed/${point.identifier}`} className='text-primary text-decoration-none' title='View BED page'>
+                              <i className='bi bi-box-arrow-up-right' /> View
+                            </a>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -541,7 +609,7 @@ export const BEDEmbeddingView = (props: Props) => {
             </div>
           </div>
           <div className='col-sm-2'>
-            <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(100vh - 93.6px)` }}>
+            <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(50vh - 50px)` }}>
               <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
                 <span>Legend</span>
                 <div className='btn-group btn-group-xs' role='group'>
@@ -573,30 +641,62 @@ export const BEDEmbeddingView = (props: Props) => {
                   </label>
                 </div>
               </div>
+              {pinnedCategories.size > 0 && (
+                <div className='card-header border-bottom py-1 px-2 d-flex justify-content-between align-items-center'>
+                  <span className='text-xs text-muted'>{pinnedCategories.size} pinned</span>
+                  <button
+                    className='btn btn-outline-danger btn-xs'
+                    onClick={() => {
+                      setPinnedCategories(new Set());
+                      filter.update({ source: legendFilterSource, value: null, predicate: null });
+                    }}
+                  >
+                    Unpin All
+                  </button>
+                </div>
+              )}
               <div className='card-body table-responsive p-0'>
                 <table className='table table-hover text-xs mb-2'>
                   <tbody>
-                    {legendItems?.map((item: any) => (
-                      <tr
-                        className={`text-nowrap cursor-pointer ${filterSelection?.category === item.category ? 'table-active' : ''}`}
-                        onClick={() => handleLegendClick(item)}
-                        key={item.category}
-                      >
-                        <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
-                          <span>
-                            <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
-                            {item.name}
-                          </span>
-                          {filterSelection?.category === item.category && (
-                            <button className='btn btn-danger btn-xs'>Clear</button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {legendItems?.map((item: any) => {
+                      const isPinned = colorGrouping === pinGrouping && pinnedCategories.has(item.category);
+                      const isFiltered = filterSelection?.category === item.category;
+                      return (
+                        <tr
+                          className={`text-nowrap cursor-pointer ${isFiltered ? 'table-active' : ''} ${isPinned ? 'table-info' : ''}`}
+                          onClick={() => handleLegendClick(item)}
+                          key={item.category}
+                        >
+                          <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
+                            <span>
+                              <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
+                              {item.name}
+                            </span>
+                            <span className='d-flex align-items-center gap-1'>
+                              {/*{isFiltered && <button className='btn btn-danger btn-xs'>Clear</button>}*/}
+                              <i
+                                className={`bi ${isPinned ? 'bi-pin-fill text-primary' : 'bi-pin text-muted'} cursor-pointer`}
+                                title={isPinned ? 'Unpin' : 'Pin'}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handlePinToggle(item);
+                                }}
+                              />
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
             </div>
+            <EmbeddingStats
+              selectedPoints={selectedPoints}
+              colorGrouping={colorGrouping}
+              legendItems={legendItems}
+              filterSelection={filterSelection}
+            />
           </div>
         </div>
       ) : (

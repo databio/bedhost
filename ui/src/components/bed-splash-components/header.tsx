@@ -213,7 +213,7 @@ export const BedSplashHeader = (props: Props) => {
               >
                 {metadata?.genome_digest ? (
                   <>
-                    <a href={`http://refgenomes.databio.org/v3/genomes/splash/${metadata.genome_digest}`}
+                    <a href={`https://api.refgenie.org/v4/page/genome/${metadata.genome_digest}`}
                        target="_blank">
                       <div
                         className={genomeStats?.compared_genome ? 'badge bg-primary rounded-end-0' : 'badge bg-primary'}>
