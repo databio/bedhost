@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useMemo, forwardRef, useImperativeHandle } from 'react';
 import { createPortal } from 'react-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { EmbeddingPlot } from './embedding-plot.tsx';
 import type { EmbeddingPlotRef } from './embedding-plot.tsx';
 import { EmbeddingLegend } from './embedding-legend.tsx';
@@ -33,23 +34,31 @@ type Props = {
   showBorder?: boolean;
   uploadedFile?: File;
   rounded?: string;
+  navigateTo?: string;
+  umapUrl?: string;
+  initialColorGrouping?: string;
 };
 
 export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((props, ref) => {
-  const { 
-    bedIds, 
-    height, 
-    preselectPoint, 
-    stickyInitial, 
-    centerInitial, 
-    tooltipInitial, 
-    simpleTooltip, 
-    initialState, 
-    blockCompact, 
-    showBorder = true, 
+  const {
+    bedIds,
+    height,
+    preselectPoint,
+    stickyInitial,
+    centerInitial,
+    tooltipInitial,
+    simpleTooltip,
+    initialState,
+    blockCompact,
+    showBorder = true,
     uploadedFile,
-    rounded = 'rounded'
+    rounded = 'rounded',
+    navigateTo,
+    umapUrl,
+    initialColorGrouping,
   } = props;
+
+  const navigate = useNavigate();
 
   const { addMultipleBedsToCart } = useBedCart();
   const { mutateAsync: getUmapCoordinates } = useBedUmap();
@@ -65,7 +74,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
   const [embeddingHeight, setEmbeddingHeight] = useState(500);
   const [legendItems, setLegendItems] = useState<any[]>([]);
   const [filterSelection, setFilterSelection] = useState<any>(null);
-  const [colorGrouping, setColorGrouping] = useState('cell_line_category');
+  const [colorGrouping, setColorGrouping] = useState(initialColorGrouping || 'cell_line_category');
   const [selectedPoints, setSelectedPoints] = useState<any[]>([]);
   const [addedToCart, setAddedToCart] = useState(false);
   const [file, setFile] = useState<File | null>(uploadedFile || null);
@@ -298,7 +307,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
         style={getInnerCardStyles()}
       >
         <div className='expandable-card__layout'>
-          <div className='expandable-card__main' onClick={state === 'compact' && blockCompact ? handleExpand : undefined} style={state === 'compact' && blockCompact ? { cursor: 'pointer' } : undefined}>
+          <div className='expandable-card__main' onClick={state === 'compact' && blockCompact ? (navigateTo ? () => navigate(navigateTo) : handleExpand) : undefined} style={state === 'compact' && blockCompact ? { cursor: 'pointer' } : undefined}>
             <div className={`position-relative overflow-hidden bg-white ${state !== 'compact' || showBorder ? 'border rounded' : ''}`}>
               {state === 'compact' && blockCompact && (
                 <div className='position-absolute w-100 h-100' style={{top: 0, left: 0, zIndex: 1}} />
@@ -306,11 +315,11 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
               {state === 'compact' ? blockCompact ? (
                 <></>
               ) : (
-                <span 
-                  className='badge rounded-2 text-bg-primary position-absolute cursor-pointer border border-primary' 
-                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} 
+                <span
+                  className='badge rounded-2 text-bg-primary position-absolute cursor-pointer border border-primary'
+                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}}
                   title='Expand Embeddings'
-                  onClick={handleExpand}
+                  onClick={navigateTo ? () => navigate(navigateTo) : handleExpand}
                 >
                   <i className='bi bi-fullscreen' />
                 </span>
@@ -377,6 +386,11 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                       }
                     }}
                   />
+                  {umapUrl && (
+                    <Link to={umapUrl} className='badge rounded-2 text-bg-light border fw-normal cursor-pointer' title='Open in UMAP page'>
+                      <i className='bi bi-box-arrow-up-right' />
+                    </Link>
+                  )}
                   <span
                     className='badge rounded-2 text-bg-primary border border-primary cursor-pointer fw-normal'
                     title='Add Selection to Cart'

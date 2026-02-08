@@ -330,6 +330,8 @@ export const Home = () => {
                       blockCompact={true}
                       showBorder={false}
                       rounded={'rounded-3'}
+                      navigateTo='/umap'
+                      umapUrl='/umap'
                     />
                   </div>
                   <div className='card-body'>

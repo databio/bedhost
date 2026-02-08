@@ -93,18 +93,19 @@ export const Bed2Bed = (props: Props) => {
                             height: `${containerHeight}px`,
                           }}
                         >
-                          <EmbeddingContainer 
+                          <EmbeddingContainer
                             ref={embeddingPlotRef}
-                            bedIds={bedIds} 
-                            height={containerHeight} 
-                            preselectPoint={false} 
+                            bedIds={bedIds}
+                            height={containerHeight}
+                            preselectPoint={false}
                             stickyInitial={true}
-                            centerInitial={true} 
-                            tooltipInitial={true} 
-                            simpleTooltip={false} 
-                            blockCompact={false} 
-                            showBorder={false} 
+                            centerInitial={true}
+                            tooltipInitial={true}
+                            simpleTooltip={false}
+                            blockCompact={false}
+                            showBorder={false}
                             uploadedFile={file}
+                            umapUrl={bedIds?.length ? `/umap?bedIds=${bedIds.join(',')}` : '/umap'}
                           />
                         </div>
                       </div>

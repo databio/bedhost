@@ -7,6 +7,10 @@ import { useEffect, useState, useRef } from 'react';
 export const BEDUmap: React.FC = () => {
   const [searchParams] = useSearchParams();
   const bedId = searchParams.get('searchId');
+  const center = searchParams.get('center') === 'true';
+  const colorGrouping = searchParams.get('colorGrouping');
+  const bedIdsParam = searchParams.get('bedIds');
+  const bedIds = bedIdsParam ? bedIdsParam.split(',') : (bedId ? [bedId] : undefined);
 
   const [embeddingHeight, setEmbeddingHeight] = useState(400);
   const embeddingContainerRef = useRef<EmbeddingContainerRef>(null)
@@ -30,17 +34,18 @@ export const BEDUmap: React.FC = () => {
     <Layout title='BEDbase' flexLayout>
       <div className='row mt-2 pt-1'>
         <div className='col-12'>
-          <EmbeddingContainer 
+          <EmbeddingContainer
             ref={embeddingContainerRef}
-            bedIds={bedId ? [bedId] : undefined} 
-            height={embeddingHeight} 
-            preselectPoint={true} 
-            centerInitial={false} 
-            tooltipInitial={true} 
-            simpleTooltip={false} 
-            blockCompact={false} 
-            showBorder={true} 
+            bedIds={bedIds}
+            height={embeddingHeight}
+            preselectPoint={true}
+            centerInitial={center}
+            tooltipInitial={true}
+            simpleTooltip={false}
+            blockCompact={false}
+            showBorder={true}
             initialState='compact'
+            initialColorGrouping={colorGrouping || undefined}
           />
         </div>
       </div>

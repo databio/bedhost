@@ -251,16 +251,18 @@ export const BedSplash = () => {
             {bedId && metadata?.name?.includes('encode') && (
               <div className='col-md-6 gap-2'>
                 <div className='border rounded bg-white overflow-hidden embedding-card'>
-                  <EmbeddingContainer 
+                  <EmbeddingContainer
                     ref={embeddingPlotRef}
-                    bedIds={[bedId]} 
-                    height={filteredKeys.length * 24} 
-                    preselectPoint={true} 
-                    centerInitial={true} 
-                    tooltipInitial={true} 
-                    simpleTooltip={true} 
-                    blockCompact={true} 
-                    showBorder={false} 
+                    bedIds={[bedId]}
+                    height={filteredKeys.length * 24}
+                    preselectPoint={true}
+                    centerInitial={true}
+                    tooltipInitial={true}
+                    simpleTooltip={true}
+                    blockCompact={true}
+                    showBorder={false}
+                    navigateTo={`/umap?searchId=${bedId}&center=true`}
+                    umapUrl={`/umap?searchId=${bedId}&center=true`}
                   />
                   <div className='text-center'>
                     <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>Region Embeddings Location</p>
