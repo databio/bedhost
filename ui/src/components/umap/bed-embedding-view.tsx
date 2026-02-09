@@ -35,7 +35,7 @@ export const BEDEmbeddingView = (props: Props) => {
   const [selectedPoints, setSelectedPoints] = useState<any[]>([]);
   const [initialPoint, setInitialPoint] = useState<any>(null);
   const [viewportState, setViewportState] = useState<any>(null);
-  const [legendItems, setLegendItems] = useState<string[]>([]);
+  const [legendItems, setLegendItems] = useState<any[]>([]);
   const [filterSelection, setFilterSelection] = useState<any>(null);
   const [addedToCart, setAddedToCart] = useState(false);
   const [tooltipPoint, setTooltipPoint] = useState<any>(null);
@@ -45,6 +45,18 @@ export const BEDEmbeddingView = (props: Props) => {
   const [uploadButtonText, setUploadButtonText] = useState('Upload BED');
   const [pinnedCategories, setPinnedCategories] = useState<Set<any>>(new Set());
   const [pinGrouping, setPinGrouping] = useState<string>(colorGrouping);
+
+  const categoryColors = useMemo(() => {
+    const colors = [...tableau20, '#cccccc'];
+    if (legendItems) {
+      legendItems.forEach((item: any) => {
+        if (item.name === 'UNKNOWN' && item.category < 20) {
+          colors[item.category] = '#cccccc';
+        }
+      });
+    }
+    return colors;
+  }, [legendItems]);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -350,11 +362,15 @@ export const BEDEmbeddingView = (props: Props) => {
   };
 
   const fetchLegendItems = async (coordinator: any) => {
-    const query = `SELECT DISTINCT
-        ${colorGrouping.replace('_category', '')} as name,
-        ${colorGrouping} as category
-        FROM data
-        ORDER BY ${colorGrouping}`;
+    const fieldName = colorGrouping.replace('_category', '');
+    const query = `
+      SELECT
+        CASE WHEN ${colorGrouping} < 20 THEN ${fieldName} ELSE 'Other' END as name,
+        CASE WHEN ${colorGrouping} < 20 THEN ${colorGrouping} ELSE 20 END as category,
+        COUNT(*) as count
+      FROM data
+      GROUP BY 1, 2
+      ORDER BY count DESC`;
 
     const result = (await coordinator.query(query, { type: 'json' })) as any[];
     return result;
@@ -546,7 +562,7 @@ export const BEDEmbeddingView = (props: Props) => {
                     identifier='id'
                     text='name'
                     category={colorGrouping}
-                    categoryColors={tableau20}
+                    categoryColors={categoryColors}
                     additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
                     height={embeddingHeight}
                     width={containerWidth}
@@ -641,18 +657,40 @@ export const BEDEmbeddingView = (props: Props) => {
                   </label>
                 </div>
               </div>
-              {pinnedCategories.size > 0 && (
+              {legendItems?.length > 0 && (
                 <div className='card-header border-bottom py-1 px-2 d-flex justify-content-between align-items-center'>
-                  <span className='text-xs text-muted'>{pinnedCategories.size} pinned</span>
-                  <button
-                    className='btn btn-outline-danger btn-xs'
-                    onClick={() => {
-                      setPinnedCategories(new Set());
-                      filter.update({ source: legendFilterSource, value: null, predicate: null });
-                    }}
-                  >
-                    Unpin All
-                  </button>
+                  {pinnedCategories.size > 0 && (
+                    <span className='text-xs text-muted'>{pinnedCategories.size} pinned</span>
+                  )}
+                  <span className='d-flex gap-1 ms-auto'>
+                    {pinnedCategories.size < legendItems.length && (
+                      <button
+                        className='btn btn-outline-primary btn-xs'
+                        onClick={() => {
+                          const allCategories = new Set(legendItems.map((item: any) => item.category));
+                          setPinnedCategories(allCategories);
+                          setPinGrouping(colorGrouping);
+                          const categories = Array.from(allCategories);
+                          const predicate = vg.or(...categories.map((cat: any) => vg.eq(colorGrouping, cat)));
+                          filter.update({ source: legendFilterSource, value: categories, predicate });
+                          setFilterSelection(null);
+                        }}
+                      >
+                        Pin All
+                      </button>
+                    )}
+                    {pinnedCategories.size > 0 && (
+                      <button
+                        className='btn btn-outline-danger btn-xs'
+                        onClick={() => {
+                          setPinnedCategories(new Set());
+                          filter.update({ source: legendFilterSource, value: null, predicate: null });
+                        }}
+                      >
+                        Unpin All
+                      </button>
+                    )}
+                  </span>
                 </div>
               )}
               <div className='card-body table-responsive p-0'>
@@ -669,8 +707,11 @@ export const BEDEmbeddingView = (props: Props) => {
                         >
                           <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
                             <span>
-                              <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
+                              <i className='bi bi-square-fill me-3' style={{ color: item.name === 'UNKNOWN' ? '#cccccc' : categoryColors[item.category] }} />
                               {item.name}
+                              {item.count != null && (
+                                <span className='text-muted ms-1'>({Number(item.count).toLocaleString()})</span>
+                              )}
                             </span>
                             <span className='d-flex align-items-center gap-1'>
                               {/*{isFiltered && <button className='btn btn-danger btn-xs'>Clear</button>}*/}

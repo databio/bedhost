@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import * as vg from '@uwdata/vgplot';
 
 import { tableau20 } from '../../utils';
+
+const categoryColors = [...tableau20, '#cccccc'];
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
@@ -157,7 +159,7 @@ export const BEDEmbeddingPlot = forwardRef<BEDEmbeddingPlotRef, Props>((props, r
                 identifier='id'
                 text='name'
                 category={colorGrouping}
-                categoryColors={tableau20}
+                categoryColors={categoryColors}
                 additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
                 height={height || 500}
                 width={containerWidth}
