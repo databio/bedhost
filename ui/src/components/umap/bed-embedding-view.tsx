@@ -35,7 +35,7 @@ export const BEDEmbeddingView = (props: Props) => {
   const [selectedPoints, setSelectedPoints] = useState<any[]>([]);
   const [initialPoint, setInitialPoint] = useState<any>(null);
   const [viewportState, setViewportState] = useState<any>(null);
-  const [legendItems, setLegendItems] = useState<string[]>([]);
+  const [legendItems, setLegendItems] = useState<any[]>([]);
   const [filterSelection, setFilterSelection] = useState<any>(null);
   const [addedToCart, setAddedToCart] = useState(false);
   const [tooltipPoint, setTooltipPoint] = useState<any>(null);
@@ -45,6 +45,8 @@ export const BEDEmbeddingView = (props: Props) => {
   const [uploadButtonText, setUploadButtonText] = useState('Upload BED');
   const [pinnedCategories, setPinnedCategories] = useState<Set<any>>(new Set());
   const [pinGrouping, setPinGrouping] = useState<string>(colorGrouping);
+
+  const categoryColors = useMemo(() => [...tableau20, '#cccccc'], []);
 
   const filter = useMemo(() => vg.Selection.intersect(), []);
   const legendFilterSource = useMemo(() => ({}), []);
@@ -350,11 +352,15 @@ export const BEDEmbeddingView = (props: Props) => {
   };
 
   const fetchLegendItems = async (coordinator: any) => {
-    const query = `SELECT DISTINCT
-        ${colorGrouping.replace('_category', '')} as name,
-        ${colorGrouping} as category
-        FROM data
-        ORDER BY ${colorGrouping}`;
+    const fieldName = colorGrouping.replace('_category', '');
+    const query = `
+      SELECT
+        CASE WHEN ${colorGrouping} < 20 THEN ${fieldName} ELSE 'Other' END as name,
+        CASE WHEN ${colorGrouping} < 20 THEN ${colorGrouping} ELSE 20 END as category,
+        COUNT(*) as count
+      FROM data
+      GROUP BY 1, 2
+      ORDER BY count DESC`;
 
     const result = (await coordinator.query(query, { type: 'json' })) as any[];
     return result;
@@ -546,7 +552,7 @@ export const BEDEmbeddingView = (props: Props) => {
                     identifier='id'
                     text='name'
                     category={colorGrouping}
-                    categoryColors={tableau20}
+                    categoryColors={categoryColors}
                     additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
                     height={embeddingHeight}
                     width={containerWidth}
@@ -669,8 +675,11 @@ export const BEDEmbeddingView = (props: Props) => {
                         >
                           <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
                             <span>
-                              <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
+                              <i className='bi bi-square-fill me-3' style={{ color: categoryColors[item.category] }} />
                               {item.name}
+                              {item.count != null && (
+                                <span className='text-muted ms-1'>({Number(item.count).toLocaleString()})</span>
+                              )}
                             </span>
                             <span className='d-flex align-items-center gap-1'>
                               {/*{isFiltered && <button className='btn btn-danger btn-xs'>Clear</button>}*/}
