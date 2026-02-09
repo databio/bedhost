@@ -36,7 +36,7 @@ export const SearchBedSetResultTable = (props: Props) => {
               <td>{result?.id || 'Unknown Id'}</td>
               <td>{result?.name || 'Unknown Name'}</td>
               <td>{result?.description || 'Unknown Description'}</td>
-              <td>{result?.bed_ids?.length || 0}</td>
+              <td>{result?.bed_ids ? result.bed_ids.length : 'N/A'}</td>
             </tr>
           ))}
         </tbody>

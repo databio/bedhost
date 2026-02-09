@@ -421,3 +421,16 @@ td {
 .embedding-card:hover {
   outline: 4px solid $primary !important;
 }
+
+.table-compact td,
+.table-compact th {
+  padding-left: 0 !important;
+  padding-right: 0.5rem !important;
+}
+
+// Section rule: vertical line from header through content
+.section-rule {
+  // margin-left: 0.375rem;
+  padding-left: 0.75rem;
+  border-left: 2px solid rgba(0, 0, 0, 0.15);
+}

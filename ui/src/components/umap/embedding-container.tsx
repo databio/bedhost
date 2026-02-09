@@ -37,6 +37,7 @@ type Props = {
   navigateTo?: string;
   umapUrl?: string;
   initialColorGrouping?: string;
+  homeUrl?: string;
 };
 
 export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((props, ref) => {
@@ -56,6 +57,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
     navigateTo,
     umapUrl,
     initialColorGrouping,
+    homeUrl,
   } = props;
 
   const navigate = useNavigate();
@@ -323,19 +325,28 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                 >
                   <i className='bi bi-fullscreen' />
                 </span>
+              ) : homeUrl ? (
+                <span
+                  className='badge rounded-2 text-bg-primary position-absolute cursor-pointer border border-primary'
+                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}}
+                  title='Go Back'
+                  onClick={() => navigate(-1)}
+                >
+                  <i className='bi bi-arrow-left' />
+                </span>
               ) : initialState === 'hidden' ? (
-                <span 
-                  className='badge rounded-2 text-bg-danger position-absolute cursor-pointer border border-danger' 
-                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} 
+                <span
+                  className='badge rounded-2 text-bg-danger position-absolute cursor-pointer border border-danger'
+                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}}
                   onClick={handleHide}
                   title='Hide Embeddings'
                 >
                   <i className='bi bi-x-lg' />
                 </span>
               ) : (
-                <span 
-                  className='badge rounded-2 text-bg-danger position-absolute cursor-pointer border border-danger' 
-                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}} 
+                <span
+                  className='badge rounded-2 text-bg-danger position-absolute cursor-pointer border border-danger'
+                  style={{top: '0.5rem', left: '0.5rem', zIndex: 9999}}
                   onClick={handleCollapse}
                   title='Collapse Embeddings'
                 >
@@ -427,7 +438,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                 height={state === 'compact' ? height : undefined}
                 preselectPoint={state === 'compact' ? preselectPoint : true}
                 stickyInitial={state === 'compact' ? stickyInitial : true}
-                centerInitial={state === 'compact' ? centerInitial : false}
+                centerInitial={centerInitial}
                 tooltipInitial={state === 'compact' ? tooltipInitial : true}
                 customCoordinates={customCoordinates}
                 customFilename={file?.name || undefined}

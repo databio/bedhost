@@ -46,6 +46,7 @@ export const BEDUmap: React.FC = () => {
             showBorder={true}
             initialState='compact'
             initialColorGrouping={colorGrouping || undefined}
+            homeUrl='/'
           />
         </div>
       </div>

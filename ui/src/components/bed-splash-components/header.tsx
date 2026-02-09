@@ -248,32 +248,6 @@ export const BedSplashHeader = (props: Props) => {
               </OverlayTrigger>
             )}
           </div>
-          <OverlayTrigger
-            placement='top'
-            overlay={
-              <div className='tooltip'>
-                <div className='tooltip-arrow' />
-                <div className='tooltip-inner'>BED compliance</div>
-              </div>
-            }
-          >
-            <div className='badge bg-primary mt-1'>
-              {metadata?.bed_compliance || 'No compliance available'}
-            </div>
-          </OverlayTrigger>
-          <OverlayTrigger
-            placement='top'
-            overlay={
-              <div className='tooltip'>
-                <div className='tooltip-arrow' />
-                <div className='tooltip-inner'>Data Format</div>
-              </div>
-            }
-          >
-            <div className='badge bg-primary mt-1'>
-              {metadata?.data_format || 'No data format available'}
-            </div>
-          </OverlayTrigger>
           <a
             href={`http://purl.obolibrary.org/obo/${(metadata?.license_id || 'DUO:0000042').replace(/:/g, '_')}`}
             target='_blank'

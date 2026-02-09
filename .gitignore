@@ -40,3 +40,4 @@ venv.bak/
 .DS_store
 
 ui/package-lock.json
+plans/*

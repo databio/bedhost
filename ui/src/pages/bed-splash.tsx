@@ -227,70 +227,60 @@ export const BedSplash = () => {
     return (
       <Layout title={`BEDbase | ${bedId}`} footer fullHeight>
         <div className='container my-2'>
-          <div className='row mb-2'>
+          <div className='row'>
             <div className='col-12'>
               {metadata !== undefined ? (
                 <BedSplashHeader metadata={metadata} record_identifier={bedId} genomeStats={genomeStats} />
               ) : null}
             </div>
           </div>
-          <div className='row mt-1 mb-3 g-2'>
+          <div className='row mb-4 g-2'>
             <div className='col-12 col-xl-6'>
-              <h5 className='fw-bold'>Overview</h5>
-              <div className='row'>
-                <div className='col-12 mt-0'>
-                  <div className='text-sm'>
-                    <table className='table table-sm table-borderless table-transparent mb-0'>
-                      <tbody>{filteredKeys.map(metadataRow)}</tbody>
-                    </table>
-                  </div>
-                </div>
-                
-              </div>
-            </div>
-            {bedId && metadata?.name?.includes('encode') && (
-              <div className='col-md-6 gap-2'>
-                <div className='border rounded bg-white overflow-hidden embedding-card'>
-                  <EmbeddingContainer
-                    ref={embeddingPlotRef}
-                    bedIds={[bedId]}
-                    height={filteredKeys.length * 24}
-                    preselectPoint={true}
-                    centerInitial={true}
-                    tooltipInitial={true}
-                    simpleTooltip={true}
-                    blockCompact={true}
-                    showBorder={false}
-                    navigateTo={`/umap?searchId=${bedId}&center=true`}
-                    umapUrl={`/umap?searchId=${bedId}&center=true`}
-                  />
-                  <div className='text-center'>
-                    <p className='fw-medium text-xs bg-body-secondary border-top p-2 mb-0'>Region Embeddings Location</p>
-                  </div>
+              <h6 className='fw-semibold'>Overview</h6>
+              <div className='section-rule'>
+                <div className='text-sm'>
+                  <table className='table table-sm table-borderless table-transparent table-compact mb-0'>
+                    <tbody>{filteredKeys.map(metadataRow)}</tbody>
+                  </table>
                 </div>
               </div>
-            )}
-          </div>
-
-          <div className='row mb-0 g-2'>
-            <div className='d-flex flex-row gap-4 justify-content-center mt-5 mb-4 pb-2 text-muted'>
-              <span>
-                <strong className='text-primary'>{(metadata?.stats?.number_of_regions || 0).toLocaleString()}</strong> regions
-              </span>
-              <span>•</span>
-              <span>
-                <strong className='text-success'>{(metadata?.stats?.median_tss_dist  || 0).toLocaleString()} bp</strong> median TSS distance
-              </span>
-              <span>•</span>
-              <span>
-                <strong className='text-info'>{(metadata?.stats?.mean_region_width  || 0).toLocaleString()} bp</strong> mean region width
-              </span>
-              <span>•</span>
-              <span>
-                <strong className='text-secondary'>{(metadata?.stats?.gc_content  || 0).toLocaleString()}</strong> GC content
-              </span>
             </div>
-            
+            <div className='col-12 col-xl-6'>
+              <h6 className='fw-semibold'>Statistics</h6>
+              {/* <StatsBarChart metadata={metadata!} /> */}
+              <div className='section-rule'>
+                <div className='text-sm'>
+                  <table className='table table-sm table-borderless table-transparent table-compact mb-0'>
+                    <tbody>
+                      <tr>
+                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>Number of Regions</td>
+                        <td className='pt-0 pb-1'>{(metadata?.stats?.number_of_regions || 0).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>Median TSS Distance</td>
+                        <td className='pt-0 pb-1'>{(metadata?.stats?.median_tss_dist || 0).toLocaleString()} bp</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>Mean Region Width</td>
+                        <td className='pt-0 pb-1'>{(metadata?.stats?.mean_region_width || 0).toLocaleString()} bp</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>GC Content</td>
+                        <td className='pt-0 pb-1'>{(metadata?.stats?.gc_content || 0).toLocaleString()}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>BED Compliance</td>
+                        <td className='pt-0 pb-1'>{metadata?.bed_compliance || 'N/A'}</td>
+                      </tr>
+                      <tr>
+                        <td style={{ width: '200px' }} className='text-muted p-0 pb-1'>Data Format</td>
+                        <td className='pt-0 pb-1'>{metadata?.data_format || 'N/A'}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className='row mb-4'>
@@ -332,7 +322,7 @@ export const BedSplash = () => {
                         name: bedset.name || '',
                         description: bedset.description || '',
                         md5sum: '',
-                        bed_ids: [],
+                        bed_ids: undefined,
                       })),
                     }}
                   />
@@ -347,7 +337,7 @@ export const BedSplash = () => {
                         name: bedset.name || '',
                         description: bedset.description || '',
                         md5sum: '',
-                        bed_ids: [],
+                        bed_ids: undefined,
                       })),
                     }}
                     showBEDCount={true}
@@ -383,6 +373,29 @@ export const BedSplash = () => {
                 ) : (
                   <Text2BedSearchResultsCards results={neighbours} />
                 )}
+              </div>
+            </div>
+          )}
+
+          {bedId && metadata?.genome_alias === 'hg38' && (
+            <div className='row mb-4'>
+              <h5 className='fw-bold'>UMAP Location</h5>
+              <div className='col-12'>
+                <div className='border rounded bg-white overflow-hidden embedding-card'>
+                  <EmbeddingContainer
+                    ref={embeddingPlotRef}
+                    bedIds={[bedId]}
+                    height={300}
+                    preselectPoint={true}
+                    centerInitial={false}
+                    tooltipInitial={true}
+                    simpleTooltip={true}
+                    blockCompact={true}
+                    showBorder={false}
+                    navigateTo={`/umap?searchId=${bedId}&center=true`}
+                    umapUrl={`/umap?searchId=${bedId}&center=true`}
+                  />
+                </div>
               </div>
             </div>
           )}

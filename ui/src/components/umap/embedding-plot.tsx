@@ -402,7 +402,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         setInitialPoint(pointToSelect);
         if (preselectPoint) {
           if (!!customCoordinates || centerInitial) {
-            centerOnPoint(pointToSelect, 0.2, tooltipInitial);
+            centerOnPoint(pointToSelect, 0.1, tooltipInitial);
           } else if (tooltipInitial) {
             setTimeout(() => {
               setTooltipPoint(pointToSelect);

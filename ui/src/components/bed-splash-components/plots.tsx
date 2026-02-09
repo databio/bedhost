@@ -57,9 +57,7 @@ export const Plots = (props: PlotsProps) => {
 
   // console.log(Object.keys(metadata?.plots ?? {}).map((name: string) => name));
 
-  // comment out partitions because we already have it in statistics section
-  const plotNames = metadata.plots ? Object.keys(metadata.plots).filter((name: string) => name != 'chrombins') : [];
-  // const plotNames = metadata.plots ? Object.keys(metadata.plots) : [];
+  const plotNames = metadata.plots ? Object.keys(metadata.plots).filter((name: string) => name !== 'expected_partitions') : [];
   return (
     <Fragment>
       <Row className='row-cols-lg-4 row-cols-md-3 row-cols-sm-2 row-cols-1 g-2'>
