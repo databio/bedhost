@@ -130,7 +130,7 @@ print(bed_granges)
 `;
 
 export const CLIENT_RUST_CODE_RAW = `
-\`\`\`python
+\`\`\`rust
 use gtars::bbclient::BBClient;
 
 let mut bbc = BBClient::new(Some(cache_folder.clone()), None).expect("Failed to create BBClient");

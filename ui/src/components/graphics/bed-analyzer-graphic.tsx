@@ -65,21 +65,30 @@ export const BedAnalyzerGraphic = () => {
             filter="url(#glow-analyzer)"
           />
 
-          {/* File content lines */}
-          <rect x="25" y="-10" width="145" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="25" y="0" width="115" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="25" y="10" width="135" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="25" y="20" width="110" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="25" y="30" width="130" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="25" y="40" width="150" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="25" y="50" width="110" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="25" y="60" width="130" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="25" y="70" width="125" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="25" y="80" width="145" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="25" y="90" width="125" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="25" y="100" width="135" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="25" y="110" width="130" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="25" y="120" width="140" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
+          {/* BED file content - 3 columns: chr | start | end */}
+          {[
+            { y: -10, o: 0.4, w2: 35, w3: 38 },
+            { y: 0, o: 0.3, w2: 30, w3: 45 },
+            { y: 10, o: 0.4, w2: 38, w3: 35 },
+            { y: 20, o: 0.3, w2: 32, w3: 42 },
+            { y: 30, o: 0.4, w2: 35, w3: 38 },
+            { y: 40, o: 0.3, w2: 28, w3: 45 },
+            { y: 50, o: 0.4, w2: 38, w3: 35 },
+            { y: 60, o: 0.3, w2: 32, w3: 42 },
+            { y: 70, o: 0.4, w2: 35, w3: 38 },
+            { y: 80, o: 0.3, w2: 30, w3: 45 },
+            { y: 90, o: 0.4, w2: 38, w3: 35 },
+            { y: 100, o: 0.3, w2: 32, w3: 42 },
+            { y: 110, o: 0.4, w2: 35, w3: 38 },
+            { y: 120, o: 0.3, w2: 30, w3: 45 },
+          ].map((row, i) => (
+            <g key={i}>
+              <rect x="25" y={row.y} width="20" height="3" rx="1.5" fill="#008080" opacity={row.o}/>
+              <rect x="55" y={row.y} width={row.w2} height="3" rx="1.5" fill="#008080" opacity={row.o}/>
+              <rect x="100" y={row.y} width={row.w3} height="3" rx="1.5" fill="#008080" opacity={row.o}/>
+            </g>
+          ))}
+          <text x="182" y="123" fontSize="9" fill="#008080" opacity="0.5" textAnchor="end" fontFamily="monospace">.bed</text>
         </g>
 
         {/* Results rectangle - cut off from bottom */}

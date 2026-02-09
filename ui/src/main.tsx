@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, ScrollRestoration, Outlet } from 'react-router-dom';
 import { AxiosProvider } from './contexts/api-context.tsx';
 import { QueryCache, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -20,6 +20,7 @@ import { MosaicCoordinatorProvider } from './contexts/mosaic-coordinator-context
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'devicon/devicon.min.css';
 import 'highlight.js/styles/a11y-light.min.css';
 import './custom.scss';
 import './components/umap/embedding-styles.scss';
@@ -55,51 +56,64 @@ const queryClient = new QueryClient({
   }),
 });
 
+// root layout that handles scroll restoration
+const RootLayout = () => (
+  <>
+    <ScrollRestoration />
+    <Outlet />
+  </>
+);
+
 // create the router
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/home_alt',
-    element: <HomeAlt />,
-  },
-  {
-    path: '/home_alt2',
-    element: <HomeAlt2 />,
-  },
-  {
-    path: '/bed/:id',
-    element: <BedSplash />,
-  },
-  {
-    path: '/bedset/:id',
-    element: <BedsetSplash />,
-  },
-  {
-    path: '/cart',
-    element: <BedCart />,
-  },
-  {
-    path: '/search',
-    element: <SearchPage />,
-  },
-  {
-    path: '/metrics',
-    element: <Metrics />,
-  },
-  {
-    path: '*',
-    element: <div>Not Found</div>,
-  },
-  {
-    path: '/umap',
-    element: <BEDUmap />,
-  },
-  {
-    path: '/analyze',
-    element: <BEDAnalytics />,
+    element: <RootLayout />,
+    children: [
+      {
+        path: '/',
+        element: <Home />,
+      },
+      {
+        path: '/home_alt',
+        element: <HomeAlt />,
+      },
+      {
+        path: '/home_alt2',
+        element: <HomeAlt2 />,
+      },
+      {
+        path: '/bed/:id',
+        element: <BedSplash />,
+      },
+      {
+        path: '/bedset/:id',
+        element: <BedsetSplash />,
+      },
+      {
+        path: '/cart',
+        element: <BedCart />,
+      },
+      {
+        path: '/search',
+        element: <SearchPage />,
+      },
+      {
+        path: '/metrics',
+        element: <Metrics />,
+      },
+      {
+        path: '/umap',
+        element: <BEDUmap />,
+      },
+      {
+        path: '/analyze',
+        element: <BEDAnalytics />,
+      },
+      {
+        path: '*',
+        element: <div>Not Found</div>,
+      },
+    ],
   },
 ]);
 

@@ -53,7 +53,7 @@ export const SearchPage = () => {
       if (genome) params.set('genome', genome);
       if (assay) params.set('assay', assay);
     }
-    setSearchParams(params);
+    setSearchParams(params, { replace: true });
   }, [searchTerm, genome, assay, searchView, setSearchParams]);
 
   return (

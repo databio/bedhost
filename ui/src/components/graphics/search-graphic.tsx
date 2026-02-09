@@ -175,95 +175,19 @@ export const SearchGraphic = () => {
 
         {/* Grid of file icons */}
         <g>
-          {/* File 1 */}
-          <g transform="translate(85, 150)">
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke="#008080"
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill="#008080" opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill="#008080" opacity="0.3"/>
-          </g>
-
-          {/* File 2 */}
-          <g transform="translate(135, 150)">
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke="#008080"
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill="#008080" opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill="#008080" opacity="0.3"/>
-          </g>
-
-          {/* File 3 */}
-          <g transform="translate(185, 150)">
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke="#008080"
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill="#008080" opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill="#008080" opacity="0.3"/>
-          </g>
-
-          {/* File 4 */}
-          <g transform="translate(235, 150)">
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke="#008080"
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill="#008080" opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill="#008080" opacity="0.3"/>
-          </g>
-
-          {/* File 5 */}
-          <g transform="translate(285, 150)">
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke="#008080"
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill="#008080" opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill="#008080" opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill="#008080" opacity="0.3"/>
-          </g>
+          {/* Small file icons with 3-column BED content */}
+          {[85, 135, 185, 235, 285].map((x, i) => (
+            <g key={i} transform={`translate(${x}, 150)`}>
+              <rect x="0" y="0" width="30" height="40" rx="4" fill="white" stroke="#008080" strokeWidth="1.5"/>
+              {[8, 14, 20, 26].map((y) => (
+                <g key={y}>
+                  <rect x="4" y={y} width="5" height="2" rx="1" fill="#008080" opacity="0.4"/>
+                  <rect x="11" y={y} width="7" height="2" rx="1" fill="#008080" opacity="0.3"/>
+                  <rect x="20" y={y} width="6" height="2" rx="1" fill="#008080" opacity="0.3"/>
+                </g>
+              ))}
+            </g>
+          ))}
         </g>
       </svg>
     </div>

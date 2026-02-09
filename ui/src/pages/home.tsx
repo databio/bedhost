@@ -245,7 +245,7 @@ export const Home = () => {
                         rel='noopener noreferrer'
                         className='btn btn-outline-primary btn-sm'
                       >
-                        <i className='bi bi-box-fill me-1'></i> Python
+                        <i className='devicon-python-plain me-1'></i> Python
                       </a>
                       <a
                         href='https://github.com/waldronlab/bedbaser'
@@ -253,7 +253,7 @@ export const Home = () => {
                         rel='noopener noreferrer'
                         className='btn btn-outline-primary btn-sm'
                       >
-                        <i className='bi bi-github me-1'></i> R
+                        <i className='devicon-r-plain me-1'></i> R
                       </a>
                       <a
                         href='https://crates.io/crates/gtars'
@@ -261,7 +261,7 @@ export const Home = () => {
                         rel='noopener noreferrer'
                         className='btn btn-outline-primary btn-sm'
                       >
-                        <i className='bi bi-box-fill me-1'></i> Rust
+                        <i className='devicon-rust-original me-1'></i> Rust
                       </a>
                     </div>
                   </div>

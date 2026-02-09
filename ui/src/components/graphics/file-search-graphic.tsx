@@ -42,19 +42,28 @@ export const FileSearchGraphic = () => {
             filter="url(#glow)"
           />
 
-          {/* File content lines - more lines distributed throughout */}
-          <rect x="70" y="-10" width="260" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="70" y="0" width="200" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="70" y="10" width="240" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="70" y="20" width="180" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="70" y="30" width="220" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="70" y="40" width="250" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="70" y="50" width="190" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="70" y="60" width="230" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="70" y="70" width="210" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="70" y="80" width="240" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
-          <rect x="70" y="90" width="200" height="3" rx="1.5" fill="#008080" opacity="0.4"/>
-          <rect x="70" y="100" width="220" height="3" rx="1.5" fill="#008080" opacity="0.3"/>
+          {/* BED file content - 3 columns: chr | start | end */}
+          {[
+            { y: -10, o: 0.4, w2: 55, w3: 60 },
+            { y: 0, o: 0.3, w2: 45, w3: 70 },
+            { y: 10, o: 0.4, w2: 60, w3: 55 },
+            { y: 20, o: 0.3, w2: 50, w3: 65 },
+            { y: 30, o: 0.4, w2: 55, w3: 60 },
+            { y: 40, o: 0.3, w2: 45, w3: 70 },
+            { y: 50, o: 0.4, w2: 60, w3: 55 },
+            { y: 60, o: 0.3, w2: 50, w3: 65 },
+            { y: 70, o: 0.4, w2: 55, w3: 60 },
+            { y: 80, o: 0.3, w2: 45, w3: 70 },
+            { y: 90, o: 0.4, w2: 60, w3: 55 },
+            { y: 100, o: 0.3, w2: 50, w3: 65 },
+          ].map((row, i) => (
+            <g key={i}>
+              <rect x="70" y={row.y} width="30" height="3" rx="1.5" fill="#008080" opacity={row.o}/>
+              <rect x="115" y={row.y} width={row.w2} height="3" rx="1.5" fill="#008080" opacity={row.o}/>
+              <rect x="190" y={row.y} width={row.w3} height="3" rx="1.5" fill="#008080" opacity={row.o}/>
+            </g>
+          ))}
+          <text x="335" y="103" fontSize="11" fill="#008080" opacity="0.5" textAnchor="end" fontFamily="monospace">.bed</text>
         </g>
 
         {/* Connecting lines from document to files */}
@@ -103,7 +112,7 @@ export const FileSearchGraphic = () => {
 
           {/* Line to file 5 - from right side of document */}
           <polyline
-            points="280,60 280,130 300,130 300,150"
+            points="250,60 250,130 300,130 300,150"
             fill="none"
             stroke={hoveredFile === 5 ? "#008080" : "#6c757d"}
             strokeWidth="2"
@@ -125,118 +134,37 @@ export const FileSearchGraphic = () => {
 
         {/* Grid of file icons */}
         <g>
-          {/* File 1 */}
-          <g
-            transform="translate(85, 150)"
-            onMouseEnter={() => setHoveredFile(1)}
-            onMouseLeave={() => setHoveredFile(null)}
-            style={{ cursor: 'pointer' }}
-          >
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke={hoveredFile === 1 ? "#008080" : "#6c757d"}
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill={hoveredFile === 1 ? "#008080" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill={hoveredFile === 1 ? "#008080" : "#6c757d"} opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill={hoveredFile === 1 ? "#008080" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill={hoveredFile === 1 ? "#008080" : "#6c757d"} opacity="0.3"/>
-          </g>
-
-          {/* File 2 */}
-          <g
-            transform="translate(135, 150)"
-            onMouseEnter={() => setHoveredFile(2)}
-            onMouseLeave={() => setHoveredFile(null)}
-            style={{ cursor: 'pointer' }}
-          >
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke={hoveredFile === 2 ? "#008080" : "#6c757d"}
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill={hoveredFile === 2 ? "#008080" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill={hoveredFile === 2 ? "#008080" : "#6c757d"} opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill={hoveredFile === 2 ? "#008080" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill={hoveredFile === 2 ? "#008080" : "#6c757d"} opacity="0.3"/>
-          </g>
-
-          {/* File 3 - no line, no interaction */}
-          <g transform="translate(185, 150)"
-            onMouseEnter={() => setHoveredFile(3)}
-            onMouseLeave={() => setHoveredFile(null)}
-            style={{ cursor: 'pointer' }}
-          >
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke={hoveredFile === 3 ? "#495057" : "#6c757d"}
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill={hoveredFile === 3 ? "#495057" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill={hoveredFile === 3 ? "#495057" : "#6c757d"} opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill={hoveredFile === 3 ? "#495057" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill={hoveredFile === 3 ? "#495057" : "#6c757d"} opacity="0.3"/>
-          </g>
-
-          {/* File 4 - no line, no interaction */}
-          <g transform="translate(235, 150)"
-            onMouseEnter={() => setHoveredFile(4)}
-            onMouseLeave={() => setHoveredFile(null)}
-            style={{ cursor: 'pointer' }}
-          >
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke={hoveredFile === 4 ? "#495057" : "#6c757d"}
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill={hoveredFile === 4 ? "#495057" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill={hoveredFile === 4 ? "#495057" : "#6c757d"} opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill={hoveredFile === 4 ? "#495057" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill={hoveredFile === 4 ? "#495057" : "#6c757d"} opacity="0.3"/>
-          </g>
-
-          {/* File 5 */}
-          <g
-            transform="translate(285, 150)"
-            onMouseEnter={() => setHoveredFile(5)}
-            onMouseLeave={() => setHoveredFile(null)}
-            style={{ cursor: 'pointer' }}
-          >
-            <rect
-              x="0"
-              y="0"
-              width="30"
-              height="40"
-              rx="4"
-              fill="white"
-              stroke={hoveredFile === 5 ? "#008080" : "#6c757d"}
-              strokeWidth="1.5"
-            />
-            <rect x="5" y="8" width="20" height="2" rx="1" fill={hoveredFile === 5 ? "#008080" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="14" width="15" height="2" rx="1" fill={hoveredFile === 5 ? "#008080" : "#6c757d"} opacity="0.3"/>
-            <rect x="5" y="20" width="20" height="2" rx="1" fill={hoveredFile === 5 ? "#008080" : "#6c757d"} opacity="0.4"/>
-            <rect x="5" y="26" width="12" height="2" rx="1" fill={hoveredFile === 5 ? "#008080" : "#6c757d"} opacity="0.3"/>
-          </g>
+          {/* Small file icons with 3-column BED content */}
+          {[
+            { x: 85, id: 1, highlight: true },
+            { x: 135, id: 2, highlight: true },
+            { x: 185, id: 3, highlight: false },
+            { x: 235, id: 4, highlight: false },
+            { x: 285, id: 5, highlight: true },
+          ].map((file) => {
+            const hovered = hoveredFile === file.id;
+            const color = hovered
+              ? (file.highlight ? "#008080" : "#495057")
+              : "#6c757d";
+            return (
+              <g
+                key={file.id}
+                transform={`translate(${file.x}, 150)`}
+                onMouseEnter={() => setHoveredFile(file.id)}
+                onMouseLeave={() => setHoveredFile(null)}
+                style={{ cursor: 'pointer' }}
+              >
+                <rect x="0" y="0" width="30" height="40" rx="4" fill="white" stroke={hovered ? (file.highlight ? "#008080" : "#495057") : "#6c757d"} strokeWidth="1.5"/>
+                {[8, 14, 20, 26].map((y) => (
+                  <g key={y}>
+                    <rect x="4" y={y} width="5" height="2" rx="1" fill={color} opacity="0.4"/>
+                    <rect x="11" y={y} width="7" height="2" rx="1" fill={color} opacity="0.3"/>
+                    <rect x="20" y={y} width="6" height="2" rx="1" fill={color} opacity="0.3"/>
+                  </g>
+                ))}
+              </g>
+            );
+          })}
         </g>
       </svg>
     </div>
