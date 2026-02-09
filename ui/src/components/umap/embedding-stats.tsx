@@ -17,13 +17,16 @@ export const EmbeddingStats = (props: Props) => {
   useEffect(() => {
     if (!coordinator || legendItems.length === 0) return;
     const query = `SELECT ${colorGrouping} as category, COUNT(*) as count FROM data GROUP BY ${colorGrouping}`;
-    coordinator.query(query, { type: 'json' }).then((result: any) => {
-      const map = new Map<string, number>();
-      for (const row of result) {
-        map.set(row.category, Number(row.count));
-      }
-      setTotalCounts(map);
-    }).catch(() => {});
+    coordinator
+      .query(query, { type: 'json' })
+      .then((result: any) => {
+        const map = new Map<string, number>();
+        for (const row of result) {
+          map.set(row.category, Number(row.count));
+        }
+        setTotalCounts(map);
+      })
+      .catch(() => {});
   }, [coordinator, colorGrouping, legendItems.length]);
 
   const hasSelection = selectedPoints.length > 0;
@@ -58,24 +61,22 @@ export const EmbeddingStats = (props: Props) => {
   }, [selectedPoints, colorGrouping, legendItems, hasSelection, totalCounts, filterSelection]);
 
   const showBackground = hasSelection || !!filterSelection;
-  const maxTotal = useMemo(() => Math.max(1, ...legendItems.map((item) => totalCounts.get(item.category) ?? 0)), [legendItems, totalCounts]);
+  const maxTotal = useMemo(
+    () => Math.max(1, ...legendItems.map((item) => totalCounts.get(item.category) ?? 0)),
+    [legendItems, totalCounts],
+  );
   const maxRows = useMemo(() => Math.max(1, ...rows.map((r) => r.count)), [rows]);
   const maxCount = showBackground ? maxTotal : maxRows;
 
   return (
-    <div className='border card bg-white'>
-      <div className='card-header border-bottom text-xs fw-semibold bg-white'>
-        Selection Count
-      </div>
-      <div className='card-body' style={{ padding: '12px 12px 12px 12px' }}>
+    <div className='card mb-2 border'>
+      <div className='card-header text-xs fw-bolder border-bottom'>Selection Count</div>
+      <div className='card-body' style={{ padding: '12px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {rows.map((row) => {
             const total = totalCounts.get(row.category) ?? 0;
             return (
-              <div
-                key={row.category}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, height: 20 }}
-              >
+              <div key={row.category} style={{ display: 'flex', alignItems: 'center', gap: 6, height: 20 }}>
                 <span
                   style={{
                     width: 80,
