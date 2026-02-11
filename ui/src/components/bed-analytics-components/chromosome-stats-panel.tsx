@@ -1,31 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import { ChromosomeStatistics, RegionSet } from '@databio/gtars';
-import { RegionCountsPlot } from './region-counts-plot';
 
 interface Props {
   rs: RegionSet;
   selectedFile: File | null;
 }
 
-const ChromosomeStatsPanel = ({ rs, selectedFile }: Props) => {
+const ChromosomeStatsPanel: React.FC<Props> = ({ rs, selectedFile }) => {
   const calc = rs.chromosomeStatistics();
   if (!calc) return null;
-
-  const plotRef = useRef<HTMLDivElement>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (plotRef.current) {
-        const width = plotRef.current.offsetWidth - 120;
-        setContainerWidth(width);
-      }
-    };
-
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
 
   const statsEntries = Array.from(calc.entries())
     .map((entry) => {
@@ -54,15 +37,6 @@ const ChromosomeStatsPanel = ({ rs, selectedFile }: Props) => {
 
   return (
     <div>
-      <div className='mb-3 w-100'>
-        <h6>Number of regions per chromosome: </h6>
-        <div className='border rounded bg-white overflow-hidden w-100' ref={plotRef}>
-          <div className='overflow-auto px-4 pt-3 pb-2 w-100' style={{ maxHeight: 400 }}>
-            {containerWidth > 0 && <RegionCountsPlot statsEntries={statsEntries} width={containerWidth} />}
-          </div>
-        </div>
-      </div>
-
       <div className='d-flex flex-column gap-2 overflow-auto'>
         <div className='d-flex justify-content-between align-items-end'>
           <h6 className='mb-0'>Chromosome regions statistics: </h6>

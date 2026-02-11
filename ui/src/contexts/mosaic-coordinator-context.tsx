@@ -35,17 +35,29 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
 
     const coordinator = getCoordinator();
 
+
     await coordinator.exec([
       vg.sql`CREATE OR REPLACE TABLE data AS
             SELECT
               unnest(nodes, recursive := true)
             FROM read_json_auto('${UMAP_URL}')`,
       vg.sql`CREATE OR REPLACE TABLE data AS
-            SELECT
-              *,
-              (DENSE_RANK() OVER (ORDER BY assay) - 1)::INTEGER AS assay_category,
-              (DENSE_RANK() OVER (ORDER BY cell_line) - 1)::INTEGER AS cell_line_category
-            FROM data` as any,
+            WITH assay_counts AS (
+              SELECT assay,
+                (ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) - 1)::INTEGER as rank
+              FROM data GROUP BY assay
+            ),
+            cell_line_counts AS (
+              SELECT cell_line,
+                (ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) - 1)::INTEGER as rank
+              FROM data GROUP BY cell_line
+            )
+            SELECT d.*,
+              CASE WHEN ac.rank < 20 THEN ac.rank ELSE 20 END AS assay_category,
+              CASE WHEN cc.rank < 20 THEN cc.rank ELSE 20 END AS cell_line_category
+            FROM data d
+            JOIN assay_counts ac ON d.assay = ac.assay
+            JOIN cell_line_counts cc ON d.cell_line = cc.cell_line` as any,
     ]);
 
     dataInitializedRef.current = true;
@@ -62,18 +74,6 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
 
     await coordinator.exec([vg.sql`DELETE FROM data WHERE id = 'custom_point'` as any]);
 
-    // Get max category indices for uploaded points (after deletion to ensure clean state)
-    const maxCategories = (await coordinator.query(
-      `SELECT
-        MAX(assay_category) as max_assay_category,
-        MAX(cell_line_category) as max_cell_line_category
-       FROM data`,
-      { type: 'json' },
-    )) as any[];
-
-    const assayCategory = (maxCategories[0]?.max_assay_category ?? -1) + 1;
-    const cellLineCategory = (maxCategories[0]?.max_cell_line_category ?? -1) + 1;
-
     await coordinator.exec([
       vg.sql`INSERT INTO data VALUES (
         ${x},
@@ -83,8 +83,8 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
         '${description}',
         'Uploaded BED',
         'Uploaded BED',
-        ${assayCategory},
-        ${cellLineCategory}
+        20,
+        20
       )` as any,
     ]);
   };
