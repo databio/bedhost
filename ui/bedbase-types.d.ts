@@ -4,3069 +4,3069 @@
  */
 
 export interface paths {
-    "/v1": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * API intro page
-         * @description Display the index UI page
-         */
-        get: operations["index_v1_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  '/v1': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/docs/changelog": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Release notes */
-        get: operations["changelog_v1_docs_changelog_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * API intro page
+     * @description Display the index UI page
+     */
+    get: operations['index_v1_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/docs/changelog': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Lending Page */
-        get: operations["lending_page__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Release notes */
+    get: operations['changelog_v1_docs_changelog_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get summary statistics for BEDbase platform
-         * @description Returns statistics
-         */
-        get: operations["get_bedbase_db_stats_v1_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Lending Page */
+    get: operations['lending_page__get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/stats': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/detailed-stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get detailed statistics for BEDbase platform, including number of files for each genome
-         * @description Returns detailed statistics
-         */
-        get: operations["get_detailed_stats_v1_detailed_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get summary statistics for BEDbase platform
+     * @description Returns statistics
+     */
+    get: operations['get_bedbase_db_stats_v1_stats_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/detailed-stats': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/detailed-usage": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get detailed usage statistics for BEDbase platform
-         * @description Returns detailed usage statistics
-         */
-        get: operations["get_detailed_usage_v1_detailed_usage_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get detailed statistics for BEDbase platform, including number of files for each genome
+     * @description Returns detailed statistics
+     */
+    get: operations['get_detailed_stats_v1_detailed_stats_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/detailed-usage': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/genomes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get available genomes
-         * @description Returns statistics
-         */
-        get: operations["get_bedbase_db_stats_v1_genomes_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get detailed usage statistics for BEDbase platform
+     * @description Returns detailed usage statistics
+     */
+    get: operations['get_detailed_usage_v1_detailed_usage_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/genomes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/assays": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get available assays
-         * @description Returns statistics
-         */
-        get: operations["get_bedbase_db_stats_v1_assays_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get available genomes
+     * @description Returns statistics
+     */
+    get: operations['get_bedbase_db_stats_v1_genomes_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/assays': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/service-info": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * GA4GH service info
-         * @description Returns information about this service, such as versions, name, etc.
-         */
-        get: operations["service_info_v1_service_info_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get available assays
+     * @description Returns statistics
+     */
+    get: operations['get_bedbase_db_stats_v1_assays_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/service-info': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/files/{file_path}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Redirect To Download */
-        get: operations["redirect_to_download_v1_files__file_path__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * GA4GH service info
+     * @description Returns information about this service, such as versions, name, etc.
+     */
+    get: operations['service_info_v1_service_info_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/files/{file_path}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/example": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get example BED record metadata
-         * @description Get metadata for an example BED record.
-         */
-        get: operations["get_example_bed_record_v1_bed_example_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Redirect To Download */
+    get: operations['redirect_to_download_v1_files__file_path__get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/example': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Paged list of all BED records
-         * @description Returns list of BED files in the database with optional filters.
-         */
-        get: operations["list_beds_v1_bed_list_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get example BED record metadata
+     * @description Get metadata for an example BED record.
+     */
+    get: operations['get_example_bed_record_v1_bed_example_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/list': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/metadata": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get metadata for a single BED record
-         * @description Example
-         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
-         */
-        get: operations["get_bed_metadata_v1_bed__bed_id__metadata_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Paged list of all BED records
+     * @description Returns list of BED files in the database with optional filters.
+     */
+    get: operations['list_beds_v1_bed_list_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/metadata': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/metadata/plots": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get plots for a single BED record
-         * @description Example
-         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
-         */
-        get: operations["get_bed_plots_v1_bed__bed_id__metadata_plots_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get metadata for a single BED record
+     * @description Example
+     *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
+    get: operations['get_bed_metadata_v1_bed__bed_id__metadata_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/metadata/plots': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/metadata/files": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get metadata for a single BED record
-         * @description Example
-         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
-         */
-        get: operations["get_bed_files_v1_bed__bed_id__metadata_files_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get plots for a single BED record
+     * @description Example
+     *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
+    get: operations['get_bed_plots_v1_bed__bed_id__metadata_plots_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/metadata/files': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/metadata/stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get stats for a single BED record
-         * @description Example
-         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
-         */
-        get: operations["get_bed_stats_v1_bed__bed_id__metadata_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get metadata for a single BED record
+     * @description Example
+     *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
+    get: operations['get_bed_files_v1_bed__bed_id__metadata_files_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/metadata/stats': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/metadata/classification": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get classification of single BED file
-         * @description Example
-         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
-         */
-        get: operations["get_bed_classification_v1_bed__bed_id__metadata_classification_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get stats for a single BED record
+     * @description Example
+     *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
+    get: operations['get_bed_stats_v1_bed__bed_id__metadata_stats_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/metadata/classification': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/metadata/raw": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get raw metadata for a single BED record
-         * @description Returns raw metadata for a single BED record. This metadata is stored in PEPHub. And is not verified.Example
-         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
-         */
-        get: operations["get_bed_pephub_v1_bed__bed_id__metadata_raw_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get classification of single BED file
+     * @description Example
+     *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
+    get: operations['get_bed_classification_v1_bed__bed_id__metadata_classification_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/metadata/raw': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/neighbours": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get nearest neighbours for a single BED record
-         * @description Returns most similar BED files in the database. Example
-         *      bed_id: bbad85f21962bb8d972444f7f9a3a932
-         */
-        get: operations["get_bed_neighbours_v1_bed__bed_id__neighbours_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get raw metadata for a single BED record
+     * @description Returns raw metadata for a single BED record. This metadata is stored in PEPHub. And is not verified.Example
+     *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
+    get: operations['get_bed_pephub_v1_bed__bed_id__metadata_raw_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/neighbours': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/embedding": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get embeddings for a single BED record
-         * @description Returns embeddings for a single BED record.
-         */
-        get: operations["get_bed_embedding_v1_bed__bed_id__embedding_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get nearest neighbours for a single BED record
+     * @description Returns most similar BED files in the database. Example
+     *      bed_id: bbad85f21962bb8d972444f7f9a3a932
+     */
+    get: operations['get_bed_neighbours_v1_bed__bed_id__neighbours_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/embedding': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/embed": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Get embeddings for a bed file.
-         * @description Create embedding for bed file
-         */
-        post: operations["embed_bed_file_v1_bed_embed_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get embeddings for a single BED record
+     * @description Returns embeddings for a single BED record.
+     */
+    get: operations['get_bed_embedding_v1_bed__bed_id__embedding_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/embed': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/missing_plots": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get missing plots for a bed file.
-         * @description Get missing plots for a bed file
-         *
-         *     example ->  plot_id: gccontent
-         */
-        get: operations["missing_plots_v1_bed_missing_plots_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Get embeddings for a bed file.
+     * @description Create embedding for bed file
+     */
+    post: operations['embed_bed_file_v1_bed_embed_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/missing_plots': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/regions/{chr_num}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get regions from a BED file that overlap a query region.
-         * @description Returns the queried regions with provided ID and optional query parameters
-         */
-        get: operations["get_regions_for_bedfile_v1_bed__bed_id__regions__chr_num__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get missing plots for a bed file.
+     * @description Get missing plots for a bed file
+     *
+     *     example ->  plot_id: gccontent
+     */
+    get: operations['missing_plots_v1_bed_missing_plots_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/regions/{chr_num}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/search/text": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Search for a BedFile
-         * @description Search for a BedFile by a text query.
-         *
-         *     By default, it searches in the 'hg38' genome. To search in a different genome, specify the `genome` parameter. eg. mm10
-         *     Example: query="cancer"
-         */
-        post: operations["text_to_bed_search_v1_bed_search_text_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get regions from a BED file that overlap a query region.
+     * @description Returns the queried regions with provided ID and optional query parameters
+     */
+    get: operations['get_regions_for_bedfile_v1_bed__bed_id__regions__chr_num__get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/search/text': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/search/exact": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Search for exact match of metadata in bed files */
-        post: operations["text_to_bed_search_v1_bed_search_exact_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Search for a BedFile
+     * @description Search for a BedFile by a text query.
+     *
+     *     By default, it searches in the 'hg38' genome. To search in a different genome, specify the `genome` parameter. eg. mm10
+     *     Example: query="cancer"
+     */
+    post: operations['text_to_bed_search_v1_bed_search_text_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/search/exact': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/search/bed": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /** Search for similar bed files */
-        post: operations["bed_to_bed_search_v1_bed_search_bed_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Search for exact match of metadata in bed files */
+    post: operations['text_to_bed_search_v1_bed_search_exact_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/search/bed': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/tokens/{universe_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get tokenized of bed file
-         * @description Return univers of bed file
-         *     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
-         */
-        get: operations["get_tokens_v1_bed__bed_id__tokens__universe_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /** Search for similar bed files */
+    post: operations['bed_to_bed_search_v1_bed_search_bed_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/tokens/{universe_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/tokens/{universe_id}/info": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get link to tokenized bed file
-         * @description Return link to tokenized bed file
-         *     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
-         */
-        get: operations["get_tokens_v1_bed__bed_id__tokens__universe_id__info_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get tokenized of bed file
+     * @description Return univers of bed file
+     *     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+     */
+    get: operations['get_tokens_v1_bed__bed_id__tokens__universe_id__get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/tokens/{universe_id}/info': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bed/{bed_id}/genome-stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get reference genome validation results
-         * @description Return reference genome validation results for a bed file
-         *     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302
-         */
-        get: operations["get_ref_gen_results_v1_bed__bed_id__genome_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get link to tokenized bed file
+     * @description Return link to tokenized bed file
+     *     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
+     */
+    get: operations['get_tokens_v1_bed__bed_id__tokens__universe_id__info_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bed/{bed_id}/genome-stats': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/example": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /** Get metadata for an example BEDset record */
-        get: operations["get_example_bedset_record_v1_bedset_example_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get reference genome validation results
+     * @description Return reference genome validation results for a bed file
+     *     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302
+     */
+    get: operations['get_ref_gen_results_v1_bed__bed_id__genome_stats_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/example': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/list": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Paged list of all BEDset records
-         * @description Returns a list of BEDset records in the database with optional filters and search.
-         */
-        get: operations["list_bedsets_v1_bedset_list_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /** Get metadata for an example BEDset record */
+    get: operations['get_example_bedset_record_v1_bedset_example_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/list': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/{bedset_id}/metadata": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get all metadata for a single BEDset record
-         * @description Example
-         *      bed_id: gse218680
-         */
-        get: operations["get_bedset_metadata_v1_bedset__bedset_id__metadata_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Paged list of all BEDset records
+     * @description Returns a list of BEDset records in the database with optional filters and search.
+     */
+    get: operations['list_bedsets_v1_bedset_list_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/{bedset_id}/metadata': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/{bedset_id}/pep": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Download PEP project for a single BEDset record
-         * @description Example
-         *      bed_id: gse218680
-         */
-        get: operations["get_bedset_pep_v1_bedset__bedset_id__pep_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get all metadata for a single BEDset record
+     * @description Example
+     *      bed_id: gse218680
+     */
+    get: operations['get_bedset_metadata_v1_bedset__bedset_id__metadata_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/{bedset_id}/pep': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/{bedset_id}/metadata/plots": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get plots for single bedset record
-         * @description Example
-         *      bed_id: gse218680
-         */
-        get: operations["get_bedset_metadata_v1_bedset__bedset_id__metadata_plots_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Download PEP project for a single BEDset record
+     * @description Example
+     *      bed_id: gse218680
+     */
+    get: operations['get_bedset_pep_v1_bedset__bedset_id__pep_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/{bedset_id}/metadata/plots': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/{bedset_id}/metadata/stats": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get stats for a single BEDSET record
-         * @description Example
-         *      bed_id: gse218680
-         */
-        get: operations["get_bedset_metadata_v1_bedset__bedset_id__metadata_stats_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get plots for single bedset record
+     * @description Example
+     *      bed_id: gse218680
+     */
+    get: operations['get_bedset_metadata_v1_bedset__bedset_id__metadata_plots_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/{bedset_id}/metadata/stats': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/{bedset_id}/bedfiles": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Bedfiles In Bedset
-         * @description Example
-         *      bed_id: gse218680
-         */
-        get: operations["get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get stats for a single BEDSET record
+     * @description Example
+     *      bed_id: gse218680
+     */
+    get: operations['get_bedset_metadata_v1_bedset__bedset_id__metadata_stats_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/{bedset_id}/bedfiles': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/{bedset_id}/track_hub": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get Track Hub Bedset
-         * @description Generate track hub files for the BED set
-         */
-        get: operations["get_track_hub_bedset_v1_bedset__bedset_id__track_hub_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        /**
-         * Get Track Hub Bedset
-         * @description Generate track hub files for the BED set
-         */
-        head: operations["get_track_hub_bedset_v1_bedset__bedset_id__track_hub_head"];
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Bedfiles In Bedset
+     * @description Example
+     *      bed_id: gse218680
+     */
+    get: operations['get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/{bedset_id}/track_hub': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/bedset/create": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        /**
-         * Create Bedset
-         * @description Create a new bedset by providing registry path to the PEPhub project
-         */
-        post: operations["create_bedset_v1_bedset_create_post"];
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get Track Hub Bedset
+     * @description Generate track hub files for the BED set
+     */
+    get: operations['get_track_hub_bedset_v1_bedset__bedset_id__track_hub_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    /**
+     * Get Track Hub Bedset
+     * @description Generate track hub files for the BED set
+     */
+    head: operations['get_track_hub_bedset_v1_bedset__bedset_id__track_hub_head'];
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/bedset/create': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/objects/{object_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get DRS object metadata
-         * @description Returns metadata about a DrsObject.
-         */
-        get: operations["get_drs_object_metadata_v1_objects__object_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    get?: never;
+    put?: never;
+    /**
+     * Create Bedset
+     * @description Create a new bedset by providing registry path to the PEPhub project
+     */
+    post: operations['create_bedset_v1_bedset_create_post'];
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/objects/{object_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/objects/{object_id}/access/{access_id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get URL where you can retrieve files
-         * @description Returns a URL that can be used to fetch the bytes of a DrsObject.
-         */
-        get: operations["get_object_bytes_url_v1_objects__object_id__access__access_id__get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get DRS object metadata
+     * @description Returns metadata about a DrsObject.
+     */
+    get: operations['get_drs_object_metadata_v1_objects__object_id__get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/objects/{object_id}/access/{access_id}': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/objects/{object_id}/access/{access_id}/bytes": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Download actual file
-         * @description Returns the bytes of a DrsObject.
-         */
-        get: operations["get_object_bytes_v1_objects__object_id__access__access_id__bytes_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get URL where you can retrieve files
+     * @description Returns a URL that can be used to fetch the bytes of a DrsObject.
+     */
+    get: operations['get_object_bytes_url_v1_objects__object_id__access__access_id__get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/objects/{object_id}/access/{access_id}/bytes': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/v1/objects/{object_id}/access/{access_id}/thumbnail": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Download thumbnail file
-         * @description Returns the bytes of a thumbnail of a DrsObject
-         */
-        get: operations["get_object_thumbnail_v1_objects__object_id__access__access_id__thumbnail_get"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Download actual file
+     * @description Returns the bytes of a DrsObject.
+     */
+    get: operations['get_object_bytes_v1_objects__object_id__access__access_id__bytes_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  '/v1/objects/{object_id}/access/{access_id}/thumbnail': {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /**
+     * Download thumbnail file
+     * @description Returns the bytes of a thumbnail of a DrsObject
+     */
+    get: operations['get_object_thumbnail_v1_objects__object_id__access__access_id__thumbnail_get'];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        /** AccessMethod */
-        AccessMethod: {
-            /** Type */
-            type: string;
-            access_url?: components["schemas"]["AccessURL"] | null;
-            /** Access Id */
-            access_id?: string | null;
-            /** Region */
-            region?: string | null;
-        };
-        /** AccessURL */
-        AccessURL: {
-            /** Url */
-            url: string;
-            /** Headers */
-            headers?: Record<string, never> | null;
-        };
-        /** BaseListResponse */
-        BaseListResponse: {
-            /** Count */
-            count: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-            /** Results */
-            results: unknown[];
-        };
-        /** BedClassification */
-        BedClassification: {
-            /** Name */
-            name?: string | null;
-            /** Genome Alias */
-            genome_alias?: string;
-            /** Genome Digest */
-            genome_digest?: string | null;
-            /**
-             * Bed Compliance
-             * @default bed3
-             */
-            bed_compliance: string;
-            /** Data Format */
-            data_format?: string | null;
-            /**
-             * Compliant Columns
-             * @default 3
-             */
-            compliant_columns: number;
-            /**
-             * Non Compliant Columns
-             * @default 0
-             */
-            non_compliant_columns: number;
-            /** Header */
-            header?: string | null;
-        };
-        /** BedEmbeddingResult */
-        BedEmbeddingResult: {
-            /** Identifier */
-            identifier: string;
-            /** Payload */
-            payload: Record<string, never>;
-            /** Embedding */
-            embedding: number[];
-        };
-        /** BedFiles */
-        BedFiles: {
-            bed_file?: components["schemas"]["FileModel"] | null;
-            bigbed_file?: components["schemas"]["FileModel"] | null;
-        };
-        /** BedListResult */
-        BedListResult: {
-            /** Count */
-            count: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-            /** Results */
-            results: components["schemas"]["BedMetadataBasic"][];
-        };
-        /** BedListSearchResult */
-        BedListSearchResult: {
-            /** Count */
-            count: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-            /** Results */
-            results?: components["schemas"]["QdrantSearchResult"][];
-        };
-        /** BedMetadataAll */
-        BedMetadataAll: {
-            /**
-             * Name
-             * @default
-             */
-            name: string | null;
-            /** Genome Alias */
-            genome_alias?: string;
-            /** Genome Digest */
-            genome_digest?: string | null;
-            /**
-             * Bed Compliance
-             * @default bed3
-             */
-            bed_compliance: string;
-            /** Data Format */
-            data_format?: string | null;
-            /**
-             * Compliant Columns
-             * @default 3
-             */
-            compliant_columns: number;
-            /**
-             * Non Compliant Columns
-             * @default 0
-             */
-            non_compliant_columns: number;
-            /** Header */
-            header?: string | null;
-            /** Id */
-            id: string;
-            /** Description */
-            description?: string | null;
-            /**
-             * Submission Date
-             * Format: date-time
-             */
-            submission_date?: string;
-            /** Last Update Date */
-            last_update_date?: string | null;
-            /**
-             * Is Universe
-             * @default false
-             */
-            is_universe: boolean | null;
-            /**
-             * License Id
-             * @default DUO:0000042
-             */
-            license_id: string | null;
-            annotation?: components["schemas"]["StandardMeta"] | null;
-            /**
-             * Processed
-             * @default true
-             */
-            processed: boolean | null;
-            stats?: components["schemas"]["BedStatsModel"] | null;
-            plots?: components["schemas"]["BedPlots"] | null;
-            files?: components["schemas"]["BedFiles"] | null;
-            universe_metadata?: components["schemas"]["UniverseMetadata"] | null;
-            /** Raw Metadata */
-            raw_metadata?: components["schemas"]["BedPEPHub"] | components["schemas"]["BedPEPHubRestrict"] | null;
-            /** Bedsets */
-            bedsets?: components["schemas"]["BedSetMinimal"][] | null;
-        };
-        /** BedMetadataBasic */
-        BedMetadataBasic: {
-            /**
-             * Name
-             * @default
-             */
-            name: string | null;
-            /** Genome Alias */
-            genome_alias?: string;
-            /** Genome Digest */
-            genome_digest?: string | null;
-            /**
-             * Bed Compliance
-             * @default bed3
-             */
-            bed_compliance: string;
-            /** Data Format */
-            data_format?: string | null;
-            /**
-             * Compliant Columns
-             * @default 3
-             */
-            compliant_columns: number;
-            /**
-             * Non Compliant Columns
-             * @default 0
-             */
-            non_compliant_columns: number;
-            /** Header */
-            header?: string | null;
-            /** Id */
-            id: string;
-            /** Description */
-            description?: string | null;
-            /**
-             * Submission Date
-             * Format: date-time
-             */
-            submission_date?: string;
-            /** Last Update Date */
-            last_update_date?: string | null;
-            /**
-             * Is Universe
-             * @default false
-             */
-            is_universe: boolean | null;
-            /**
-             * License Id
-             * @default DUO:0000042
-             */
-            license_id: string | null;
-            annotation?: components["schemas"]["StandardMeta"] | null;
-            /**
-             * Processed
-             * @default true
-             */
-            processed: boolean | null;
-        };
-        /** BedPEPHub */
-        BedPEPHub: {
-            /**
-             * Sample Name
-             * @default
-             */
-            sample_name: string;
-            /**
-             * Genome
-             * @default
-             */
-            genome: string;
-            /**
-             * Organism
-             * @default
-             */
-            organism: string;
-            /**
-             * Species Id
-             * @default
-             */
-            species_id: string;
-            /**
-             * Cell Type
-             * @default
-             */
-            cell_type: string;
-            /**
-             * Cell Line
-             * @default
-             */
-            cell_line: string;
-            /**
-             * Assay
-             * @description Experimental protocol (e.g. ChIP-seq)
-             * @default
-             */
-            assay: string;
-            /**
-             * Library Source
-             * @description Library source (e.g. genomic, transcriptomic)
-             * @default
-             */
-            library_source: string;
-            /**
-             * Genotype
-             * @description Genotype of the sample
-             * @default
-             */
-            genotype: string;
-            /**
-             * Target
-             * @description Target of the assay (e.g. H3K4me3)
-             * @default
-             */
-            target: string;
-            /**
-             * Antibody
-             * @description Antibody used in the assay
-             * @default
-             */
-            antibody: string;
-            /**
-             * Treatment
-             * @description Treatment of the sample (e.g. drug treatment)
-             * @default
-             */
-            treatment: string;
-            /**
-             * Tissue
-             * @description Tissue type
-             * @default
-             */
-            tissue: string;
-            /**
-             * Global Sample Id
-             * @description Global sample identifier
-             * @default
-             */
-            global_sample_id: string;
-            /**
-             * Global Experiment Id
-             * @description Global experiment identifier
-             * @default
-             */
-            global_experiment_id: string;
-            /**
-             * Description
-             * @description Description of the sample
-             * @default
-             */
-            description: string;
-        } & {
-            [key: string]: unknown;
-        };
-        /** BedPEPHubRestrict */
-        BedPEPHubRestrict: {
-            /**
-             * Sample Name
-             * @default
-             */
-            sample_name: string;
-            /**
-             * Genome
-             * @default
-             */
-            genome: string;
-            /**
-             * Organism
-             * @default
-             */
-            organism: string;
-            /**
-             * Species Id
-             * @default
-             */
-            species_id: string;
-            /**
-             * Cell Type
-             * @default
-             */
-            cell_type: string;
-            /**
-             * Cell Line
-             * @default
-             */
-            cell_line: string;
-            /**
-             * Assay
-             * @description Experimental protocol (e.g. ChIP-seq)
-             * @default
-             */
-            assay: string;
-            /**
-             * Library Source
-             * @description Library source (e.g. genomic, transcriptomic)
-             * @default
-             */
-            library_source: string;
-            /**
-             * Genotype
-             * @description Genotype of the sample
-             * @default
-             */
-            genotype: string;
-            /**
-             * Target
-             * @description Target of the assay (e.g. H3K4me3)
-             * @default
-             */
-            target: string;
-            /**
-             * Antibody
-             * @description Antibody used in the assay
-             * @default
-             */
-            antibody: string;
-            /**
-             * Treatment
-             * @description Treatment of the sample (e.g. drug treatment)
-             * @default
-             */
-            treatment: string;
-            /**
-             * Tissue
-             * @description Tissue type
-             * @default
-             */
-            tissue: string;
-            /**
-             * Global Sample Id
-             * @description Global sample identifier
-             * @default
-             */
-            global_sample_id: string;
-            /**
-             * Global Experiment Id
-             * @description Global experiment identifier
-             * @default
-             */
-            global_experiment_id: string;
-            /**
-             * Description
-             * @description Description of the sample
-             * @default
-             */
-            description: string;
-        };
-        /** BedPlots */
-        BedPlots: {
-            chrombins?: components["schemas"]["FileModel"];
-            gccontent?: components["schemas"]["FileModel"];
-            partitions?: components["schemas"]["FileModel"];
-            expected_partitions?: components["schemas"]["FileModel"];
-            cumulative_partitions?: components["schemas"]["FileModel"];
-            widths_histogram?: components["schemas"]["FileModel"];
-            neighbor_distances?: components["schemas"]["FileModel"];
-            open_chromatin?: components["schemas"]["FileModel"];
-            tss_distance?: components["schemas"]["FileModel"];
-        };
-        /** BedSetBedFiles */
-        BedSetBedFiles: {
-            /** Count */
-            count: number;
-            /** Results */
-            results: components["schemas"]["BedMetadataBasic"][];
-        };
-        /** BedSetListResult */
-        BedSetListResult: {
-            /** Count */
-            count: number;
-            /** Limit */
-            limit: number;
-            /** Offset */
-            offset: number;
-            /** Results */
-            results: components["schemas"]["BedSetMetadata"][];
-        };
-        /** BedSetMetadata */
-        BedSetMetadata: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            /** Md5Sum */
-            md5sum: string;
-            /**
-             * Submission Date
-             * Format: date-time
-             */
-            submission_date?: string;
-            /**
-             * Last Update Date
-             * Format: date-time
-             */
-            last_update_date?: string;
-            statistics?: components["schemas"]["BedSetStats"] | null;
-            plots?: components["schemas"]["BedSetPlots"] | null;
-            /** Description */
-            description?: string;
-            /** Summary */
-            summary?: string;
-            /** Bed Ids */
-            bed_ids?: string[];
-            /** Author */
-            author?: string | null;
-            /** Source */
-            source?: string | null;
-        };
-        /** BedSetMinimal */
-        BedSetMinimal: {
-            /** Id */
-            id: string;
-            /** Name */
-            name?: string | null;
-            /** Description */
-            description?: string | null;
-        };
-        /** BedSetPlots */
-        BedSetPlots: {
-            region_commonality?: components["schemas"]["FileModel"];
-        };
-        /** BedSetStats */
-        BedSetStats: {
-            mean?: components["schemas"]["BedStatsModel"];
-            sd?: components["schemas"]["BedStatsModel"];
-        };
-        /** BedStatsModel */
-        BedStatsModel: {
-            /** Number Of Regions */
-            number_of_regions?: number | null;
-            /** Gc Content */
-            gc_content?: number | null;
-            /** Median Tss Dist */
-            median_tss_dist?: number | null;
-            /** Mean Region Width */
-            mean_region_width?: number | null;
-            /** Exon Frequency */
-            exon_frequency?: number | null;
-            /** Exon Percentage */
-            exon_percentage?: number | null;
-            /** Intron Frequency */
-            intron_frequency?: number | null;
-            /** Intron Percentage */
-            intron_percentage?: number | null;
-            /** Intergenic Percentage */
-            intergenic_percentage?: number | null;
-            /** Intergenic Frequency */
-            intergenic_frequency?: number | null;
-            /** Promotercore Frequency */
-            promotercore_frequency?: number | null;
-            /** Promotercore Percentage */
-            promotercore_percentage?: number | null;
-            /** Fiveutr Frequency */
-            fiveutr_frequency?: number | null;
-            /** Fiveutr Percentage */
-            fiveutr_percentage?: number | null;
-            /** Threeutr Frequency */
-            threeutr_frequency?: number | null;
-            /** Threeutr Percentage */
-            threeutr_percentage?: number | null;
-            /** Promoterprox Frequency */
-            promoterprox_frequency?: number | null;
-            /** Promoterprox Percentage */
-            promoterprox_percentage?: number | null;
-        };
-        /** BinValues */
-        BinValues: {
-            /** Bins */
-            bins: (number | string)[];
-            /** Counts */
-            counts: number[];
-            /** Mean */
-            mean: number;
-            /** Median */
-            median: number;
-        };
-        /** Body_bed_to_bed_search_v1_bed_search_bed_post */
-        Body_bed_to_bed_search_v1_bed_search_bed_post: {
-            /**
-             * File
-             * Format: binary
-             */
-            file?: string;
-        };
-        /** Body_embed_bed_file_v1_bed_embed_post */
-        Body_embed_bed_file_v1_bed_embed_post: {
-            /**
-             * File
-             * Format: binary
-             */
-            file?: string;
-        };
-        /** ComponentVersions */
-        ComponentVersions: {
-            /** Bedhost Version */
-            bedhost_version: string;
-            /** Bbconf Version */
-            bbconf_version: string;
-            /** Python Version */
-            python_version: string;
-            /** Geniml Version */
-            geniml_version: string;
-            /** Openapi Version */
-            openapi_version: string;
-        };
-        /** CreateBEDsetRequest */
-        CreateBEDsetRequest: {
-            /** Registry Path */
-            registry_path: string;
-        };
-        /** DRSModel */
-        DRSModel: {
-            /** Id */
-            id: string;
-            /** Name */
-            name?: string | null;
-            /** Self Uri */
-            self_uri: string;
-            /** Size */
-            size?: number | null;
-            /** Created Time */
-            created_time?: string | null;
-            /** Updated Time */
-            updated_time?: string | null;
-            /** Checksums */
-            checksums: string;
-            /** Access Methods */
-            access_methods: components["schemas"]["AccessMethod"][];
-            /** Description */
-            description?: string | null;
-        };
-        /** EmbeddingModels */
-        EmbeddingModels: {
-            /** Region2Vec */
-            region2vec: string;
-            /** Text2Vec */
-            text2vec: string;
-        };
-        /** FileModel */
-        FileModel: {
-            /** Name */
-            name: string;
-            /** Title */
-            title?: string | null;
-            /** Path */
-            path: string;
-            /** File Digest */
-            file_digest?: string | null;
-            /** Thumbnail Path */
-            thumbnail_path?: string | null;
-            /** Description */
-            description?: string | null;
-            /** Size */
-            size?: number | null;
-            /** Object Id */
-            object_id?: string | null;
-            /** Access Methods */
-            access_methods?: components["schemas"]["AccessMethod"][];
-        };
-        /** FileStats */
-        FileStats: {
-            /** Bed Compliance */
-            bed_compliance: {
-                [key: string]: number;
-            };
-            /** Data Format */
-            data_format: {
-                [key: string]: number;
-            };
-            /** File Genome */
-            file_genome: {
-                [key: string]: number;
-            };
-            /** File Organism */
-            file_organism: {
-                [key: string]: number;
-            };
-            /** File Assay */
-            file_assay: {
-                [key: string]: number;
-            };
-            /** Geo Status */
-            geo_status: {
-                [key: string]: number;
-            };
-            /** Bed Comments */
-            bed_comments: {
-                [key: string]: number;
-            };
-            mean_region_width: components["schemas"]["BinValues"];
-            file_size: components["schemas"]["BinValues"];
-            number_of_regions: components["schemas"]["BinValues"];
-            geo: components["schemas"]["GEOStatistics"];
-        };
-        /**
-         * GEOStatistics
-         * @description GEO statistics for files.
-         */
-        GEOStatistics: {
-            /** Number Of Files */
-            number_of_files: {
-                [key: string]: number;
-            };
-            /** Cumulative Number Of Files */
-            cumulative_number_of_files: {
-                [key: string]: number;
-            };
-            file_sizes: components["schemas"]["BinValues"];
-        };
-        /** HTTPValidationError */
-        HTTPValidationError: {
-            /** Detail */
-            detail?: components["schemas"]["ValidationError"][];
-        };
-        /** Organization */
-        Organization: {
-            /** Name */
-            name: string;
-            /** Url */
-            url: string;
-        };
-        /** QdrantSearchResult */
-        QdrantSearchResult: {
-            /** Id */
-            id: string;
-            /** Payload */
-            payload?: Record<string, never>;
-            /** Score */
-            score?: number;
-            metadata?: components["schemas"]["BedMetadataBasic"] | null;
-        };
-        /** RefGenValidModel */
-        RefGenValidModel: {
-            /** Provided Genome */
-            provided_genome: string;
-            /** Compared Genome */
-            genome_digest: string;
-            compared_genome: string;
-            /**
-             * Xs
-             * @default 0
-             */
-            xs: number;
-            /** Oobr */
-            oobr?: number | null;
-            /** Sequence Fit */
-            sequence_fit?: number | null;
-            /** Assigned Points */
-            assigned_points: number;
-            /** Tier Ranking */
-            tier_ranking: number;
-        };
-        /** RefGenValidReturnModel */
-        RefGenValidReturnModel: {
-            /** Id */
-            id: string;
-            /** Provided Genome */
-            provided_genome?: string | null;
-            /** Compared Genome */
-            compared_genome: components["schemas"]["RefGenValidModel"][];
-        };
-        /** ServiceInfoResponse */
-        ServiceInfoResponse: {
-            /** Id */
-            id: string;
-            /** Name */
-            name: string;
-            type: components["schemas"]["Type"];
-            /** Description */
-            description: string;
-            organization: components["schemas"]["Organization"];
-            /** Contacturl */
-            contactUrl: string;
-            /** Documentationurl */
-            documentationUrl: string;
-            /** Updatedat */
-            updatedAt: string;
-            /** Environment */
-            environment: string;
-            /** Version */
-            version: string;
-            component_versions: components["schemas"]["ComponentVersions"];
-            embedding_models: components["schemas"]["EmbeddingModels"];
-        };
-        /**
-         * StandardMeta
-         * @description Standardized Bed file metadata
-         */
-        StandardMeta: {
-            /**
-             * Organism
-             * @description Name of species. e.g. Homo sapiens.
-             * @default
-             */
-            organism: string;
-            /**
-             * Species Id
-             * @default
-             */
-            species_id: string;
-            /**
-             * Genotype
-             * @description Genotype of the sample
-             * @default
-             */
-            genotype: string;
-            /**
-             * Phenotype
-             * @description Phenotype of the sample
-             * @default
-             */
-            phenotype: string;
-            /**
-             * Description
-             * @default
-             */
-            description: string | null;
-            /**
-             * Cell Type
-             * @description specific kind of cell with distinct characteristics found in an organism. e.g. Neurons, Hepatocytes, Adipocytes
-             * @default
-             */
-            cell_type: string;
-            /**
-             * Cell Line
-             * @description population of cells derived from a single cell and cultured in the lab for extended use, e.g. HeLa, HepG2, k562
-             * @default
-             */
-            cell_line: string;
-            /**
-             * Tissue
-             * @description Tissue type
-             * @default
-             */
-            tissue: string;
-            /**
-             * Library Source
-             * @description Library source (e.g. genomic, transcriptomic)
-             * @default
-             */
-            library_source: string;
-            /**
-             * Assay
-             * @description Experimental protocol (e.g. ChIP-seq)
-             * @default
-             */
-            assay: string;
-            /**
-             * Antibody
-             * @description Antibody used in the assay
-             * @default
-             */
-            antibody: string;
-            /**
-             * Target
-             * @description Target of the assay (e.g. H3K4me3)
-             * @default
-             */
-            target: string;
-            /**
-             * Treatment
-             * @description Treatment of the sample (e.g. drug treatment)
-             * @default
-             */
-            treatment: string;
-            /**
-             * Global Sample Id
-             * @description Global sample identifier. e.g. GSM000
-             * @default
-             */
-            global_sample_id: string[] | null;
-            /**
-             * Global Experiment Id
-             * @description Global experiment identifier. e.g. GSE000
-             * @default
-             */
-            global_experiment_id: string[] | null;
-            /**
-             * Original File Name
-             * @description Original file name
-             * @default
-             */
-            original_file_name: string;
-        };
-        /** StatsReturn */
-        StatsReturn: {
-            /**
-             * Bedfiles Number
-             * @default 0
-             */
-            bedfiles_number: number;
-            /**
-             * Bedsets Number
-             * @default 0
-             */
-            bedsets_number: number;
-            /**
-             * Genomes Number
-             * @default 0
-             */
-            genomes_number: number;
-        };
-        /** TokenizedBedResponse */
-        TokenizedBedResponse: {
-            /** Universe Id */
-            universe_id: string;
-            /** Bed Id */
-            bed_id: string;
-            /** Tokenized Bed */
-            tokenized_bed: number[];
-        };
-        /** TokenizedPathResponse */
-        TokenizedPathResponse: {
-            /** Bed Id */
-            bed_id: string;
-            /** Universe Id */
-            universe_id: string;
-            /** File Path */
-            file_path: string;
-            /** Endpoint Url */
-            endpoint_url: string;
-        };
-        /** Type */
-        Type: {
-            /** Group */
-            group: string;
-            /** Artifact */
-            artifact: string;
-            /** Version */
-            version: string;
-        };
-        /** UniverseMetadata */
-        UniverseMetadata: {
-            /** Construct Method */
-            construct_method?: string | null;
-            /** Bedset Id */
-            bedset_id?: string | null;
-        };
-        /** UsageStats */
-        UsageStats: {
-            /** Bed Metadata */
-            bed_metadata: {
-                [key: string]: number;
-            };
-            /** Bedset Metadata */
-            bedset_metadata: {
-                [key: string]: number;
-            };
-            /** Bed Search Terms */
-            bed_search_terms: {
-                [key: string]: number;
-            };
-            /** Bedset Search Terms */
-            bedset_search_terms: {
-                [key: string]: number;
-            };
-            /** Bed Downloads */
-            bed_downloads: {
-                [key: string]: number;
-            };
-        };
-        /** ValidationError */
-        ValidationError: {
-            /** Location */
-            loc: (string | number)[];
-            /** Message */
-            msg: string;
-            /** Error Type */
-            type: string;
-        };
+  schemas: {
+    /** AccessMethod */
+    AccessMethod: {
+      /** Type */
+      type: string;
+      access_url?: components['schemas']['AccessURL'] | null;
+      /** Access Id */
+      access_id?: string | null;
+      /** Region */
+      region?: string | null;
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    /** AccessURL */
+    AccessURL: {
+      /** Url */
+      url: string;
+      /** Headers */
+      headers?: Record<string, never> | null;
+    };
+    /** BaseListResponse */
+    BaseListResponse: {
+      /** Count */
+      count: number;
+      /** Limit */
+      limit: number;
+      /** Offset */
+      offset: number;
+      /** Results */
+      results: unknown[];
+    };
+    /** BedClassification */
+    BedClassification: {
+      /** Name */
+      name?: string | null;
+      /** Genome Alias */
+      genome_alias?: string;
+      /** Genome Digest */
+      genome_digest?: string | null;
+      /**
+       * Bed Compliance
+       * @default bed3
+       */
+      bed_compliance: string;
+      /** Data Format */
+      data_format?: string | null;
+      /**
+       * Compliant Columns
+       * @default 3
+       */
+      compliant_columns: number;
+      /**
+       * Non Compliant Columns
+       * @default 0
+       */
+      non_compliant_columns: number;
+      /** Header */
+      header?: string | null;
+    };
+    /** BedEmbeddingResult */
+    BedEmbeddingResult: {
+      /** Identifier */
+      identifier: string;
+      /** Payload */
+      payload: Record<string, never>;
+      /** Embedding */
+      embedding: number[];
+    };
+    /** BedFiles */
+    BedFiles: {
+      bed_file?: components['schemas']['FileModel'] | null;
+      bigbed_file?: components['schemas']['FileModel'] | null;
+    };
+    /** BedListResult */
+    BedListResult: {
+      /** Count */
+      count: number;
+      /** Limit */
+      limit: number;
+      /** Offset */
+      offset: number;
+      /** Results */
+      results: components['schemas']['BedMetadataBasic'][];
+    };
+    /** BedListSearchResult */
+    BedListSearchResult: {
+      /** Count */
+      count: number;
+      /** Limit */
+      limit: number;
+      /** Offset */
+      offset: number;
+      /** Results */
+      results?: components['schemas']['QdrantSearchResult'][];
+    };
+    /** BedMetadataAll */
+    BedMetadataAll: {
+      /**
+       * Name
+       * @default
+       */
+      name: string | null;
+      /** Genome Alias */
+      genome_alias?: string;
+      /** Genome Digest */
+      genome_digest?: string | null;
+      /**
+       * Bed Compliance
+       * @default bed3
+       */
+      bed_compliance: string;
+      /** Data Format */
+      data_format?: string | null;
+      /**
+       * Compliant Columns
+       * @default 3
+       */
+      compliant_columns: number;
+      /**
+       * Non Compliant Columns
+       * @default 0
+       */
+      non_compliant_columns: number;
+      /** Header */
+      header?: string | null;
+      /** Id */
+      id: string;
+      /** Description */
+      description?: string | null;
+      /**
+       * Submission Date
+       * Format: date-time
+       */
+      submission_date?: string;
+      /** Last Update Date */
+      last_update_date?: string | null;
+      /**
+       * Is Universe
+       * @default false
+       */
+      is_universe: boolean | null;
+      /**
+       * License Id
+       * @default DUO:0000042
+       */
+      license_id: string | null;
+      annotation?: components['schemas']['StandardMeta'] | null;
+      /**
+       * Processed
+       * @default true
+       */
+      processed: boolean | null;
+      stats?: components['schemas']['BedStatsModel'] | null;
+      plots?: components['schemas']['BedPlots'] | null;
+      files?: components['schemas']['BedFiles'] | null;
+      universe_metadata?: components['schemas']['UniverseMetadata'] | null;
+      /** Raw Metadata */
+      raw_metadata?: components['schemas']['BedPEPHub'] | components['schemas']['BedPEPHubRestrict'] | null;
+      /** Bedsets */
+      bedsets?: components['schemas']['BedSetMinimal'][] | null;
+    };
+    /** BedMetadataBasic */
+    BedMetadataBasic: {
+      /**
+       * Name
+       * @default
+       */
+      name: string | null;
+      /** Genome Alias */
+      genome_alias?: string;
+      /** Genome Digest */
+      genome_digest?: string | null;
+      /**
+       * Bed Compliance
+       * @default bed3
+       */
+      bed_compliance: string;
+      /** Data Format */
+      data_format?: string | null;
+      /**
+       * Compliant Columns
+       * @default 3
+       */
+      compliant_columns: number;
+      /**
+       * Non Compliant Columns
+       * @default 0
+       */
+      non_compliant_columns: number;
+      /** Header */
+      header?: string | null;
+      /** Id */
+      id: string;
+      /** Description */
+      description?: string | null;
+      /**
+       * Submission Date
+       * Format: date-time
+       */
+      submission_date?: string;
+      /** Last Update Date */
+      last_update_date?: string | null;
+      /**
+       * Is Universe
+       * @default false
+       */
+      is_universe: boolean | null;
+      /**
+       * License Id
+       * @default DUO:0000042
+       */
+      license_id: string | null;
+      annotation?: components['schemas']['StandardMeta'] | null;
+      /**
+       * Processed
+       * @default true
+       */
+      processed: boolean | null;
+    };
+    /** BedPEPHub */
+    BedPEPHub: {
+      /**
+       * Sample Name
+       * @default
+       */
+      sample_name: string;
+      /**
+       * Genome
+       * @default
+       */
+      genome: string;
+      /**
+       * Organism
+       * @default
+       */
+      organism: string;
+      /**
+       * Species Id
+       * @default
+       */
+      species_id: string;
+      /**
+       * Cell Type
+       * @default
+       */
+      cell_type: string;
+      /**
+       * Cell Line
+       * @default
+       */
+      cell_line: string;
+      /**
+       * Assay
+       * @description Experimental protocol (e.g. ChIP-seq)
+       * @default
+       */
+      assay: string;
+      /**
+       * Library Source
+       * @description Library source (e.g. genomic, transcriptomic)
+       * @default
+       */
+      library_source: string;
+      /**
+       * Genotype
+       * @description Genotype of the sample
+       * @default
+       */
+      genotype: string;
+      /**
+       * Target
+       * @description Target of the assay (e.g. H3K4me3)
+       * @default
+       */
+      target: string;
+      /**
+       * Antibody
+       * @description Antibody used in the assay
+       * @default
+       */
+      antibody: string;
+      /**
+       * Treatment
+       * @description Treatment of the sample (e.g. drug treatment)
+       * @default
+       */
+      treatment: string;
+      /**
+       * Tissue
+       * @description Tissue type
+       * @default
+       */
+      tissue: string;
+      /**
+       * Global Sample Id
+       * @description Global sample identifier
+       * @default
+       */
+      global_sample_id: string;
+      /**
+       * Global Experiment Id
+       * @description Global experiment identifier
+       * @default
+       */
+      global_experiment_id: string;
+      /**
+       * Description
+       * @description Description of the sample
+       * @default
+       */
+      description: string;
+    } & {
+      [key: string]: unknown;
+    };
+    /** BedPEPHubRestrict */
+    BedPEPHubRestrict: {
+      /**
+       * Sample Name
+       * @default
+       */
+      sample_name: string;
+      /**
+       * Genome
+       * @default
+       */
+      genome: string;
+      /**
+       * Organism
+       * @default
+       */
+      organism: string;
+      /**
+       * Species Id
+       * @default
+       */
+      species_id: string;
+      /**
+       * Cell Type
+       * @default
+       */
+      cell_type: string;
+      /**
+       * Cell Line
+       * @default
+       */
+      cell_line: string;
+      /**
+       * Assay
+       * @description Experimental protocol (e.g. ChIP-seq)
+       * @default
+       */
+      assay: string;
+      /**
+       * Library Source
+       * @description Library source (e.g. genomic, transcriptomic)
+       * @default
+       */
+      library_source: string;
+      /**
+       * Genotype
+       * @description Genotype of the sample
+       * @default
+       */
+      genotype: string;
+      /**
+       * Target
+       * @description Target of the assay (e.g. H3K4me3)
+       * @default
+       */
+      target: string;
+      /**
+       * Antibody
+       * @description Antibody used in the assay
+       * @default
+       */
+      antibody: string;
+      /**
+       * Treatment
+       * @description Treatment of the sample (e.g. drug treatment)
+       * @default
+       */
+      treatment: string;
+      /**
+       * Tissue
+       * @description Tissue type
+       * @default
+       */
+      tissue: string;
+      /**
+       * Global Sample Id
+       * @description Global sample identifier
+       * @default
+       */
+      global_sample_id: string;
+      /**
+       * Global Experiment Id
+       * @description Global experiment identifier
+       * @default
+       */
+      global_experiment_id: string;
+      /**
+       * Description
+       * @description Description of the sample
+       * @default
+       */
+      description: string;
+    };
+    /** BedPlots */
+    BedPlots: {
+      chrombins?: components['schemas']['FileModel'];
+      gccontent?: components['schemas']['FileModel'];
+      partitions?: components['schemas']['FileModel'];
+      expected_partitions?: components['schemas']['FileModel'];
+      cumulative_partitions?: components['schemas']['FileModel'];
+      widths_histogram?: components['schemas']['FileModel'];
+      neighbor_distances?: components['schemas']['FileModel'];
+      open_chromatin?: components['schemas']['FileModel'];
+      tss_distance?: components['schemas']['FileModel'];
+    };
+    /** BedSetBedFiles */
+    BedSetBedFiles: {
+      /** Count */
+      count: number;
+      /** Results */
+      results: components['schemas']['BedMetadataBasic'][];
+    };
+    /** BedSetListResult */
+    BedSetListResult: {
+      /** Count */
+      count: number;
+      /** Limit */
+      limit: number;
+      /** Offset */
+      offset: number;
+      /** Results */
+      results: components['schemas']['BedSetMetadata'][];
+    };
+    /** BedSetMetadata */
+    BedSetMetadata: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      /** Md5Sum */
+      md5sum: string;
+      /**
+       * Submission Date
+       * Format: date-time
+       */
+      submission_date?: string;
+      /**
+       * Last Update Date
+       * Format: date-time
+       */
+      last_update_date?: string;
+      statistics?: components['schemas']['BedSetStats'] | null;
+      plots?: components['schemas']['BedSetPlots'] | null;
+      /** Description */
+      description?: string;
+      /** Summary */
+      summary?: string;
+      /** Bed Ids */
+      bed_ids?: string[];
+      /** Author */
+      author?: string | null;
+      /** Source */
+      source?: string | null;
+    };
+    /** BedSetMinimal */
+    BedSetMinimal: {
+      /** Id */
+      id: string;
+      /** Name */
+      name?: string | null;
+      /** Description */
+      description?: string | null;
+    };
+    /** BedSetPlots */
+    BedSetPlots: {
+      region_commonality?: components['schemas']['FileModel'];
+    };
+    /** BedSetStats */
+    BedSetStats: {
+      mean?: components['schemas']['BedStatsModel'];
+      sd?: components['schemas']['BedStatsModel'];
+    };
+    /** BedStatsModel */
+    BedStatsModel: {
+      /** Number Of Regions */
+      number_of_regions?: number | null;
+      /** Gc Content */
+      gc_content?: number | null;
+      /** Median Tss Dist */
+      median_tss_dist?: number | null;
+      /** Mean Region Width */
+      mean_region_width?: number | null;
+      /** Exon Frequency */
+      exon_frequency?: number | null;
+      /** Exon Percentage */
+      exon_percentage?: number | null;
+      /** Intron Frequency */
+      intron_frequency?: number | null;
+      /** Intron Percentage */
+      intron_percentage?: number | null;
+      /** Intergenic Percentage */
+      intergenic_percentage?: number | null;
+      /** Intergenic Frequency */
+      intergenic_frequency?: number | null;
+      /** Promotercore Frequency */
+      promotercore_frequency?: number | null;
+      /** Promotercore Percentage */
+      promotercore_percentage?: number | null;
+      /** Fiveutr Frequency */
+      fiveutr_frequency?: number | null;
+      /** Fiveutr Percentage */
+      fiveutr_percentage?: number | null;
+      /** Threeutr Frequency */
+      threeutr_frequency?: number | null;
+      /** Threeutr Percentage */
+      threeutr_percentage?: number | null;
+      /** Promoterprox Frequency */
+      promoterprox_frequency?: number | null;
+      /** Promoterprox Percentage */
+      promoterprox_percentage?: number | null;
+    };
+    /** BinValues */
+    BinValues: {
+      /** Bins */
+      bins: (number | string)[];
+      /** Counts */
+      counts: number[];
+      /** Mean */
+      mean: number;
+      /** Median */
+      median: number;
+    };
+    /** Body_bed_to_bed_search_v1_bed_search_bed_post */
+    Body_bed_to_bed_search_v1_bed_search_bed_post: {
+      /**
+       * File
+       * Format: binary
+       */
+      file?: string;
+    };
+    /** Body_embed_bed_file_v1_bed_embed_post */
+    Body_embed_bed_file_v1_bed_embed_post: {
+      /**
+       * File
+       * Format: binary
+       */
+      file?: string;
+    };
+    /** ComponentVersions */
+    ComponentVersions: {
+      /** Bedhost Version */
+      bedhost_version: string;
+      /** Bbconf Version */
+      bbconf_version: string;
+      /** Python Version */
+      python_version: string;
+      /** Geniml Version */
+      geniml_version: string;
+      /** Openapi Version */
+      openapi_version: string;
+    };
+    /** CreateBEDsetRequest */
+    CreateBEDsetRequest: {
+      /** Registry Path */
+      registry_path: string;
+    };
+    /** DRSModel */
+    DRSModel: {
+      /** Id */
+      id: string;
+      /** Name */
+      name?: string | null;
+      /** Self Uri */
+      self_uri: string;
+      /** Size */
+      size?: number | null;
+      /** Created Time */
+      created_time?: string | null;
+      /** Updated Time */
+      updated_time?: string | null;
+      /** Checksums */
+      checksums: string;
+      /** Access Methods */
+      access_methods: components['schemas']['AccessMethod'][];
+      /** Description */
+      description?: string | null;
+    };
+    /** EmbeddingModels */
+    EmbeddingModels: {
+      /** Region2Vec */
+      region2vec: string;
+      /** Text2Vec */
+      text2vec: string;
+    };
+    /** FileModel */
+    FileModel: {
+      /** Name */
+      name: string;
+      /** Title */
+      title?: string | null;
+      /** Path */
+      path: string;
+      /** File Digest */
+      file_digest?: string | null;
+      /** Thumbnail Path */
+      thumbnail_path?: string | null;
+      /** Description */
+      description?: string | null;
+      /** Size */
+      size?: number | null;
+      /** Object Id */
+      object_id?: string | null;
+      /** Access Methods */
+      access_methods?: components['schemas']['AccessMethod'][];
+    };
+    /** FileStats */
+    FileStats: {
+      /** Bed Compliance */
+      bed_compliance: {
+        [key: string]: number;
+      };
+      /** Data Format */
+      data_format: {
+        [key: string]: number;
+      };
+      /** File Genome */
+      file_genome: {
+        [key: string]: number;
+      };
+      /** File Organism */
+      file_organism: {
+        [key: string]: number;
+      };
+      /** File Assay */
+      file_assay: {
+        [key: string]: number;
+      };
+      /** Geo Status */
+      geo_status: {
+        [key: string]: number;
+      };
+      /** Bed Comments */
+      bed_comments: {
+        [key: string]: number;
+      };
+      mean_region_width: components['schemas']['BinValues'];
+      file_size: components['schemas']['BinValues'];
+      number_of_regions: components['schemas']['BinValues'];
+      geo: components['schemas']['GEOStatistics'];
+    };
+    /**
+     * GEOStatistics
+     * @description GEO statistics for files.
+     */
+    GEOStatistics: {
+      /** Number Of Files */
+      number_of_files: {
+        [key: string]: number;
+      };
+      /** Cumulative Number Of Files */
+      cumulative_number_of_files: {
+        [key: string]: number;
+      };
+      file_sizes: components['schemas']['BinValues'];
+    };
+    /** HTTPValidationError */
+    HTTPValidationError: {
+      /** Detail */
+      detail?: components['schemas']['ValidationError'][];
+    };
+    /** Organization */
+    Organization: {
+      /** Name */
+      name: string;
+      /** Url */
+      url: string;
+    };
+    /** QdrantSearchResult */
+    QdrantSearchResult: {
+      /** Id */
+      id: string;
+      /** Payload */
+      payload?: Record<string, never>;
+      /** Score */
+      score?: number;
+      metadata?: components['schemas']['BedMetadataBasic'] | null;
+    };
+    /** RefGenValidModel */
+    RefGenValidModel: {
+      /** Provided Genome */
+      provided_genome: string;
+      /** Compared Genome */
+      genome_digest: string;
+      compared_genome: string;
+      /**
+       * Xs
+       * @default 0
+       */
+      xs: number;
+      /** Oobr */
+      oobr?: number | null;
+      /** Sequence Fit */
+      sequence_fit?: number | null;
+      /** Assigned Points */
+      assigned_points: number;
+      /** Tier Ranking */
+      tier_ranking: number;
+    };
+    /** RefGenValidReturnModel */
+    RefGenValidReturnModel: {
+      /** Id */
+      id: string;
+      /** Provided Genome */
+      provided_genome?: string | null;
+      /** Compared Genome */
+      compared_genome: components['schemas']['RefGenValidModel'][];
+    };
+    /** ServiceInfoResponse */
+    ServiceInfoResponse: {
+      /** Id */
+      id: string;
+      /** Name */
+      name: string;
+      type: components['schemas']['Type'];
+      /** Description */
+      description: string;
+      organization: components['schemas']['Organization'];
+      /** Contacturl */
+      contactUrl: string;
+      /** Documentationurl */
+      documentationUrl: string;
+      /** Updatedat */
+      updatedAt: string;
+      /** Environment */
+      environment: string;
+      /** Version */
+      version: string;
+      component_versions: components['schemas']['ComponentVersions'];
+      embedding_models: components['schemas']['EmbeddingModels'];
+    };
+    /**
+     * StandardMeta
+     * @description Standardized Bed file metadata
+     */
+    StandardMeta: {
+      /**
+       * Organism
+       * @description Name of species. e.g. Homo sapiens.
+       * @default
+       */
+      organism: string;
+      /**
+       * Species Id
+       * @default
+       */
+      species_id: string;
+      /**
+       * Genotype
+       * @description Genotype of the sample
+       * @default
+       */
+      genotype: string;
+      /**
+       * Phenotype
+       * @description Phenotype of the sample
+       * @default
+       */
+      phenotype: string;
+      /**
+       * Description
+       * @default
+       */
+      description: string | null;
+      /**
+       * Cell Type
+       * @description specific kind of cell with distinct characteristics found in an organism. e.g. Neurons, Hepatocytes, Adipocytes
+       * @default
+       */
+      cell_type: string;
+      /**
+       * Cell Line
+       * @description population of cells derived from a single cell and cultured in the lab for extended use, e.g. HeLa, HepG2, k562
+       * @default
+       */
+      cell_line: string;
+      /**
+       * Tissue
+       * @description Tissue type
+       * @default
+       */
+      tissue: string;
+      /**
+       * Library Source
+       * @description Library source (e.g. genomic, transcriptomic)
+       * @default
+       */
+      library_source: string;
+      /**
+       * Assay
+       * @description Experimental protocol (e.g. ChIP-seq)
+       * @default
+       */
+      assay: string;
+      /**
+       * Antibody
+       * @description Antibody used in the assay
+       * @default
+       */
+      antibody: string;
+      /**
+       * Target
+       * @description Target of the assay (e.g. H3K4me3)
+       * @default
+       */
+      target: string;
+      /**
+       * Treatment
+       * @description Treatment of the sample (e.g. drug treatment)
+       * @default
+       */
+      treatment: string;
+      /**
+       * Global Sample Id
+       * @description Global sample identifier. e.g. GSM000
+       * @default
+       */
+      global_sample_id: string[] | null;
+      /**
+       * Global Experiment Id
+       * @description Global experiment identifier. e.g. GSE000
+       * @default
+       */
+      global_experiment_id: string[] | null;
+      /**
+       * Original File Name
+       * @description Original file name
+       * @default
+       */
+      original_file_name: string;
+    };
+    /** StatsReturn */
+    StatsReturn: {
+      /**
+       * Bedfiles Number
+       * @default 0
+       */
+      bedfiles_number: number;
+      /**
+       * Bedsets Number
+       * @default 0
+       */
+      bedsets_number: number;
+      /**
+       * Genomes Number
+       * @default 0
+       */
+      genomes_number: number;
+    };
+    /** TokenizedBedResponse */
+    TokenizedBedResponse: {
+      /** Universe Id */
+      universe_id: string;
+      /** Bed Id */
+      bed_id: string;
+      /** Tokenized Bed */
+      tokenized_bed: number[];
+    };
+    /** TokenizedPathResponse */
+    TokenizedPathResponse: {
+      /** Bed Id */
+      bed_id: string;
+      /** Universe Id */
+      universe_id: string;
+      /** File Path */
+      file_path: string;
+      /** Endpoint Url */
+      endpoint_url: string;
+    };
+    /** Type */
+    Type: {
+      /** Group */
+      group: string;
+      /** Artifact */
+      artifact: string;
+      /** Version */
+      version: string;
+    };
+    /** UniverseMetadata */
+    UniverseMetadata: {
+      /** Construct Method */
+      construct_method?: string | null;
+      /** Bedset Id */
+      bedset_id?: string | null;
+    };
+    /** UsageStats */
+    UsageStats: {
+      /** Bed Metadata */
+      bed_metadata: {
+        [key: string]: number;
+      };
+      /** Bedset Metadata */
+      bedset_metadata: {
+        [key: string]: number;
+      };
+      /** Bed Search Terms */
+      bed_search_terms: {
+        [key: string]: number;
+      };
+      /** Bedset Search Terms */
+      bedset_search_terms: {
+        [key: string]: number;
+      };
+      /** Bed Downloads */
+      bed_downloads: {
+        [key: string]: number;
+      };
+    };
+    /** ValidationError */
+    ValidationError: {
+      /** Location */
+      loc: (string | number)[];
+      /** Message */
+      msg: string;
+      /** Error Type */
+      type: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    index_v1_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
+  index_v1_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    changelog_v1_docs_changelog_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/html": string;
-                };
-            };
+        content: {
+          'application/json': unknown;
         };
+      };
     };
-    lending_page__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-        };
+  };
+  changelog_v1_docs_changelog_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    get_bedbase_db_stats_v1_stats_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["StatsReturn"];
-                };
-            };
+        content: {
+          'text/html': string;
         };
+      };
     };
-    get_detailed_stats_v1_detailed_stats_get: {
-        parameters: {
-            query?: {
-                concise?: boolean;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["FileStats"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  lending_page__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    get_detailed_usage_v1_detailed_usage_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["UsageStats"];
-                };
-            };
+        content: {
+          'application/json': unknown;
         };
+      };
     };
-    get_bedbase_db_stats_v1_genomes_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BaseListResponse"];
-                };
-            };
-        };
+  };
+  get_bedbase_db_stats_v1_stats_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    get_bedbase_db_stats_v1_assays_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BaseListResponse"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['StatsReturn'];
         };
+      };
     };
-    service_info_v1_service_info_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["ServiceInfoResponse"];
-                };
-            };
-        };
+  };
+  get_detailed_stats_v1_detailed_stats_get: {
+    parameters: {
+      query?: {
+        concise?: boolean;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    redirect_to_download_v1_files__file_path__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                file_path: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['FileStats'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    get_example_bed_record_v1_bed_example_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedMetadataAll"];
-                };
-            };
-        };
+  };
+  get_detailed_usage_v1_detailed_usage_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    list_beds_v1_bed_list_get: {
-        parameters: {
-            query?: {
-                limit?: number;
-                offset?: number;
-                /** @description filter by genome of the bed file. e.g. 'hg38' */
-                genome?: string;
-                /** @description filter by bed type. e.g. 'bed6+4' */
-                bed_compliance?: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedListResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['UsageStats'];
         };
+      };
     };
-    get_bed_metadata_v1_bed__bed_id__metadata_get: {
-        parameters: {
-            query?: {
-                /** @description Return full record with stats, plots, files and metadata */
-                full?: boolean | null;
-            };
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedMetadataAll"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bedbase_db_stats_v1_genomes_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    get_bed_plots_v1_bed__bed_id__metadata_plots_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedPlots"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BaseListResponse'];
         };
+      };
     };
-    get_bed_files_v1_bed__bed_id__metadata_files_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedFiles"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bedbase_db_stats_v1_assays_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    get_bed_stats_v1_bed__bed_id__metadata_stats_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedStatsModel"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BaseListResponse'];
         };
+      };
     };
-    get_bed_classification_v1_bed__bed_id__metadata_classification_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedClassification"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  service_info_v1_service_info_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    get_bed_pephub_v1_bed__bed_id__metadata_raw_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedPEPHubRestrict"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['ServiceInfoResponse'];
         };
+      };
     };
-    get_bed_neighbours_v1_bed__bed_id__neighbours_get: {
-        parameters: {
-            query?: {
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedListSearchResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  redirect_to_download_v1_files__file_path__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        file_path: string;
+      };
+      cookie?: never;
     };
-    get_bed_embedding_v1_bed__bed_id__embedding_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedEmbeddingResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': unknown;
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    embed_bed_file_v1_bed_embed_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_embed_bed_file_v1_bed_embed_post"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": number[];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_example_bed_record_v1_bed_example_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    missing_plots_v1_bed_missing_plots_get: {
-        parameters: {
-            query: {
-                plot_id: string;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BaseListResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedMetadataAll'];
         };
+      };
     };
-    get_regions_for_bedfile_v1_bed__bed_id__regions__chr_num__get: {
-        parameters: {
-            query?: {
-                /** @description query range: start coordinate */
-                start?: string | null;
-                /** @description query range: start coordinate */
-                end?: string | null;
-            };
-            header?: never;
-            path: {
-                /** @description BED digest */
-                bed_id: string;
-                /**
-                 * @description Chromosome number
-                 * @example chr1
-                 */
-                chr_num: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "text/plain": string;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  list_beds_v1_bed_list_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+        /** @description filter by genome of the bed file. e.g. 'hg38' */
+        genome?: string;
+        /** @description filter by bed type. e.g. 'bed6+4' */
+        bed_compliance?: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    text_to_bed_search_v1_bed_search_text_post: {
-        parameters: {
-            query: {
-                query: string;
-                genome?: string | null;
-                assay?: string | null;
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedListSearchResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedListResult'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    text_to_bed_search_v1_bed_search_exact_post: {
-        parameters: {
-            query: {
-                query: string;
-                genome?: string | null;
-                assay?: string | null;
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedListSearchResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_metadata_v1_bed__bed_id__metadata_get: {
+    parameters: {
+      query?: {
+        /** @description Return full record with stats, plots, files and metadata */
+        full?: boolean | null;
+      };
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    bed_to_bed_search_v1_bed_search_bed_post: {
-        parameters: {
-            query?: {
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: {
-            content: {
-                "multipart/form-data": components["schemas"]["Body_bed_to_bed_search_v1_bed_search_bed_post"];
-            };
+        content: {
+          'application/json': components['schemas']['BedMetadataAll'];
         };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedListSearchResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
         };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    get_tokens_v1_bed__bed_id__tokens__universe_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bed_id: string;
-                universe_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TokenizedBedResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_plots_v1_bed__bed_id__metadata_plots_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    get_tokens_v1_bed__bed_id__tokens__universe_id__info_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bed_id: string;
-                universe_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["TokenizedPathResponse"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedPlots'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    get_ref_gen_results_v1_bed__bed_id__genome_stats_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bed_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["RefGenValidReturnModel"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_files_v1_bed__bed_id__metadata_files_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    get_example_bedset_record_v1_bedset_example_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedSetMetadata"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedFiles'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    list_bedsets_v1_bedset_list_get: {
-        parameters: {
-            query?: {
-                query?: string;
-                limit?: number;
-                offset?: number;
-            };
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedSetListResult"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_stats_v1_bed__bed_id__metadata_stats_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    get_bedset_metadata_v1_bedset__bedset_id__metadata_get: {
-        parameters: {
-            query?: {
-                full?: boolean;
-            };
-            header?: never;
-            path: {
-                bedset_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedSetMetadata"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedStatsModel'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    get_bedset_pep_v1_bedset__bedset_id__pep_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bedset_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_classification_v1_bed__bed_id__metadata_classification_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    get_bedset_metadata_v1_bedset__bedset_id__metadata_plots_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bedset_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedSetPlots"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedClassification'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    get_bedset_metadata_v1_bedset__bedset_id__metadata_stats_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bedset_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedSetStats"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_pephub_v1_bed__bed_id__metadata_raw_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bedset_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["BedSetBedFiles"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedPEPHubRestrict'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    get_track_hub_bedset_v1_bedset__bedset_id__track_hub_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bedset_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_neighbours_v1_bed__bed_id__neighbours_get: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+      };
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    get_track_hub_bedset_v1_bedset__bedset_id__track_hub_head: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                bedset_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedListSearchResult'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    create_bedset_v1_bedset_create_post: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody: {
-            content: {
-                "application/json": components["schemas"]["CreateBEDsetRequest"];
-            };
-        };
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": unknown;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  get_bed_embedding_v1_bed__bed_id__embedding_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+      };
+      cookie?: never;
     };
-    get_drs_object_metadata_v1_objects__object_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                object_id: string;
-            };
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["DRSModel"];
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': components['schemas']['BedEmbeddingResult'];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
-    get_object_bytes_url_v1_objects__object_id__access__access_id__get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                object_id: string;
-                access_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+  };
+  embed_bed_file_v1_bed_embed_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    get_object_bytes_v1_objects__object_id__access__access_id__bytes_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                object_id: string;
-                access_id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
-        };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['Body_embed_bed_file_v1_bed_embed_post'];
+      };
     };
-    get_object_thumbnail_v1_objects__object_id__access__access_id__thumbnail_get: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                object_id: string;
-                access_id: string;
-            };
-            cookie?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successful Response */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": string;
-                };
-            };
-            /** @description Validation Error */
-            422: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": components["schemas"]["HTTPValidationError"];
-                };
-            };
+        content: {
+          'application/json': number[];
         };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
     };
+  };
+  missing_plots_v1_bed_missing_plots_get: {
+    parameters: {
+      query: {
+        plot_id: string;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BaseListResponse'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_regions_for_bedfile_v1_bed__bed_id__regions__chr_num__get: {
+    parameters: {
+      query?: {
+        /** @description query range: start coordinate */
+        start?: string | null;
+        /** @description query range: start coordinate */
+        end?: string | null;
+      };
+      header?: never;
+      path: {
+        /** @description BED digest */
+        bed_id: string;
+        /**
+         * @description Chromosome number
+         * @example chr1
+         */
+        chr_num: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'text/plain': string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  text_to_bed_search_v1_bed_search_text_post: {
+    parameters: {
+      query: {
+        query: string;
+        genome?: string | null;
+        assay?: string | null;
+        limit?: number;
+        offset?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedListSearchResult'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  text_to_bed_search_v1_bed_search_exact_post: {
+    parameters: {
+      query: {
+        query: string;
+        genome?: string | null;
+        assay?: string | null;
+        limit?: number;
+        offset?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedListSearchResult'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  bed_to_bed_search_v1_bed_search_bed_post: {
+    parameters: {
+      query?: {
+        limit?: number;
+        offset?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: {
+      content: {
+        'multipart/form-data': components['schemas']['Body_bed_to_bed_search_v1_bed_search_bed_post'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedListSearchResult'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_tokens_v1_bed__bed_id__tokens__universe_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bed_id: string;
+        universe_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TokenizedBedResponse'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_tokens_v1_bed__bed_id__tokens__universe_id__info_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bed_id: string;
+        universe_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['TokenizedPathResponse'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_ref_gen_results_v1_bed__bed_id__genome_stats_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bed_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['RefGenValidReturnModel'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_example_bedset_record_v1_bedset_example_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedSetMetadata'];
+        };
+      };
+    };
+  };
+  list_bedsets_v1_bedset_list_get: {
+    parameters: {
+      query?: {
+        query?: string;
+        limit?: number;
+        offset?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedSetListResult'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_bedset_metadata_v1_bedset__bedset_id__metadata_get: {
+    parameters: {
+      query?: {
+        full?: boolean;
+      };
+      header?: never;
+      path: {
+        bedset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedSetMetadata'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_bedset_pep_v1_bedset__bedset_id__pep_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bedset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_bedset_metadata_v1_bedset__bedset_id__metadata_plots_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bedset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedSetPlots'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_bedset_metadata_v1_bedset__bedset_id__metadata_stats_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bedset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedSetStats'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_bedfiles_in_bedset_v1_bedset__bedset_id__bedfiles_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bedset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['BedSetBedFiles'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_track_hub_bedset_v1_bedset__bedset_id__track_hub_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bedset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_track_hub_bedset_v1_bedset__bedset_id__track_hub_head: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        bedset_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  create_bedset_v1_bedset_create_post: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['CreateBEDsetRequest'];
+      };
+    };
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': unknown;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_drs_object_metadata_v1_objects__object_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        object_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['DRSModel'];
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_object_bytes_url_v1_objects__object_id__access__access_id__get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        object_id: string;
+        access_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_object_bytes_v1_objects__object_id__access__access_id__bytes_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        object_id: string;
+        access_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
+  get_object_thumbnail_v1_objects__object_id__access__access_id__thumbnail_get: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        object_id: string;
+        access_id: string;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': string;
+        };
+      };
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          'application/json': components['schemas']['HTTPValidationError'];
+        };
+      };
+    };
+  };
 }

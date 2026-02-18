@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom';
 import { Layout } from '../components/layout';
-import { Col, Container, Row } from 'react-bootstrap';
 import { useBedsetMetadata } from '../queries/useBedsetMetadata';
 import { CardSkeleton } from '../components/skeletons/card-skeleton';
 import { BedsetSplashHeader } from '../components/bedset-splash-components/header';
@@ -34,30 +33,30 @@ export const BedsetSplash = () => {
   if (isLoadingMetadata) {
     return (
       <Layout title={`BEDbase | ${bedsetId}`} footer>
-        <div className="my-2">
-          <Row>
-            <Col sm={12} md={12}>
-              <div className="mb-2">
-                <CardSkeleton height="100px" />
+        <div className='my-2'>
+          <div className='row'>
+            <div className='col-12'>
+              <div className='mb-2'>
+                <CardSkeleton height='100px' />
               </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col sm={5} md={5}>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+            </div>
+          </div>
+          <div className='row'>
+            <div className='col-12 col-md-5'>
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-              <div className="mb-2">
-                <CardSkeleton height="300px" />
+              <div className='mb-2'>
+                <CardSkeleton height='300px' />
               </div>
-            </Col>
-            <Col sm={7} md={7}>
-              <CardSkeleton height="100%" />
-            </Col>
-          </Row>
+            </div>
+            <div className='col-12 col-md-7'>
+              <CardSkeleton height='100%' />
+            </div>
+          </div>
         </div>
       </Layout>
     );
@@ -66,32 +65,32 @@ export const BedsetSplash = () => {
       return (
         <Layout title={`BEDbase | ${bedsetId}`} footer>
           <div
-            className="mt-5 w-100 d-flex flex-column align-items-center justify-content-center"
+            className='mt-5 w-100 d-flex flex-column align-items-center justify-content-center'
             style={{ height: '50vh' }}
           >
-            <h1 className="fw-bold text-center mb-3">Oh no!</h1>
-            <div className="d-flex flex-row align-items-center w-100 justify-content-center">
-              <h4 className="text-2xl text-center">
+            <h1 className='fw-bold text-center mb-3'>Oh no!</h1>
+            <div className='d-flex flex-row align-items-center w-100 justify-content-center'>
+              <h5 className='text-2xl text-center'>
                 We could not find BEDset with record identifier: <br />
-                <span className="fw-bold">{bedsetId}</span>
-              </h4>
+                <span className='fw-bold'>{bedsetId}</span>
+              </h5>
             </div>
-            <div className="w-50">
-              <p className="fst-italic text-center mt-3">
+            <div className='w-50'>
+              <p className='fst-italic text-center mt-3'>
                 Are you sure you have the correct record identifier? If you believe this is an error, please open an
-                issue: <a href="https://github.com/databio/bedhost/issues">on GitHub</a>
+                issue: <a href='https://github.com/databio/bedhost/issues'>on GitHub</a>
               </p>
             </div>
-            <div className="d-flex flex-row align-items-center justify-content-center">
-              <a href="/">
-                <button className="btn btn-primary">
-                  <i className="bi bi-house me-1"></i>
+            <div className='d-flex flex-row align-items-center justify-content-center'>
+              <a href='/'>
+                <button className='btn btn-primary'>
+                  <i className='bi bi-house me-1'></i>
                   Home
                 </button>
               </a>
-              <a href="https://github.com/databio/bedhost/issues">
-                <button className="btn btn-primary ms-2">
-                  <i className="bi bi-exclamation-triangle me-1"></i>
+              <a href='https://github.com/databio/bedhost/issues'>
+                <button className='btn btn-primary ms-2'>
+                  <i className='bi bi-exclamation-triangle me-1'></i>
                   Report issue
                 </button>
               </a>
@@ -103,50 +102,54 @@ export const BedsetSplash = () => {
   } else {
     return (
       <Layout title={`BEDbase | ${bedsetId}`} footer fullHeight>
-        <Container className="my-2">
-          <Row className="mb-2">
-            <Col sm={12}>{(metadata !== undefined) && bedfiles ? <BedsetSplashHeader metadata={metadata} beds={bedfiles.results} /> : null}</Col>
-          </Row>
+        <div className='container my-2'>
+          <div className='row mb-2'>
+            <div className='col-12'>
+              {metadata !== undefined && bedfiles ? (
+                <BedsetSplashHeader metadata={metadata} beds={bedfiles.results} />
+              ) : null}
+            </div>
+          </div>
 
-          <Row className="mb-2 g-2">
-            <h4 className="fw-bold">Statistics</h4>
+          <div className='row mt-3 mb-4 g-2'>
+            <h5 className='fw-bold mt-0'>Statistics</h5>
             {metadata && (
-              <Col sm={12} md={4} className="d-flex flex-column mt-0 gap-2">
+              <div className='col-12 col-md-3 d-flex flex-column mt-0 gap-2'>
                 <MeanRegionWidthCard metadata={metadata} />
                 <MedianTssDistCard metadata={metadata} />
                 <GCContentCard metadata={metadata} />
-              </Col>
+              </div>
             )}
-            <Col sm={12} md={8} className="h-100 align-items-stretch mt-2 mt-md-0">
+            <div className='col-12 col-md-9 h-100 align-items-stretch mt-2 mt-md-0'>
               <GenomicFeatureBar metadata={metadata!} />
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row className="mb-2">
-            <Col sm={12}>
-              <h4 className="fw-bold">Plots</h4>
+          <div className='row mb-4'>
+            <div className='col-12'>
+              <h5 className='fw-bold'>Plots</h5>
               <Plots metadata={metadata!} />
-            </Col>
-          </Row>
+            </div>
+          </div>
 
-          <Row className="mb-2">
-            <h4 className="fw-bold">Constituent BED Files</h4>
-            <Col sm={12}>
+          <div className='row mb-4'>
+            <h5 className='fw-bold'>Constituent BED Files</h5>
+            <div className='col-12'>
               {isLoadingBedfiles ? (
-                <div className="mt-2 mb-5">
-                  <CardSkeleton height="100px" />
+                <div className='mt-2 mb-5'>
+                  <CardSkeleton height='100px' />
                   {Array.from({ length: 10 }).map((_, index) => (
-                    <div key={index} className="mb-2">
-                      <CardSkeleton height="15px" />
+                    <div key={index} className='mb-2'>
+                      <CardSkeleton height='15px' />
                     </div>
                   ))}
                 </div>
               ) : (
                 bedfiles && <BedsTable beds={bedfiles.results} />
               )}
-            </Col>
-          </Row>
-        </Container>
+            </div>
+          </div>
+        </div>
       </Layout>
     );
   }

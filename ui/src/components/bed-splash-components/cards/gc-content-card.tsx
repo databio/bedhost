@@ -12,9 +12,9 @@ export const GCContentCard = (props: Props) => {
 
   return (
     <StatCard
-      title="GC Content"
+      title='GC Content'
       stat={`${metadata.stats?.gc_content ? formatNumberWithCommas(metadata.stats?.gc_content) : 'N/A'}`}
-      tooltip="The percentage of guanine and cytosine nucleotides in the sequence."
+      tooltip='The percentage of guanine and cytosine nucleotides in the sequence.'
     />
   );
 };

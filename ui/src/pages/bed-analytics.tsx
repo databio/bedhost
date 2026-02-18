@@ -381,21 +381,15 @@ export const BEDAnalytics = () => {
                   </div>
                 </div>
                 <div className="mt-5">
-                  <h3>Interval chromosome length statistics</h3>
+                  <h5>Interval chromosome length statistics</h5>
                   {rs && (
                     <ChromosomeStatsPanel rs={rs} selectedFile={selectedFile} />
                   )}
                 </div>
                 <div className="mt-5">
                   {rs && (
-                    // <div className="mt-3 p-3 border rounded shadow-sm bg-light">
-                    //   <h5>Region Distribution Data</h5>
-                    //   <pre className="bg-white p-3 rounded border"
-                    //        style={{ fontSize: '0.875rem', maxHeight: '400px', overflow: 'auto' }}>
-                    //     {JSON.stringify(rs.calculateRegionDistribution(300), null, 2)}
-                    //   </pre>
-                    // </div>
                     <div className="mb-3">
+                      <h5>Regions distribution over chromosomes</h5>
                       <RegionDistributionPlot
                         data={rs.regionDistribution(300)}
                       />
