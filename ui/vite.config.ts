@@ -19,10 +19,9 @@ export default defineConfig({
     },
     proxy: {
       '/api': {
-        target: 'https://api-dev.bedbase.org/v1',
+        target: process.env.VITE_API_TARGET || 'https://api-dev.bedbase.org/v1',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
-        secure: false,
       },
     },
   },
