@@ -9,6 +9,10 @@ export default defineConfig({
   build: {
     target: 'esnext', // Ensure ESNext target for WASM support
   },
+  worker: {
+    format: 'es', // Use ES module format for workers (required for dynamic imports in workers)
+    plugins: () => [wasm(), topLevelAwait()],
+  },
   server: {
     fs: {
       allow: ['..'], // Allow serving files from one level up to the project root
