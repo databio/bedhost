@@ -64,72 +64,71 @@ export const CreateBedSetModal = (props: Props) => {
     }
   };
 
-
   return (
     <Modal
       animation={false}
       show={show}
       onHide={() => setShow(false)}
-      size="xl"
-      aria-labelledby="contained-modal-title-vcenter"
+      size='xl'
+      aria-labelledby='contained-modal-title-vcenter'
       centered
     >
       <Modal.Header>
         <button
-          type="button"
-          className="btn-close position-absolute top-0 end-0 m-3 py-1 px-0"
-          aria-label="Close"
+          type='button'
+          className='btn-close position-absolute top-0 end-0 m-3 py-1 px-0'
+          aria-label='Close'
           onClick={() => setShow(false)}
         ></button>
-        <div className="w-100 text-sm">
-          <h1 className="fs-5 mb-1 fw-semibold d-inline">Create BEDset</h1>
+        <div className='w-100 text-sm'>
+          <h1 className='fs-5 mb-1 fw-semibold d-inline'>Create BEDset</h1>
         </div>
       </Modal.Header>
 
       <Modal.Body>
-        <div className="w-100 text-sm">
-          <Markdown rehypePlugins={[rehypeHighlight]}>
-            {generateBEDsetCreationDescription()}
-          </Markdown>
+        <div className='w-100 text-sm'>
+          <Markdown rehypePlugins={[rehypeHighlight]}>{generateBEDsetCreationDescription()}</Markdown>
         </div>
 
-        <div className="border-bottom my-3" style={{ margin: '0 -1em' }}></div>
-        <span className="fw-semibold text-lg">
-            PEP sample table
-          </span>
-        <div className="position-relative my-1 px-3" style={{ margin: '-1em' }}>
-          <Markdown className='rounded rounded-2 bg-body-secondary markdown-bg' rehypePlugins={[rehypeHighlight]}>{generateBEDsetPEPMd(Object.values(cart).map((item) => item.id))}</Markdown>
-          <div className="position-absolute top-0 end-0 m-3">
+        <div className='border-bottom my-3' style={{ margin: '0 -1em' }}></div>
+        <span className='fw-semibold text-lg'>PEP sample table</span>
+        <div className='position-relative my-1 px-3' style={{ margin: '-1em' }}>
+          <Markdown className='rounded rounded-2 bg-body-secondary markdown-bg' rehypePlugins={[rehypeHighlight]}>
+            {generateBEDsetPEPMd(Object.values(cart).map((item) => item.id))}
+          </Markdown>
+          <div className='position-absolute top-0 end-0 m-3'>
             <button
-              className="btn btn-sm btn-primary me-3"
+              className='btn btn-sm btn-primary me-3'
               onClick={() => {
                 copyToClipboard(generateBEDsetPEPDownloadRaw(Object.values(cart).map((item) => item.id)));
                 setCopied(true);
                 setTimeout(() => setCopied(false), 2000);
               }}
             >
-              <i className="bi bi-clipboard me-2"></i>
+              <i className='bi bi-clipboard me-2'></i>
               {copied ? 'Copied!' : 'Copy'}
             </button>
           </div>
         </div>
 
-        <div className="border-bottom my-3" style={{ margin: '0 -1em' }}></div>
+        <div className='border-bottom my-3' style={{ margin: '0 -1em' }}></div>
 
-        <div className="">
-          <span className="fw-semibold text-lg">
-            Submit PEP
-          </span>
-          <div className="d-flex align-items-center mt-1">
-            <input type="text" className="form-control me-2" placeholder="Provide a PEPhub registry path."
-                   value={inputValue}
-                   onChange={handleInputRegistryPathChange} />
-            <button className="btn btn-primary" onClick={handleSubmit}>Submit</button>
+        <div className=''>
+          <span className='fw-semibold text-lg'>Submit PEP</span>
+          <div className='d-flex align-items-center mt-1'>
+            <input
+              type='text'
+              className='form-control me-2'
+              placeholder='Provide a PEPhub registry path.'
+              value={inputValue}
+              onChange={handleInputRegistryPathChange}
+            />
+            <button className='btn btn-primary' onClick={handleSubmit}>
+              Submit
+            </button>
           </div>
-          {message && <div className="mt-2">{message}</div>}
-
+          {message && <div className='mt-2'>{message}</div>}
         </div>
-
       </Modal.Body>
     </Modal>
   );

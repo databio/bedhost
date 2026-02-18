@@ -9,13 +9,7 @@ type ProviderProps = {
 const SearchViewContext = createContext<{ searchView: string }>(undefined);
 
 export const SearchViewProvider = ({ children, searchView }: ProviderProps) => {
-  return (
-    <SearchViewContext.Provider
-      value={{ searchView }}
-    >
-      {children}
-    </SearchViewContext.Provider>
-  );
+  return <SearchViewContext.Provider value={{ searchView }}>{children}</SearchViewContext.Provider>;
 };
 
 export const useSearchView = () => {

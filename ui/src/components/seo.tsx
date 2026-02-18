@@ -18,26 +18,26 @@ export const SEO: FC<Props> = ({ title, description, image }) => {
     <Helmet>
       {/*  general */}
       <title>{pageTitle}</title>
-      <meta name="description" content={pageDescription} />
-      <meta name="author" content="databio" />
+      <meta name='description' content={pageDescription} />
+      <meta name='author' content='databio' />
       {/* favicon */}
-      <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+      <link rel='icon' type='image/svg+xml' href='/favicon.ico' />
 
       {/*  open graph */}
-      <meta property="og:type" content={pageType} />
-      <meta name="description" property="og:description" content={pageDescription} />
-      <meta name="title" property="og:title" content={pageTitle} />
-      <meta name="image" property="og:image" content={pageImage} />
-      <meta property="og:type" content={pageType} />
-      <meta property="og:url" content={pageUrl} />
+      <meta property='og:type' content={pageType} />
+      <meta name='description' property='og:description' content={pageDescription} />
+      <meta name='title' property='og:title' content={pageTitle} />
+      <meta name='image' property='og:image' content={pageImage} />
+      <meta property='og:type' content={pageType} />
+      <meta property='og:url' content={pageUrl} />
 
       {/*  twitter card */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:site" content="@shefflab" />
-      <meta name="twitter:creator" content="@shefflab" />
-      <meta name="twitter:title" content={pageTitle} />
-      <meta name="twitter:description" content={pageDescription} />
-      <meta name="twitter:image" content={pageImage} />
+      <meta name='twitter:card' content='summary_large_image' />
+      <meta name='twitter:site' content='@shefflab' />
+      <meta name='twitter:creator' content='@shefflab' />
+      <meta name='twitter:title' content={pageTitle} />
+      <meta name='twitter:description' content={pageDescription} />
+      <meta name='twitter:image' content={pageImage} />
     </Helmet>
   );
 };

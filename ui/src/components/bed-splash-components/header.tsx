@@ -3,9 +3,11 @@ import toast from 'react-hot-toast';
 import { Fragment, useState } from 'react';
 import { components } from '../../../bedbase-types';
 import { useCopyToClipboard } from '@uidotdev/usehooks';
-import { bytesToSize, formatDateTime } from '../../utils';
+import { bytesToSize, formatDateShort } from '../../utils';
 import { Dropdown, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { RefGenomeModal } from './refgenome-modal';
+// import { EmbeddingContainer } from '../umap/embedding-container.tsx';
+// import type { EmbeddingContainerRef } from '../umap/embedding-container.tsx';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -20,6 +22,7 @@ type Props = {
 
 export const BedSplashHeader = (props: Props) => {
   const { metadata, record_identifier, genomeStats } = props;
+  // console.log(metadata);
 
   const [, copyToClipboard] = useCopyToClipboard();
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
@@ -27,18 +30,16 @@ export const BedSplashHeader = (props: Props) => {
   const [copiedId, setCopiedId] = useState(false);
   const [showRefGenomeModal, setShowRefGenomeModal] = useState(false);
 
-
   const noFilesToDownload = !metadata.files?.bed_file && !metadata.files?.bigbed_file;
 
   return (
-    <div className="border-bottom py-2">
-      <div className="d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-3 mb-lg-1">
-        <div className="d-flex align-items-center overflow-x-auto w-100">
-          <h4 className="fw-bold d-flex align-items-center flex-nowrap">
-            <i className="bi bi-file-earmark-text me-2 flex-shrink-0" />
-            <span className="text-truncate">{metadata?.id || 'No ID available'}</span>
+    <div className='pt-2'>
+      <div className='d-flex flex-column flex-lg-row align-items-start justify-content-lg-between mb-0'>
+        <div className='d-flex align-items-center overflow-x-auto w-100 mb-0'>
+          <h5 className='fw-light d-flex align-items-center flex-nowrap mb-0'>
+            <span className='text-truncate'>{metadata?.id || 'No ID available'}</span>
             <button
-              className="btn btn-link text-primary mb-1"
+              className='btn btn-sm btn-link text-primary mb-0'
               onClick={() => {
                 copyToClipboard(metadata.id || '');
                 setCopiedId(true);
@@ -47,55 +48,42 @@ export const BedSplashHeader = (props: Props) => {
                 }, 1000);
               }}
             >
-              {copiedId ? <i className="bi bi-check me-1" /> : <i className="bi bi-clipboard me-1" />}
+              {copiedId ? <i className='bi bi-check me-1' /> : <i className='bi bi-clipboard me-1' />}
             </button>
-          </h4>
+          </h5>
         </div>
         {!metadata?.processed && (
-          <p
-            className="text-warning text-nowrap me-1 btn btn-outline btn-sm transparent-btn"
-          >
+          <p className='text-warning text-nowrap me-1 btn btn-outline btn-sm transparent-btn'>
             <OverlayTrigger
-              placement="top"
+              placement='top'
               overlay={
-                <Tooltip id="tooltip-top">
-                  This file has not been processed by the BedBoss pipeline yet.
-                </Tooltip>
+                <Tooltip id='tooltip-top'>This file has not been processed by the BedBoss pipeline yet.</Tooltip>
               }
             >
-    <span>
-      <i className="bi bi-exclamation-triangle-fill me-1"></i>
-      Not Processed
-    </span>
+              <span>
+                <i className='bi bi-exclamation-triangle-fill me-1'></i>
+                Not Processed
+              </span>
             </OverlayTrigger>
           </p>
         )}
 
-        <div className="d-flex flex-col align-items-center gap-1 flex-shrink-0">
-
-          {(metadata?.processed && metadata?.genome_alias == 'hg38') &&
-            <a href={`/umap?searchId=${record_identifier}`}>
-              <button className="btn btn-outline-primary btn-sm">
-                <i className="bi bi-globe2 me-1" />
-                Visualize
-              </button>
-            </a>
-          }
+        <div className='d-flex flex-wrap align-items-center gap-1 flex-shrink-0'>
           <a href={`/analyze?bedUrl=${record_identifier}`}>
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-bar-chart-steps me-1" />
+            <button className='btn btn-outline-primary btn-sm text-nowrap'>
+              <i className='bi bi-bar-chart-steps me-1' />
               Analyze
             </button>
           </a>
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
-            <button className="btn btn-outline-primary btn-sm">
-              <i className="bi bi-info-circle me-1" />
+            <button className='btn btn-outline-primary btn-sm text-nowrap'>
+              <i className='bi bi-info-circle me-1' />
               API
             </button>
           </a>
           {!addedToCart && cart[record_identifier || ''] ? (
             <button
-              className="btn btn-outline-danger btn-sm"
+              className='btn btn-outline-danger btn-sm text-nowrap'
               onClick={() => {
                 if (record_identifier == undefined || metadata === undefined) {
                   toast.error(
@@ -106,13 +94,13 @@ export const BedSplashHeader = (props: Props) => {
                 removeBedFromCart(record_identifier);
               }}
             >
-              <i className="bi bi-trash me-1" />
+              <i className='bi bi-trash me-1' />
               Remove from cart
             </button>
           ) : (
             <button
               disabled={addedToCart}
-              className="btn btn-primary btn-sm"
+              className='btn btn-primary btn-sm text-nowrap'
               onClick={() => {
                 if (record_identifier === undefined || metadata === undefined) {
                   toast.error(
@@ -140,33 +128,33 @@ export const BedSplashHeader = (props: Props) => {
                 }, 500);
               }}
             >
-              <i className="bi bi-cart-fill me-1" />
+              <i className='bi bi-cart-fill me-1' />
               {addedToCart ? 'Adding...' : 'Add to cart'}
             </button>
           )}
           <Dropdown>
-            <Dropdown.Toggle variant="outline-primary" id="dropdown-basic" size="sm">
-              <i className="bi bi-download me-1" />
+            <Dropdown.Toggle variant='outline-primary' id='dropdown-basic' size='sm'>
+              <i className='bi bi-download me-1' />
               Downloads
             </Dropdown.Toggle>
             {
               // If there are no files to download, disable the dropdown
               noFilesToDownload ? (
-                <Dropdown.Menu className="border border-light-subtle shadow-sm">
+                <Dropdown.Menu className='border border-light-subtle'>
                   <Dropdown.Item disabled>There are no files to download</Dropdown.Item>
                 </Dropdown.Menu>
               ) : (
-                <Dropdown.Menu className="border border-light-subtle shadow-sm">
+                <Dropdown.Menu className='border border-light-subtle'>
                   {metadata.files?.bed_file && (
                     <Fragment>
-                      {(metadata.files?.bed_file?.access_methods || []).map((method) => {
+                      {(metadata.files?.bed_file?.access_methods || []).map((method, index) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                          <Dropdown.Item className='text-primary' href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BED file' : 'No download link available'} (
-                            <span className="fw-bold">{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
+                            <span className='fw-bold'>{bytesToSize(metadata.files?.bed_file?.size || 0)}</span>)
                           </Dropdown.Item>
                         );
                       })}
@@ -174,14 +162,14 @@ export const BedSplashHeader = (props: Props) => {
                   )}
                   {metadata.files?.bigbed_file && (
                     <Fragment>
-                      {(metadata.files?.bigbed_file?.access_methods || []).map((method) => {
+                      {(metadata.files?.bigbed_file?.access_methods || []).map((method, index) => {
                         if (method.type === 'local' || method.type === 's3') {
                           return null;
                         }
                         return (
-                          <Dropdown.Item className="text-primary" href={method.access_url?.url}>
+                          <Dropdown.Item className='text-primary' href={method.access_url?.url} key={index}>
                             {method.access_id ? 'BigBED file' : 'No download link available'} (
-                            <span className="fw-bold">{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
+                            <span className='fw-bold'>{bytesToSize(metadata.files?.bigbed_file?.size || 0)}</span>)
                           </Dropdown.Item>
                         );
                       })}
@@ -342,7 +330,7 @@ export const BedSplashHeader = (props: Props) => {
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
               <span>Created:</span>{' '}
-              {metadata?.submission_date ? formatDateTime(metadata?.submission_date) : 'No date available'}
+              {metadata?.submission_date ? formatDateShort(metadata?.submission_date) : 'No date available'}
             </p>
           </div>
 
@@ -350,12 +338,13 @@ export const BedSplashHeader = (props: Props) => {
             <i className="bi bi-calendar4-event me-1" />
             <p className="mb-0">
               <span>Updated:</span>{' '}
-              {metadata?.last_update_date ? formatDateTime(metadata?.last_update_date) : 'No date available'}
+              {metadata?.last_update_date ? formatDateShort(metadata?.last_update_date) : 'No date available'}
             </p>
           </div>
         </div>
       </div>
-      {genomeStats?.compared_genome &&
+
+      {genomeStats?.compared_genome && (
         <RefGenomeModal
           show={showRefGenomeModal}
           onHide={() => {
@@ -363,7 +352,7 @@ export const BedSplashHeader = (props: Props) => {
           }}
           genomeStats={genomeStats}
         />
-      }
+      )}
     </div>
   );
 };

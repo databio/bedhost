@@ -9,20 +9,19 @@ export const Nav = () => {
   return (
     <Fragment>
       <nav
-        className="d-flex flex-row align-items-center justify-content-between w-100 py-3 border-bottom"
-        aria-label="navbar"
-        style={{ backgroundColor: '#EFF3F6' }}
+        className='d-flex flex-row align-items-center justify-content-between w-100 py-3 border-bottom bg-white'
+        aria-label='navbar'
       >
-        <div className="d-flex flex-row align-items-center px-4">
+        <div className='d-flex flex-row align-items-center px-4'>
           <NavLogo />
         </div>
-        <div className="d-flex flex-row align-items-center justify-content-end w-100">
+        <div className='d-flex flex-row align-items-center justify-content-end w-100'>
           {/* Desktop nav */}
-          <div className="hidden large-flex w-100">
+          <div className='hidden large-flex w-100'>
             <NavDesktop />
           </div>
           {/* Mobile nav */}
-          <div className="block large-hidden">
+          <div className='block large-hidden'>
             <MobileNav />
           </div>
         </div>

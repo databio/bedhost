@@ -1,4 +1,3 @@
-import Nav from 'react-bootstrap/Nav';
 import { useSearchParams } from 'react-router-dom';
 
 type SearchView = 't2b' | 'b2b' | 't2bs';
@@ -12,40 +11,49 @@ export const SearchSelector = (props: Props) => {
   const { view, setView } = props;
   const [params, setParams] = useSearchParams();
   return (
-    <div className="d-flex flex-row align-items-center justify-content-center w-100 my-2">
-      <div className="p-1">
-        <Nav variant="pills" defaultActiveKey="t2b" activeKey={view}>
-  <Nav.Item
-    onClick={() => {
-      params.set('view', 't2b');
-      params.delete('q');
-      setParams(params);
-      setView('t2b');
-    }}
-  >
-    <Nav.Link eventKey="t2b" style={{ borderRadius: '50px' }}>Text-to-BED</Nav.Link>
-  </Nav.Item>
-  <Nav.Item
-    onClick={() => {
-      params.set('view', 'b2b');
-      params.delete('q');
-      setParams(params);
-      setView('b2b');
-    }}
-  >
-    <Nav.Link eventKey="b2b" style={{ borderRadius: '50px' }}>BED-to-BED</Nav.Link>
-  </Nav.Item>
-  <Nav.Item
-    onClick={() => {
-      params.set('view', 't2bs');
-      params.delete('q');
-      setParams(params);
-      setView('t2bs');
-    }}
-  >
-    <Nav.Link eventKey="t2bs" style={{ borderRadius: '50px' }}>Text-to-BEDset</Nav.Link>
-  </Nav.Item>
-</Nav>
+    <div className='d-flex flex-row align-items-center justify-content-center my-2 text-sm'>
+      <div className='p-1 border rounded-5 bg-white'>
+        <ul className='nav nav-pills'>
+          <li className='nav-item'>
+            <button
+              className={`rounded-5 nav-link ${view === 't2b' ? 'active fw-medium' : ''}`}
+              onClick={() => {
+                params.set('view', 't2b');
+                params.delete('q');
+                setParams(params);
+                setView('t2b');
+              }}
+            >
+              Text-to-BED
+            </button>
+          </li>
+          <li className='nav-item'>
+            <button
+              className={`mx-1 rounded-5 nav-link ${view === 'b2b' ? 'active fw-medium' : ''}`}
+              onClick={() => {
+                params.set('view', 'b2b');
+                params.delete('q');
+                setParams(params);
+                setView('b2b');
+              }}
+            >
+              BED-to-BED
+            </button>
+          </li>
+          <li className='nav-item'>
+            <button
+              className={`rounded-5 nav-link ${view === 't2bs' ? 'active fw-medium' : ''}`}
+              onClick={() => {
+                params.set('view', 't2bs');
+                params.delete('q');
+                setParams(params);
+                setView('t2bs');
+              }}
+            >
+              Text-to-BEDset
+            </button>
+          </li>
+        </ul>
       </div>
     </div>
   );

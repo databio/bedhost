@@ -17,22 +17,21 @@ type Props = {
 
 const baseColors = [
   'rgba(0, 128, 128,0.6)',
-  'rgb(96,141,174)',  // dusty sky-blue
-  'rgb(52,119,65)',  // Okabe-Ito “sky blue”✓
-  'rgb(25,97,22)',  // Okabe-Ito “bluish green”✓
-  'rgb(53,133,56)',  // soft teal
-  'rgb( 84, 185, 147)',  // mint-teal
+  'rgb(96,141,174)', // dusty sky-blue
+  'rgb(52,119,65)', // Okabe-Ito “sky blue”✓
+  'rgb(25,97,22)', // Okabe-Ito “bluish green”✓
+  'rgb(53,133,56)', // soft teal
+  'rgb( 84, 185, 147)', // mint-teal
   'rgb(92,119,103)',
-  'rgba(114,117,69,0.6)',// light sage
+  'rgba(114,117,69,0.6)', // light sage
   'rgba(152,119,89,0.6)',
-  'rgb(48,89,63)',  // pale moss
-  'rgb(78,136,70)',  // misty mint-grey
-
+  'rgb(48,89,63)', // pale moss
+  'rgb(78,136,70)', // misty mint-grey
 ];
 
 const maxLength = 40;
 
-const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 250, color = 0, angle = true) => {
+const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 220, color = 0, angle = true) => {
   return {
     $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
     data: {
@@ -103,7 +102,7 @@ const barSpec = (data: any, xlab: string = '', ylab: string = '', height: number
   };
 };
 
-const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 222) => {
+const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number = 210) => {
   return {
     $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
     data: {
@@ -148,7 +147,7 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
         },
       },
       {
-        mark: { type: 'text', fontSize: 8.5, radius: height / 3, font: 'Arial'},
+        mark: { type: 'text', fontSize: 8.5, radius: height / 3, font: 'Arial' },
         encoding: {
           text: {
             condition: {
@@ -173,7 +172,14 @@ const pieSpec = (data: any, xlab: string = '', ylab: string = '', height: number
   };
 };
 
-const histSpec = (data: any, median: number = 0, xlab: string = '', ylab: string = '', height: number = 250, color = 0) => {
+const histSpec = (
+  data: any,
+  median: number = 0,
+  xlab: string = '',
+  ylab: string = '',
+  height: number = 220,
+  color = 0,
+) => {
   return {
     $schema: 'https://vega.github.io/schema/vega-lite/v6.json',
     data: {
@@ -230,7 +236,7 @@ const histSpec = (data: any, median: number = 0, xlab: string = '', ylab: string
           // fontSize: 12,
           // color: 'black',
           fontWeight: 'bold',
-          font: 'Trebuchet MS'
+          font: 'Trebuchet MS',
         },
         encoding: {
           x: { datum: median },
@@ -239,21 +245,21 @@ const histSpec = (data: any, median: number = 0, xlab: string = '', ylab: string
         },
       },
       // {
-      //   mark: {type: "text", dy: -7, fontSize: 8.5},
+      //   mark: {type: 'text', dy: -7, fontSize: 8.5},
       //   encoding: {
       //     text: {
-      //       field: "value",
-      //       type: "quantitative",
+      //       field: 'value',
+      //       type: 'quantitative',
       //       sort: null
       //     },
       //     x: {
-      //       field: "label",
-      //       type: "quantitative",
+      //       field: 'label',
+      //       type: 'quantitative',
       //       sort: null
       //     },
       //     y: {
-      //       field: "value",
-      //       type: "quantitative",
+      //       field: 'value',
+      //       type: 'quantitative',
       //       sort: null
       //     },
       //     opacity: {value: 0.75},
@@ -275,18 +281,19 @@ export const MetricPlot = (props: Props) => {
 
   const plotRef = useRef<HTMLDivElement>(null);
   const spec =
-    type == 'bar' ? barSpec(data, xlab, ylab, height, color) :
-      type == 'pie' ? pieSpec(data, xlab, ylab, height) : histSpec(data, median, xlab, ylab, height, color);
-
+    type == 'bar'
+      ? barSpec(data, xlab, ylab, height, color)
+      : type == 'pie'
+        ? pieSpec(data, xlab, ylab, height)
+        : histSpec(data, median, xlab, ylab, height, color);
 
   useEffect(() => {
     if (plotRef.current && spec) {
       try {
         // @ts-ignore vega lite spec is fine
-        embed(plotRef.current, spec, { 'actions': action })
-          .catch(error => {
-            console.error('Embed error after parsing:', error);
-          });
+        embed(plotRef.current, spec, { actions: action }).catch((error) => {
+          console.error('Embed error after parsing:', error);
+        });
       } catch (error) {
         console.error(error);
       }
@@ -299,7 +306,5 @@ export const MetricPlot = (props: Props) => {
     };
   }, [spec]);
 
-  return (
-    <div className="w-100" ref={plotRef} />
-  );
+  return <div className='w-100' ref={plotRef} />;
 };

@@ -11,9 +11,9 @@ export const MedianTssDistCard = (props: Props) => {
   const { metadata } = props;
   return (
     <StatCard
-      title="Median TSS Distance"
+      title='Median TSS Distance'
       stat={`${formatNumberWithCommas(metadata.stats?.median_tss_dist || 0)} bp`}
-      tooltip="The median distance of the regions to the nearest transcription start site."
+      tooltip='The median distance of the regions to the nearest transcription start site.'
     />
   );
 };

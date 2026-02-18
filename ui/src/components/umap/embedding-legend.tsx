@@ -1,0 +1,102 @@
+import { tableau20 } from "../../utils";
+
+type LegendItem = {
+  category: string;
+  name: string;
+};
+
+type Props = {
+  legendItems: LegendItem[];
+  filterSelection: any;
+  handleLegendClick: (item: LegendItem) => void;
+  colorGrouping: string;
+  setColorGrouping: (colorGrouping: string) => void;
+  onSaveCategory?: (item: any) => void;
+  persistentFilter?: { column: string; category: string; name: string } | null;
+  onPinFilter?: (filter: { column: string; category: string; name: string }) => void;
+  onClearPersistentFilter?: () => void;
+};
+
+export const EmbeddingLegend = (props: Props) => {
+  const { legendItems, filterSelection, handleLegendClick, colorGrouping, setColorGrouping, onSaveCategory, persistentFilter, onPinFilter, onClearPersistentFilter } = props;
+
+  return (
+    <div className='card mb-2 border overflow-hidden' style={{ maxHeight: `calc(100vh - 93.6px)` }}>
+      <div className='card-header text-xs fw-bolder border-bottom d-flex justify-content-between align-items-center'>
+        <span className='d-flex align-items-center gap-1'>
+          Legend
+          {persistentFilter && (
+            <span className='badge text-bg-primary d-flex align-items-center gap-1 fw-normal'>
+              {persistentFilter.name}
+              <i
+                className='bi bi-x-lg cursor-pointer'
+                onClick={() => onClearPersistentFilter?.()}
+              />
+            </span>
+          )}
+        </span>
+        <div className='btn-group btn-group-xs' role='group'>
+          <input
+            type='radio'
+            className='btn-check'
+            name='color_legend'
+            id='color_legend_1'
+            value='cell_line_category'
+            autoComplete='off'
+            checked={colorGrouping === 'cell_line_category'}
+            onChange={(e) => setColorGrouping(e.target.value)}
+          />
+          <label className='btn btn-outline-secondary' htmlFor={'color_legend_1'}>
+            Cell Line
+          </label>
+          <input
+            type='radio'
+            className='btn-check'
+            name='color_legend'
+            id='color_legend_2'
+            value='assay_category'
+            autoComplete='off'
+            checked={colorGrouping === 'assay_category'}
+            onChange={(e) => setColorGrouping(e.target.value)}
+          />
+          <label className='btn btn-outline-secondary' htmlFor={'color_legend_2'}>
+            Assay
+          </label>
+        </div>
+      </div>
+
+      <div className='card-body table-responsive p-0'>
+        <table className='table table-hover text-xs mb-2'>
+          <tbody>
+            {legendItems?.map((item: any) => (
+              <tr
+                className={`text-nowrap cursor-pointer ${filterSelection?.category === item.category ? 'table-active' : ''}`}
+                onClick={() => handleLegendClick(item)}
+                key={item.category}
+              >
+                <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
+                  <span>
+                    <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
+                    {item.name}
+                  </span>
+                  {filterSelection?.category === item.category && (
+                    <span className='d-flex gap-1'>
+                      <button className='btn btn-danger btn-xs' onClick={(e) => { e.stopPropagation(); handleLegendClick(item); }}>Clear</button>
+                      <button
+                        className='btn btn-primary btn-xs'
+                        onClick={(e) => { e.stopPropagation(); onPinFilter?.({ column: colorGrouping, category: item.category, name: item.name }); }}
+                      >
+                        Pin
+                      </button>
+                      <button className='btn btn-secondary btn-xs' onClick={(e) => { e.stopPropagation(); onSaveCategory?.(item); }}>Save Selection</button>
+                    </span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  )
+}

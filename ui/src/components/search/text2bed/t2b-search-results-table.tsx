@@ -5,6 +5,7 @@ import { useBedCart } from '../../../contexts/bedcart-context';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import YAML from 'js-yaml';
+import { useNavigate } from 'react-router-dom';
 
 type SearchResponse = components['schemas']['BedListSearchResult'];
 // type BedNeighboursResponse = components['schemas']['BedNeighboursResult'];
@@ -12,6 +13,8 @@ type SearchResponse = components['schemas']['BedListSearchResult'];
 type Props = {
   results: SearchResponse;
   search_query?: string | undefined;
+  layout?: string;
+  onCardClick?: (bedId: string) => void;
 };
 
 const IsUnique = (name: string, found_id: string, search_id: string) => {
@@ -28,7 +31,7 @@ const IsUnique = (name: string, found_id: string, search_id: string) => {
             </div>
           }
         >
-          <div className="bi bi-patch-check-fill text-success">
+          <div className="bi bi-patch-check-fill text-primary">
           </div>
         </OverlayTrigger>
       </div>
@@ -41,27 +44,22 @@ const IsUnique = (name: string, found_id: string, search_id: string) => {
 export const Text2BedSearchResultsTable = (props: Props) => {
   const { results, search_query } = props;
   const { cart, addBedToCart, removeBedFromCart } = useBedCart();
-
-  const handleRowClick = (id?: string) => (e: React.MouseEvent) => {
-    if (!(e.target as HTMLElement).closest('button')) {
-      window.location.href = `/bed/${id}`;
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <div className="table-responsive">
+    <div className="table-responsive border bg-white rounded">
       <table className="table text-sm table-hover">
         <thead>
-        <tr>
-          <th scope="col">Name</th>
-          <th scope="col">Genome</th>
-          <th scope="col">Tissue</th>
-          <th scope="col">Cell Line</th>
-          <th scope="col">Cell Type</th>
-          <th scope="col">Description</th>
-          <th scope="col">Assay</th>
-          <th scope="col">Info</th>
-          <th scope="col">
+        <tr className='text-nowrap'>
+          <th className='text-nowrap' scope="col">Name</th>
+          <th className='text-nowrap' scope="col">Genome</th>
+          <th className='text-nowrap' scope="col">Tissue</th>
+          <th className='text-nowrap' scope="col">Cell Line</th>
+          <th className='text-nowrap' scope="col">Cell Type</th>
+          <th className='text-nowrap' scope="col">Assay</th>
+          <th className='text-nowrap' scope="col">Description</th>
+          <th className='text-nowrap' scope="col">Info</th>
+          <th className='text-nowrap' scope="col">
             <OverlayTrigger
               placement="left"
               overlay={
@@ -78,8 +76,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 </span>
             </OverlayTrigger>
           </th>
-          <th scope="col" style={{ minWidth: '110px' }}>
-            Actions
+          <th scope="col" style={{ width: '42px' }}>
+            
           </th>
         </tr>
         </thead>
@@ -87,7 +85,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
         {results.results?.map((result) => (
           <tr
             key={result.id}
-            onClick={handleRowClick(result.metadata?.id)}
+            onClick={() => navigate(`/bed/${result.metadata?.id}`)}
             className="cursor-pointer position-relative"
           >
             <td>{IsUnique(result?.metadata?.name || 'No name', result.id, search_query || '') || 'No name'}</td>
@@ -97,8 +95,8 @@ export const Text2BedSearchResultsTable = (props: Props) => {
             <td>{result?.metadata?.annotation?.tissue || 'N/A'}</td>
             <td>{result?.metadata?.annotation?.cell_line || 'N/A'}</td>
             <td>{result?.metadata?.annotation?.cell_type || 'N/A'}</td>
-            <td>{result?.metadata?.description || ''}</td>
             <td>{result?.metadata?.annotation?.assay || 'N/A'}</td>
+            <td>{result?.metadata?.description || ''}</td>
             <td className="text-start">
               <OverlayTrigger
                 placement="left"
@@ -123,15 +121,16 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                 // if (scoreValue >= 60) return 'text-warning';
                 // if (scoreValue >= 40) return 'text-info';
                 // return 'text-danger';
-                return 'text-success';
+                return 'text-primary';
               })()}`}>
                 {roundToTwoDecimals((result.score ?? 0) * 100)}%
               </span>
             </td>
-            <td>
+            <td className='p-0 position-relative' style={{ width: '42px' }}>
               {cart[result?.metadata?.id || ''] ? (
                 <button
-                  className="btn btn-sm btn-outline-danger"
+                  className="btn btn-sm btn-danger rounded-0 border-0 position-absolute top-0 start-0 h-100 p-0"
+                  style={{ width: '42px' }}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (result.metadata?.id === undefined) {
@@ -141,12 +140,12 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                     removeBedFromCart(result.metadata?.id);
                   }}
                 >
-                  Remove
-                  <i className="bi bi-cart-dash ms-1"></i>
+                  <i className="bi bi-cart-dash"></i>
                 </button>
               ) : (
                 <button
-                  className="btn btn-sm btn-outline-primary small-font"
+                  className="btn btn-sm btn-primary rounded-0 border-0 position-absolute top-0 start-0 h-100 p-0"
+                  style={{ width: '42px' }}
                   onClick={(e) => {
                     e.stopPropagation();
                     if (result.metadata?.id === undefined) {
@@ -169,8 +168,7 @@ export const Text2BedSearchResultsTable = (props: Props) => {
                     addBedToCart(bedItem);
                   }}
                 >
-                  Add
-                  <i className="bi bi-cart-plus ms-1"></i>
+                  <i className="bi bi-cart-plus"></i>
                 </button>
               )}
             </td>

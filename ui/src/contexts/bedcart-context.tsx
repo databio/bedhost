@@ -35,17 +35,18 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
   const addMultipleBedsToCart = (beds: BedItem[]) => {
     const alreadyInCart = beds.filter((bed) => cart[bed.id]);
     if (alreadyInCart.length > 0) {
-      const bedIds = alreadyInCart.map(bed => bed.id);
+      const bedIds = alreadyInCart.map((bed) => bed.id);
       toast.error(`BED IDs ${bedIds.join(', ')} are already in the cart!`);
       return;
     }
-    
+
     const newItems = beds.reduce((acc, bed) => {
       acc[bed.id] = bed;
       return acc;
     }, {} as BedCart);
-    
+
     setCart({ ...cart, ...newItems });
+    toast.success(`Added ${beds.length} BED file${beds.length !== 1 ? 's' : ''} to cart!`);
   };
 
   const addBedToCart = (bed: BedItem) => {
@@ -54,11 +55,12 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
       return;
     }
     setCart({ ...cart, [bed.id]: bed });
+    // toast.success(`Added ${bed.id} to cart!`);
   };
 
   const removeMultipleBedsFromCart = (bedIds: string[]) => {
     const newCart = { ...cart };
-    bedIds.forEach(id => {
+    bedIds.forEach((id) => {
       delete newCart[id];
     });
     setCart(newCart);
@@ -72,6 +74,7 @@ export const BedCartProvider = ({ children }: ProviderProps) => {
     const newCart = { ...cart };
     delete newCart[bedId];
     setCart(newCart);
+    // toast.success(`Removed ${bedId} from cart!`);
   };
 
   return (
