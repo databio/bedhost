@@ -21,7 +21,7 @@ export const PaginationBar = (props: Props) => {
         <button
           className='btn btn-sm btn-outline-primary border-0 text-dark'
           onClick={() => {
-            setOffset(offset - limit);
+            setOffset(Math.max(0, offset - limit));
           }}
           disabled={offset === 0}
         >
@@ -90,9 +90,9 @@ export const PaginationBar = (props: Props) => {
         <button
           className='btn btn-sm btn-outline-primary border-0 text-dark'
           onClick={() => {
-            setOffset(offset + limit);
+            setOffset((Math.ceil(total / limit) - 1) * limit);
           }}
-          disabled={total < limit || offset === Math.floor(total / limit) * limit}
+          disabled={offset + limit >= total}
         >
           <i className='bi bi-arrow-right' />
         </button>

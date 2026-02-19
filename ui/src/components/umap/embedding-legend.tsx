@@ -1,9 +1,14 @@
 import { tableau20 } from "../../utils";
 
+type LegendItem = {
+  category: string;
+  name: string;
+};
+
 type Props = {
-  legendItems: string[];
+  legendItems: LegendItem[];
   filterSelection: any;
-  handleLegendClick: (item: any) => void;
+  handleLegendClick: (item: LegendItem) => void;
   colorGrouping: string;
   setColorGrouping: (colorGrouping: string) => void;
   onSaveCategory?: (item: any) => void;
@@ -76,7 +81,7 @@ export const EmbeddingLegend = (props: Props) => {
                   </span>
                   {filterSelection?.category === item.category && (
                     <span className='d-flex gap-1'>
-                      <button className='btn btn-danger btn-xs'>Clear</button>
+                      <button className='btn btn-danger btn-xs' onClick={(e) => { e.stopPropagation(); handleLegendClick(item); }}>Clear</button>
                       <button
                         className='btn btn-primary btn-xs'
                         onClick={(e) => { e.stopPropagation(); onPinFilter?.({ column: colorGrouping, category: item.category, name: item.name }); }}

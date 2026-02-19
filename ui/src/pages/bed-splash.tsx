@@ -114,7 +114,7 @@ export const BedSplash = () => {
                         <a 
                           className='link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover fw-medium fst-italic'
                           key={i} 
-                          href={'https://www.encodeproject.org'}
+                          href={'https://www.encodeproject.org/experiments/' + v.replace('encode:', '')}
                           target='_blank'
                           rel='noopener noreferrer'
                         >
