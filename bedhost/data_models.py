@@ -1,8 +1,10 @@
 from enum import Enum
-from typing import Dict
+from typing import Dict, List
 
 from fastapi import Path
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+
+from .const import MAX_BATCH_IDS
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -82,6 +84,10 @@ class BaseListResponse(BaseModel):
 
 class CreateBEDsetRequest(BaseModel):
     registry_path: str
+
+
+class BatchBedRequest(BaseModel):
+    ids: List[str] = Field(..., max_length=MAX_BATCH_IDS, description="List of BED file identifiers")
 
 
 class ChromLengthUploadModel(BaseModel):

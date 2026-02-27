@@ -31,6 +31,7 @@ from bbconf.models.bed_models import (
     RefGenValidReturnModel,
     RefGenValidModel,
 )
+from bbconf.models.bedset_models import BedSetStats
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile, Request
 from fastapi.responses import PlainTextResponse
 from gtars.models import RegionSet
@@ -40,6 +41,7 @@ from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WI
 from ..data_models import (
     CROM_NUMBERS,
     BaseListResponse,
+    BatchBedRequest,
     BedDigest,
     ChromLengthUploadModel,
 )
@@ -89,6 +91,30 @@ async def list_beds(
     return bbagent.bed.get_ids_list(
         limit=limit, offset=offset, genome=genome, bed_compliance=bed_compliance
     )
+
+
+@router.post(
+    "/batch",
+    summary="Get basic metadata for multiple BED records",
+    response_model=BedListResult,
+)
+async def get_bed_batch(request: BatchBedRequest):
+    """
+    Returns basic metadata for a batch of BED files by their identifiers.
+    """
+    return bbagent.bed.get_batch(request.ids, full=False)
+
+
+@router.post(
+    "/collection/stats",
+    summary="Compute aggregated stats for a list of BED files",
+    response_model=BedSetStats,
+)
+async def get_collection_stats(request: BatchBedRequest):
+    """
+    Computes and returns aggregated statistics for an ad-hoc collection of BED files.
+    """
+    return bbagent.bed.aggregate_collection(request.ids)
 
 
 @router.get(
@@ -159,9 +185,10 @@ async def get_bed_files(
 )
 async def get_bed_stats(
     bed_id: str = BedDigest,
+    distributions: bool = Query(True, description="Include distribution arrays"),
 ):
     try:
-        return bbagent.bed.get_stats(bed_id)
+        return bbagent.bed.get_stats(bed_id, distributions=distributions)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,

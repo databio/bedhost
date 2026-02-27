@@ -5,7 +5,6 @@ from bbconf.models.bedset_models import (
     BedSetBedFiles,
     BedSetListResult,
     BedSetMetadata,
-    BedSetPlots,
     BedSetStats,
 )
 from pephubclient.helpers import is_registry_path, unwrap_registry_path
@@ -89,30 +88,12 @@ async def get_bedset_pep(
 
 
 @router.get(
-    "/{bedset_id}/metadata/plots",
-    response_model=BedSetPlots,
-    summary="Get plots for single bedset record",
-    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
-)
-async def get_bedset_metadata(
-    bedset_id: str,
-):
-    """
-    Returns metadata from selected columns for selected bedset
-    """
-    try:
-        return bbagent.bedset.get_plots(bedset_id)
-    except BedSetNotFoundError as _:
-        raise HTTPException(status_code=404, detail="No records found")
-
-
-@router.get(
     "/{bedset_id}/metadata/stats",
     response_model=BedSetStats,
     summary="Get stats for a single BEDSET record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_metadata(
+async def get_bedset_stats(
     bedset_id: str,
 ):
     try:
