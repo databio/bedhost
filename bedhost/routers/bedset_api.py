@@ -3,6 +3,7 @@ import logging
 from bbconf.exceptions import BedSetNotFoundError, BedSetTrackHubLimitError
 from bbconf.models.bedset_models import (
     BedSetBedFiles,
+    BedSetDistributions,
     BedSetListResult,
     BedSetMetadata,
     BedSetPlots,
@@ -109,14 +110,35 @@ async def get_bedset_metadata(
 @router.get(
     "/{bedset_id}/metadata/stats",
     response_model=BedSetStats,
-    summary="Get stats for a single BEDSET record",
-    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
+    summary="Get scalar stats (mean/sd) for a single BEDSET record",
+    description=f"Example\n bedset_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_metadata(
+async def get_bedset_stats(
     bedset_id: str,
 ):
     try:
         return bbagent.bedset.get_statistics(bedset_id)
+    except BedSetNotFoundError as _:
+        raise HTTPException(status_code=404, detail="No records found")
+
+
+@router.get(
+    "/{bedset_id}/metadata/distributions",
+    response_model=BedSetDistributions,
+    summary="Get distribution statistics for a single BEDSET record",
+    description=f"Example\n bedset_id: {EXAMPLE_BEDSET}",
+)
+async def get_bedset_distributions(
+    bedset_id: str,
+):
+    """Get aggregated distribution statistics from the JSONB column.
+
+    Returns full distribution data (histograms, KDEs, partitions, etc.)
+    computed across all member BED files. Falls back to wrapping old
+    scalar stats if distribution data is not yet available.
+    """
+    try:
+        return bbagent.bedset.get_distributions(bedset_id)
     except BedSetNotFoundError as _:
         raise HTTPException(status_code=404, detail="No records found")
 
