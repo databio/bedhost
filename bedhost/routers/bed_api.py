@@ -194,7 +194,7 @@ async def get_bed_batch(
             status_code=400,
             detail=f"Too many IDs. Maximum is {MAX_BATCH_IDS}.",
         )
-    return bbagent.bed.get_batch(request.ids, full=True)
+    return bbagent.bed.get_batch(request.ids, full=True, distributions=False)
 
 
 @router.post(
