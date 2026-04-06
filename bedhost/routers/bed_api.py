@@ -183,7 +183,6 @@ async def get_bed_stats(
 @router.post(
     "/batch",
     summary="Get metadata for multiple BED records",
-    response_model=BedListResult,
 )
 async def get_bed_batch(
     request: BatchBedRequest,
