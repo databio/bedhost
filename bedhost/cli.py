@@ -3,6 +3,8 @@ from ubiquerg import VersionInHelpParser
 from . import PKG_NAME
 from ._version import __version__
 
+CFG_ENV_VARS = ["BEDBASE_CONFIG"]
+
 
 def build_parser():
     """
