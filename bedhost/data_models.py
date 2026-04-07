@@ -84,5 +84,13 @@ class CreateBEDsetRequest(BaseModel):
     registry_path: str
 
 
+class BatchBedRequest(BaseModel):
+    ids: list[str]
+
+
+class CollectionStatsRequest(BaseModel):
+    ids: list[str]
+
+
 class ChromLengthUploadModel(BaseModel):
     bed_file: Dict[str, int]

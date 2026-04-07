@@ -6,7 +6,12 @@ except ImportError:
 
 from platform import python_version
 
-from bbconf import __version__ as bbconf_version
+try:
+    from bbconf import __version__ as bbconf_version
+except ImportError:
+    from importlib.metadata import version
+
+    bbconf_version = version("bbconf")
 from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
 from fastapi import APIRouter, Request
 from geniml import __version__ as geniml_version
