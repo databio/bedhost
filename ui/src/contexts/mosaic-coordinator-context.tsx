@@ -1,6 +1,9 @@
 import { createContext, useContext, useMemo, useRef, ReactNode, useState, useEffect } from 'react';
 import * as vg from '@uwdata/vgplot';
 import { UMAP_URL } from '../const.ts'
+import { getCachedUmap, setCachedUmap } from '../lib/umap-cache.ts';
+
+const UMAP_VIRTUAL_FILE = 'umap.json';
 
 interface MosaicCoordinatorContextType {
   getCoordinator: () => vg.Coordinator;
@@ -14,7 +17,7 @@ const MosaicCoordinatorContext = createContext<MosaicCoordinatorContextType | nu
 
 export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode }) => {
   const coordinatorRef = useRef<vg.Coordinator | null>(null);
-  const dataInitializedRef = useRef<boolean>(false);
+  const initPromiseRef = useRef<Promise<void> | null>(null);
   const [webglStatus, setWebglStatus] = useState<{ checking: boolean; webgl2: boolean; error: string | null }>({
     checking: true,
     webgl2: false,
@@ -28,19 +31,36 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
     return coordinatorRef.current;
   };
 
-  const initializeData = async () => {
-    if (dataInitializedRef.current) {
-      return; // Already initialized
+  const loadUmapBuffer = async (): Promise<ArrayBuffer> => {
+    const cached = await getCachedUmap(UMAP_URL);
+    if (cached) return cached;
+    const res = await fetch(UMAP_URL);
+    if (!res.ok) {
+      throw new Error(`Failed to fetch UMAP data: ${res.status} ${res.statusText}`);
     }
+    const buf = await res.arrayBuffer();
+    await setCachedUmap(UMAP_URL, buf);
+    return buf;
+  };
 
+  const doInitialize = async () => {
     const coordinator = getCoordinator();
+    const connector: any = (coordinator as any).databaseConnector?.() ?? (coordinator as any)._db;
 
+    const buffer = await loadUmapBuffer();
+
+    // Register the cached bytes as a virtual file inside DuckDB-WASM so the
+    // SQL below reads from memory instead of hitting the network again.
+    if (connector && typeof connector.getDuckDB === 'function') {
+      const db = await connector.getDuckDB();
+      await db.registerFileBuffer(UMAP_VIRTUAL_FILE, new Uint8Array(buffer));
+    }
 
     await coordinator.exec([
       vg.sql`CREATE OR REPLACE TABLE data AS
             SELECT
               unnest(nodes, recursive := true)
-            FROM read_json_auto('${UMAP_URL}')`,
+            FROM read_json_auto('${UMAP_VIRTUAL_FILE}')`,
       vg.sql`CREATE OR REPLACE TABLE data AS
             WITH assay_counts AS (
               SELECT assay,
@@ -59,8 +79,17 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
             JOIN assay_counts ac ON d.assay = ac.assay
             JOIN cell_line_counts cc ON d.cell_line = cc.cell_line` as any,
     ]);
+  };
 
-    dataInitializedRef.current = true;
+  const initializeData = async () => {
+    if (!initPromiseRef.current) {
+      initPromiseRef.current = doInitialize().catch((err) => {
+        // Allow a retry on the next call if init failed.
+        initPromiseRef.current = null;
+        throw err;
+      });
+    }
+    return initPromiseRef.current;
   };
 
   const deleteCustomPoint = async () => {

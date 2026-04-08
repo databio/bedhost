@@ -5,7 +5,6 @@ except ImportError:
     from typing import Dict, Optional, List, Any
 
 from platform import python_version
-
 from bbconf import __version__ as bbconf_version
 from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
 from fastapi import APIRouter, Request
