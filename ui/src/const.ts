@@ -4,6 +4,11 @@ const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 const EXAMPLE_URL = `${API_BASE}/bed/example`;
 
+// export const UMAP_PARQUET_URL =
+//   'https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap_3_13.parquet';
+export const UMAP_PARQUET_URL = `${window.location.origin}/test_big_3_13.parquet`;
+
+// Legacy JSON URL (kept for backward compatibility)
 export const UMAP_URL = 'https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap_3_13.json';
 // export const UMAP_URL = `${window.location.origin}/feb08_3_13.json`;
 
