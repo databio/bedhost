@@ -518,7 +518,9 @@ async def text_to_bed_search(
             if result.count != 0:
                 return result
 
-        elif spaceless_query_lower.startswith("encsr") or spaceless_query_lower.startswith("encff"):
+        elif spaceless_query_lower.startswith(
+            "encsr"
+        ) or spaceless_query_lower.startswith("encff"):
             result = bbagent.bed.search_external_file(
                 source="encode", accession=spaceless_query_lower.upper()
             )

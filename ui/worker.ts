@@ -16,7 +16,7 @@ const CRAWLER_USER_AGENTS = [
 const API_BASE = 'https://api.bedbase.org/v1';
 const SITE_URL = 'https://bedbase.org';
 // Replace with a PNG (1200x630) for best compatibility across all platforms
-const OG_IMAGE = `${SITE_URL}/bedbase_logo.svg`;
+const OG_IMAGE = `${SITE_URL}/bedbase_web.svg`;
 
 interface Env {
   ASSETS: Fetcher;
