@@ -496,6 +496,7 @@ async def text_to_bed_search(
         [
             spaceless_query_lower.startswith("gsm"),
             spaceless_query_lower.startswith("encff"),
+            spaceless_query_lower.startswith("encsr"),
             spaceless_query_lower.startswith("gse"),
             spaceless_query_lower.startswith("geo:"),
             spaceless_query_lower.startswith("encode:"),
@@ -507,6 +508,7 @@ async def text_to_bed_search(
             "encode:", ""
         )
 
+        _LOGGER.info(spaceless_query_lower)
         if spaceless_query_lower.startswith("gsm") or spaceless_query_lower.startswith(
             "gse"
         ):
@@ -516,7 +518,7 @@ async def text_to_bed_search(
             if result.count != 0:
                 return result
 
-        elif spaceless_query_lower.startswith("encff"):
+        elif spaceless_query_lower.startswith("encsr") or spaceless_query_lower.startswith("encff"):
             result = bbagent.bed.search_external_file(
                 source="encode", accession=spaceless_query_lower.upper()
             )
