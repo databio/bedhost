@@ -45,13 +45,20 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
               SELECT cell_line,
                 (ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) - 1)::INTEGER as rank
               FROM data GROUP BY cell_line
+            ),
+            cell_type_counts AS (
+              SELECT cell_type,
+                (ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) - 1)::INTEGER as rank
+              FROM data GROUP BY cell_type
             )
             SELECT d.*,
               CASE WHEN ac.rank < 20 THEN ac.rank ELSE 20 END AS assay_category,
-              CASE WHEN cc.rank < 20 THEN cc.rank ELSE 20 END AS cell_line_category
+              CASE WHEN cc.rank < 20 THEN cc.rank ELSE 20 END AS cell_line_category,
+              CASE WHEN ct.rank < 20 THEN ct.rank ELSE 20 END AS cell_type_category
             FROM data d
             JOIN assay_counts ac ON d.assay = ac.assay
-            JOIN cell_line_counts cc ON d.cell_line = cc.cell_line` as any,
+            JOIN cell_line_counts cc ON d.cell_line = cc.cell_line
+            JOIN cell_type_counts ct ON d.cell_type = ct.cell_type` as any,
     ]);
   };
 
@@ -86,6 +93,8 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
         '${description}',
         'Uploaded BED',
         'Uploaded BED',
+        'Uploaded BED',
+        20,
         20,
         20
       )` as any,
