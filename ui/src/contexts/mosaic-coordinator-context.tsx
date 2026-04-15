@@ -1,9 +1,6 @@
 import { createContext, useContext, useMemo, useRef, ReactNode, useState, useEffect } from 'react';
 import * as vg from '@uwdata/vgplot';
-import { UMAP_URL } from '../const.ts'
-import { getCachedUmap, setCachedUmap } from '../lib/umap-cache.ts';
-
-const UMAP_VIRTUAL_FILE = 'umap.json';
+import { UMAP_PARQUET_URL } from '../const.ts';
 
 interface MosaicCoordinatorContextType {
   getCoordinator: () => vg.Coordinator;
@@ -31,36 +28,13 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
     return coordinatorRef.current;
   };
 
-  const loadUmapBuffer = async (): Promise<ArrayBuffer> => {
-    const cached = await getCachedUmap(UMAP_URL);
-    if (cached) return cached;
-    const res = await fetch(UMAP_URL);
-    if (!res.ok) {
-      throw new Error(`Failed to fetch UMAP data: ${res.status} ${res.statusText}`);
-    }
-    const buf = await res.arrayBuffer();
-    await setCachedUmap(UMAP_URL, buf);
-    return buf;
-  };
-
   const doInitialize = async () => {
     const coordinator = getCoordinator();
-    const connector: any = (coordinator as any).databaseConnector?.() ?? (coordinator as any)._db;
 
-    const buffer = await loadUmapBuffer();
-
-    // Register the cached bytes as a virtual file inside DuckDB-WASM so the
-    // SQL below reads from memory instead of hitting the network again.
-    if (connector && typeof connector.getDuckDB === 'function') {
-      const db = await connector.getDuckDB();
-      await db.registerFileBuffer(UMAP_VIRTUAL_FILE, new Uint8Array(buffer));
-    }
-
+    // Read parquet directly over HTTP with range requests (no full download needed).
     await coordinator.exec([
       vg.sql`CREATE OR REPLACE TABLE data AS
-            SELECT
-              unnest(nodes, recursive := true)
-            FROM read_json_auto('${UMAP_VIRTUAL_FILE}')`,
+            SELECT * FROM read_parquet('${UMAP_PARQUET_URL}')`,
       vg.sql`CREATE OR REPLACE TABLE data AS
             WITH assay_counts AS (
               SELECT assay,
@@ -71,13 +45,20 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
               SELECT cell_line,
                 (ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) - 1)::INTEGER as rank
               FROM data GROUP BY cell_line
+            ),
+            cell_type_counts AS (
+              SELECT cell_type,
+                (ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC) - 1)::INTEGER as rank
+              FROM data GROUP BY cell_type
             )
             SELECT d.*,
               CASE WHEN ac.rank < 20 THEN ac.rank ELSE 20 END AS assay_category,
-              CASE WHEN cc.rank < 20 THEN cc.rank ELSE 20 END AS cell_line_category
+              CASE WHEN cc.rank < 20 THEN cc.rank ELSE 20 END AS cell_line_category,
+              CASE WHEN ct.rank < 20 THEN ct.rank ELSE 20 END AS cell_type_category
             FROM data d
             JOIN assay_counts ac ON d.assay = ac.assay
-            JOIN cell_line_counts cc ON d.cell_line = cc.cell_line` as any,
+            JOIN cell_line_counts cc ON d.cell_line = cc.cell_line
+            JOIN cell_type_counts ct ON d.cell_type = ct.cell_type` as any,
     ]);
   };
 
@@ -112,6 +93,8 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
         '${description}',
         'Uploaded BED',
         'Uploaded BED',
+        'Uploaded BED',
+        20,
         20,
         20
       )` as any,

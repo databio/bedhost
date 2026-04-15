@@ -1,7 +1,7 @@
 {
   "name": "bedhost-ui-2",
   "private": true,
-  "version": "0.13.0",
+  "version": "0.13.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -46,6 +46,9 @@
     "vega-embed": "^7.0.2",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.5.0"
+  },
+  "overrides": {
+    "@uwdata/mosaic-core": "0.21.1"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
