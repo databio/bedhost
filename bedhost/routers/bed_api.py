@@ -508,7 +508,6 @@ async def text_to_bed_search(
             "encode:", ""
         )
 
-        _LOGGER.info(spaceless_query_lower)
         if spaceless_query_lower.startswith("gsm") or spaceless_query_lower.startswith(
             "gse"
         ):
