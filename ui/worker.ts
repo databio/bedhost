@@ -15,7 +15,7 @@ const CRAWLER_USER_AGENTS = [
 
 const API_BASE = 'https://api.bedbase.org/v1';
 const SITE_URL = 'https://bedbase.org';
-// Replace with a PNG (1200x630) for best compatibility across all platforms
+// Current OG image is an SVG; use a 1200x630 PNG here if one is added for broader social preview compatibility
 const OG_IMAGE = `${SITE_URL}/bedbase_web.svg`;
 
 interface Env {
