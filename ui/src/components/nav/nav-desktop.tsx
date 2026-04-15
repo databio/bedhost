@@ -14,6 +14,12 @@ export const NavDesktop = () => {
         </a>
       </li>
       <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
+        <a className='nav-link' href='/analyze'>
+          <i className='bi bi-body-text me-1 text-base' />
+          Analyzer
+        </a>
+      </li>
+      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
         <a className='nav-link' href='/umap'>
           <i className='bi bi-diagram-3 me-1 text-base' />
           Visualization

@@ -19,6 +19,11 @@ export const MobileNav = () => {
           <i className='bi bi-diagram-3 me-2' />
           Visualization
         </Dropdown.Item>
+        <Dropdown.Item href='/analyze'>
+          <i className='bi bi-body-text me-2' />
+          Analyzer
+        </Dropdown.Item>
+
         <Dropdown.Item href='https://docs.bedbase.org/bedbase/'>
           <i className='bi bi-info-circle me-2' />
           Docs
