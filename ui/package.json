@@ -1,7 +1,7 @@
 {
   "name": "bedhost-ui-2",
   "private": true,
-  "version": "0.13.0",
+  "version": "0.13.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,7 +9,9 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "generate-types": "npx openapi-typescript https://api-dev.bedbase.org/openapi.json -o bedbase-types.d.ts",
-    "generate-types-local": "npx openapi-typescript http://localhost:8000/openapi.json -o bedbase-types.d.ts"
+    "generate-types-local": "npx openapi-typescript http://localhost:8000/openapi.json -o bedbase-types.d.ts",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:preview": "npm run build && wrangler dev"
   },
   "dependencies": {
     "@databio/gtars": "^0.5.3",
@@ -44,6 +46,9 @@
     "vega-embed": "^7.0.2",
     "vite-plugin-top-level-await": "^1.6.0",
     "vite-plugin-wasm": "^3.5.0"
+  },
+  "overrides": {
+    "@uwdata/mosaic-core": "0.21.1"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",

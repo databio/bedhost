@@ -62,6 +62,19 @@ export const EmbeddingLegend = (props: Props) => {
           <label className='btn btn-outline-secondary' htmlFor={'color_legend_2'}>
             Assay
           </label>
+          <input
+            type='radio'
+            className='btn-check'
+            name='color_legend'
+            id='color_legend_3'
+            value='cell_type_category'
+            autoComplete='off'
+            checked={colorGrouping === 'cell_type_category'}
+            onChange={(e) => setColorGrouping(e.target.value)}
+          />
+          <label className='btn btn-outline-secondary' htmlFor={'color_legend_3'}>
+            Cell Type
+          </label>
         </div>
       </div>
 
