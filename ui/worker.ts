@@ -15,6 +15,8 @@ const CRAWLER_USER_AGENTS = [
 
 const API_BASE = 'https://api.bedbase.org/v1';
 const SITE_URL = 'https://bedbase.org';
+// Replace with a PNG (1200x630) for best compatibility across all platforms
+const OG_IMAGE = `${SITE_URL}/bedbase_logo.svg`;
 
 interface Env {
   ASSETS: Fetcher;
@@ -151,6 +153,7 @@ export default {
           title,
           description: buildBedDescription(meta),
           url: `${SITE_URL}/bed/${id}`,
+          image: OG_IMAGE,
         });
         return new Response(html, {
           headers: { 'Content-Type': 'text/html; charset=utf-8' },
@@ -172,6 +175,7 @@ export default {
           title,
           description,
           url: `${SITE_URL}/bedset/${id}`,
+          image: OG_IMAGE,
         });
         return new Response(html, {
           headers: { 'Content-Type': 'text/html; charset=utf-8' },
