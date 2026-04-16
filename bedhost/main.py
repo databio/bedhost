@@ -75,7 +75,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory="bedhost/templates", autoescape=False)
+templates = Jinja2Templates(directory="bedhost/templates")
+templates.env.autoescape = False
 
 
 @app.get("/v1", summary="API intro page", tags=["home"])
