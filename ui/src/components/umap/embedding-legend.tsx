@@ -1,4 +1,4 @@
-import { tableau20 } from "../../utils";
+import { categoryPalette } from "../../utils";
 
 type LegendItem = {
   category: string;
@@ -89,7 +89,7 @@ export const EmbeddingLegend = (props: Props) => {
               >
                 <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
                   <span>
-                    <i className='bi bi-square-fill me-3' style={{ color: tableau20[item.category] }} />
+                    <i className='bi bi-square-fill me-3' style={{ color: categoryPalette[item.category] }} />
                     {item.name}
                   </span>
                   {filterSelection?.category === item.category && (

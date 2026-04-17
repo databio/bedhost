@@ -71,7 +71,7 @@ export const EmbeddingStats = (props: Props) => {
   return (
     <div className='card mb-2 border'>
       <div className='card-header text-xs fw-bolder border-bottom'>Selection Count</div>
-      <div className='card-body' style={{ padding: '12px' }}>
+      <div className='card-body' style={{ padding: '12px', maxHeight: 450, overflowY: 'auto' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
           {rows.map((row) => {
             const total = totalCounts.get(row.category) ?? 0;

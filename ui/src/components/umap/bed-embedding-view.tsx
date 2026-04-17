@@ -2,7 +2,7 @@ import { EmbeddingViewMosaic } from 'embedding-atlas/react';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import * as vg from '@uwdata/vgplot';
 
-import { isPointInPolygon, tableau20 } from '../../utils';
+import { isPointInPolygon, categoryPalette, MAX_CATEGORIES } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
 import { AtlasTooltip } from './atlas-tooltip';
@@ -47,10 +47,10 @@ export const BEDEmbeddingView = (props: Props) => {
   const [pinGrouping, setPinGrouping] = useState<string>(colorGrouping);
 
   const categoryColors = useMemo(() => {
-    const colors = [...tableau20, '#cccccc'];
+    const colors = [...categoryPalette, '#cccccc'];
     if (legendItems) {
       legendItems.forEach((item: any) => {
-        if (item.name === 'UNKNOWN' && item.category < 20) {
+        if (item.name === 'UNKNOWN' && item.category < MAX_CATEGORIES) {
           colors[item.category] = '#cccccc';
         }
       });
@@ -365,8 +365,8 @@ export const BEDEmbeddingView = (props: Props) => {
     const fieldName = colorGrouping.replace('_category', '');
     const query = `
       SELECT
-        CASE WHEN ${colorGrouping} < 20 THEN ${fieldName} ELSE 'Other' END as name,
-        CASE WHEN ${colorGrouping} < 20 THEN ${colorGrouping} ELSE 20 END as category,
+        CASE WHEN ${colorGrouping} < ${MAX_CATEGORIES} THEN ${fieldName} ELSE 'Other' END as name,
+        CASE WHEN ${colorGrouping} < ${MAX_CATEGORIES} THEN ${colorGrouping} ELSE ${MAX_CATEGORIES} END as category,
         COUNT(*) as count
       FROM data
       GROUP BY 1, 2

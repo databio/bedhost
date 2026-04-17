@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useMemo, forwardRef, useImperativeHandle }
 import toast from 'react-hot-toast';
 import * as vg from '@uwdata/vgplot';
 
-import { tableau20 } from '../../utils';
+import { categoryPalette } from '../../utils';
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
@@ -507,7 +507,7 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
                 identifier='id'
                 text='name'
                 category={colorGrouping}
-                categoryColors={tableau20}
+                categoryColors={categoryPalette}
                 additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line', 'Cell Type': 'cell_type' }}
                 height={height || embeddingHeight}
                 width={containerWidth}
