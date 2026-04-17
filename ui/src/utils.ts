@@ -174,7 +174,9 @@ export const convertStatusCodeToMessage = (statusCode: number | undefined) => {
   }
 };
 
-export const tableau20 = [
+export const MAX_CATEGORIES = 40;
+
+export const categoryPalette = [
   '#1f77b4',
   '#aec7e8',
   '#ff7f0e',
@@ -195,6 +197,26 @@ export const tableau20 = [
   '#dbdb8d',
   '#17becf',
   '#9edae5',
+  '#393b79',
+  '#5254a3',
+  '#6b6ecf',
+  '#9c9ede',
+  '#637939',
+  '#8ca252',
+  '#b5cf6b',
+  '#cedb9c',
+  '#8c6d31',
+  '#bd9e39',
+  '#e7ba52',
+  '#e7cb94',
+  '#843c39',
+  '#ad494a',
+  '#d6616b',
+  '#e7969c',
+  '#7b4173',
+  '#a55194',
+  '#ce6dbd',
+  '#de9ed6',
 ];
 
 // Point-in-polygon test using ray casting algorithm

@@ -3,9 +3,9 @@ import { useEffect, useState, useRef, useMemo, forwardRef, useImperativeHandle }
 import toast from 'react-hot-toast';
 import * as vg from '@uwdata/vgplot';
 
-import { tableau20 } from '../../utils';
+import { categoryPalette } from '../../utils';
 
-const categoryColors = [...tableau20, '#cccccc'];
+const categoryColors = [...categoryPalette, '#cccccc'];
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 

@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useRef, ReactNode, useState, useEffect } from 'react';
 import * as vg from '@uwdata/vgplot';
 import { UMAP_PARQUET_URL } from '../const.ts';
+import { MAX_CATEGORIES } from '../utils';
 
 interface MosaicCoordinatorContextType {
   getCoordinator: () => vg.Coordinator;
@@ -52,9 +53,9 @@ export const MosaicCoordinatorProvider = ({ children }: { children: ReactNode })
               FROM data GROUP BY cell_type
             )
             SELECT d.*,
-              CASE WHEN ac.rank < 20 THEN ac.rank ELSE 20 END AS assay_category,
-              CASE WHEN cc.rank < 20 THEN cc.rank ELSE 20 END AS cell_line_category,
-              CASE WHEN ct.rank < 20 THEN ct.rank ELSE 20 END AS cell_type_category
+              CASE WHEN ac.rank < ${MAX_CATEGORIES} THEN ac.rank ELSE ${MAX_CATEGORIES} END AS assay_category,
+              CASE WHEN cc.rank < ${MAX_CATEGORIES} THEN cc.rank ELSE ${MAX_CATEGORIES} END AS cell_line_category,
+              CASE WHEN ct.rank < ${MAX_CATEGORIES} THEN ct.rank ELSE ${MAX_CATEGORIES} END AS cell_type_category
             FROM data d
             JOIN assay_counts ac ON d.assay = ac.assay
             JOIN cell_line_counts cc ON d.cell_line = cc.cell_line
