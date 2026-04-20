@@ -96,7 +96,7 @@ echo "----------------------------------------------"
 
 cd "$PROJECT_ROOT"
 
-python3 -m pytest tests/integration/ "$@"
+python3 -m pytest tests/integration/ tests/api/ "$@"
 TEST_EXIT_CODE=$?
 
 echo "----------------------------------------------"

@@ -66,10 +66,17 @@ def attach_routers(app):
 
 
 def configure(bbconf_file_path: str) -> BedBaseAgent:
+    # Respect BEDHOST_INIT_ML for CI/smoke deployments that don't need the
+    # ML models (dense/sparse encoders, UMAP, region2vec) loaded. Default
+    # is to initialize them (unchanged behavior for production).
+    init_ml_env = os.environ.get("BEDHOST_INIT_ML", "true").lower()
+    init_ml = init_ml_env not in ("0", "false", "no")
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        _LOGGER.info(f"Loading config: '{bbconf_file_path}'")
-        bbc = BedBaseAgent(bbconf_file_path)
+        _LOGGER.info(
+            f"Loading config: '{bbconf_file_path}' (init_ml={init_ml})"
+        )
+        bbc = BedBaseAgent(bbconf_file_path, init_ml=init_ml)
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
     return bbc
