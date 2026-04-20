@@ -132,17 +132,23 @@ def count_requests(
                     else:
                         usage_data.files[file_path] = 1
             elif event == "bed_search":
-                query = kwargs.get("query").strip()
-                if query in usage_data.bed_search:
-                    usage_data.bed_search[query] += 1
-                else:
-                    usage_data.bed_search[query] = 1
+                raw_query = kwargs.get("query")
+                # /v1/bedset/list accepts query=None; skip usage tracking in
+                # that case rather than crashing on ``None.strip()``.
+                if raw_query is not None:
+                    query = raw_query.strip()
+                    if query in usage_data.bed_search:
+                        usage_data.bed_search[query] += 1
+                    else:
+                        usage_data.bed_search[query] = 1
             elif event == "bedset_search":
-                query = kwargs.get("query").strip()
-                if query in usage_data.bedset_search:
-                    usage_data.bedset_search[query] += 1
-                else:
-                    usage_data.bedset_search[query] = 1
+                raw_query = kwargs.get("query")
+                if raw_query is not None:
+                    query = raw_query.strip()
+                    if query in usage_data.bedset_search:
+                        usage_data.bedset_search[query] += 1
+                    else:
+                        usage_data.bedset_search[query] = 1
             elif event == "bed_meta":
                 bed_id = kwargs.get("bed_id")
                 if bed_id in usage_data.bed_meta:
