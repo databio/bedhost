@@ -73,9 +73,7 @@ def configure(bbconf_file_path: str) -> BedBaseAgent:
     init_ml = init_ml_env not in ("0", "false", "no")
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        _LOGGER.info(
-            f"Loading config: '{bbconf_file_path}' (init_ml={init_ml})"
-        )
+        _LOGGER.info(f"Loading config: '{bbconf_file_path}' (init_ml={init_ml})")
         bbc = BedBaseAgent(bbconf_file_path, init_ml=init_ml)
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
