@@ -30,3 +30,29 @@ UI development:
 ```terminal
 export VITE_API_HOST=http://localhost:8000
 ```
+
+## Testing
+
+Black-box compliance tests (against any deployment):
+
+```
+pytest tests/api/ --api_root=https://api.bedbase.org
+```
+
+Integration tests (ephemeral Postgres + Qdrant + in-process TestClient, ~30s):
+
+```
+./tests/scripts/test-integration.sh
+```
+
+Manual service control:
+
+```
+./tests/scripts/services.sh start
+RUN_INTEGRATION_TESTS=true pytest tests/integration/ tests/api/
+./tests/scripts/services.sh stop
+```
+
+Integration tests require network access on first boot (bbconf downloads a
+licenses CSV from GitHub and may pull HuggingFace models unless
+`BEDHOST_INIT_ML=false` is set; `test-integration.sh` sets it).
