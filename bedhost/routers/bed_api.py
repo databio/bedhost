@@ -498,6 +498,15 @@ async def text_to_bed_search(
         f"Searching for: '{query}' with limit='{limit}' and offset='{offset}' and genome='{genome}' and assay='{assay}'"
     )
 
+    # Hybrid search depends on the dense encoder, which isn't loaded when
+    # bbconf is initialized with ``init_ml=False`` (CI / BEDHOST_INIT_ML=false).
+    # Return 503 up-front rather than a 500 AttributeError from deep in bbconf.
+    if getattr(bbagent.config, "dense_encoder", None) is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Text search unavailable (ML models disabled)",
+        )
+
     spaceless_query = query.replace(" ", "")
     if len(spaceless_query) == 32 and spaceless_query == query:
         try:
