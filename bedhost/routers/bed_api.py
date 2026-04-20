@@ -31,7 +31,9 @@ from bbconf.models.bed_models import (
     RefGenValidReturnModel,
     RefGenValidModel,
 )
-from fastapi import APIRouter, File, HTTPException, Query, UploadFile, Request
+from bbconf.bbagent import BedBaseAgent
+from bedboss.refgenome_validator.main import ReferenceValidator
+from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, Request
 from fastapi.responses import PlainTextResponse
 from gtars.models import RegionSet
 
@@ -43,7 +45,7 @@ from ..data_models import (
     BedDigest,
     ChromLengthUploadModel,
 )
-from ..main import bbagent, usage_data, ref_validator
+from ..dependencies import get_bbagent, get_ref_validator
 from ..helpers import count_requests, test_query_parameter
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
@@ -55,7 +57,9 @@ router = APIRouter(prefix="/v1/bed", tags=["bed"])
     response_model=BedMetadataAll,
     response_model_by_alias=False,
 )
-async def get_example_bed_record():
+async def get_example_bed_record(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Get metadata for an example BED record.
     """
@@ -81,6 +85,7 @@ async def list_beds(
     bed_compliance: str = Query(
         default=None, description="filter by bed type. e.g. 'bed6+4'"
     ),
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedListResult:
     """
     Returns list of BED files in the database with optional filters.
@@ -98,13 +103,15 @@ async def list_beds(
     response_model_by_alias=False,
     description=f"Example\n " f"bed_id: {EXAMPLE_BED}",
 )
-@count_requests(usage_data, event="bed_meta")
+@count_requests(event="bed_meta")
 async def get_bed_metadata(
+    request: Request,
     bed_id: str = BedDigest,
     full: Optional[bool] = Query(
         False, description="Return full record with stats, plots, files and metadata"
     ),
     test_request: bool = test_query_parameter,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns metadata for a single BED record. if full=True, returns full record with stats, plots, files and metadata.
@@ -114,6 +121,7 @@ async def get_bed_metadata(
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED file not found",
         )
 
 
@@ -125,12 +133,14 @@ async def get_bed_metadata(
 )
 async def get_bed_plots(
     bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return bbagent.bed.get_plots(bed_id)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED plots not found",
         )
 
 
@@ -142,12 +152,14 @@ async def get_bed_plots(
 )
 async def get_bed_files(
     bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return bbagent.bed.get_files(bed_id)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED files not found",
         )
 
 
@@ -159,12 +171,14 @@ async def get_bed_files(
 )
 async def get_bed_stats(
     bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return bbagent.bed.get_stats(bed_id)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED stats not found",
         )
 
 
@@ -177,12 +191,14 @@ async def get_bed_stats(
 )
 async def get_bed_classification(
     bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return bbagent.bed.get_classification(bed_id)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED classification not found",
         )
 
 
@@ -198,12 +214,14 @@ async def get_bed_classification(
 )
 async def get_bed_pephub(
     bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return bbagent.bed.get_raw_metadata(bed_id)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED raw metadata not found",
         )
 
 
@@ -219,12 +237,14 @@ async def get_bed_neighbours(
     bed_id: str = BedDigest,
     limit: int = 10,
     offset: int = 0,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return bbagent.bed.get_neighbours(bed_id, limit=limit, offset=offset)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED neighbours not found",
         )
 
 
@@ -233,7 +253,10 @@ async def get_bed_neighbours(
     summary="Get embeddings for a single BED record",
     response_model=BedEmbeddingResult,
 )
-async def get_bed_embedding(bed_id: str = BedDigest):
+async def get_bed_embedding(
+    bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns embeddings for a single BED record.
     """
@@ -242,6 +265,7 @@ async def get_bed_embedding(bed_id: str = BedDigest):
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
+            detail="BED embedding not found",
         )
 
 
@@ -252,6 +276,7 @@ async def get_bed_embedding(bed_id: str = BedDigest):
 )
 async def embed_bed_file(
     file: UploadFile = File(None),
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Create embedding for bed file
@@ -276,8 +301,9 @@ async def embed_bed_file(
     summary="Get embeddings for a bed file.",
     response_model=List[float],
 )
-async def embed_bed_file(
+async def umap_bed_file(
     file: UploadFile = File(None),
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Create embedding for bed file
@@ -304,6 +330,8 @@ async def embed_bed_file(
 )
 async def analyze_reference_genome(
     chrom_lengths: ChromLengthUploadModel,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+    ref_validator: ReferenceValidator = Depends(get_ref_validator),
 ):
     """
     Provide length of the chromosomes for a reference genome, and
@@ -350,7 +378,10 @@ async def analyze_reference_genome(
     summary="Get missing plots for a bed file.",
     response_model=BaseListResponse,
 )
-async def missing_plots(plot_id: str):
+async def missing_plots(
+    plot_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Get missing plots for a bed file
 
@@ -386,6 +417,7 @@ def get_regions_for_bedfile(
     end: Annotated[
         Optional[str], Query(description="query range: start coordinate")
     ] = None,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns the queried regions with provided ID and optional query parameters
@@ -438,14 +470,16 @@ def get_regions_for_bedfile(
     response_model=BedListSearchResult,
     response_model_by_alias=False,
 )
-@count_requests(usage_data, event="bed_search")
+@count_requests(event="bed_search")
 async def text_to_bed_search(
+    request: Request,
     query: str,
     genome: Optional[Union[str, None]] = None,
     assay: Optional[Union[str, None]] = None,
     limit: int = 10,
     offset: int = 0,
     test_request: bool = test_query_parameter,  # needed for usage tracking in @count_requests
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Search for a BedFile by a text query.
@@ -589,6 +623,7 @@ async def exact_search(
     assay: Optional[Union[str, None]] = None,
     limit: int = 10,
     offset: int = 0,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     return bbagent.bed.sql_search(
         query=query,
@@ -607,7 +642,10 @@ async def exact_search(
     response_model_by_alias=False,
 )
 async def bed_to_bed_search(
-    file: UploadFile = File(None), limit: int = 10, offset: int = 0
+    file: UploadFile = File(None),
+    limit: int = 10,
+    offset: int = 0,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     _LOGGER.info("Searching for bedfiles...")
     print("file size {}", file.size)
@@ -650,7 +688,7 @@ async def bed_to_bed_search(
             )
         return results
 
-    return HTTPException(
+    raise HTTPException(
         status_code=404,
         detail="Error occurred, please make sure file is correct and if issue persists, contact support.",
     )
@@ -664,6 +702,7 @@ async def bed_to_bed_search(
 async def get_tokens(
     bed_id: str,
     universe_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Return univers of bed file
@@ -685,9 +724,10 @@ async def get_tokens(
     summary="Get link to tokenized bed file",
     response_model=TokenizedPathResponse,
 )
-async def get_tokens(
+async def get_tokens_info(
     bed_id: str,
     universe_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Return link to tokenized bed file
@@ -710,6 +750,7 @@ async def get_tokens(
 )
 async def get_ref_gen_results(
     bed_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Return reference genome validation results for a bed file
