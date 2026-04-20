@@ -338,6 +338,12 @@ async def analyze_reference_genome(
     return reference genome validation results for a bed file
     """
 
+    if ref_validator is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Reference validator unavailable (BEDHOST_INIT_ML=false)",
+        )
+
     try:
         genome_aliases = bbagent.get_reference_genomes()
         result = ref_validator.determine_compatibility(
