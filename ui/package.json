@@ -14,7 +14,7 @@
     "deploy:preview": "npm run build && wrangler dev"
   },
   "dependencies": {
-    "@databio/gtars": "^0.5.3",
+    "@databio/gtars": "/home/bnt4me/virginia/repos/gtars/gtars-wasm/pkg",
     "@tanstack/react-query": "^5.28.0",
     "@tanstack/react-query-devtools": "^5.28.0",
     "@tanstack/react-table": "^8.15.3",
