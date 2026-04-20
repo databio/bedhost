@@ -13,9 +13,28 @@ Or manually:
 """
 
 import os
+import signal as _signal_mod
+import threading as _threading_mod
 from pathlib import Path
 
 import pytest
+
+# yacman (pulled in transitively by bbconf/bedhost) registers SIGINT/SIGTERM
+# handlers in YacAttMap.__enter__, which raises ``ValueError: signal only
+# works in main thread of the main interpreter`` under FastAPI TestClient
+# (lifespan runs on an AnyIO worker thread). Swallow those so bbconf can
+# finish loading its config. Tests don't need graceful signal handling.
+_real_signal = _signal_mod.signal
+
+
+def _signal_main_thread_only(signum, handler):
+    try:
+        return _real_signal(signum, handler)
+    except ValueError:
+        return handler
+
+
+_signal_mod.signal = _signal_main_thread_only
 
 
 def pytest_collection_modifyitems(config, items):
