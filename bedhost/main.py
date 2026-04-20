@@ -168,9 +168,7 @@ def render_markdown(filename: str, request: Request):
     with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
         text = input_file.read()
     content = markdown.markdown(text)
-    return templates.TemplateResponse(
-        request, "page.html", {"content": content}
-    )
+    return templates.TemplateResponse(request, "page.html", {"content": content})
 
 
 @app.exception_handler(MissingThumbnailError)
