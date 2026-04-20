@@ -293,3 +293,30 @@ class TestOpenAPIDocumentation:
         data = res.json()
         assert "openapi" in data
         assert "paths" in data
+
+
+@pytest.mark.require_service
+class TestMarkdownAndSchemaPages:
+    """Regression tests for pages that broke under Starlette 1.0."""
+
+    def test_v1_landing_page_returns_200(self, api_root):
+        """GET /v1 (markdown landing page via TemplateResponse) must return 200."""
+        res = requests.get(f"{api_root}/v1", timeout=10, allow_redirects=True)
+        assert res.status_code == 200
+        assert "text/html" in res.headers.get("content-type", "").lower()
+        # Body should be non-empty rendered HTML, not an error page
+        assert len(res.text) > 100
+
+    def test_v1_openapi_json_returns_200(self, api_root):
+        """GET /v1/openapi.json must return valid OpenAPI JSON within a strict timeout."""
+        res = requests.get(f"{api_root}/v1/openapi.json", timeout=10)
+        assert res.status_code == 200
+        data = res.json()
+        assert "openapi" in data
+        assert "paths" in data
+
+    def test_v1_changelog_returns_200(self, api_root):
+        """GET /v1/docs/changelog (markdown rendered via TemplateResponse) must return 200."""
+        res = requests.get(f"{api_root}/v1/docs/changelog", timeout=10, allow_redirects=True)
+        assert res.status_code == 200
+        assert "text/html" in res.headers.get("content-type", "").lower()
