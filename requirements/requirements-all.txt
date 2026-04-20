@@ -1,6 +1,7 @@
 # bbconf @ git+https://github.com/databio/bbconf.git@dev#egg=bbconf
 bbconf>=0.14.11
 fastapi>=0.103.0
+sentence_transformers>=5.0
 logmuse>=0.2.7
 markdown
 requests
