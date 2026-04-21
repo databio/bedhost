@@ -14,4 +14,5 @@ python-multipart>=0.0.9
 APScheduler>=3.11.0
 cachetools>=4.2.4
 bedboss>=0.8.6
+Pillow>=10.0.0
 #bedboss @ git+https://github.com/databio/bedboss.git@dev#egg=bedboss
