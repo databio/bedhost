@@ -81,7 +81,7 @@ async def get_genomes_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
-    Returns statistics
+    Returns available genomes
     """
     genomes = bbagent.get_list_genomes()
     return BaseListResponse(
@@ -101,7 +101,7 @@ async def get_assays_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
-    Returns statistics
+    Returns available assays
     """
     genomes = bbagent.get_list_assays()
     return BaseListResponse(
