@@ -148,7 +148,11 @@ async def get_bed_og_image(bed_id: str = BedDigest):
         number_of_regions=getattr(stats, "number_of_regions", None) if stats else None,
         mean_region_width=getattr(stats, "mean_region_width", None) if stats else None,
     )
-    return Response(content=png, media_type="image/png", headers={"Cache-Control": "public, max-age=86400"})
+    return Response(
+        content=png,
+        media_type="image/png",
+        headers={"Cache-Control": "public, max-age=86400"},
+    )
 
 
 @router.get(
