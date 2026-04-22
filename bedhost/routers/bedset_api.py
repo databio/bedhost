@@ -1,5 +1,6 @@
 import logging
 
+from bbconf.bbagent import BedBaseAgent
 from bbconf.exceptions import BedSetNotFoundError, BedSetTrackHubLimitError
 from bbconf.models.bedset_models import (
     BedSetBedFiles,
@@ -9,11 +10,11 @@ from bbconf.models.bedset_models import (
     BedSetStats,
 )
 from pephubclient.helpers import is_registry_path, unwrap_registry_path
-from fastapi import APIRouter, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 
 from ..const import EXAMPLE_BEDSET, PKG_NAME
-from ..main import bbagent, usage_data
 from ..data_models import CreateBEDsetRequest
+from ..dependencies import get_bbagent
 from ..utils import zip_pep
 from ..helpers import count_requests, test_query_parameter
 
@@ -28,7 +29,9 @@ _LOGGER = logging.getLogger(PKG_NAME)
     response_model=BedSetMetadata,
     response_model_by_alias=False,
 )
-async def get_example_bedset_record():
+async def get_example_bedset_record(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     result = bbagent.bedset.get_ids_list(limit=1).results
     if result:
         return bbagent.bedset.get(result[0].id, full=True)
@@ -41,12 +44,14 @@ async def get_example_bedset_record():
     tags=["search"],
     response_model=BedSetListResult,
 )
-@count_requests(usage_data, event="bedset_search")
+@count_requests(event="bedset_search")
 async def list_bedsets(
+    request: Request,
     query: str = None,
     limit: int = 1000,
     offset: int = 0,
     test_request: bool = test_query_parameter,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns a list of BEDset records in the database with optional filters and search.
@@ -61,11 +66,13 @@ async def list_bedsets(
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
     response_model_by_alias=False,
 )
-@count_requests(usage_data, event="bedset_meta")
+@count_requests(event="bedset_meta")
 async def get_bedset_metadata(
+    request: Request,
     bedset_id: str,
     full: bool = True,
     test_request: bool = test_query_parameter,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     # TODO: fix error with not found
     try:
@@ -81,6 +88,7 @@ async def get_bedset_metadata(
 )
 async def get_bedset_pep(
     bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return zip_pep(bbagent.bedset.get_bedset_pep(bedset_id))
@@ -94,8 +102,9 @@ async def get_bedset_pep(
     summary="Get plots for single bedset record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_metadata(
+async def get_bedset_plots_handler(
     bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns metadata from selected columns for selected bedset
@@ -112,8 +121,9 @@ async def get_bedset_metadata(
     summary="Get stats for a single BEDSET record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_metadata(
+async def get_bedset_stats_handler(
     bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return bbagent.bedset.get_statistics(bedset_id)
@@ -129,13 +139,18 @@ async def get_bedset_metadata(
 )
 async def get_bedfiles_in_bedset(
     bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     return bbagent.bedset.get_bedset_bedfiles(bedset_id)
 
 
 @router.head("/{bedset_id}/track_hub")
 @router.get("/{bedset_id}/track_hub")
-async def get_track_hub_bedset(request: Request, bedset_id: str):
+async def get_track_hub_bedset(
+    request: Request,
+    bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Generate track hub files for the BED set
     """
@@ -172,7 +187,10 @@ async def get_genomes_file_bedset(request: Request, bedset_id: str):
 
 @router.head("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
 @router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
-async def get_trackDb_file_bedset(bedset_id: str):
+async def get_trackDb_file_bedset(
+    bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Generate trackDb file for the BED set track hub
     """
@@ -200,7 +218,10 @@ async def get_trackDb_file_bedset(bedset_id: str):
     "/create",
     description="Create a new bedset by providing registry path to the PEPhub project",
 )
-async def create_bedset(bedset: CreateBEDsetRequest):
+async def create_bedset(
+    bedset: CreateBEDsetRequest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Create a new bedset
     """

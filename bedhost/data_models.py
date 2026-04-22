@@ -20,7 +20,7 @@ ex_chr = "chr1"
 BedDigest = Path(
     ...,
     description="BED digest",
-    regex=r"^\w+$",
+    pattern=r"^\w+$",
     max_length=32,
     min_length=32,
     # example=ex_bed_digest,
@@ -29,8 +29,8 @@ BedDigest = Path(
 CROM_NUMBERS = Path(
     ...,
     description="Chromosome number",
-    regex=r"^\S+$",
-    example=ex_chr,
+    pattern=r"^\S+$",
+    examples=[ex_chr],
 )
 
 

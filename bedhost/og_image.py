@@ -22,14 +22,21 @@ def _font(name: str, size: int) -> ImageFont.FreeTypeFont:
         return ImageFont.load_default()
 
 
-def _centered_x(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont) -> int:
+def _centered_x(
+    draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont
+) -> int:
     return (_W - int(draw.textlength(text, font=font))) // 2
 
 
 def _draw_stat_card(draw: ImageDraw.ImageDraw, x: int, y: int, label: str, value: str):
     w, h = 250, 115
     draw.rounded_rectangle([x, y, x + w, y + h], radius=12, fill=_LIGHT_GRAY)
-    draw.text((x + 18, y + 14), label.upper(), font=_font("Roboto-Regular.ttf", 21), fill=_GRAY)
+    draw.text(
+        (x + 18, y + 14),
+        label.upper(),
+        font=_font("Roboto-Regular.ttf", 21),
+        fill=_GRAY,
+    )
     draw.text((x + 18, y + 50), value, font=_font("Roboto-Bold.ttf", 36), fill=_DARK)
 
 

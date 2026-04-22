@@ -6,8 +6,10 @@ except ImportError:
 
 from platform import python_version
 from bbconf import __version__ as bbconf_version
+from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Depends, Request
+from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
 
 from .._version import __version__ as bedhost_version
@@ -19,12 +21,10 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
-from ..dependencies import fetch_detailed_stats
+from ..dependencies import fetch_detailed_stats, get_bbagent
 from ..helpers import get_openapi_version, count_requests, test_query_parameter
-from ..main import app, bbagent, usage_data
 
 router = APIRouter(prefix="/v1", tags=["base"])
-from fastapi.responses import RedirectResponse
 
 packages_versions = {}
 
@@ -34,7 +34,9 @@ packages_versions = {}
     summary="Get summary statistics for BEDbase platform",
     response_model=StatsReturn,
 )
-async def get_bedbase_db_stats():
+async def get_bedbase_db_stats(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns statistics
     """
@@ -48,11 +50,12 @@ async def get_bedbase_db_stats():
 )
 async def get_detailed_stats(
     concise: bool = False,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns detailed statistics
     """
-    return fetch_detailed_stats(concise=concise)
+    return fetch_detailed_stats(bbagent, concise=concise)
 
 
 @router.get(
@@ -60,7 +63,9 @@ async def get_detailed_stats(
     summary="Get detailed usage statistics for BEDbase platform",
     response_model=UsageStats,
 )
-async def get_detailed_usage():
+async def get_detailed_usage(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns detailed usage statistics
     """
@@ -72,7 +77,9 @@ async def get_detailed_usage():
     summary="Get available genomes",
     response_model=BaseListResponse,
 )
-async def get_bedbase_db_stats():
+async def get_genomes_list(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns statistics
     """
@@ -90,7 +97,9 @@ async def get_bedbase_db_stats():
     summary="Get available assays",
     response_model=BaseListResponse,
 )
-async def get_bedbase_db_stats():
+async def get_assays_list(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns statistics
     """
@@ -106,7 +115,10 @@ async def get_bedbase_db_stats():
 @router.get(
     "/service-info", summary="GA4GH service info", response_model=ServiceInfoResponse
 )
-async def service_info():
+async def service_info(
+    request: Request,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns information about this service, such as versions, name, etc.
     """
@@ -115,7 +127,7 @@ async def service_info():
         bbconf_version=bbconf_version,
         geniml_version=geniml_version,
         python_version=python_version(),
-        openapi_version=get_openapi_version(app),
+        openapi_version=get_openapi_version(request.app),
     )
 
     return ServiceInfoResponse(
@@ -142,9 +154,11 @@ async def service_info():
 
 
 @router.get("/files/{file_path:path}")
-@count_requests(usage_data, event="files")
+@count_requests(event="files")
 async def redirect_to_download(
-    file_path: str, request: Request, test_request: bool = test_query_parameter
+    file_path: str,
+    request: Request,
+    test_request: bool = test_query_parameter,
 ):
     download_url = f"https://data2.bedbase.org/{file_path}"
     return RedirectResponse(url=download_url)
