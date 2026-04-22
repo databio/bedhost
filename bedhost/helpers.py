@@ -66,10 +66,15 @@ def attach_routers(app):
 
 
 def configure(bbconf_file_path: str) -> BedBaseAgent:
+    # Respect BEDHOST_INIT_ML for CI/smoke deployments that don't need the
+    # ML models (dense/sparse encoders, UMAP, region2vec) loaded. Default
+    # is to initialize them (unchanged behavior for production).
+    init_ml_env = os.environ.get("BEDHOST_INIT_ML", "true").lower()
+    init_ml = init_ml_env not in ("0", "false", "no")
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        _LOGGER.info(f"Loading config: '{bbconf_file_path}'")
-        bbc = BedBaseAgent(bbconf_file_path)
+        _LOGGER.info(f"Loading config: '{bbconf_file_path}' (init_ml={init_ml})")
+        bbc = BedBaseAgent(bbconf_file_path, init_ml=init_ml)
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
     return bbc
@@ -125,17 +130,23 @@ def count_requests(
                     else:
                         usage_data.files[file_path] = 1
             elif event == "bed_search":
-                query = kwargs.get("query").strip()
-                if query in usage_data.bed_search:
-                    usage_data.bed_search[query] += 1
-                else:
-                    usage_data.bed_search[query] = 1
+                raw_query = kwargs.get("query")
+                # /v1/bedset/list accepts query=None; skip usage tracking in
+                # that case rather than crashing on ``None.strip()``.
+                if raw_query is not None:
+                    query = raw_query.strip()
+                    if query in usage_data.bed_search:
+                        usage_data.bed_search[query] += 1
+                    else:
+                        usage_data.bed_search[query] = 1
             elif event == "bedset_search":
-                query = kwargs.get("query").strip()
-                if query in usage_data.bedset_search:
-                    usage_data.bedset_search[query] += 1
-                else:
-                    usage_data.bedset_search[query] = 1
+                raw_query = kwargs.get("query")
+                if raw_query is not None:
+                    query = raw_query.strip()
+                    if query in usage_data.bedset_search:
+                        usage_data.bedset_search[query] += 1
+                    else:
+                        usage_data.bedset_search[query] = 1
             elif event == "bed_meta":
                 bed_id = kwargs.get("bed_id")
                 if bed_id in usage_data.bed_meta:

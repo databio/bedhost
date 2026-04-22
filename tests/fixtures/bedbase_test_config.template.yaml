@@ -1,0 +1,21 @@
+database:
+  host: localhost
+  port: {DB_PORT}
+  user: testuser
+  password: testpass
+  database: bedbase_test
+  dialect: postgresql
+  driver: psycopg
+qdrant:
+  host: http://localhost
+  port: {QDRANT_PORT}
+  file_collection: bedbase_test
+  text_collection: bed_text_test
+  hybrid_collection: bedbase_query_search_test
+server:
+  host: 0.0.0.0
+  port: 8000
+path:
+  region2vec: databio/r2v_encoder-ChIP-atlas-hg38
+  text2vec: sentence-transformers/all-MiniLM-L6-v2
+  sparse_model: prithivida/Splade_PP_en_v2

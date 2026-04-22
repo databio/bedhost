@@ -14,7 +14,7 @@ from bbconf.exceptions import (
 )
 from bedboss.refgenome_validator.main import ReferenceValidator
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -117,6 +117,7 @@ app = FastAPI(
     description="BED file/sets statistics and image server API",
     version=bedhost_version,
     docs_url="/v1/docs",
+    openapi_url="/v1/openapi.json",
     openapi_tags=tags_metadata,
     lifespan=lifespan,
 )
@@ -165,8 +166,14 @@ def lending_page():
 
 
 def render_markdown(filename: str, request: Request):
-    with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
-        text = input_file.read()
+    path = os.path.join(STATIC_PATH, filename)
+    try:
+        with open(path, "r", encoding="utf-8") as input_file:
+            text = input_file.read()
+    except FileNotFoundError:
+        # e.g. docs/changelog.md was removed from the repo in 2024 but the
+        # route is still registered. Return 404 rather than a 500.
+        raise HTTPException(status_code=404, detail=f"{filename} not found")
     content = markdown.markdown(text)
     return templates.TemplateResponse(request, "page.html", {"content": content})
 
