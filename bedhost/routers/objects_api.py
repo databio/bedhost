@@ -6,11 +6,12 @@ except ImportError:
 
 from urllib.parse import urlparse
 
+from bbconf.bbagent import BedBaseAgent
 from bbconf.models.drs_models import DRSModel
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 
+from ..dependencies import get_bbagent
 from ..helpers import serve_file
-from ..main import bbagent
 
 router = APIRouter(prefix="/v1/objects", tags=["objects"])
 
@@ -20,7 +21,11 @@ router = APIRouter(prefix="/v1/objects", tags=["objects"])
     summary="Get DRS object metadata",
     response_model=DRSModel,
 )
-async def get_drs_object_metadata(object_id: str, req: Request):
+async def get_drs_object_metadata(
+    object_id: str,
+    req: Request,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns metadata about a DrsObject.
     """
@@ -36,7 +41,11 @@ async def get_drs_object_metadata(object_id: str, req: Request):
     summary="Get URL where you can retrieve files",
     response_model=str,
 )
-async def get_object_bytes_url(object_id: str, access_id: str):
+async def get_object_bytes_url(
+    object_id: str,
+    access_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns a URL that can be used to fetch the bytes of a DrsObject.
     """
@@ -54,7 +63,11 @@ async def get_object_bytes_url(object_id: str, access_id: str):
     summary="Download actual file",
     response_model=bytes,
 )
-async def get_object_bytes(object_id: str, access_id: str):
+async def get_object_bytes(
+    object_id: str,
+    access_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns the bytes of a DrsObject.
     """
@@ -71,7 +84,11 @@ async def get_object_bytes(object_id: str, access_id: str):
     summary="Download thumbnail file",
     response_model=bytes,
 )
-async def get_object_thumbnail(object_id: str, access_id: str):
+async def get_object_thumbnail(
+    object_id: str,
+    access_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Returns the bytes of a thumbnail of a DrsObject
     """

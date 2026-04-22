@@ -5,8 +5,8 @@ from typing import Literal
 import datetime
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import UsageModel
-from starlette.responses import FileResponse, JSONResponse, RedirectResponse
-from fastapi import Query
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
+from fastapi import Query, Request
 
 from . import _LOGGER
 from .exceptions import BedHostException
@@ -89,13 +89,14 @@ test_query_parameter = Query(
 
 
 def count_requests(
-    usage_data: UsageModel,
     event: Literal["bed_search", "bedset_search", "bed_meta", "bedset_meta", "files"],
 ):
     """
-    Decorator to count requests for different events
+    Decorator to count requests for different events.
 
-    :param UsageModel usage_data: usage data model
+    The wrapped endpoint must accept ``request: Request``; the usage data model
+    is read from ``request.app.state.usage_data`` per-request.
+
     :param str event: event type
     """
 
@@ -109,6 +110,13 @@ def count_requests(
                     f"Test request was executed. For '{event}' event with: {args}, {kwargs}. No results saved."
                 )
                 return function_result
+            request = kwargs.get("request")
+            if request is None:
+                raise RuntimeError(
+                    f"count_requests decorator requires the wrapped endpoint "
+                    f"'{func.__name__}' to accept a 'request: Request' parameter."
+                )
+            usage_data: UsageModel = request.app.state.usage_data
             if event == "files":
                 file_path = kwargs.get("file_path")
                 if "bed" in file_path or "bigbed" in file_path.lower():
@@ -159,3 +167,30 @@ def init_model_usage():
         files={},
         date_from=datetime.datetime.now(),
     )
+
+
+def upload_usage(bbagent: BedBaseAgent, usage_data: UsageModel) -> None:
+    """
+    Upload usage data to the database and reset the usage data in place.
+
+    :param BedBaseAgent bbagent: the bbconf agent used to persist usage records
+    :param UsageModel usage_data: the live usage model to flush and reset
+    """
+    from .const import USAGE_RECORD_DAYS
+
+    _LOGGER.info("Running uploading of the usage")
+    usage_data.date_to = datetime.datetime.now() + datetime.timedelta(
+        days=USAGE_RECORD_DAYS
+    )
+    try:
+        bbagent.add_usage(usage_data)
+    except Exception as e:
+        _LOGGER.error(f"Error while uploading usage data: {e}")
+
+    usage_data.bed_meta = {}
+    usage_data.bedset_meta = {}
+    usage_data.bed_search = {}
+    usage_data.bedset_search = {}
+    usage_data.files = {}
+    usage_data.date_from = datetime.datetime.now()
+    usage_data.date_to = None
