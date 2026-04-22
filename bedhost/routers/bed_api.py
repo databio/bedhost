@@ -132,7 +132,10 @@ async def get_bed_metadata(
     responses={200: {"content": {"image/png": {}}}},
     description=f"Returns a 1200x630 PNG card with stats for link previews. Example bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_og_image(bed_id: str = BedDigest):
+async def get_bed_og_image(
+    bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     from ..og_image import generate_bed_og_image
 
     try:
