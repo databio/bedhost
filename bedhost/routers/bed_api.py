@@ -305,7 +305,7 @@ async def get_bed_embedding(
     response_model=List[float],
 )
 async def embed_bed_file(
-    file: UploadFile = File(None),
+    file: UploadFile = File(...),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
