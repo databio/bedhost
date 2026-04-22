@@ -1,9 +1,11 @@
 import os
 import sys
-import datetime
+from contextlib import asynccontextmanager
+from pathlib import Path
 
 import markdown
 import uvicorn
+from apscheduler.schedulers.background import BackgroundScheduler
 from bbconf.exceptions import (
     BEDFileNotFoundError,
     BedSetNotFoundError,
@@ -20,9 +22,14 @@ from fastapi.templating import Jinja2Templates
 from . import _LOGGER
 from ._version import __version__ as bedhost_version
 from .cli import build_parser
-from .const import PKG_NAME, STATIC_PATH, USAGE_SAVE_HOURS, USAGE_RECORD_DAYS
-from .helpers import attach_routers, configure, drs_response, init_model_usage
-from apscheduler.schedulers.background import BackgroundScheduler
+from .const import PKG_NAME, STATIC_PATH, USAGE_SAVE_HOURS
+from .helpers import (
+    attach_routers,
+    configure,
+    drs_response,
+    init_model_usage,
+    upload_usage,
+)
 
 tags_metadata = [
     {
@@ -51,12 +58,67 @@ tags_metadata = [
     },
 ]
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """
+    Application lifespan handler.
+
+    Startup:
+      - Read BEDBASE_CONFIG from env (raise EnvironmentError if missing).
+      - Build the BedBaseAgent, UsageModel, and ReferenceValidator.
+      - Stash them on app.state for dependency injection.
+      - Start the BackgroundScheduler that periodically flushes usage data.
+
+    Shutdown:
+      - Stop the scheduler so it does not leak across reloads.
+    """
+    bbconf_file_path = os.environ.get("BEDBASE_CONFIG")
+    if not bbconf_file_path:
+        raise EnvironmentError(
+            "No BEDBASE_CONFIG found. Can't configure server. "
+            "Check documentation to create config file"
+        )
+
+    _LOGGER.info(f"Running {PKG_NAME} app...")
+    app.state.bbagent = configure(bbconf_file_path)
+    app.state.usage_data = init_model_usage()
+
+    # Respect BEDHOST_INIT_ML for CI/smoke deployments that don't need the
+    # reference genome validator loaded. Default is to initialize it.
+    init_ml_env = os.environ.get("BEDHOST_INIT_ML", "true").lower()
+    if init_ml_env in ("0", "false", "no"):
+        _LOGGER.info(
+            "BEDHOST_INIT_ML=false; skipping ReferenceValidator initialization."
+        )
+        app.state.ref_validator = None
+    else:
+        _LOGGER.info("Initializing reference genome validator...")
+        app.state.ref_validator = ReferenceValidator()
+
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(
+        upload_usage,
+        "interval",
+        hours=USAGE_SAVE_HOURS,
+        args=(app.state.bbagent, app.state.usage_data),
+    )
+    scheduler.start()
+    app.state.scheduler = scheduler
+
+    try:
+        yield
+    finally:
+        app.state.scheduler.shutdown(wait=False)
+
+
 app = FastAPI(
     title=PKG_NAME,
     description="BED file/sets statistics and image server API",
     version=bedhost_version,
     docs_url="/v1/docs",
     openapi_tags=tags_metadata,
+    lifespan=lifespan,
 )
 
 origins = [
@@ -75,7 +137,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory="bedhost/templates")
+templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 templates.env.autoescape = False
 
 
@@ -106,9 +168,7 @@ def render_markdown(filename: str, request: Request):
     with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
         text = input_file.read()
     content = markdown.markdown(text)
-    return templates.TemplateResponse(
-        "page.html", {"request": request, "content": content}
-    )
+    return templates.TemplateResponse(request, "page.html", {"content": content})
 
 
 @app.exception_handler(MissingThumbnailError)
@@ -127,8 +187,14 @@ async def exc_handler_BedSetNotFoundError(req: Request, exc: BedSetNotFoundError
 
 
 @app.exception_handler(MissingObjectError)
-async def exc_handler_BedSetNotFoundError(req: Request, exc: MissingObjectError):
+async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
     return drs_response(404, "Object not found.")
+
+
+# Router endpoints use Depends() to resolve bbagent/usage_data/ref_validator
+# from app.state at request time, so attaching at module import is safe
+# regardless of lifespan ordering.
+attach_routers(app)
 
 
 def main():
@@ -140,71 +206,19 @@ def main():
         sys.exit(1)
 
     if args.command == "serve":
-        _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = args.config or os.environ.get("BEDBASE_CONFIG") or None
+        if bbconf_file_path:
+            os.environ["BEDBASE_CONFIG"] = bbconf_file_path
 
-        global bbagent
+        # Load config once just to pull host/port out. Lifespan will rebuild
+        # the agent in the uvicorn worker process.
         bbagent = configure(bbconf_file_path)
+        host = bbagent.config.config.server.host
+        port = bbagent.config.config.server.port
 
-        _LOGGER.info("Initializing reference genome validator...")
-        global ref_validator
-        ref_validator = ReferenceValidator()
-
-        attach_routers(app)
+        _LOGGER.info(f"Running {PKG_NAME} app on {host}:{port}...")
         uvicorn.run(
-            app,
-            host=bbagent.config.config.server.host,
-            port=bbagent.config.config.server.port,
-        )
-
-
-if __name__ != "__main__":
-    if os.environ.get("BEDBASE_CONFIG"):
-        import logging
-
-        _LOGGER.setLevel(logging.DEBUG)
-        _LOGGER.info(f"Running {PKG_NAME} app...")
-        bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        global bbagent
-        global usage_data
-        global ref_validator
-
-        bbagent = configure(
-            bbconf_file_path
-        )  # configure before attaching routers to avoid circular imports
-        usage_data = init_model_usage()
-
-        ref_validator = ReferenceValidator()
-
-        scheduler = BackgroundScheduler()
-
-        def upload_usage():
-            """
-            Upload usage data to the database and reset the usage data
-            """
-
-            _LOGGER.info("Running uploading of the usage")
-            usage_data.date_to = datetime.datetime.now() + datetime.timedelta(
-                days=USAGE_RECORD_DAYS
-            )
-            try:
-                bbagent.add_usage(usage_data)
-            except Exception as e:
-                _LOGGER.error(f"Error while uploading usage data: {e}")
-
-            usage_data.bed_meta = {}
-            usage_data.bedset_meta = {}
-            usage_data.bed_search = {}
-            usage_data.bedset_search = {}
-            usage_data.files = {}
-            usage_data.date_from = datetime.datetime.now()
-            usage_data.date_to = None
-
-        scheduler.add_job(upload_usage, "interval", hours=USAGE_SAVE_HOURS)
-        scheduler.start()
-
-        attach_routers(app)
-    else:
-        raise EnvironmentError(
-            "No BEDBASE_CONFIG found. Can't configure server. Check documentation to create config file"
+            "bedhost.main:app",
+            host=host,
+            port=port,
         )
