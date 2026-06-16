@@ -1,0 +1,48 @@
+name: Deploy UI to Cloudflare Workers
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - 'ui/**'
+  workflow_dispatch:
+    inputs: null
+
+jobs:
+  deploy:
+    name: Build and deploy ui/ to Cloudflare Workers
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ui
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # NOTE: ui/ currently has NO committed package-lock.json, so `npm ci`
+      # (and npm caching keyed on the lockfile) cannot be used yet. Commit a
+      # ui/package-lock.json and then switch this to `npm ci` + enable
+      # `cache: npm` / `cache-dependency-path: ui/package-lock.json` above.
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        env:
+          # Production BEDbase API base. The app reads import.meta.env.VITE_API_BASE
+          # at build time (see ui/src/vite-env.d.ts, ui/src/const.ts).
+          VITE_API_BASE: https://api.bedbase.org/v1
+        run: npm run build
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: ui
+          command: deploy
