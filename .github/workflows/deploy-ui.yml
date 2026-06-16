@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: deploy-ui
+  cancel-in-progress: true
+
 jobs:
   deploy:
     name: Build and deploy ui/ to Cloudflare Workers
