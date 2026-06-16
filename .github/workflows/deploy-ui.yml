@@ -9,6 +9,9 @@ on:
   workflow_dispatch:
     inputs: null
 
+permissions:
+  contents: read
+
 jobs:
   deploy:
     name: Build and deploy ui/ to Cloudflare Workers
