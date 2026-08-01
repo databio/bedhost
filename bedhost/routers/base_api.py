@@ -1,3 +1,4 @@
+
 try:
     from typing import Annotated, Any, Dict, List, Optional
 except ImportError:
@@ -48,7 +49,7 @@ async def get_bedbase_db_stats(
     summary="Get detailed statistics for BEDbase platform, including number of files for each genome",
     response_model=FileStats,
 )
-async def get_detailed_stats(
+def get_detailed_stats(
     concise: bool = False,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
