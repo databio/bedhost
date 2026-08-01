@@ -16,6 +16,8 @@ const CRAWLER_USER_AGENTS = [
 const API_BASE = 'https://api.bedbase.org/v1';
 const SITE_URL = 'https://bedbase.org';
 const OG_IMAGE = `${SITE_URL}/bedbase_web_preview.png`;
+const API_OG_IMAGE = (type: 'bed' | 'bedset', id: string) =>
+  `${API_BASE}/${type}/${id}/og-image`;
 
 interface Env {
   ASSETS: Fetcher;
@@ -152,7 +154,7 @@ export default {
           title,
           description: buildBedDescription(meta),
           url: `${SITE_URL}/bed/${id}`,
-          image: OG_IMAGE,
+          image: API_OG_IMAGE('bed', id),
         });
         return new Response(html, {
           headers: { 'Content-Type': 'text/html; charset=utf-8' },
@@ -176,6 +178,7 @@ export default {
           url: `${SITE_URL}/bedset/${id}`,
           image: OG_IMAGE,
         });
+        // Note: bedsets use the static logo since there's no per-bedset og-image endpoint yet
         return new Response(html, {
           headers: { 'Content-Type': 'text/html; charset=utf-8' },
         });
