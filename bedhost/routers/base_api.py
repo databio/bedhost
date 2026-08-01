@@ -50,13 +50,14 @@ async def get_bedbase_db_stats(
     response_model=FileStats,
 )
 def get_detailed_stats(
+    request: Request,
     concise: bool = False,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns detailed statistics
     """
-    return fetch_detailed_stats(bbagent, concise=concise)
+    return fetch_detailed_stats(request, bbagent=bbagent, concise=concise)
 
 
 @router.get(

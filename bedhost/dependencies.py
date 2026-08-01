@@ -1,19 +1,16 @@
 from statistics import StatisticsError
-from cachetools import TTLCache
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import BinValues, FileStats, GEOStatistics, UsageModel
 from bedboss.refgenome_validator.main import ReferenceValidator
 from fastapi import Request
-
-_stats_cache: TTLCache = TTLCache(maxsize=2, ttl=14 * 24 * 60 * 60)
-
+from . import _LOGGER
 
 def get_bbagent(request: Request) -> BedBaseAgent:
     return request.app.state.bbagent
 
 
-def get_usage_data(request: Request) -> UsageModel:
-    return request.app.state.usage_data
+# def get_usage_data(request: Request) -> UsageModel:
+#     return request.app.state.usage_data
 
 
 def get_ref_validator(request: Request) -> ReferenceValidator:
@@ -52,14 +49,15 @@ def _empty_file_stats() -> FileStats:
     )
 
 
-def fetch_detailed_stats(bbagent: BedBaseAgent, concise: bool = False) -> FileStats:
+def fetch_detailed_stats(request: Request, bbagent: BedBaseAgent, concise: bool = False) -> FileStats:
     """
     Fetch detailed file statistics from the BedBaseAgent.
     """
-    try:
-        return bbagent.get_detailed_stats(concise=concise)
-    except StatisticsError:
-        return _empty_file_stats()
-    #     if concise not in _stats_cache:
-    #         _stats_cache[concise] = bbagent.get_detailed_stats(concise=concise)
-    #     return _stats_cache[concise]
+
+    if concise not in request.app.state.detailed_stats:
+        _LOGGER.info("Stats are not cached, fetching...")
+        try:
+            request.app.state.detailed_stats[concise] = bbagent.get_detailed_stats(concise=concise)
+        except StatisticsError:
+            return _empty_file_stats()
+    return request.app.state.detailed_stats[concise]
