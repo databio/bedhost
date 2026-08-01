@@ -29,7 +29,7 @@ export const SearchBedSetResultCards = (props: Props) => {
                 {showBEDCount && (
                   <div className='d-flex align-items-center text-sm ms-2'>
                     <span className='badge bg-secondary fw-medium'>
-                      {result?.bed_ids?.length || 0} BED files
+                      {result?.bedfile_count || 0} BED files
                     </span>
                   </div>
                 )}
