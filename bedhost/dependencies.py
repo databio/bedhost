@@ -5,6 +5,7 @@ from bedboss.refgenome_validator.main import ReferenceValidator
 from fastapi import Request
 from . import _LOGGER
 
+
 def get_bbagent(request: Request) -> BedBaseAgent:
     return request.app.state.bbagent
 
@@ -49,7 +50,9 @@ def _empty_file_stats() -> FileStats:
     )
 
 
-def fetch_detailed_stats(request: Request, bbagent: BedBaseAgent, concise: bool = False) -> FileStats:
+def fetch_detailed_stats(
+    request: Request, bbagent: BedBaseAgent, concise: bool = False
+) -> FileStats:
     """
     Fetch detailed file statistics from the BedBaseAgent.
     """
@@ -57,7 +60,9 @@ def fetch_detailed_stats(request: Request, bbagent: BedBaseAgent, concise: bool 
     if concise not in request.app.state.detailed_stats:
         _LOGGER.info("Stats are not cached, fetching...")
         try:
-            request.app.state.detailed_stats[concise] = bbagent.get_detailed_stats(concise=concise)
+            request.app.state.detailed_stats[concise] = bbagent.get_detailed_stats(
+                concise=concise
+            )
         except StatisticsError:
             return _empty_file_stats()
     return request.app.state.detailed_stats[concise]

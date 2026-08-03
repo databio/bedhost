@@ -101,7 +101,7 @@ async def list_beds(
     summary="Get metadata for a single BED record",
     response_model=BedMetadataAll,
     response_model_by_alias=False,
-    description=f"Example\n " f"bed_id: {EXAMPLE_BED}",
+    description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 @count_requests(event="bed_meta")
 async def get_bed_metadata(
