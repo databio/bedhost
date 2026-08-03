@@ -43,7 +43,13 @@ from fastapi.responses import PlainTextResponse
 from gtars.models import RegionSet
 
 from .. import _LOGGER
-from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WIDTH
+from ..const import (
+    EXAMPLE_BED,
+    EXPORTS_URL_BASE,
+    MAX_FILE_SIZE,
+    MAX_REGION_NUMBER,
+    MIN_REGION_WIDTH,
+)
 from ..data_models import (
     CROM_NUMBERS,
     BaseListResponse,
@@ -111,18 +117,14 @@ def get_bed_exports(
 ) -> BedSnapshotListResult:
     """
     Return the index of bulk metadata export artifacts published to S3, newest
-    first. ``file_path`` is rewritten to an absolute HTTPS URL. Consumers should
-    resolve the current snapshot through this endpoint rather than constructing
-    or hardcoding a filename, since artifacts are dated and immutable.
+    first. ``file_path`` is rewritten to the absolute HTTPS CDN URL. Consumers
+    should resolve the current snapshot through this endpoint rather than
+    constructing or hardcoding a filename, since artifacts are dated and
+    immutable.
 
     Declared ``def`` (not ``async def``) so the blocking database query runs in a
     threadpool instead of stalling the event loop.
     """
-    try:
-        prefix = bbagent.config.config.access_methods.http.prefix
-    except AttributeError:
-        prefix = "https://data2.bedbase.org/"
-
     with Session(bbagent.config.db_engine.engine) as session:
         rows = session.scalars(
             select(BedSnapshot).order_by(
@@ -132,7 +134,7 @@ def get_bed_exports(
 
     results = [
         BedSnapshotResult(
-            file_path=os.path.join(prefix, row.file_path),
+            file_path=os.path.join(EXPORTS_URL_BASE, row.file_path),
             file_type=row.file_type,
             creation_date=row.creation_date,
             record_count=row.record_count,
