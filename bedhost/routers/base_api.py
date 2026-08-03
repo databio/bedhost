@@ -48,14 +48,15 @@ async def get_bedbase_db_stats(
     summary="Get detailed statistics for BEDbase platform, including number of files for each genome",
     response_model=FileStats,
 )
-async def get_detailed_stats(
+def get_detailed_stats(
+    request: Request,
     concise: bool = False,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns detailed statistics
     """
-    return fetch_detailed_stats(bbagent, concise=concise)
+    return fetch_detailed_stats(request, bbagent=bbagent, concise=concise)
 
 
 @router.get(
@@ -81,7 +82,7 @@ async def get_genomes_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
-    Returns statistics
+    Returns available genomes
     """
     genomes = bbagent.get_list_genomes()
     return BaseListResponse(
@@ -101,7 +102,7 @@ async def get_assays_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
-    Returns statistics
+    Returns available assays
     """
     genomes = bbagent.get_list_assays()
     return BaseListResponse(

@@ -14,9 +14,12 @@ from bbconf.exceptions import (
 )
 from bedboss.refgenome_validator.main import ReferenceValidator
 
+from cachetools import TTLCache
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import _LOGGER
@@ -84,6 +87,8 @@ async def lifespan(app: FastAPI):
     app.state.bbagent = configure(bbconf_file_path)
     app.state.usage_data = init_model_usage()
 
+    app.state.detailed_stats: TTLCache = TTLCache(maxsize=2, ttl=14 * 24 * 60 * 60)
+
     # Respect BEDHOST_INIT_ML for CI/smoke deployments that don't need the
     # reference genome validator loaded. Default is to initialize it.
     init_ml_env = os.environ.get("BEDHOST_INIT_ML", "true").lower()
@@ -107,6 +112,7 @@ async def lifespan(app: FastAPI):
     app.state.scheduler = scheduler
 
     try:
+        _LOGGER.info("Starting app ...")
         yield
     finally:
         app.state.scheduler.shutdown(wait=False)
@@ -138,6 +144,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.mount(
+    "/static",
+    StaticFiles(directory=str(Path(__file__).parent / "static")),
+    name="static",
+)
+
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 templates.env.autoescape = False
 
@@ -161,7 +173,7 @@ async def changelog(request: Request):
 
 
 @app.get("/")
-def lending_page():
+def landing_page():
     return RedirectResponse(url="v1/")
 
 
