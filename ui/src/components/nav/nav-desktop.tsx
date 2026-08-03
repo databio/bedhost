@@ -26,6 +26,12 @@ export const NavDesktop = () => {
         </a>
       </li>
       <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
+        <a className='nav-link' href='/downloads'>
+          <i className='bi bi-download me-1 text-base' />
+          Downloads
+        </a>
+      </li>
+      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
         <a className='nav-link' href='https://github.com/databio/bedhost' target='_blank'>
           <i className='bi bi-github me-1 text-base' />
           GitHub
