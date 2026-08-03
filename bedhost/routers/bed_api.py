@@ -24,6 +24,8 @@ from bbconf.models.bed_models import (
     BedMetadataAll,
     BedPEPHubRestrict,
     BedPlots,
+    BedSnapshotListResult,
+    BedSnapshotResult,
     BedStatsModel,
     TokenizedBedResponse,
     TokenizedPathResponse,
@@ -32,6 +34,9 @@ from bbconf.models.bed_models import (
     RefGenValidModel,
 )
 from bbconf.bbagent import BedBaseAgent
+from bbconf.db_utils import BedSnapshot
+from sqlalchemy import select
+from sqlalchemy.orm import Session
 from bedboss.refgenome_validator.main import ReferenceValidator
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, Request
 from fastapi.responses import PlainTextResponse
@@ -94,6 +99,50 @@ async def list_beds(
     return bbagent.bed.get_ids_list(
         limit=limit, offset=offset, genome=genome, bed_compliance=bed_compliance
     )
+
+
+@router.get(
+    "/exports",
+    summary="Index of published bulk metadata exports (newest first)",
+    response_model=BedSnapshotListResult,
+)
+def get_bed_exports(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSnapshotListResult:
+    """
+    Return the index of bulk metadata export artifacts published to S3, newest
+    first. ``file_path`` is rewritten to an absolute HTTPS URL. Consumers should
+    resolve the current snapshot through this endpoint rather than constructing
+    or hardcoding a filename, since artifacts are dated and immutable.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    try:
+        prefix = bbagent.config.config.access_methods.http.prefix
+    except AttributeError:
+        prefix = "https://data2.bedbase.org/"
+
+    with Session(bbagent.config.db_engine.engine) as session:
+        rows = session.scalars(
+            select(BedSnapshot).order_by(
+                BedSnapshot.creation_date.desc(), BedSnapshot.id.desc()
+            )
+        ).all()
+
+    results = [
+        BedSnapshotResult(
+            file_path=os.path.join(prefix, row.file_path),
+            file_type=row.file_type,
+            creation_date=row.creation_date,
+            record_count=row.record_count,
+            file_size=row.file_size,
+            checksum=row.checksum,
+            schema_version=row.schema_version,
+        )
+        for row in rows
+    ]
+    return BedSnapshotListResult(count=len(results), results=results)
 
 
 @router.get(
