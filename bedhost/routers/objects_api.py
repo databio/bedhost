@@ -9,11 +9,10 @@ except ImportError:
 from urllib.parse import urlparse
 
 from bbconf.bbagent import BedBaseAgent
-from bbconf.db_utils import BedSnapshot
+from bbconf.exceptions import SnapshotNotFoundError
+from bbconf.models.base_models import BedSnapshotResult
 from bbconf.models.drs_models import AccessMethod, AccessURL, DRSModel
 from fastapi import APIRouter, Depends, HTTPException, Request
-from sqlalchemy import select
-from sqlalchemy.orm import Session
 
 from ..const import EXPORTS_URL_BASE
 from ..dependencies import get_bbagent
@@ -60,13 +59,8 @@ def list_export_drs_objects(
     threadpool instead of stalling the event loop.
     """
     base_uri = urlparse(str(req.url)).netloc
-    with Session(bbagent.config.db_engine.engine) as session:
-        rows = session.scalars(
-            select(BedSnapshot).order_by(
-                BedSnapshot.creation_date.desc(), BedSnapshot.id.desc()
-            )
-        ).all()
-        return [_export_drs_object(bbagent, row, base_uri) for row in rows]
+    result = bbagent.snapshot.list(limit=None)
+    return [_export_drs_object(bbagent, row, base_uri) for row in result.results]
 
 
 @router.get(
@@ -92,14 +86,14 @@ def get_export_drs_object_metadata(
     threadpool instead of stalling the event loop.
     """
     base_uri = urlparse(str(req.url)).netloc
-    with Session(bbagent.config.db_engine.engine) as session:
-        row = _find_export_snapshot(session, object_id)
-        if row is None:
-            raise HTTPException(
-                status_code=404,
-                detail=f"Export DRS object {object_id} not found",
-            )
-        return _export_drs_object(bbagent, row, base_uri)
+    try:
+        row = bbagent.snapshot.get_by_filename(object_id)
+    except SnapshotNotFoundError:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Export DRS object {object_id} not found",
+        )
+    return _export_drs_object(bbagent, row, base_uri)
 
 
 @router.get(
@@ -214,27 +208,8 @@ def parse_bedbase_drs_object_id(object_id: str):
     }
 
 
-def _find_export_snapshot(session: Session, object_id: str) -> BedSnapshot | None:
-    """
-    Resolve an export DRS object-id to its ``bed_snapshots`` row.
-
-    The object-id is an export's bare filename. Returns the newest row whose
-    ``file_path`` basename equals that filename, or ``None`` if there is no match.
-    """
-    filename = os.path.basename(object_id)
-    rows = session.scalars(
-        select(BedSnapshot)
-        .where(BedSnapshot.file_path.like(f"%{filename}"))
-        .order_by(BedSnapshot.creation_date.desc(), BedSnapshot.id.desc())
-    ).all()
-    for row in rows:
-        if os.path.basename(row.file_path) == filename:
-            return row
-    return None
-
-
 def _export_drs_object(
-    bbagent: BedBaseAgent, row: BedSnapshot, base_uri: str
+    bbagent: BedBaseAgent, row: BedSnapshotResult, base_uri: str
 ) -> DRSModel:
     """
     Build a GA4GH DRS object for a single ``bed_snapshots`` export row.

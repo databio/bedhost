@@ -25,7 +25,7 @@ export const useExports = () => {
   return useQuery({
     queryKey: ['exports'],
     queryFn: async () => {
-      const { data } = await api.get<BedSnapshotListResult>('/bed/exports');
+      const { data } = await api.get<BedSnapshotListResult>('/exports');
       return data;
     },
   });

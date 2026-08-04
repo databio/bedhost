@@ -1,3 +1,5 @@
+import { Dropdown } from 'react-bootstrap';
+
 import { useBedCart } from '../../contexts/bedcart-context';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
@@ -25,29 +27,36 @@ export const NavDesktop = () => {
           Visualization
         </a>
       </li>
+
       <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
-        <a className='nav-link' href='/downloads'>
-          <i className='bi bi-download me-1 text-base' />
-          Downloads
-        </a>
-      </li>
-      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
-        <a className='nav-link' href='https://github.com/databio/bedhost' target='_blank'>
-          <i className='bi bi-github me-1 text-base' />
-          GitHub
-        </a>
-      </li>
-      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
-        <a className='nav-link' href='https://docs.bedbase.org/bedbase/' target='_blank'>
-          <i className='bi bi-file-earmark-text me-1 text-base' />
-          Docs
-        </a>
-      </li>
-      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
-        <a className='nav-link' href={`${API_BASE}`} target='_blank'>
-          <i className='bi bi-hdd-stack fs-6 me-1' />
-          API
-        </a>
+        <Dropdown align='end'>
+          <Dropdown.Toggle
+            className='nav-link shadow-none p-0 border-0'
+            variant='none'
+            id='nav-more-dropdown'
+          >
+            <i className='bi bi-list me-1 text-base' />
+            More
+          </Dropdown.Toggle>
+          <Dropdown.Menu className='border border-light-subtle shadow'>
+            <Dropdown.Item href='/downloads'>
+              <i className='bi bi-download me-2' />
+              Downloads
+            </Dropdown.Item>
+            <Dropdown.Item href='https://github.com/databio/bedhost' target='_blank'>
+              <i className='bi bi-github me-2' />
+              GitHub
+            </Dropdown.Item>
+            <Dropdown.Item href='https://docs.bedbase.org/bedbase/' target='_blank'>
+              <i className='bi bi-file-earmark-text me-2' />
+              Docs
+            </Dropdown.Item>
+            <Dropdown.Item href={`${API_BASE}`} target='_blank'>
+              <i className='bi bi-hdd-stack me-2' />
+              API
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </li>
 
       <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>

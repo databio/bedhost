@@ -22,22 +22,41 @@ const fileTypeLabel = (fileType: string) => FILE_TYPE_LABELS[fileType as BedSnap
 
 const fileName = (filePath: string) => filePath.split('/').pop() || filePath;
 
-// group export files by their snapshot date, preserving the newest-first
-// order the API returns.
+// group export files by their snapshot date and hour, preserving the
+// newest-first order the API returns.
 type SnapshotGroup = {
-  date: string;
+  key: string;
+  label: string;
   files: BedSnapshotResult[];
+};
+
+// bucket key truncated to the hour, e.g. "2026-08-03 14"
+const snapshotKey = (date: string) => {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return date;
+  const day = formatDateShort(d);
+  const hour = String(d.getHours()).padStart(2, '0');
+  return `${day} ${hour}`;
+};
+
+// human-readable label for a snapshot bucket, e.g. "2026-08-03 · 14:00"
+const snapshotLabel = (date: string) => {
+  const d = new Date(date);
+  if (isNaN(d.getTime())) return date;
+  const day = formatDateShort(d);
+  const hour = String(d.getHours()).padStart(2, '0');
+  return `${day} · ${hour}:00`;
 };
 
 const groupBySnapshot = (results: BedSnapshotResult[]): SnapshotGroup[] => {
   const groups: SnapshotGroup[] = [];
   for (const file of results) {
-    const date = formatDateShort(file.creation_date) || file.creation_date;
-    const existing = groups.find((group) => group.date === date);
+    const key = snapshotKey(file.creation_date);
+    const existing = groups.find((group) => group.key === key);
     if (existing) {
       existing.files.push(file);
     } else {
-      groups.push({ date, files: [file] });
+      groups.push({ key, label: snapshotLabel(file.creation_date), files: [file] });
     }
   }
   return groups;
@@ -134,8 +153,8 @@ export const Downloads = () => {
   return (
     <Layout title='BEDbase | Downloads' footer fullHeight>
       <div className='my-3'>
-        <Row>
-          <Col xs={12} lg={10} xl={8}>
+        <Row className='justify-content-center'>
+          <Col xs={12} lg={11} xl={10} xxl={9}>
             <h2 className='fw-light mb-2'>
               <i className='bi bi-download me-2' />
               Bulk exports
@@ -159,8 +178,8 @@ export const Downloads = () => {
         </Row>
 
         {groups.length === 0 ? (
-          <Row>
-            <Col xs={12} lg={10} xl={8}>
+          <Row className='justify-content-center'>
+            <Col xs={12} lg={11} xl={10} xxl={9}>
               <div className='p-4 border border-primary border-opacity-25 rounded bg-white text-center'>
                 <i className='bi bi-inbox fs-1 text-primary d-block mb-2' />
                 <p className='mb-0'>No bulk exports have been published yet. Please check back later.</p>
@@ -170,13 +189,13 @@ export const Downloads = () => {
         ) : (
           <Fragment>
             {groups.map((group) => (
-              <Row key={group.date}>
-                <Col xs={12} lg={10} xl={8}>
+              <Row key={group.key} className='justify-content-center'>
+                <Col xs={12} lg={11} xl={10} xxl={9}>
                   <Card className='mb-4 shadow-sm'>
                     <Card.Header className='bg-white d-flex align-items-center justify-content-between'>
                       <span className='fw-bold'>
-                        <i className='bi bi-calendar3 me-2' />
-                        Snapshot {group.date}
+                        <i className='bi bi-clock-history me-2' />
+                        Snapshot {group.label}
                       </span>
                       <span className='badge bg-primary bg-opacity-25 border border-primary text-primary rounded-pill'>
                         {group.files.length} {group.files.length === 1 ? 'file' : 'files'}
