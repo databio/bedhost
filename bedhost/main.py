@@ -1,8 +1,10 @@
+import logging
 import os
 import sys
 from contextlib import asynccontextmanager
 from pathlib import Path
 
+import logmuse
 import markdown
 import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -30,6 +32,13 @@ from .helpers import (
     init_model_usage,
     upload_usage,
 )
+
+# This module is the application entry point (uvicorn loads `bedhost.main:app`),
+# so it is where logging gets configured. Don't move this into `__init__.py`.
+logmuse.init_logger(PKG_NAME)
+
+logging.getLogger("bbconf").setLevel(logging.DEBUG)
+logging.getLogger("geniml").setLevel(logging.DEBUG)
 
 tags_metadata = [
     {
