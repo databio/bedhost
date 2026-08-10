@@ -79,7 +79,7 @@ async def get_example_bed_record(
     summary="Paged list of all BED records",
     response_model=BedListResult,
 )
-async def list_beds(
+def list_beds(
     limit: int = Query(
         1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
     ),
@@ -109,7 +109,7 @@ async def list_beds(
     description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
 @count_requests(event="bed_meta")
-async def get_bed_metadata(
+def get_bed_metadata(
     request: Request,
     bed_id: str = BedDigest,
     full: Optional[bool] = Query(
@@ -137,7 +137,7 @@ async def get_bed_metadata(
     responses={200: {"content": {"image/png": {}}}},
     description=f"Returns a 1200x630 PNG card with stats for link previews. Example bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_og_image(
+def get_bed_og_image(
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -250,7 +250,7 @@ async def get_bed_classification(
     f"This metadata is stored in PEPHub. And is not verified."
     f"Example\n bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_pephub(
+def get_bed_pephub(
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -271,7 +271,7 @@ async def get_bed_pephub(
     description=f"Returns most similar BED files in the database. "
     f"Example\n bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_neighbours(
+def get_bed_neighbours(
     bed_id: str = BedDigest,
     limit: int = 10,
     offset: int = 0,
@@ -312,7 +312,7 @@ async def get_bed_embedding(
     summary="Get embeddings for a bed file.",
     response_model=List[float],
 )
-async def embed_bed_file(
+def embed_bed_file(
     file: UploadFile = File(...),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -339,7 +339,7 @@ async def embed_bed_file(
     summary="Get embeddings for a bed file.",
     response_model=List[float],
 )
-async def umap_bed_file(
+def umap_bed_file(
     file: UploadFile = File(None),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -366,7 +366,7 @@ async def umap_bed_file(
     summary="Analyze reference genome for bed file",
     response_model=RefGenValidReturnModel,
 )
-async def analyze_reference_genome(
+def analyze_reference_genome(
     chrom_lengths: ChromLengthUploadModel,
     bbagent: BedBaseAgent = Depends(get_bbagent),
     ref_validator: ReferenceValidator = Depends(get_ref_validator),
@@ -422,7 +422,7 @@ async def analyze_reference_genome(
     summary="Get missing plots for a bed file.",
     response_model=BaseListResponse,
 )
-async def missing_plots(
+def missing_plots(
     plot_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -515,7 +515,7 @@ def get_regions_for_bedfile(
     response_model_by_alias=False,
 )
 @count_requests(event="bed_search")
-async def text_to_bed_search(
+def text_to_bed_search(
     request: Request,
     query: str,
     genome: Optional[Union[str, None]] = None,
@@ -694,7 +694,7 @@ async def exact_search(
     response_model=BedListSearchResult,
     response_model_by_alias=False,
 )
-async def bed_to_bed_search(
+def bed_to_bed_search(
     file: UploadFile = File(None),
     limit: int = 10,
     offset: int = 0,

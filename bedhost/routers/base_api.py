@@ -38,7 +38,7 @@ packages_versions = {}
     summary="Get summary statistics for BEDbase platform",
     response_model=StatsReturn,
 )
-async def get_bedbase_db_stats(
+def get_bedbase_db_stats(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
@@ -68,7 +68,7 @@ def get_detailed_stats(
     summary="Get detailed usage statistics for BEDbase platform",
     response_model=UsageStats,
 )
-async def get_detailed_usage(
+def get_detailed_usage(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """

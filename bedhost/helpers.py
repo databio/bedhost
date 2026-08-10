@@ -1,10 +1,12 @@
 import os
+import inspect
 from functools import wraps
 
 from typing import Literal
 import datetime
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import UsageModel
+from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi import Query, Request
 
@@ -109,7 +111,15 @@ def count_requests(
         @wraps(func)
         async def wrapper(*args, **kwargs):
 
-            function_result = await func(*args, **kwargs)
+            # The wrapper is always async (FastAPI sees it as the route handler),
+            # but the wrapped endpoint may be a plain ``def``. Plain ``def``
+            # endpoints must run in a worker thread so their blocking work does
+            # not stall the event loop; awaiting one directly would also raise a
+            # TypeError. Dispatch accordingly.
+            if inspect.iscoroutinefunction(func):
+                function_result = await func(*args, **kwargs)
+            else:
+                function_result = await run_in_threadpool(func, *args, **kwargs)
             if "test_request" in kwargs and kwargs["test_request"]:
                 _LOGGER.info(
                     f"Test request was executed. For '{event}' event with: {args}, {kwargs}. No results saved."

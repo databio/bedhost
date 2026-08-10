@@ -45,7 +45,7 @@ async def get_example_bedset_record(
     response_model=BedSetListResult,
 )
 @count_requests(event="bedset_search")
-async def list_bedsets(
+def list_bedsets(
     request: Request,
     query: str = None,
     limit: int = 1000,
@@ -67,7 +67,7 @@ async def list_bedsets(
     response_model_by_alias=False,
 )
 @count_requests(event="bedset_meta")
-async def get_bedset_metadata(
+def get_bedset_metadata(
     request: Request,
     bedset_id: str,
     full: bool = True,
@@ -86,7 +86,7 @@ async def get_bedset_metadata(
     summary="Download PEP project for a single BEDset record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_pep(
+def get_bedset_pep(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -137,7 +137,7 @@ async def get_bedset_stats_handler(
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
     response_model_by_alias=False,
 )
-async def get_bedfiles_in_bedset(
+def get_bedfiles_in_bedset(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -187,7 +187,7 @@ async def get_genomes_file_bedset(request: Request, bedset_id: str):
 
 @router.head("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
 @router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
-async def get_trackDb_file_bedset(
+def get_trackDb_file_bedset(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -218,7 +218,7 @@ async def get_trackDb_file_bedset(
     "/create",
     description="Create a new bedset by providing registry path to the PEPhub project",
 )
-async def create_bedset(
+def create_bedset(
     bedset: CreateBEDsetRequest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
