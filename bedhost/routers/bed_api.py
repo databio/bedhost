@@ -97,6 +97,31 @@ async def list_beds(
 
 
 @router.get(
+    "/recent",
+    summary="Paged list of most recently added BED records",
+    response_model=BedListResult,
+    response_model_by_alias=False,
+)
+async def list_recent_beds(
+    limit: int = Query(25, ge=1, le=1000, description="Limit (1-1000), default 25"),
+    offset: int = 0,
+    genome: str = Query(
+        default=None, description="filter by genome of the bed file. e.g. 'hg38'"
+    ),
+    bed_compliance: str = Query(
+        default=None, description="filter by bed type. e.g. 'bed6+4'"
+    ),
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedListResult:
+    """
+    Returns the most recently added BED files (newest first), paginated.
+    """
+    return bbagent.bed.get_recent_beds(
+        limit=limit, offset=offset, genome=genome, bed_compliance=bed_compliance
+    )
+
+
+@router.get(
     "/{bed_id}/metadata",
     summary="Get metadata for a single BED record",
     response_model=BedMetadataAll,
