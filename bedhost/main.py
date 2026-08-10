@@ -16,9 +16,12 @@ from bbconf.exceptions import (
 )
 from bedboss.refgenome_validator.main import ReferenceValidator
 
-from fastapi import FastAPI, Request
+from cachetools import TTLCache
+
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import _LOGGER
@@ -93,6 +96,8 @@ async def lifespan(app: FastAPI):
     app.state.bbagent = configure(bbconf_file_path)
     app.state.usage_data = init_model_usage()
 
+    app.state.detailed_stats: TTLCache = TTLCache(maxsize=2, ttl=14 * 24 * 60 * 60)
+
     # Respect BEDHOST_INIT_ML for CI/smoke deployments that don't need the
     # reference genome validator loaded. Default is to initialize it.
     init_ml_env = os.environ.get("BEDHOST_INIT_ML", "true").lower()
@@ -116,6 +121,7 @@ async def lifespan(app: FastAPI):
     app.state.scheduler = scheduler
 
     try:
+        _LOGGER.info("Starting app ...")
         yield
     finally:
         app.state.scheduler.shutdown(wait=False)
@@ -126,6 +132,7 @@ app = FastAPI(
     description="BED file/sets statistics and image server API",
     version=bedhost_version,
     docs_url="/v1/docs",
+    openapi_url="/v1/openapi.json",
     openapi_tags=tags_metadata,
     lifespan=lifespan,
 )
@@ -144,6 +151,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+)
+
+app.mount(
+    "/static",
+    StaticFiles(directory=str(Path(__file__).parent / "static")),
+    name="static",
 )
 
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
@@ -169,13 +182,19 @@ async def changelog(request: Request):
 
 
 @app.get("/")
-def lending_page():
+def landing_page():
     return RedirectResponse(url="v1/")
 
 
 def render_markdown(filename: str, request: Request):
-    with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
-        text = input_file.read()
+    path = os.path.join(STATIC_PATH, filename)
+    try:
+        with open(path, "r", encoding="utf-8") as input_file:
+            text = input_file.read()
+    except FileNotFoundError:
+        # e.g. docs/changelog.md was removed from the repo in 2024 but the
+        # route is still registered. Return 404 rather than a 500.
+        raise HTTPException(status_code=404, detail=f"{filename} not found")
     content = markdown.markdown(text)
     return templates.TemplateResponse(request, "page.html", {"content": content})
 

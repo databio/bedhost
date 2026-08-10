@@ -213,6 +213,7 @@ export const SearchBar = (props: Props) => {
                   <h6 className='mb-0 fw-semibold ms-auto text-sm'>Genome:</h6>
                   <select
                     className='form-select form-select-sm w-auto ms-1 border rounded-2'
+                    style={{ maxWidth: '180px' }}
                     value={genome}
                     onChange={(e) => setGenome(String(e.target.value))}
                   >
