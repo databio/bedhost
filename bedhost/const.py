@@ -18,3 +18,10 @@ USAGE_RECORD_DAYS = 30
 MAX_FILE_SIZE = 1024 * 1024 * 20
 MAX_REGION_NUMBER = 5000000
 MIN_REGION_WIDTH = 10
+
+# Public CDN base for bulk metadata export artifacts. These live directly on the
+# storage CDN (Backblaze B2 fronted by Cloudflare), NOT behind the API's
+# /v1/files/ redirect proxy — so export URLs must use this base rather than the
+# config's http access-method prefix (which points at api.bedbase.org/v1/files/
+# and, notably, 405s on HEAD, breaking DuckDB range probing).
+EXPORTS_URL_BASE = "https://data2.bedbase.org/"

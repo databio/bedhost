@@ -4,11 +4,14 @@ except ImportError:
     from typing_extensions import Annotated
     from typing import Dict, Optional, List, Any
 
+import os
+
 from platform import python_version
 from bbconf import __version__ as bbconf_version
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
-from fastapi import APIRouter, Depends, Request
+from bbconf.models.base_models import BedSnapshotListResult
+from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
 
@@ -21,6 +24,7 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
+from ..const import EXPORTS_URL_BASE
 from ..dependencies import fetch_detailed_stats, get_bbagent
 from ..helpers import get_openapi_version, count_requests, test_query_parameter
 
@@ -111,6 +115,38 @@ async def get_assays_list(
         offset=0,
         results=genomes,
     )
+
+
+@router.get(
+    "/exports",
+    summary="Index of published bulk metadata exports (newest first)",
+    response_model=BedSnapshotListResult,
+)
+def get_bed_exports(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+    limit: int = Query(
+        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+    ),
+    offset: int = 0,
+) -> BedSnapshotListResult:
+    """
+    Return the index of bulk metadata export artifacts published to S3, newest
+    first. ``file_path`` is rewritten to the absolute HTTPS CDN URL. Consumers
+    should resolve the current snapshot through this endpoint rather than
+    constructing or hardcoding a filename, since artifacts are dated and
+    immutable.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    result = bbagent.snapshot.list(limit=limit, offset=offset)
+    result.results = [
+        row.model_copy(
+            update={"file_path": os.path.join(EXPORTS_URL_BASE, row.file_path)}
+        )
+        for row in result.results
+    ]
+    return result
 
 
 @router.get(

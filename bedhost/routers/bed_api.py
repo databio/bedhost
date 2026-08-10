@@ -38,7 +38,12 @@ from fastapi.responses import PlainTextResponse, Response
 from gtars.models import RegionSet
 
 from .. import _LOGGER
-from ..const import EXAMPLE_BED, MAX_FILE_SIZE, MAX_REGION_NUMBER, MIN_REGION_WIDTH
+from ..const import (
+    EXAMPLE_BED,
+    MAX_FILE_SIZE,
+    MAX_REGION_NUMBER,
+    MIN_REGION_WIDTH,
+)
 from ..data_models import (
     CROM_NUMBERS,
     BaseListResponse,
