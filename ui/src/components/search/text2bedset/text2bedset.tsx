@@ -22,7 +22,6 @@ export const Text2BedSet = (props: Props) => {
   const { searchTerm, limit, offset, setOffset, triggerSearch, layout } = props;
 
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [resultsCount, setResultsCount] = useState(0);
 
   const {
     isFetching: isSearching,
@@ -39,7 +38,6 @@ export const Text2BedSet = (props: Props) => {
   useEffect(() => {
     if (results?.results) {
       setHasLoaded(true);
-      setResultsCount(results.count);
     }
   }, [results?.results]);
 
@@ -83,7 +81,12 @@ export const Text2BedSet = (props: Props) => {
                     <SearchingJumper />
                   </div>
                 )}
-                <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
+                <PaginationBar
+                  limit={limit}
+                  offset={offset}
+                  setOffset={setOffset}
+                  hasMore={(results?.results?.length ?? 0) >= limit}
+                />
               </div>
             ) : (
               <div className='d-flex flex-column align-items-center justify-content-center mt-5 fst-italic'>
