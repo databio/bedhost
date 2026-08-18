@@ -126,9 +126,7 @@ def list_analysis_file_drs_objects(
     """
     base_uri = urlparse(str(req.url)).netloc
     result = bbagent.analysis_files.list(limit=None)
-    return [
-        _analysis_file_drs_object(bbagent, row, base_uri) for row in result.results
-    ]
+    return [_analysis_file_drs_object(bbagent, row, base_uri) for row in result.results]
 
 
 @router.get(
