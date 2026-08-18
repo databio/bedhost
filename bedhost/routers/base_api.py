@@ -10,7 +10,7 @@ from platform import python_version
 from bbconf import __version__ as bbconf_version
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
-from bbconf.models.base_models import BedSnapshotListResult
+from bbconf.models.base_models import BedSnapshotListResult, AnalysisFileListResult
 from fastapi import APIRouter, Depends, Request, Query
 from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
@@ -140,6 +140,46 @@ def get_bed_exports(
     threadpool instead of stalling the event loop.
     """
     result = bbagent.snapshot.list(limit=limit, offset=offset)
+    result.results = [
+        row.model_copy(
+            update={"file_path": os.path.join(EXPORTS_URL_BASE, row.file_path)}
+        )
+        for row in result.results
+    ]
+    return result
+
+
+@router.get(
+    "/files",
+    summary="Index of standalone analysis files (newest first)",
+    response_model=AnalysisFileListResult,
+)
+def get_analysis_files(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+    file_type: Optional[str] = Query(None, description="Filter by file type"),
+    genome: Optional[str] = Query(None, description="Filter by genome/assembly"),
+    tag: Optional[str] = Query(None, description="Filter by a single tag"),
+    limit: int = Query(
+        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+    ),
+    offset: int = 0,
+) -> AnalysisFileListResult:
+    """
+    Return the index of standalone analysis files (openSignalMatrix, models,
+    other analysis inputs) stored in S3, newest first. These files are global;
+    they are not tied to any bed file or bedset. ``file_path`` is rewritten to
+    the absolute HTTPS CDN URL.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    result = bbagent.analysis_files.list(
+        file_type=file_type,
+        genome=genome,
+        tag=tag,
+        limit=limit,
+        offset=offset,
+    )
     result.results = [
         row.model_copy(
             update={"file_path": os.path.join(EXPORTS_URL_BASE, row.file_path)}

@@ -43,6 +43,10 @@ export const NavDesktop = () => {
               <i className='bi bi-download me-2' />
               Downloads
             </Dropdown.Item>
+            <Dropdown.Item href='/files'>
+              <i className='bi bi-file-earmark-binary me-2' />
+              Analysis files
+            </Dropdown.Item>
             <Dropdown.Item href='https://github.com/databio/bedhost' target='_blank'>
               <i className='bi bi-github me-2' />
               GitHub

@@ -22,7 +22,6 @@ from bbconf.models.bed_models import (
     BedListResult,
     BedListSearchResult,
     BedMetadataAll,
-    BedPEPHubRestrict,
     BedPlots,
     BedStatsModel,
     TokenizedBedResponse,
@@ -240,27 +239,27 @@ async def get_bed_classification(
         )
 
 
-@router.get(
-    "/{bed_id}/metadata/raw",
-    summary="Get raw metadata for a single BED record",
-    # response_model=BedPEPHub,
-    response_model=BedPEPHubRestrict,
-    response_model_by_alias=False,
-    description=f"Returns raw metadata for a single BED record. "
-    f"This metadata is stored in PEPHub. And is not verified."
-    f"Example\n bed_id: {EXAMPLE_BED}",
-)
-def get_bed_pephub(
-    bed_id: str = BedDigest,
-    bbagent: BedBaseAgent = Depends(get_bbagent),
-):
-    try:
-        return bbagent.bed.get_raw_metadata(bed_id)
-    except BEDFileNotFoundError as _:
-        raise HTTPException(
-            status_code=404,
-            detail="BED raw metadata not found",
-        )
+# @router.get(
+#     "/{bed_id}/metadata/raw",
+#     summary="Get raw metadata for a single BED record",
+#     # response_model=BedPEPHub,
+#     response_model=BedPEPHubRestrict,
+#     response_model_by_alias=False,
+#     description=f"Returns raw metadata for a single BED record. "
+#     f"This metadata is stored in PEPHub. And is not verified."
+#     f"Example\n bed_id: {EXAMPLE_BED}",
+# )
+# def get_bed_pephub(
+#     bed_id: str = BedDigest,
+#     bbagent: BedBaseAgent = Depends(get_bbagent),
+# ):
+#     try:
+#         return bbagent.bed.get_raw_metadata(bed_id)
+#     except BEDFileNotFoundError as _:
+#         raise HTTPException(
+#             status_code=404,
+#             detail="BED raw metadata not found",
+#         )
 
 
 @router.get(
