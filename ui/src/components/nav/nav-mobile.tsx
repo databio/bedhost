@@ -27,6 +27,10 @@ export const MobileNav = () => {
           <i className='bi bi-download me-2' />
           Downloads
         </Dropdown.Item>
+        <Dropdown.Item href='/files'>
+          <i className='bi bi-file-earmark-binary me-2' />
+          Analysis files
+        </Dropdown.Item>
 
         <Dropdown.Item href='https://docs.bedbase.org/bedbase/'>
           <i className='bi bi-info-circle me-2' />

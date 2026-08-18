@@ -9,8 +9,8 @@ except ImportError:
 from urllib.parse import urlparse
 
 from bbconf.bbagent import BedBaseAgent
-from bbconf.exceptions import SnapshotNotFoundError
-from bbconf.models.base_models import BedSnapshotResult
+from bbconf.exceptions import AnalysisFileNotFoundError, SnapshotNotFoundError
+from bbconf.models.base_models import BedSnapshotResult, AnalysisFileResult
 from bbconf.models.drs_models import AccessMethod, AccessURL, DRSModel
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -94,6 +94,73 @@ def get_export_drs_object_metadata(
             detail=f"Export DRS object {object_id} not found",
         )
     return _export_drs_object(bbagent, row, base_uri)
+
+
+# ---------------------------------------------------------------------------
+# DRS objects for standalone analysis files (the ``analysis_files`` table).
+# Same object-id scheme as exports: the DRS object-id is the bare filename
+# (basename of ``analysis_files.file_path``), resolved to the newest matching
+# row. Declared BEFORE the generic ``/{object_id}`` route below.
+# ---------------------------------------------------------------------------
+
+
+@router.get(
+    "/files",
+    summary="List standalone analysis files as DRS objects (newest first)",
+    response_model=List[DRSModel],
+)
+def list_analysis_file_drs_objects(
+    req: Request,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> List[DRSModel]:
+    """
+    Enumerate every standalone analysis file as a GA4GH DRS object, newest
+    first.
+
+    The DRS object-id of an analysis file is its bare filename (the basename of
+    the ``analysis_files.file_path`` S3 key). Resolve a single object at
+    ``GET /v1/objects/files/{object_id}``.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    base_uri = urlparse(str(req.url)).netloc
+    result = bbagent.analysis_files.list(limit=None)
+    return [
+        _analysis_file_drs_object(bbagent, row, base_uri) for row in result.results
+    ]
+
+
+@router.get(
+    "/files/{object_id}",
+    summary="Get DRS object metadata for a standalone analysis file",
+    response_model=DRSModel,
+)
+def get_analysis_file_drs_object_metadata(
+    object_id: str,
+    req: Request,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> DRSModel:
+    """
+    Return GA4GH DRS metadata for a single standalone analysis file.
+
+    ``object_id`` is the file's bare filename (the basename of the
+    ``analysis_files.file_path`` S3 key). The id round-trips: the resolved
+    ``analysis_files`` row is the newest whose ``file_path`` basename equals
+    ``object_id``.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    base_uri = urlparse(str(req.url)).netloc
+    try:
+        row = bbagent.analysis_files.get_by_filename(object_id)
+    except AnalysisFileNotFoundError:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Analysis file DRS object {object_id} not found",
+        )
+    return _analysis_file_drs_object(bbagent, row, base_uri)
 
 
 @router.get(
@@ -241,4 +308,39 @@ def _export_drs_object(
         checksums=row.checksum or object_id,
         access_methods=access_methods,
         description=f"BEDbase bulk metadata export ({row.file_type})",
+    )
+
+
+def _analysis_file_drs_object(
+    bbagent: BedBaseAgent, row: AnalysisFileResult, base_uri: str
+) -> DRSModel:
+    """
+    Build a GA4GH DRS object for a single ``analysis_files`` row.
+
+    Like export artifacts (and unlike BED-file DRS objects), analysis files live
+    directly on the storage CDN, so the access URL is built from
+    ``EXPORTS_URL_BASE`` (https://data2.bedbase.org/) rather than the config's
+    http access-method prefix.
+    """
+    object_id = os.path.basename(row.file_path)
+    access_methods = [
+        AccessMethod(
+            type="https",
+            access_id="https",
+            access_url=AccessURL(url=os.path.join(EXPORTS_URL_BASE, row.file_path)),
+        )
+    ]
+    description = row.description or f"BEDbase analysis file ({row.name})"
+    return DRSModel(
+        id=object_id,
+        name=object_id,
+        self_uri=f"drs://{base_uri}/{object_id}",
+        size=row.file_size,
+        created_time=row.creation_date,
+        updated_time=row.creation_date,
+        # See the note in _export_drs_object: DRSModel types ``checksums`` as a
+        # plain str, so we put the real sha256 here, falling back to the id.
+        checksums=row.checksum or object_id,
+        access_methods=access_methods,
+        description=description,
     )
