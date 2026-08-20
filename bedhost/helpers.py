@@ -46,6 +46,27 @@ def serve_file(
         raise FileNotFoundError(msg)
 
 
+def build_exports_url(file_path: str) -> str:
+    """
+    Build a public HTTPS CDN URL for an export / analysis-file S3 key.
+
+    Uses explicit string concatenation rather than ``os.path.join``: the latter
+    is a filesystem operation and, given an absolute ``file_path`` (leading
+    ``/``), silently discards the base URL entirely — dropping the scheme and
+    host. Stripping a trailing slash off the base and a leading slash off the
+    key guarantees exactly one separator and always preserves the host.
+
+    Args:
+        file_path: The S3 key (relative or absolute) of the artifact.
+
+    Returns:
+        The absolute ``https://data2.bedbase.org/...`` URL for the artifact.
+    """
+    from .const import EXPORTS_URL_BASE
+
+    return f"{EXPORTS_URL_BASE.rstrip('/')}/{file_path.lstrip('/')}"
+
+
 def get_openapi_version(app: FastAPI) -> str:
     """
     Get the OpenAPI version from the OpenAPI description JSON.

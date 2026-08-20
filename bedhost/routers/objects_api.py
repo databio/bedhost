@@ -7,9 +7,8 @@ from bbconf.models.base_models import AnalysisFileResult, BedSnapshotResult
 from bbconf.models.drs_models import AccessMethod, AccessURL, DRSModel
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from ..const import EXPORTS_URL_BASE
 from ..dependencies import get_bbagent
-from ..helpers import serve_file
+from ..helpers import build_exports_url, serve_file
 
 router = APIRouter(prefix="/v1/objects", tags=["objects"])
 
@@ -282,7 +281,7 @@ def _export_drs_object(
         AccessMethod(
             type="https",
             access_id="https",
-            access_url=AccessURL(url=os.path.join(EXPORTS_URL_BASE, row.file_path)),
+            access_url=AccessURL(url=build_exports_url(row.file_path)),
         )
     ]
     return DRSModel(
@@ -318,7 +317,7 @@ def _analysis_file_drs_object(
         AccessMethod(
             type="https",
             access_id="https",
-            access_url=AccessURL(url=os.path.join(EXPORTS_URL_BASE, row.file_path)),
+            access_url=AccessURL(url=build_exports_url(row.file_path)),
         )
     ]
     description = row.description or f"BEDbase analysis file ({row.name})"

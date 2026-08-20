@@ -1,4 +1,3 @@
-import os
 from platform import python_version
 
 from bbconf import __version__ as bbconf_version
@@ -25,7 +24,12 @@ from ..data_models import (
     Type,
 )
 from ..dependencies import fetch_detailed_stats, get_bbagent
-from ..helpers import count_requests, get_openapi_version, test_query_parameter
+from ..helpers import (
+    build_exports_url,
+    count_requests,
+    get_openapi_version,
+    test_query_parameter,
+)
 
 router = APIRouter(prefix="/v1", tags=["base"])
 
@@ -140,9 +144,7 @@ def get_bed_exports(
     """
     result = bbagent.snapshot.list(limit=limit, offset=offset)
     result.results = [
-        row.model_copy(
-            update={"file_path": os.path.join(EXPORTS_URL_BASE, row.file_path)}
-        )
+        row.model_copy(update={"file_path": build_exports_url(row.file_path)})
         for row in result.results
     ]
     return result
@@ -180,9 +182,7 @@ def get_analysis_files(
         offset=offset,
     )
     result.results = [
-        row.model_copy(
-            update={"file_path": os.path.join(EXPORTS_URL_BASE, row.file_path)}
-        )
+        row.model_copy(update={"file_path": build_exports_url(row.file_path)})
         for row in result.results
     ]
     return result
@@ -236,5 +236,5 @@ async def redirect_to_download(
     request: Request,
     test_request: bool = test_query_parameter,
 ):
-    download_url = f"https://data2.bedbase.org/{file_path}"
+    download_url = f"{EXPORTS_URL_BASE}{file_path}"
     return RedirectResponse(url=download_url)
