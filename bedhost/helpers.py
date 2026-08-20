@@ -1,15 +1,15 @@
-import os
+import datetime
 import inspect
+import os
 from collections.abc import Callable
 from functools import wraps
-
 from typing import Literal
-import datetime
+
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import UsageModel
+from fastapi import FastAPI, Query
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
-from fastapi import FastAPI, Query
 
 from . import _LOGGER
 from .exceptions import BedHostException
@@ -19,11 +19,14 @@ def serve_file(
     path: str, remote: bool | None = None
 ) -> FileResponse | RedirectResponse:
     """
-    Serve a local or remote file
+    Serve a local or remote file.
 
-    :param str path: relative path to serve
-    :param bool remote: whether to redirect to a remote source or serve local
-    :exception FileNotFoundError: if file not found
+    Args:
+        path: Relative path to serve.
+        remote: Whether to redirect to a remote source or serve local.
+
+    Raises:
+        FileNotFoundError: If file not found.
     """
     remote = remote or True
     if remote:
@@ -45,10 +48,13 @@ def serve_file(
 
 def get_openapi_version(app: FastAPI) -> str:
     """
-    Get the OpenAPI version from the OpenAPI description JSON
+    Get the OpenAPI version from the OpenAPI description JSON.
 
-    :param fastapi.FastAPI app: app object
-    :return str: openAPI version in use
+    Args:
+        app: App object.
+
+    Returns:
+        OpenAPI version in use.
     """
     try:
         return app.openapi()["openapi"]
@@ -107,7 +113,8 @@ def count_requests(
     The wrapped endpoint must accept ``request: Request``; the usage data model
     is read from ``request.app.state.usage_data`` per-request.
 
-    :param str event: event type
+    Args:
+        event: Event type.
     """
 
     def decorator(func: Callable) -> Callable:
@@ -197,8 +204,9 @@ def upload_usage(bbagent: BedBaseAgent, usage_data: UsageModel) -> None:
     """
     Upload usage data to the database and reset the usage data in place.
 
-    :param BedBaseAgent bbagent: the bbconf agent used to persist usage records
-    :param UsageModel usage_data: the live usage model to flush and reset
+    Args:
+        bbagent: The bbconf agent used to persist usage records.
+        usage_data: The live usage model to flush and reset.
     """
     from .const import USAGE_RECORD_DAYS
 

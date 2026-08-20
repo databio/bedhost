@@ -1,10 +1,9 @@
 import os
-
 from urllib.parse import urlparse
 
 from bbconf.bbagent import BedBaseAgent
 from bbconf.exceptions import AnalysisFileNotFoundError, SnapshotNotFoundError
-from bbconf.models.base_models import BedSnapshotResult, AnalysisFileResult
+from bbconf.models.base_models import AnalysisFileResult, BedSnapshotResult
 from bbconf.models.drs_models import AccessMethod, AccessURL, DRSModel
 from fastapi import APIRouter, Depends, HTTPException, Request
 

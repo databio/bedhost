@@ -9,14 +9,14 @@ from bbconf.models.bedset_models import (
     BedSetPlots,
     BedSetStats,
 )
-from pephubclient.helpers import is_registry_path, unwrap_registry_path
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from pephubclient.helpers import is_registry_path, unwrap_registry_path
 
 from ..const import EXAMPLE_BEDSET, PKG_NAME
 from ..data_models import CreateBEDsetRequest
 from ..dependencies import get_bbagent
-from ..utils import zip_pep
 from ..helpers import count_requests, test_query_parameter
+from ..utils import zip_pep
 
 router = APIRouter(prefix="/v1/bedset", tags=["bedset"])
 

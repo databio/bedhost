@@ -18,13 +18,16 @@ from peppy.const import (
 
 def zip_conv_result(conv_result: dict, filename: str = "project.zip") -> Response:
     """
-    Given a dictionary of converted results, zip them up and return a response
+    Given a dictionary of converted results, zip them up and return a response.
 
-    ## Copied from pephub/helpers.py
+    Copied from pephub/helpers.py.
 
-    :param conv_result: dictionary of converted results
-    :param filename: name of the zip
-    return Response: response object
+    Args:
+        conv_result: Dictionary of converted results.
+        filename: Name of the zip.
+
+    Returns:
+        The response object.
     """
     mf = io.BytesIO()
 
@@ -45,10 +48,12 @@ def zip_conv_result(conv_result: dict, filename: str = "project.zip") -> Respons
 
 def zip_pep(project: dict[str, Any]) -> Response:
     """
-    Zip a project up to download
-    ## Copied from pephub/helpers.py
+    Zip a project up to download.
 
-    :param project: peppy project to zip
+    Copied from pephub/helpers.py.
+
+    Args:
+        project: Peppy project to zip.
     """
 
     content_to_zip = {}
