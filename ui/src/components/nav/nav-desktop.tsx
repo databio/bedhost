@@ -47,15 +47,15 @@ export const NavDesktop = () => {
               <i className='bi bi-file-earmark-binary me-2' />
               Analysis files
             </Dropdown.Item>
-            <Dropdown.Item href='https://github.com/databio/bedhost' target='_blank'>
+            <Dropdown.Item href='https://github.com/databio/bedhost' target='_blank' rel='noreferrer noopener'>
               <i className='bi bi-github me-2' />
               GitHub
             </Dropdown.Item>
-            <Dropdown.Item href='https://docs.bedbase.org/bedbase/' target='_blank'>
+            <Dropdown.Item href='https://docs.bedbase.org/bedbase/' target='_blank' rel='noreferrer noopener'>
               <i className='bi bi-file-earmark-text me-2' />
               Docs
             </Dropdown.Item>
-            <Dropdown.Item href={`${API_BASE}`} target='_blank'>
+            <Dropdown.Item href={`${API_BASE}`} target='_blank' rel='noreferrer noopener'>
               <i className='bi bi-hdd-stack me-2' />
               API
             </Dropdown.Item>
