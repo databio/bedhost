@@ -66,5 +66,5 @@ def fetch_detailed_stats(
                 concise=concise
             )
         except StatisticsError:
-            return _empty_file_stats()
+            request.app.state.detailed_stats[concise] = _empty_file_stats()
     return request.app.state.detailed_stats[concise]
