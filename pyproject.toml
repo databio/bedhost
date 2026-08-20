@@ -1,0 +1,95 @@
+[project]
+name = "bedhost"
+dynamic = ["version"]
+description = "A database server application that provides both a RESTful API and GUI for access to BED files and related basic statistics"
+readme = "README.md"
+license = "BSD-2-Clause"
+requires-python = ">=3.10"
+authors = [
+    { name = "Oleksandr Khoroshevskyi" },
+    { name = "Michal Stolarczyk" },
+    { name = "Ognen Duzlevski" },
+    { name = "Bingjie Xue" },
+    { name = "Nathan Sheffield" },
+]
+keywords = [
+    "project",
+    "bioinformatics",
+    "sequencing",
+    "ngs",
+    "workflow",
+    "GUI",
+    "bed",
+    "server",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "bbconf>=0.14.13",
+    "fastapi>=0.103.0",
+    "sentence_transformers>=5.0",
+    "logmuse>=0.3.1",
+    "markdown",
+    "requests",
+    "uvicorn",
+    "yacman>=1.0.0",
+    "pephubclient>=0.4.1",
+    "psycopg[binary,pool]",
+    "python-multipart>=0.0.9",
+    "APScheduler>=3.11.0",
+    "cachetools>=4.2.4",
+    "bedboss>=0.11.1",
+    "Pillow>=10.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/databio/bedhost"
+
+[project.scripts]
+bedhost = "bedhost.__main__:main"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+    "httpx",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# bedhost is NOT installed as a distribution in production: the Docker image runs
+# `uvicorn bedhost.main:app` from the copied source tree (see Dockerfile). The
+# version is therefore kept in an importable source module (bedhost/_version.py)
+# and read via `import`, never via importlib.metadata. hatchling reads the same
+# file so PyPI wheels are versioned correctly too.
+[tool.hatch.version]
+path = "bedhost/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["bedhost"]
+
+[tool.pytest.ini_options]
+addopts = "-rfE"
+testpaths = ["tests"]
+markers = [
+    "require_service: marks test as requiring a running bedhost service (deselect with '-m \"not require_service\"')",
+]
+
+[tool.ruff]
+line-length = 88
+# Root-level experimentation script, not part of the package.
+extend-exclude = ["interactive.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["F403", "F405", "E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["bedhost"]
