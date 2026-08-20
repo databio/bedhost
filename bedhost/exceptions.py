@@ -1,8 +1,8 @@
 class BedHostException(Exception):
     """Base error type for bedhost custom errors."""
 
-    def __init__(self, msg):
-        super(BedHostException, self).__init__(msg)
+    def __init__(self, msg: str) -> None:
+        super().__init__(msg)
 
 
 class IncorrectSchemaException(BedHostException):
@@ -10,5 +10,5 @@ class IncorrectSchemaException(BedHostException):
     Exception raised for errors in the pipestat input schema.
     """
 
-    def __init__(self, msg=""):
+    def __init__(self, msg: str = "") -> None:
         super().__init__(f"""Incorrect schema. {msg}""")

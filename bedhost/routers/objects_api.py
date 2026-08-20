@@ -1,16 +1,9 @@
 import os
-
-try:
-    from typing import Annotated, Any, Dict, List, Optional
-except ImportError:
-    from typing_extensions import Annotated
-    from typing import Dict, Optional, List, Any
-
 from urllib.parse import urlparse
 
 from bbconf.bbagent import BedBaseAgent
 from bbconf.exceptions import AnalysisFileNotFoundError, SnapshotNotFoundError
-from bbconf.models.base_models import BedSnapshotResult, AnalysisFileResult
+from bbconf.models.base_models import AnalysisFileResult, BedSnapshotResult
 from bbconf.models.drs_models import AccessMethod, AccessURL, DRSModel
 from fastapi import APIRouter, Depends, HTTPException, Request
 
@@ -40,12 +33,12 @@ router = APIRouter(prefix="/v1/objects", tags=["objects"])
 @router.get(
     "/exports",
     summary="List published bulk-metadata exports as DRS objects (newest first)",
-    response_model=List[DRSModel],
+    response_model=list[DRSModel],
 )
 def list_export_drs_objects(
     req: Request,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-) -> List[DRSModel]:
+) -> list[DRSModel]:
     """
     Enumerate every published bulk-metadata export artifact as a GA4GH DRS
     object, newest first.
@@ -107,12 +100,12 @@ def get_export_drs_object_metadata(
 @router.get(
     "/files",
     summary="List standalone analysis files as DRS objects (newest first)",
-    response_model=List[DRSModel],
+    response_model=list[DRSModel],
 )
 def list_analysis_file_drs_objects(
     req: Request,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-) -> List[DRSModel]:
+) -> list[DRSModel]:
     """
     Enumerate every standalone analysis file as a GA4GH DRS object, newest
     first.
@@ -170,7 +163,7 @@ async def get_drs_object_metadata(
     object_id: str,
     req: Request,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> DRSModel:
     """
     Returns metadata about a DrsObject.
     """
@@ -190,7 +183,7 @@ async def get_object_bytes_url(
     object_id: str,
     access_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> str:
     """
     Returns a URL that can be used to fetch the bytes of a DrsObject.
     """
@@ -251,7 +244,7 @@ async def get_object_thumbnail(
 # or: `bed.421d2128e183424fcc6a74269bae7934.bedfile`
 # bed.326d5d77c7decf067bd4c7b42340c9a8.bedfile
 # bed.326d5d77c7decf067bd4c7b42340c9a8.bigbed
-def parse_bedbase_drs_object_id(object_id: str):
+def parse_bedbase_drs_object_id(object_id: str) -> dict[str, str]:
     """
     Parse bedbase object id into its components
     """

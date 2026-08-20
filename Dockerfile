@@ -33,6 +33,10 @@ RUN pip install uv
 RUN uv pip install torch --index-url https://download.pytorch.org/whl/cpu --system
 # RUN uv pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip --system
 
-RUN uv pip install -r requirements/requirements-all.txt --no-cache-dir --system
+# Install dependencies only (from pyproject.toml), NOT bedhost itself: the app
+# runs from the /app source tree copied above (uvicorn bedhost.main:app), and
+# the version is read from bedhost/_version.py, so bedhost is intentionally not
+# installed as a distribution here.
+RUN uv pip install -r pyproject.toml --no-cache-dir --system
 
 CMD ["uvicorn", "bedhost.main:app", "--host", "0.0.0.0", "--port", "80"]

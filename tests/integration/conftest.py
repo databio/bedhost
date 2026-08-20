@@ -14,7 +14,6 @@ Or manually:
 
 import os
 import signal as _signal_mod
-import threading as _threading_mod
 from pathlib import Path
 
 import pytest

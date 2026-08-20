@@ -1,21 +1,21 @@
-try:
-    from typing import Annotated, Any, Dict, List, Optional
-except ImportError:
-    from typing_extensions import Annotated
-    from typing import Dict, Optional, List, Any
-
 import os
-
 from platform import python_version
+
 from bbconf import __version__ as bbconf_version
 from bbconf.bbagent import BedBaseAgent
-from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
-from bbconf.models.base_models import BedSnapshotListResult, AnalysisFileListResult
-from fastapi import APIRouter, Depends, Request, Query
+from bbconf.models.base_models import (
+    AnalysisFileListResult,
+    BedSnapshotListResult,
+    FileStats,
+    StatsReturn,
+    UsageStats,
+)
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
 
 from .._version import __version__ as bedhost_version
+from ..const import EXPORTS_URL_BASE
 from ..data_models import (
     BaseListResponse,
     ComponentVersions,
@@ -24,9 +24,8 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
-from ..const import EXPORTS_URL_BASE
 from ..dependencies import fetch_detailed_stats, get_bbagent
-from ..helpers import get_openapi_version, count_requests, test_query_parameter
+from ..helpers import count_requests, get_openapi_version, test_query_parameter
 
 router = APIRouter(prefix="/v1", tags=["base"])
 
@@ -40,7 +39,7 @@ packages_versions = {}
 )
 def get_bedbase_db_stats(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> StatsReturn:
     """
     Returns statistics
     """
@@ -56,7 +55,7 @@ def get_detailed_stats(
     request: Request,
     concise: bool = False,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> FileStats:
     """
     Returns detailed statistics
     """
@@ -70,7 +69,7 @@ def get_detailed_stats(
 )
 def get_detailed_usage(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> UsageStats:
     """
     Returns detailed usage statistics
     """
@@ -84,7 +83,7 @@ def get_detailed_usage(
 )
 async def get_genomes_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BaseListResponse:
     """
     Returns available genomes
     """
@@ -104,7 +103,7 @@ async def get_genomes_list(
 )
 async def get_assays_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BaseListResponse:
     """
     Returns available assays
     """
@@ -156,9 +155,9 @@ def get_bed_exports(
 )
 def get_analysis_files(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-    file_type: Optional[str] = Query(None, description="Filter by file type"),
-    genome: Optional[str] = Query(None, description="Filter by genome/assembly"),
-    tag: Optional[str] = Query(None, description="Filter by a single tag"),
+    file_type: str | None = Query(None, description="Filter by file type"),
+    genome: str | None = Query(None, description="Filter by genome/assembly"),
+    tag: str | None = Query(None, description="Filter by a single tag"),
     limit: int = Query(
         1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
     ),
@@ -195,7 +194,7 @@ def get_analysis_files(
 async def service_info(
     request: Request,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> ServiceInfoResponse:
     """
     Returns information about this service, such as versions, name, etc.
     """
