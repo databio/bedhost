@@ -1,15 +1,21 @@
 import os
-
 from platform import python_version
+
 from bbconf import __version__ as bbconf_version
 from bbconf.bbagent import BedBaseAgent
-from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
-from bbconf.models.base_models import BedSnapshotListResult, AnalysisFileListResult
-from fastapi import APIRouter, Depends, Request, Query
+from bbconf.models.base_models import (
+    AnalysisFileListResult,
+    BedSnapshotListResult,
+    FileStats,
+    StatsReturn,
+    UsageStats,
+)
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
 
 from .._version import __version__ as bedhost_version
+from ..const import EXPORTS_URL_BASE
 from ..data_models import (
     BaseListResponse,
     ComponentVersions,
@@ -18,9 +24,8 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
-from ..const import EXPORTS_URL_BASE
 from ..dependencies import fetch_detailed_stats, get_bbagent
-from ..helpers import get_openapi_version, count_requests, test_query_parameter
+from ..helpers import count_requests, get_openapi_version, test_query_parameter
 
 router = APIRouter(prefix="/v1", tags=["base"])
 

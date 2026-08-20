@@ -2,6 +2,9 @@ import os
 
 PKG_NAME: str = "bedhost"
 
+# Environment variables checked (in order) for the path to the bedhost config file.
+CFG_ENV_VARS: list[str] = ["BEDBASE_CONFIG"]
+
 TEMPLATES_DIRNAME: str = "templates"
 STATIC_DIRNAME: str = "../docs"
 STATIC_PATH: str = os.path.join(

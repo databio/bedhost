@@ -16,9 +16,7 @@ from bbconf.exceptions import (
     MissingThumbnailError,
 )
 from bedboss.refgenome_validator.main import ReferenceValidator
-
 from cachetools import TTLCache
-
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse, Response

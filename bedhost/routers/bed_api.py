@@ -4,13 +4,14 @@ import subprocess
 import tempfile
 from typing import Annotated
 
+from bbconf.bbagent import BedBaseAgent
 from bbconf.exceptions import (
     BedBaseConfError,
     BEDFileNotFoundError,
     TokenizeFileNotExistError,
 )
-from bbconf.models.bed_models import BedClassification  # BedPEPHub,
 from bbconf.models.bed_models import (
+    BedClassification,  # BedPEPHub,
     BedEmbeddingResult,
     BedFiles,
     BedListResult,
@@ -18,15 +19,14 @@ from bbconf.models.bed_models import (
     BedMetadataAll,
     BedPlots,
     BedStatsModel,
+    QdrantSearchResult,
+    RefGenValidModel,
+    RefGenValidReturnModel,
     TokenizedBedResponse,
     TokenizedPathResponse,
-    QdrantSearchResult,
-    RefGenValidReturnModel,
-    RefGenValidModel,
 )
-from bbconf.bbagent import BedBaseAgent
 from bedboss.refgenome_validator.main import ReferenceValidator
-from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, Request
+from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import PlainTextResponse, Response
 from gtars.models import RegionSet
 
@@ -406,7 +406,7 @@ def analyze_reference_genome(
         _LOGGER.error(e)
         raise HTTPException(
             status_code=400,
-            detail=f"Unable to process request. Check loggs",
+            detail="Unable to process request. Check loggs",
         )
 
 
@@ -558,7 +558,7 @@ def text_to_bed_search(
                     similar_results.results.insert(0, result)
                     return similar_results
                 else:
-                    raise BEDFileNotFoundError(f"Similar beds not found")
+                    raise BEDFileNotFoundError("Similar beds not found")
             except Exception as _:
                 similar_results = BedListSearchResult(
                     count=1,
@@ -652,8 +652,6 @@ def text_to_bed_search(
     # results_qdr = bbagent.bed.text_to_bed_search(
     #     query, limit=limit, offset=offset
     # )
-
-    return results_qdr
 
 
 @router.get(

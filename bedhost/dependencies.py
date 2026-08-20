@@ -1,8 +1,10 @@
 from statistics import StatisticsError
+
 from bbconf.bbagent import BedBaseAgent
-from bbconf.models.base_models import BinValues, FileStats, GEOStatistics, UsageModel
+from bbconf.models.base_models import BinValues, FileStats, GEOStatistics
 from bedboss.refgenome_validator.main import ReferenceValidator
 from fastapi import Request
+
 from . import _LOGGER
 
 
