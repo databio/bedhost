@@ -48,7 +48,8 @@
     "vite-plugin-wasm": "^3.5.0"
   },
   "overrides": {
-    "@uwdata/mosaic-core": "0.21.1"
+    "@uwdata/mosaic-core": "0.21.1",
+    "@swc/core": "1.12.14"
   },
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
