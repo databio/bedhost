@@ -1,6 +1,5 @@
 import io
 import os
-from typing import Optional
 
 from PIL import Image, ImageDraw, ImageFont
 
@@ -28,7 +27,9 @@ def _centered_x(
     return (_W - int(draw.textlength(text, font=font))) // 2
 
 
-def _draw_stat_card(draw: ImageDraw.ImageDraw, x: int, y: int, label: str, value: str):
+def _draw_stat_card(
+    draw: ImageDraw.ImageDraw, x: int, y: int, label: str, value: str
+) -> None:
     w, h = 250, 115
     draw.rounded_rectangle([x, y, x + w, y + h], radius=12, fill=_LIGHT_GRAY)
     draw.text(
@@ -42,10 +43,10 @@ def _draw_stat_card(draw: ImageDraw.ImageDraw, x: int, y: int, label: str, value
 
 def generate_bed_og_image(
     bed_id: str,
-    genome: Optional[str],
-    bed_compliance: Optional[str],
-    number_of_regions: Optional[float],
-    mean_region_width: Optional[float],
+    genome: str | None,
+    bed_compliance: str | None,
+    number_of_regions: float | None,
+    mean_region_width: float | None,
 ) -> bytes:
     img = Image.new("RGB", (_W, _H), _WHITE)
     draw = ImageDraw.Draw(img)

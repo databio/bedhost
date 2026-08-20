@@ -31,7 +31,7 @@ _LOGGER = logging.getLogger(PKG_NAME)
 )
 async def get_example_bedset_record(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BedSetMetadata:
     result = bbagent.bedset.get_ids_list(limit=1).results
     if result:
         return bbagent.bedset.get(result[0].id, full=True)
@@ -47,12 +47,12 @@ async def get_example_bedset_record(
 @count_requests(event="bedset_search")
 def list_bedsets(
     request: Request,
-    query: str = None,
+    query: str | None = None,
     limit: int = 1000,
     offset: int = 0,
     test_request: bool = test_query_parameter,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BedSetListResult:
     """
     Returns a list of BEDset records in the database with optional filters and search.
     """
@@ -73,7 +73,7 @@ def get_bedset_metadata(
     full: bool = True,
     test_request: bool = test_query_parameter,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BedSetMetadata:
     # TODO: fix error with not found
     try:
         return bbagent.bedset.get(bedset_id, full=full)
@@ -105,7 +105,7 @@ def get_bedset_pep(
 async def get_bedset_plots_handler(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BedSetPlots:
     """
     Returns metadata from selected columns for selected bedset
     """
@@ -124,7 +124,7 @@ async def get_bedset_plots_handler(
 async def get_bedset_stats_handler(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BedSetStats:
     try:
         return bbagent.bedset.get_statistics(bedset_id)
     except BedSetNotFoundError as _:
@@ -140,7 +140,7 @@ async def get_bedset_stats_handler(
 def get_bedfiles_in_bedset(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BedSetBedFiles:
     return bbagent.bedset.get_bedset_bedfiles(bedset_id)
 
 

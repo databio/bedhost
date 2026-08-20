@@ -1,7 +1,7 @@
 import io
 import zipfile
 from datetime import date
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd
 import yaml
@@ -43,7 +43,7 @@ def zip_conv_result(conv_result: dict, filename: str = "project.zip") -> Respons
     return resp
 
 
-def zip_pep(project: Dict[str, Any]) -> Response:
+def zip_pep(project: dict[str, Any]) -> Response:
     """
     Zip a project up to download
     ## Copied from pephub/helpers.py

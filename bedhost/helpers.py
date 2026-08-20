@@ -1,5 +1,6 @@
 import os
 import inspect
+from collections.abc import Callable
 from functools import wraps
 
 from typing import Literal
@@ -8,13 +9,15 @@ from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import UsageModel
 from fastapi.concurrency import run_in_threadpool
 from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
-from fastapi import Query, Request
+from fastapi import FastAPI, Query
 
 from . import _LOGGER
 from .exceptions import BedHostException
 
 
-def serve_file(path: str, remote: bool = None):
+def serve_file(
+    path: str, remote: bool | None = None
+) -> FileResponse | RedirectResponse:
     """
     Serve a local or remote file
 
@@ -40,7 +43,7 @@ def serve_file(path: str, remote: bool = None):
         raise FileNotFoundError(msg)
 
 
-def get_openapi_version(app):
+def get_openapi_version(app: FastAPI) -> str:
     """
     Get the OpenAPI version from the OpenAPI description JSON
 
@@ -53,7 +56,7 @@ def get_openapi_version(app):
         return "3.0.2"
 
 
-def attach_routers(app):
+def attach_routers(app: FastAPI) -> FastAPI:
     _LOGGER.info("Mounting routers...")
 
     # importing routers here avoids circular imports
@@ -82,7 +85,7 @@ def configure(bbconf_file_path: str) -> BedBaseAgent:
     return bbc
 
 
-def drs_response(status_code, msg):
+def drs_response(status_code: int, msg: str) -> JSONResponse:
     """Helper function to make quick DRS responses"""
     content = {"status_code": status_code, "msg": msg}
     return JSONResponse(status_code=status_code, content=content)
@@ -97,7 +100,7 @@ test_query_parameter = Query(
 
 def count_requests(
     event: Literal["bed_search", "bedset_search", "bed_meta", "bedset_meta", "files"],
-):
+) -> Callable:
     """
     Decorator to count requests for different events.
 
@@ -107,7 +110,7 @@ def count_requests(
     :param str event: event type
     """
 
-    def decorator(func):
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(*args, **kwargs):
 
@@ -179,7 +182,7 @@ def count_requests(
     return decorator
 
 
-def init_model_usage():
+def init_model_usage() -> UsageModel:
     return UsageModel(
         bed_meta={},
         bedset_meta={},

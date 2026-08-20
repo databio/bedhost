@@ -1,6 +1,7 @@
 import logging
 import os
 import sys
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -20,7 +21,7 @@ from cachetools import TTLCache
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -72,7 +73,7 @@ tags_metadata = [
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """
     Application lifespan handler.
 
@@ -186,7 +187,7 @@ def landing_page():
     return RedirectResponse(url="v1/")
 
 
-def render_markdown(filename: str, request: Request):
+def render_markdown(filename: str, request: Request) -> Response:
     path = os.path.join(STATIC_PATH, filename)
     try:
         with open(path, "r", encoding="utf-8") as input_file:
@@ -225,7 +226,7 @@ async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
 attach_routers(app)
 
 
-def main():
+def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
     if not args.command:

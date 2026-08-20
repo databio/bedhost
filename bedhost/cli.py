@@ -1,10 +1,12 @@
+import argparse
+
 from ubiquerg import VersionInHelpParser
 
 from . import PKG_NAME
 from ._version import __version__
 
 
-def build_parser():
+def build_parser() -> argparse.ArgumentParser:
     """
     Building argument parser
 
@@ -31,7 +33,7 @@ def build_parser():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    def add_subparser(cmd, description):
+    def add_subparser(cmd: str, description: str) -> argparse.ArgumentParser:
         return subparsers.add_parser(cmd, description=description, help=description)
 
     sps = {}
