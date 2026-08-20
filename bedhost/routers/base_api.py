@@ -1,18 +1,20 @@
-try:
-    from typing import Annotated, Any, Dict, List, Optional
-except ImportError:
-    from typing_extensions import Annotated
-    from typing import Dict, Optional, List, Any
-
 from platform import python_version
+
 from bbconf import __version__ as bbconf_version
 from bbconf.bbagent import BedBaseAgent
-from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
-from fastapi import APIRouter, Depends, Request
+from bbconf.models.base_models import (
+    AnalysisFileListResult,
+    BedSnapshotListResult,
+    FileStats,
+    StatsReturn,
+    UsageStats,
+)
+from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
 
 from .._version import __version__ as bedhost_version
+from ..const import EXPORTS_URL_BASE
 from ..data_models import (
     BaseListResponse,
     ComponentVersions,
@@ -22,7 +24,12 @@ from ..data_models import (
     Type,
 )
 from ..dependencies import fetch_detailed_stats, get_bbagent
-from ..helpers import get_openapi_version, count_requests, test_query_parameter
+from ..helpers import (
+    build_exports_url,
+    count_requests,
+    get_openapi_version,
+    test_query_parameter,
+)
 
 router = APIRouter(prefix="/v1", tags=["base"])
 
@@ -34,9 +41,9 @@ packages_versions = {}
     summary="Get summary statistics for BEDbase platform",
     response_model=StatsReturn,
 )
-async def get_bedbase_db_stats(
+def get_bedbase_db_stats(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> StatsReturn:
     """
     Returns statistics
     """
@@ -48,14 +55,15 @@ async def get_bedbase_db_stats(
     summary="Get detailed statistics for BEDbase platform, including number of files for each genome",
     response_model=FileStats,
 )
-async def get_detailed_stats(
+def get_detailed_stats(
+    request: Request,
     concise: bool = False,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> FileStats:
     """
     Returns detailed statistics
     """
-    return fetch_detailed_stats(bbagent, concise=concise)
+    return fetch_detailed_stats(request, bbagent=bbagent, concise=concise)
 
 
 @router.get(
@@ -63,9 +71,9 @@ async def get_detailed_stats(
     summary="Get detailed usage statistics for BEDbase platform",
     response_model=UsageStats,
 )
-async def get_detailed_usage(
+def get_detailed_usage(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> UsageStats:
     """
     Returns detailed usage statistics
     """
@@ -79,7 +87,7 @@ async def get_detailed_usage(
 )
 async def get_genomes_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BaseListResponse:
     """
     Returns available genomes
     """
@@ -99,7 +107,7 @@ async def get_genomes_list(
 )
 async def get_assays_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> BaseListResponse:
     """
     Returns available assays
     """
@@ -113,12 +121,80 @@ async def get_assays_list(
 
 
 @router.get(
+    "/exports",
+    summary="Index of published bulk metadata exports (newest first)",
+    response_model=BedSnapshotListResult,
+)
+def get_bed_exports(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+    limit: int = Query(
+        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+    ),
+    offset: int = 0,
+) -> BedSnapshotListResult:
+    """
+    Return the index of bulk metadata export artifacts published to S3, newest
+    first. ``file_path`` is rewritten to the absolute HTTPS CDN URL. Consumers
+    should resolve the current snapshot through this endpoint rather than
+    constructing or hardcoding a filename, since artifacts are dated and
+    immutable.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    result = bbagent.snapshot.list(limit=limit, offset=offset)
+    result.results = [
+        row.model_copy(update={"file_path": build_exports_url(row.file_path)})
+        for row in result.results
+    ]
+    return result
+
+
+@router.get(
+    "/files",
+    summary="Index of standalone analysis files (newest first)",
+    response_model=AnalysisFileListResult,
+)
+def get_analysis_files(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+    file_type: str | None = Query(None, description="Filter by file type"),
+    genome: str | None = Query(None, description="Filter by genome/assembly"),
+    tag: str | None = Query(None, description="Filter by a single tag"),
+    limit: int = Query(
+        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+    ),
+    offset: int = 0,
+) -> AnalysisFileListResult:
+    """
+    Return the index of standalone analysis files (openSignalMatrix, models,
+    other analysis inputs) stored in S3, newest first. These files are global;
+    they are not tied to any bed file or bedset. ``file_path`` is rewritten to
+    the absolute HTTPS CDN URL.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    result = bbagent.analysis_files.list(
+        file_type=file_type,
+        genome=genome,
+        tag=tag,
+        limit=limit,
+        offset=offset,
+    )
+    result.results = [
+        row.model_copy(update={"file_path": build_exports_url(row.file_path)})
+        for row in result.results
+    ]
+    return result
+
+
+@router.get(
     "/service-info", summary="GA4GH service info", response_model=ServiceInfoResponse
 )
 async def service_info(
     request: Request,
     bbagent: BedBaseAgent = Depends(get_bbagent),
-):
+) -> ServiceInfoResponse:
     """
     Returns information about this service, such as versions, name, etc.
     """
@@ -160,5 +236,5 @@ async def redirect_to_download(
     request: Request,
     test_request: bool = test_query_parameter,
 ):
-    download_url = f"https://data2.bedbase.org/{file_path}"
+    download_url = f"{EXPORTS_URL_BASE}{file_path}"
     return RedirectResponse(url=download_url)

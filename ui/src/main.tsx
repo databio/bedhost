@@ -29,6 +29,8 @@ import { BedSplash } from './pages/bed-splash.tsx';
 import { BedsetSplash } from './pages/bedset-splash.tsx';
 import { BedCart } from './pages/bed-cart.tsx';
 import { SearchPage } from './pages/search.tsx';
+import { Downloads } from './pages/downloads.tsx';
+import { AnalysisFiles } from './pages/analysis-files.tsx';
 
 // create the query client
 const queryClient = new QueryClient({
@@ -100,6 +102,14 @@ const router = createBrowserRouter([
   {
     path: '/analyze',
     element: <BEDAnalytics />,
+  },
+  {
+    path: '/downloads',
+    element: <Downloads />,
+  },
+  {
+    path: '/files',
+    element: <AnalysisFiles />,
   },
 ]);
 
