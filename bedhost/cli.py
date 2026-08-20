@@ -1,14 +1,18 @@
+import argparse
+
 from ubiquerg import VersionInHelpParser
 
 from . import PKG_NAME
 from ._version import __version__
+from .const import CFG_ENV_VARS
 
 
-def build_parser():
+def build_parser() -> argparse.ArgumentParser:
     """
-    Building argument parser
+    Build the argument parser.
 
-    :return argparse.ArgumentParser
+    Returns:
+        The configured argument parser.
     """
 
     # env_var_val = select_config(config_env_vars=CFG_ENV_VARS)
@@ -31,7 +35,7 @@ def build_parser():
 
     subparsers = parser.add_subparsers(dest="command")
 
-    def add_subparser(cmd, description):
+    def add_subparser(cmd: str, description: str) -> argparse.ArgumentParser:
         return subparsers.add_parser(cmd, description=description, help=description)
 
     sps = {}

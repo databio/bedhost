@@ -1,5 +1,4 @@
 from enum import Enum
-from typing import Dict
 
 from fastapi import Path
 from pydantic import BaseModel
@@ -85,4 +84,4 @@ class CreateBEDsetRequest(BaseModel):
 
 
 class ChromLengthUploadModel(BaseModel):
-    bed_file: Dict[str, int]
+    bed_file: dict[str, int]
