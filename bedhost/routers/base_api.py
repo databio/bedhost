@@ -248,11 +248,11 @@ async def redirect_to_download(
     summary="Get per-key usage counts for one event type, optionally by date range",
     response_model=UsageResponse,
 )
-async def get_usage(
+def get_usage(
     type: Literal["files", "bed_meta", "bedset_meta", "bed_search", "bedset_search"],
     date_from: datetime.datetime | None = None,
     date_to: datetime.datetime | None = None,
-    limit: int | None = None,
+    limit: int = 1000,
     offset: int = 0,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -260,8 +260,8 @@ async def get_usage(
     Returns per-key usage counts for a single event type
     (files | bed_meta | bedset_meta | bed_search | bedset_search), grouped by key
     and summed over the time-bucketed rows whose window overlaps the requested
-    [date_from, date_to] range. Both date bounds are optional; limit=None returns
-    all matching keys, otherwise limit/offset paginate the keys by count.
+    [date_from, date_to] range. Both date bounds are optional; limit/offset
+    paginate the keys by count (default limit 1000).
     """
     return bbagent.get_usage(
         event_type=type,
