@@ -1,4 +1,6 @@
+import datetime
 from platform import python_version
+from typing import Literal
 
 from bbconf import __version__ as bbconf_version
 from bbconf.bbagent import BedBaseAgent
@@ -7,6 +9,7 @@ from bbconf.models.base_models import (
     BedSnapshotListResult,
     FileStats,
     StatsReturn,
+    UsageResponse,
     UsageStats,
 )
 from fastapi import APIRouter, Depends, Query, Request
@@ -238,3 +241,32 @@ async def redirect_to_download(
 ):
     download_url = f"{EXPORTS_URL_BASE}{file_path}"
     return RedirectResponse(url=download_url)
+
+
+@router.get(
+    "/usage",
+    summary="Get per-key usage counts for one event type, optionally by date range",
+    response_model=UsageResponse,
+)
+async def get_usage(
+    type: Literal["files", "bed_meta", "bedset_meta", "bed_search", "bedset_search"],
+    date_from: datetime.datetime | None = None,
+    date_to: datetime.datetime | None = None,
+    limit: int | None = None,
+    offset: int = 0,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """
+    Returns per-key usage counts for a single event type
+    (files | bed_meta | bedset_meta | bed_search | bedset_search), grouped by key
+    and summed over the time-bucketed rows whose window overlaps the requested
+    [date_from, date_to] range. Both date bounds are optional; limit=None returns
+    all matching keys, otherwise limit/offset paginate the keys by count.
+    """
+    return bbagent.get_usage(
+        event_type=type,
+        date_from=date_from,
+        date_to=date_to,
+        limit=limit,
+        offset=offset,
+    )
