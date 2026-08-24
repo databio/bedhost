@@ -109,21 +109,36 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         _LOGGER.info("Initializing reference genome validator...")
         app.state.ref_validator = ReferenceValidator()
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(
-        upload_usage,
-        "interval",
-        hours=USAGE_SAVE_HOURS,
-        args=(app.state.bbagent, app.state.usage_data),
-    )
-    scheduler.start()
-    app.state.scheduler = scheduler
+    # Read-only guard: when BEDHOST_DISABLE_USAGE_SCHEDULER is truthy, do NOT
+    # start the hourly usage-flush job (which writes to the DB). Default (unset)
+    # keeps the scheduler ON so normal/prod deployments are unaffected.
+    if os.environ.get("BEDHOST_DISABLE_USAGE_SCHEDULER", "").lower() not in (
+        "1",
+        "true",
+        "yes",
+    ):
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(
+            upload_usage,
+            "interval",
+            hours=USAGE_SAVE_HOURS,
+            args=(app.state.bbagent, app.state.usage_data),
+        )
+        scheduler.start()
+        app.state.scheduler = scheduler
+    else:
+        app.state.scheduler = None
+        _LOGGER.info(
+            "BEDHOST_DISABLE_USAGE_SCHEDULER set; usage flush scheduler NOT "
+            "started (read-only mode)."
+        )
 
     try:
         _LOGGER.info("Starting app ...")
         yield
     finally:
-        app.state.scheduler.shutdown(wait=False)
+        if app.state.scheduler is not None:
+            app.state.scheduler.shutdown(wait=False)
 
 
 app = FastAPI(
