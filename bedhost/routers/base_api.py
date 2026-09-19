@@ -12,10 +12,12 @@ from bbconf.models.base_models import (
     UsageResponse,
     UsageStats,
 )
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
+from sqlalchemy import text
 
+from .. import _LOGGER
 from .._version import __version__ as bedhost_version
 from ..const import EXPORTS_URL_BASE
 from ..data_models import (
@@ -37,6 +39,24 @@ from ..helpers import (
 router = APIRouter(prefix="/v1", tags=["base"])
 
 packages_versions = {}
+
+
+@router.get("/ready", include_in_schema=False)
+def readiness(bbagent: BedBaseAgent = Depends(get_bbagent)):
+    """
+    Readiness probe. Takes a connection out of the SQLAlchemy pool and runs
+    ``SELECT 1``. It has to go through the pool, because the pool is what
+    wedges when the database host reboots without closing its sockets; a
+    check that opens its own connection would report healthy while every
+    real request timed out.
+    """
+    try:
+        with bbagent.config.db_engine.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as e:
+        _LOGGER.warning(f"Readiness check failed: {e}")
+        raise HTTPException(status_code=503, detail="database unavailable")
+    return {"status": "ok"}
 
 
 @router.get(

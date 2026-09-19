@@ -20,6 +20,7 @@ from cachetools import TTLCache
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -237,6 +238,29 @@ async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
 # from app.state at request time, so attaching at module import is safe
 # regardless of lifespan ordering.
 attach_routers(app)
+
+
+def _answer_head_wherever_we_answer_get(routes) -> None:
+    """
+    Starlette's plain `Route` adds HEAD alongside GET automatically; FastAPI's
+    `APIRoute` does not, so uptime monitors that send HEAD (UptimeRobot's basic
+    monitor, for one) get a 405. Adding the method makes Starlette run the GET
+    handler and drop the body.
+
+    FastAPI 0.141 stopped flattening included routers into `app.routes` and
+    keeps a wrapper object holding the original router instead, so recurse
+    through those as well. Must run before the first request: the wrapper
+    caches an effective view of its routes on first match.
+    """
+    for route in routes:
+        if isinstance(route, APIRoute) and "GET" in route.methods:
+            route.methods.add("HEAD")
+        included = getattr(route, "original_router", None)
+        if included is not None:
+            _answer_head_wherever_we_answer_get(included.routes)
+
+
+_answer_head_wherever_we_answer_get(app.routes)
 
 
 def main() -> None:
