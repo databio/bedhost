@@ -76,7 +76,23 @@ def list_beds(
     limit: int = Query(
         1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
     ),
-    offset: int = 0,
+    offset: int = Query(
+        0,
+        ge=0,
+        le=10000,
+        description=(
+            "Offset (0-10000), default 0. Offset paging gets slower the deeper "
+            "you go, so it is capped. To go further, use after=<last id> or "
+            "download the bulk snapshot from /v1/exports."
+        ),
+    ),
+    after: str | None = Query(
+        None,
+        description=(
+            "Return records with id greater than this. Keyset paging; ignores "
+            "offset. Pass the last id of the previous page to get the next one."
+        ),
+    ),
     genome: str = Query(
         default=None, description="filter by genome of the bed file. e.g. 'hg38'"
     ),
@@ -86,11 +102,21 @@ def list_beds(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedListResult:
     """
-    Returns list of BED files in the database with optional filters.
+    To enumerate everything, page with `after=<last id>` or download the
+    monthly Parquet snapshot from `/v1/exports`.
+
+    Returns list of BED files in the database with optional filters. Results
+    are ordered by id. `count` (the total number of matching records) is only
+    filled in on the first page (`offset=0` and no `after`); it is `null` on
+    every other page.
     """
 
     return bbagent.bed.get_ids_list(
-        limit=limit, offset=offset, genome=genome, bed_compliance=bed_compliance
+        limit=limit,
+        offset=offset,
+        genome=genome,
+        bed_compliance=bed_compliance,
+        after=after,
     )
 
 

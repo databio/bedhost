@@ -9,7 +9,7 @@ from bbconf.models.bedset_models import (
     BedSetPlots,
     BedSetStats,
 )
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pephubclient.helpers import is_registry_path, unwrap_registry_path
 
 from ..const import EXAMPLE_BEDSET, PKG_NAME
@@ -48,13 +48,19 @@ async def get_example_bedset_record(
 def list_bedsets(
     request: Request,
     query: str | None = None,
-    limit: int = 1000,
+    limit: int = Query(
+        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+    ),
     offset: int = 0,
     test_request: bool = test_query_parameter,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedSetListResult:
     """
-    Returns a list of BEDset records in the database with optional filters and search.
+    To enumerate everything, download the monthly Parquet snapshot from
+    `/v1/exports` (the `bedsets` file).
+
+    Returns a list of BEDset records in the database with optional filters and
+    search. Results are ordered by id, so paging with `offset` is stable.
     """
     return bbagent.bedset.get_ids_list(query=query, limit=limit, offset=offset)
 
