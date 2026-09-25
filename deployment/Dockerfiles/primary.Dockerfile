@@ -1,9 +1,7 @@
-FROM databio/bedhost:latest
+# The deploy workflow passes BASE_IMAGE built from this checkout's Dockerfile,
+# so a deploy never depends on what was last published to Docker Hub.
+ARG BASE_IMAGE=databio/bedhost:latest
+FROM ${BASE_IMAGE}
 
 COPY deployment/config/api.bedbase.org.yaml /bedbase.yaml
 ENV BEDBASE_CONFIG=/bedbase.yaml
-
-RUN mkdir -p /data/outputs/bedstat_output
-RUN mkdir -p /data/outputs/bedbuncher_output
-
-ENTRYPOINT ["uvicorn", "bedhost.main:app", "--host", "0.0.0.0"]

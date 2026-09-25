@@ -60,7 +60,9 @@ jobs:
         REPOSITORY: dev1-bedhost
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG -f deployment/Dockerfiles/${{ env.server }}.Dockerfile .
+        docker build -t bedhost-base:$IMAGE_TAG -f dev.Dockerfile .
+        docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG --build-arg BASE_IMAGE=bedhost-base:$IMAGE_TAG -f deployment/Dockerfiles/${{ env.server }}.Dockerfile .
+        ./tests/scripts/container-smoke.sh $REGISTRY/$REPOSITORY:$IMAGE_TAG
         docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
         echo "image=$REGISTRY/$REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
