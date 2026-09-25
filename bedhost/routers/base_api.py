@@ -17,7 +17,7 @@ from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
 
 from .._version import __version__ as bedhost_version
-from ..const import EXPORTS_URL_BASE
+from ..const import EXPORTS_URL_BASE, MAX_LIST_LIMIT
 from ..data_models import (
     BaseListResponse,
     ComponentVersions,
@@ -131,9 +131,12 @@ async def get_assays_list(
 def get_bed_exports(
     bbagent: BedBaseAgent = Depends(get_bbagent),
     limit: int = Query(
-        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
     ),
-    offset: int = 0,
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
 ) -> BedSnapshotListResult:
     """
     Return the index of bulk metadata export artifacts published to S3, newest
@@ -164,9 +167,12 @@ def get_analysis_files(
     genome: str | None = Query(None, description="Filter by genome/assembly"),
     tag: str | None = Query(None, description="Filter by a single tag"),
     limit: int = Query(
-        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
     ),
-    offset: int = 0,
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
 ) -> AnalysisFileListResult:
     """
     Return the index of standalone analysis files (openSignalMatrix, models,
@@ -252,8 +258,13 @@ def get_usage(
     type: Literal["files", "bed_meta", "bedset_meta", "bed_search", "bedset_search"],
     date_from: datetime.datetime | None = None,
     date_to: datetime.datetime | None = None,
-    limit: int = 1000,
-    offset: int = 0,
+    limit: int = Query(
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
@@ -261,7 +272,7 @@ def get_usage(
     (files | bed_meta | bedset_meta | bed_search | bedset_search), grouped by key
     and summed over the time-bucketed rows whose window overlaps the requested
     [date_from, date_to] range. Both date bounds are optional; limit/offset
-    paginate the keys by count (default limit 1000).
+    paginate the keys by count (default limit 1000, max 10000).
     """
     return bbagent.get_usage(
         event_type=type,

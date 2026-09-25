@@ -34,13 +34,14 @@ from .helpers import (
     init_model_usage,
     upload_usage,
 )
+from .uploads import upload_size_guard
 
 # This module is the application entry point (uvicorn loads `bedhost.main:app`),
 # so it is where logging gets configured. Don't move this into `__init__.py`.
-logmuse.init_logger(PKG_NAME)
-
-logging.getLogger("bbconf").setLevel(logging.DEBUG)
-logging.getLogger("geniml").setLevel(logging.DEBUG)
+LOG_LEVEL = os.environ.get("BEDHOST_LOG_LEVEL", "INFO").upper()
+logmuse.init_logger(PKG_NAME, level=LOG_LEVEL)
+for name in ("bbconf", "geniml"):
+    logging.getLogger(name).setLevel(LOG_LEVEL)
 
 tags_metadata = [
     {
@@ -158,6 +159,10 @@ origins = [
     "https://bedbase.org",
     "*",  # allow cross-origin resource sharing, since this is a public API
 ]
+
+# Registered before CORSMiddleware so CORS runs outside it and its 411/413
+# responses still carry CORS headers for browser clients.
+app.middleware("http")(upload_size_guard)
 
 app.add_middleware(
     CORSMiddleware,

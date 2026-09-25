@@ -9,10 +9,10 @@ from bbconf.models.bedset_models import (
     BedSetPlots,
     BedSetStats,
 )
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pephubclient.helpers import is_registry_path, unwrap_registry_path
 
-from ..const import EXAMPLE_BEDSET, PKG_NAME
+from ..const import EXAMPLE_BEDSET, MAX_LIST_LIMIT, PKG_NAME
 from ..data_models import CreateBEDsetRequest
 from ..dependencies import get_bbagent
 from ..helpers import count_requests, test_query_parameter
@@ -48,8 +48,13 @@ async def get_example_bedset_record(
 def list_bedsets(
     request: Request,
     query: str | None = None,
-    limit: int = 1000,
-    offset: int = 0,
+    limit: int = Query(
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     test_request: bool = test_query_parameter,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedSetListResult:

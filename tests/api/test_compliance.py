@@ -198,6 +198,30 @@ class TestBedMetadataEndpoints:
 
 
 @pytest.mark.require_service
+class TestBedRegionsEndpoint:
+    """Test the /regions endpoint end to end (runs bigBedToBed on a real bigBed)."""
+
+    def test_regions_returns_bed3_lines(self, api_root, example_bed_id):
+        """Regions query should return tab-separated chrom/start/end lines."""
+        if not example_bed_id:
+            pytest.skip("No example BED ID available")
+        res = api_root.get(
+            f"/v1/bed/{example_bed_id}/regions/chr1?start=0&end=1000000", timeout=60
+        )
+        if res.status_code == 404 and "bigBed" in res.text:
+            pytest.skip("Example BED record has no bigBed file")
+        if res.status_code == 500 and "not installed" in res.text:
+            pytest.skip("bigBedToBed is not installed on the server's PATH")
+        assert res.status_code == 200
+        lines = res.text.strip().splitlines()
+        assert lines, "expected at least one region in chr1:0-1000000"
+        for line in lines:
+            chrom, start, end = line.split("\t")
+            assert chrom == "chr1"
+            assert 0 <= int(start) < int(end)
+
+
+@pytest.mark.require_service
 class TestBedSearchEndpoints:
     """Test BED search endpoints."""
 
@@ -307,6 +331,76 @@ class TestOpenAPIDocumentation:
         data = res.json()
         assert "openapi" in data
         assert "paths" in data
+
+
+@pytest.mark.require_service
+class TestInputBounds:
+    """Regression tests for bounded request inputs (security review O1)."""
+
+    def test_bedset_list_limit_too_high_is_422(self, api_root):
+        res = api_root.get("/v1/bedset/list?limit=10001")
+        assert res.status_code == 422
+
+    def test_bedset_list_offset_negative_is_422(self, api_root):
+        res = api_root.get("/v1/bedset/list?offset=-1")
+        assert res.status_code == 422
+
+    def test_bedset_list_limit_at_max_is_200(self, api_root):
+        res = api_root.get("/v1/bedset/list?limit=10000")
+        assert res.status_code == 200
+
+    def test_usage_limit_too_high_is_422(self, api_root):
+        res = api_root.get("/v1/usage?type=files&limit=10001")
+        assert res.status_code == 422
+
+    def test_text_search_limit_too_high_is_422(self, api_root):
+        res = api_root.get("/v1/bed/search/text?query=x&limit=101")
+        assert res.status_code == 422
+
+    def test_text_search_offset_negative_is_422(self, api_root):
+        res = api_root.get("/v1/bed/search/text?query=x&offset=-1")
+        assert res.status_code == 422
+
+    def test_exact_search_limit_too_high_is_422(self, api_root):
+        res = api_root.get("/v1/bed/search/exact?query=x&limit=101")
+        assert res.status_code == 422
+
+    def test_neighbours_limit_too_high_is_422(self, api_root, example_bed_id):
+        if not example_bed_id:
+            pytest.skip("No example BED ID available")
+        res = api_root.get(f"/v1/bed/{example_bed_id}/neighbours?limit=101")
+        assert res.status_code == 422
+
+    def test_regions_start_negative_is_422(self, api_root, example_bed_id):
+        if not example_bed_id:
+            pytest.skip("No example BED ID available")
+        res = api_root.get(f"/v1/bed/{example_bed_id}/regions/chr1?start=-1")
+        assert res.status_code == 422
+
+    def test_regions_start_non_numeric_is_422(self, api_root, example_bed_id):
+        if not example_bed_id:
+            pytest.skip("No example BED ID available")
+        res = api_root.get(f"/v1/bed/{example_bed_id}/regions/chr1?start=abc")
+        assert res.status_code == 422
+
+    def test_regions_end_not_greater_than_start_is_400(self, api_root, example_bed_id):
+        if not example_bed_id:
+            pytest.skip("No example BED ID available")
+        res = api_root.get(f"/v1/bed/{example_bed_id}/regions/chr1?start=100&end=50")
+        assert res.status_code == 400
+
+    def test_analyze_genome_negative_length_is_422(self, api_root):
+        res = api_root.post("/v1/bed/analyze-genome", json={"bed_file": {"chr1": -5}})
+        assert res.status_code == 422
+
+    def test_analyze_genome_empty_dict_is_422(self, api_root):
+        res = api_root.post("/v1/bed/analyze-genome", json={"bed_file": {}})
+        assert res.status_code == 422
+
+    def test_analyze_genome_too_many_entries_is_422(self, api_root):
+        bed_file = {f"chr{i}": i for i in range(10001)}
+        res = api_root.post("/v1/bed/analyze-genome", json={"bed_file": bed_file})
+        assert res.status_code == 422
 
 
 @pytest.mark.require_service

@@ -1,7 +1,4 @@
-import os
-import shutil
 import subprocess
-import tempfile
 from typing import Annotated
 
 from bbconf.bbagent import BedBaseAgent
@@ -28,14 +25,14 @@ from bbconf.models.bed_models import (
 from bedboss.refgenome_validator.main import ReferenceValidator
 from fastapi import APIRouter, Depends, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import PlainTextResponse, Response
-from gtars.models import RegionSet
 
 from .. import _LOGGER
 from ..const import (
+    BIGBED_TIMEOUT_SECONDS,
     EXAMPLE_BED,
-    MAX_FILE_SIZE,
-    MAX_REGION_NUMBER,
-    MIN_REGION_WIDTH,
+    MAX_LIST_LIMIT,
+    MAX_REGIONS_OUTPUT_BYTES,
+    MAX_SEARCH_LIMIT,
 )
 from ..data_models import (
     CROM_NUMBERS,
@@ -44,9 +41,30 @@ from ..data_models import (
     ChromLengthUploadModel,
 )
 from ..dependencies import get_bbagent, get_ref_validator
-from ..helpers import count_requests, test_query_parameter
+from ..helpers import (
+    RegionOutputTooLarge,
+    build_exports_url,
+    count_requests,
+    run_bigbed_to_bed,
+    test_query_parameter,
+)
+from ..uploads import uploaded_region_set
 
 router = APIRouter(prefix="/v1/bed", tags=["bed"])
+
+
+def _require_ml(bbagent: BedBaseAgent, *attrs: str) -> None:
+    """Return 503 up-front when bbconf was started without the ML pieces a route needs.
+
+    With ``init_ml=False`` these config attributes are ``None`` and bbconf would
+    otherwise fail deep inside with a 500 AttributeError.
+    """
+    config = getattr(bbagent, "config", None)
+    if any(getattr(config, attr, None) is None for attr in attrs):
+        raise HTTPException(
+            status_code=503,
+            detail="This endpoint is unavailable (ML models disabled)",
+        )
 
 
 @router.get(
@@ -74,9 +92,12 @@ async def get_example_bed_record(
 )
 def list_beds(
     limit: int = Query(
-        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
     ),
-    offset: int = 0,
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     genome: str = Query(
         default=None, description="filter by genome of the bed file. e.g. 'hg38'"
     ),
@@ -266,8 +287,13 @@ async def get_bed_classification(
 )
 def get_bed_neighbours(
     bed_id: str = BedDigest,
-    limit: int = 10,
-    offset: int = 0,
+    limit: int = Query(
+        10,
+        ge=1,
+        le=MAX_SEARCH_LIMIT,
+        description=f"Limit (1-{MAX_SEARCH_LIMIT}), default 10",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedListSearchResult:
     try:
@@ -313,45 +339,29 @@ def embed_bed_file(
     Create embedding for bed file
     """
     _LOGGER.info("Embedding file..")
-
-    if file is not None:
-        with tempfile.TemporaryDirectory() as dirpath:
-            file_path = os.path.join(dirpath, file.filename)
-
-            with open(file_path, "wb") as bed_file:
-                shutil.copyfileobj(file.file, bed_file)
-
-            region_set = RegionSet(file_path)
-
-            embedding = bbagent.bed._embed_file(region_set)
+    _require_ml(bbagent, "qdrant_file_backend", "r2v_encoder")
+    with uploaded_region_set(file) as region_set:
+        embedding = bbagent.bed._embed_file(region_set)
     return embedding.tolist()[0]
 
 
 @router.post(
     "/umap",
-    summary="Get embeddings for a bed file.",
+    summary="Get UMAP coordinates for a bed file.",
     response_model=list[float],
 )
 def umap_bed_file(
-    file: UploadFile = File(None),
+    file: UploadFile = File(...),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> list[float]:
     """
-    Create embedding for bed file
+    Compute UMAP coordinates for bed file
     """
-    _LOGGER.info("Embedding file..")
-
-    if file is not None:
-        with tempfile.TemporaryDirectory() as dirpath:
-            file_path = os.path.join(dirpath, file.filename)
-
-            with open(file_path, "wb") as bed_file:
-                shutil.copyfileobj(file.file, bed_file)
-
-            region_set = RegionSet(file_path)
-
-            embedding = bbagent.bed._get_umap_file(region_set)
-    return embedding.tolist()[0]
+    _LOGGER.info("Computing UMAP coordinates for file..")
+    _require_ml(bbagent, "qdrant_file_backend", "r2v_encoder", "umap_encoder")
+    with uploaded_region_set(file) as region_set:
+        coordinates = bbagent.bed._get_umap_file(region_set)
+    return coordinates.tolist()[0]
 
 
 @router.post(
@@ -449,55 +459,61 @@ def get_regions_for_bedfile(
     bed_id: str = BedDigest,
     chr_num: str = CROM_NUMBERS,
     start: Annotated[
-        str | None, Query(description="query range: start coordinate")
+        int | None, Query(ge=0, description="Query range: start coordinate (0-based)")
     ] = None,
     end: Annotated[
-        str | None, Query(description="query range: start coordinate")
+        int | None, Query(ge=0, description="Query range: end coordinate")
     ] = None,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     """
     Returns the queried regions with provided ID and optional query parameters
     """
+    if start is not None and end is not None and end <= start:
+        raise HTTPException(status_code=400, detail="end must be greater than start")
+
     bigbedfile = bbagent.bed.get_files(bed_id).bigbed_file
 
     if not bigbedfile:
         raise HTTPException(
             status_code=404, detail="ERROR: bigBed file doesn't exists. Can't query."
         )
-    path = bbagent.objects.get_prefixed_uri(bigbedfile.path, access_id="http")
+    # Use the direct storage URL: the "http" access method points at the API's
+    # /v1/files/ redirect, and bigBedToBed cannot follow redirects.
+    path = build_exports_url(bigbedfile.path)
     _LOGGER.debug(path)
     cmd = ["bigBedToBed"]
     if chr_num:
         cmd.append(f"-chrom={chr_num}")
-    if start:
+    if start is not None:
         cmd.append(f"-start={start}")
-    if end:
+    if end is not None:
         cmd.append(f"-end={end}")
     cmd.extend([path, "stdout"])
 
-    _LOGGER.info(f"Command: {' '.join(map(str, cmd))} | cut -f1-3")
+    _LOGGER.info(f"Command: {' '.join(map(str, cmd))}")
     try:
-        cut_process = subprocess.Popen(
-            ["cut", "-f1-3"],
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            universal_newlines=True,
+        return run_bigbed_to_bed(cmd, BIGBED_TIMEOUT_SECONDS, MAX_REGIONS_OUTPUT_BYTES)
+    except RegionOutputTooLarge:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Too many regions in the requested range (over "
+            f"{MAX_REGIONS_OUTPUT_BYTES // (1024 * 1024)} MB). Narrow it with start and end.",
         )
-
-        subprocess.Popen(
-            cmd,
-            stdout=cut_process.stdin,
-            text=True,
-        )
-
-        return cut_process.communicate()[0]
-
     except FileNotFoundError:
         _LOGGER.warning("bigBedToBed is not installed.")
         raise HTTPException(
             status_code=500, detail="ERROR: bigBedToBed is not installed."
         )
+    except subprocess.TimeoutExpired:
+        _LOGGER.warning(f"Region query timed out for bed_id={bed_id}, chrom={chr_num}")
+        raise HTTPException(status_code=504, detail="Region query timed out.")
+    except subprocess.CalledProcessError as e:
+        _LOGGER.error(
+            f"bigBedToBed failed for bed_id={bed_id}, chrom={chr_num}: "
+            f"returncode={e.returncode}, stderr={e.stderr}"
+        )
+        raise HTTPException(status_code=502, detail="Failed to query bigBed file.")
 
 
 @router.get(
@@ -513,8 +529,13 @@ def text_to_bed_search(
     query: str,
     genome: str | None = None,
     assay: str | None = None,
-    limit: int = 10,
-    offset: int = 0,
+    limit: int = Query(
+        10,
+        ge=1,
+        le=MAX_SEARCH_LIMIT,
+        description=f"Limit (1-{MAX_SEARCH_LIMIT}), default 10",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     test_request: bool = test_query_parameter,  # needed for usage tracking in @count_requests
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedListSearchResult:
@@ -665,8 +686,13 @@ async def exact_search(
     query: str,
     genome: str | None = None,
     assay: str | None = None,
-    limit: int = 10,
-    offset: int = 0,
+    limit: int = Query(
+        10,
+        ge=1,
+        le=MAX_SEARCH_LIMIT,
+        description=f"Limit (1-{MAX_SEARCH_LIMIT}), default 10",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedListSearchResult:
     return bbagent.bed.sql_search(
@@ -686,56 +712,20 @@ async def exact_search(
     response_model_by_alias=False,
 )
 def bed_to_bed_search(
-    file: UploadFile = File(None),
-    limit: int = 10,
-    offset: int = 0,
+    file: UploadFile = File(...),
+    limit: int = Query(
+        10,
+        ge=1,
+        le=MAX_SEARCH_LIMIT,
+        description=f"Limit (1-{MAX_SEARCH_LIMIT}), default 10",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedListSearchResult:
     _LOGGER.info("Searching for bedfiles...")
-    print("file size {}", file.size)
-    if file.size > MAX_FILE_SIZE:
-        raise HTTPException(
-            status_code=413,
-            detail="File too large. Maximum file size is 20MB.",
-        )
-
-    if file is not None:
-        with tempfile.TemporaryDirectory() as dirpath:
-            file_path = os.path.join(dirpath, file.filename)
-
-            with open(file_path, "wb") as bed_file:
-                shutil.copyfileobj(file.file, bed_file)
-
-            try:
-                region_set = RegionSet(file_path)
-            except Exception as e:
-                _LOGGER.error(f"Error reading bed file: {e}")
-                raise HTTPException(
-                    status_code=415,
-                    detail="Error reading bed file. Please make sure the file is a valid BED file.",
-                )
-
-            if region_set.mean_region_width() < MIN_REGION_WIDTH:
-                raise HTTPException(
-                    status_code=415,
-                    detail="Mean region width is too small. Please provide a BED file with mean region width greater than 10.",
-                )
-
-            if len(region_set) > MAX_REGION_NUMBER:
-                raise HTTPException(
-                    status_code=415,
-                    detail="Too many regions in the BED file. Please provide a BED file with less than 1,000,000 regions.",
-                )
-
-            results = bbagent.bed.bed_to_bed_search(
-                region_set, limit=limit, offset=offset
-            )
-        return results
-
-    raise HTTPException(
-        status_code=404,
-        detail="Error occurred, please make sure file is correct and if issue persists, contact support.",
-    )
+    _require_ml(bbagent, "b2b_search_interface")
+    with uploaded_region_set(file, validate_for_search=True) as region_set:
+        return bbagent.bed.bed_to_bed_search(region_set, limit=limit, offset=offset)
 
 
 @router.get(
@@ -752,7 +742,6 @@ async def get_tokens(
     Return univers of bed file
     Example: bed: 0dcdf8986a72a3d85805bbc9493a1302 | universe: 58dee1672b7e581c8e1312bd4ca6b3c7
     """
-    _LOGGER.info(bbagent.config.config.s3)
     try:
         return bbagent.bed.get_tokenized(bed_id, universe_id)
 

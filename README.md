@@ -56,3 +56,4 @@ RUN_INTEGRATION_TESTS=true pytest tests/integration/ tests/api/
 Integration tests require network access on first boot (bbconf downloads a
 licenses CSV from GitHub and may pull HuggingFace models unless
 `BEDHOST_INIT_ML=false` is set; `test-integration.sh` sets it).
+`BEDHOST_LOG_LEVEL` (default `INFO`) sets the log level for bedhost, bbconf, and geniml.
