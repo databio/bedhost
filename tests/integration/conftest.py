@@ -124,13 +124,107 @@ def test_client(bedhost_app):
         yield c
 
 
+# Seed data mirrors a real public bedbase record (hg38 CTCF ChIP-seq peaks),
+# so its bigBed path resolves on the public CDN for /regions queries.
+SEED_BED_ID = "bbad85f21962bb8d972444f7f9a3a932"
+SEED_BEDSET_ID = "gse218680"
+SEED_BED_FILES = {
+    "bed_file": ("BED file", "files/b/b/bbad85f21962bb8d972444f7f9a3a932.bed.gz"),
+    "bigbed_file": (
+        "BigBed file",
+        "files/b/b/bbad85f21962bb8d972444f7f9a3a932.bigBed",
+    ),
+}
+
+
 @pytest.fixture(scope="session")
-def integration_api_root(test_client):
+def seeded_db(test_client):
+    """Insert one BED record and one BEDset through bbconf's own API.
+
+    Without this the ephemeral DB is empty and every test that needs an
+    example BED/BEDset ID skips. Files are inserted directly because
+    ``bed.add`` only records them when uploading to S3.
+    """
+    from bbconf.db_utils import Files
+    from sqlalchemy.orm import Session
+
+    bbagent = test_client.app.state.bbagent
+    bbagent.bed.add(
+        identifier=SEED_BED_ID,
+        stats={
+            "number_of_regions": 57_281,
+            "gc_content": 0.52,
+            "median_tss_dist": 12_345,
+            "mean_region_width": 280.5,
+            "exon_frequency": 3_000,
+            "exon_percentage": 5.2,
+            "intron_frequency": 20_000,
+            "intron_percentage": 34.9,
+            "intergenic_percentage": 45.1,
+            "intergenic_frequency": 25_800,
+            "promotercore_frequency": 4_000,
+            "promotercore_percentage": 7.0,
+            "fiveutr_frequency": 500,
+            "fiveutr_percentage": 0.9,
+            "threeutr_frequency": 1_000,
+            "threeutr_percentage": 1.7,
+            "promoterprox_frequency": 2_981,
+            "promoterprox_percentage": 5.2,
+        },
+        metadata={
+            "species_name": "Homo sapiens",
+            "species_id": "9606",
+            "cell_type": "neural progenitor cell",
+            "assay": "ChIP-seq",
+            "antibody": "CTCF",
+            "target": "CTCF",
+            "global_experiment_id": ["geo:gse218680"],
+        },
+        plots={},
+        files={},
+        classification={
+            "name": "PM_137_NPC_CTCF_ChIP",
+            "genome_alias": "hg38",
+            "genome_digest": "Ba88PY52_qeifhJrgUXyin6UITdXNsg3",
+            "bed_compliance": "bed6+4",
+            "data_format": "encode_narrowpeak",
+            "compliant_columns": 6,
+            "non_compliant_columns": 4,
+        },
+        upload_qdrant=False,
+        upload_s3=False,
+    )
+    with Session(bbagent.config.db_engine.engine) as session:
+        for name, (title, path) in SEED_BED_FILES.items():
+            session.add(
+                Files(
+                    name=name,
+                    title=title,
+                    path=path,
+                    type="file",
+                    bedfile_id=SEED_BED_ID,
+                )
+            )
+        session.commit()
+
+    bbagent.bedset.create(
+        identifier=SEED_BEDSET_ID,
+        name=SEED_BEDSET_ID,
+        bedid_list=[SEED_BED_ID],
+        description="Seeded test BEDset",
+        statistics=True,
+    )
+    return {"bed_id": SEED_BED_ID, "bedset_id": SEED_BEDSET_ID}
+
+
+@pytest.fixture(scope="session")
+def integration_api_root(test_client, seeded_db):
     """The integration-mode ``api_root`` fixture value.
 
     Named distinctly from ``api_root`` to avoid a fixture name collision
     with the top-level ``tests/conftest.py``; the top-level fixture
     delegates via ``request.getfixturevalue`` when integration mode is on.
+    Depends on ``seeded_db`` so every API test sees the example records.
     """
     from tests.client import TestClientAdapter
 
