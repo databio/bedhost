@@ -1,0 +1,22 @@
+# Local dev Postgres for bedhost/bbconf, managed by the "dash" dashboard.
+# Isolated from any production DB. Exposes Postgres on host port 15443.
+services:
+  postgres:
+    image: postgres:16
+    container_name: bedbase-postgres-dev
+    environment:
+      POSTGRES_USER: bedbase
+      POSTGRES_PASSWORD: bedbase
+      POSTGRES_DB: bedbase
+    ports:
+      - "127.0.0.1:15443:5432"
+    volumes:
+      - bedbase_dev_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bedbase -d bedbase"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  bedbase_dev_pgdata:

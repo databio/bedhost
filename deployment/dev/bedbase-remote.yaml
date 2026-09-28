@@ -1,0 +1,40 @@
+# READ-ONLY bbconf config pointing at the REAL production BEDbase Postgres.
+#
+# Mirrors the working local dev config (bedbase-dev.yaml): `path: {}` is present
+# and the `qdrant` and `s3` sections are intentionally OMITTED. With no `qdrant`
+# section, BedBaseConfig fails to build a qdrant client during construction,
+# which the constructor catches and uses to force init_ml=False -- so no ML
+# models load and no live qdrant/s3 connection is needed for the read-only
+# /v1/usage and /v1/stats endpoints.
+#
+# The database section points at the production env vars, which are resolved by
+# sourcing environment/production.env (which pulls creds from `pass`) at service
+# launch. run_migrations is FALSE: never run migrations against production.
+database:
+  host: $POSTGRES_HOST
+  port: 5432
+  user: $POSTGRES_USER
+  password: $POSTGRES_PASSWORD
+  database: $POSTGRES_DB
+  dialect: postgresql
+  driver: psycopg
+  run_migrations: false
+server:
+  host: 127.0.0.1
+  port: 8125
+path: {}
+# Needed to build file download links (/v1/bed/{id}/metadata/files, DRS).
+# Copied from deployment/config/api.bedbase.org.yaml.
+access_methods:
+  http:
+    type: "https"
+    description: HTTP compatible path
+    prefix: https://api.bedbase.org/v1/files/
+  s3:
+    type: "s3"
+    description: S3 compatible path
+    prefix: s3://data2.bedbase.org/
+  local:
+    type: "https"
+    description: How to serve local files.
+    prefix: /static/
