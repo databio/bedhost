@@ -7,13 +7,13 @@ Running with `uvicorn` provides auto-reload. To configure, this assumes you have
 
 
 ```console
-source ../bedbase.org/environment/production.env
-BEDBASE_CONFIG=../bedbase.org/config/api.bedbase.org.yaml uvicorn bedhost.main:app --reload
+source environment/production.env
+BEDBASE_CONFIG=deployment/config/api.bedbase.org.yaml uvicorn bedhost.main:app --reload
 ```
 
 You can change the database you're connecting to by using a different config file:
 - Using a local config: `BEDBASE_CONFIG=../bbconf/tests/data/config.yaml uvicorn bedhost.main:app --reload`
-- With new database: `BEDBASE_CONFIG=../bedbase.org/config/bedbase2.yaml uvicorn bedhost.main:app --reload`
+- With the dev database: `BEDBASE_CONFIG=deployment/config/api-dev.bedbase.org.yaml uvicorn bedhost.main:app --reload`
 
 Now, you can access the service at [http://127.0.0.1:8000](http://127.0.0.1:8000). Example endpoints:
 - http://127.0.0.1:8000/v1/bed/bbad85f21962bb8d972444f7f9a3a932/metadata?full=true
@@ -26,7 +26,7 @@ Now, you can access the service at [http://127.0.0.1:8000](http://127.0.0.1:8000
 
 ### Building image
 
-- Primary image: `docker build -t databio/bedhost -f .Dockerfile .`
+- Primary image: `docker build -t databio/bedhost -f Dockerfile .`
 - Dev image `docker build -t databio/bedhost:dev -f dev.Dockerfile .`
 - Test image: `docker build -t databio/bedhost:dev -f test.Dockerfile .`
 

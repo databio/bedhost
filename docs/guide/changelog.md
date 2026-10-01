@@ -2,6 +2,49 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format. 
 
+## [0.13.0] -- 2026-08-20
+### Added:
+- `/v1/objects/exports` and `/v1/objects/files` endpoints listing published bulk-metadata exports and standalone analysis files [API]
+- `BEDHOST_INIT_ML` environment variable to skip loading ML models [API]
+### Changed:
+- Statistics cache moved to app state (thread safe), with a fallback for empty datasets [API]
+- Blocking endpoints run in a threadpool instead of stalling the event loop [API]
+- Missing markdown files return 404 instead of 500 [API]
+- Logging configured once, in `main.py`
+
+## [0.12.7] -- 2026-04-22
+### Changed:
+- UMAP page improvements and fixed link previews [UI]
+- Migrated to Starlette 1.0 and yacman 1.0
+
+## [0.12.6] -- 2026-04-16
+### Fixed:
+- Build fix
+
+## [0.12.5] -- 2026-04-15
+### Changed:
+- UI updates and search improvements
+
+## [0.12.4] -- 2026-02-06
+### Fixed:
+- Search by external id
+### Changed:
+- Updated UMAP UI [UI]
+
+## [0.12.3] -- 2026-01-21
+
+## [0.12.2] -- 2026-01-21
+### Added:
+- BED classifier and reference genome validator in the BED analyzer [UI]
+### Changed:
+- Updated home page [UI]
+
+## [0.12.1] -- 2025-12-22
+### Added:
+- Hybrid text search combining dense and sparse vector search [API]
+### Changed:
+- Backend improvements that reduce container size
+
 ## [0.12.0] -- 2025-12-01
 ### Added:
 - umap calculation [API]
@@ -61,10 +104,6 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 - New text2bed search (bivec search)
 - Added track_hub endpoints and pointing link
 - Added pep generating endpoint for bedsets
-
-## [0.6.0] -- 2024-10-15
-
-## [0.6.0] -- 2024-10-15
 
 ## [0.6.0] -- 2024-10-15
 
@@ -135,7 +174,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### add
 - add endpoint for region-based query 
 ### fix
-- constrauction of local file/img path
+- construction of local file/img path
 
 ## [0.0.3] -- 2021-02-22
 - Initial project release

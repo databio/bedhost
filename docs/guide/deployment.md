@@ -16,13 +16,13 @@ This repo will deploy a new service by following these steps:
 Here we use the `databio/bedhost` container on dockerhub, and just add the configuration file in this repo to it, so build is super fast.
 
 ```
-docker build -t databio/bedhost-configured -f Dockerfiles/primary.Dockerfile .
+docker build -t databio/bedhost-configured -f deployment/Dockerfiles/primary.Dockerfile .
 ```
 
 Or for dev:
 
 ```
-docker build -t databio/bedhost-configured-dev -f Dockerfiles/dev1.Dockerfile .
+docker build -t databio/bedhost-configured-dev -f deployment/Dockerfiles/dev1.Dockerfile .
 ```
 
 ## Run it locally to test
@@ -42,8 +42,8 @@ Here's another example for running the container:
 ```
 docker run --rm --init -p 8000:8000 --name bedstat-rest-server \
   --network="host" \
-  --volume ~/code/bedbase.org/config/api.bedbase.org.yaml:/bedbase.yaml \
-  --env-file ../bedbase.org/environment/docker.env \
+  --volume "$(pwd)/deployment/config/api.bedbase.org.yaml:/bedbase.yaml" \
+  --env-file environment/docker.env \
   --env BEDBASE_CONFIG=/bedbase.yaml \
   databio/bedhost  uvicorn bedhost.main:app --reload
 ```
@@ -59,6 +59,6 @@ aws ecr get-login-password --region us-east-1 | docker login --username AWS --pa
 
 Build/tag/push image:
 ```
-docker build -t 235728444054.dkr.ecr.us-east-1.amazonaws.com/bedhost -f Dockerfiles/primary.Dockerfile .
+docker build -t 235728444054.dkr.ecr.us-east-1.amazonaws.com/bedhost -f deployment/Dockerfiles/primary.Dockerfile .
 docker push 235728444054.dkr.ecr.us-east-1.amazonaws.com/bedhost
 ```

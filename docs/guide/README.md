@@ -30,18 +30,18 @@ Therefore, to get information and statistics about BED or BEDset records, or wha
 
 ## Record identifiers vs. object identifiers
 
-Each record has an identifier. For example, `eaf9ee97241f300f1c7e76e1f945141f` is a BED identifier. You can use this identifier for the metadata endpoints. To download files, you'll need something slightly different -- you need an *object identifier*. This is because each BED record includes multiple files, such as the original BED file, the BigBed file, analysis plots, and so on. To download a file, you will construct what we call the `object_id`, which identifies the specific file.
+Each record has an identifier. For example, `0000120fe8c5334bb0ce759dfcf06c3b` is a BED identifier. You can use this identifier for the metadata endpoints. To download files, you'll need something slightly different -- you need an *object identifier*. This is because each BED record includes multiple files, such as the original BED file, the BigBed file, analysis plots, and so on. To download a file, you will construct what we call the `object_id`, which identifies the specific file.
 
 ### How to construct object identifiers
 
-Object IDs take the form `<record_type>.<record_identifier>.<result_id>`. An example of an object_id for a BED file is `bed.eaf9ee97241f300f1c7e76e1f945141f.bedfile`
+Object IDs take the form `<record_type>.<record_identifier>.<result_id>`. An example of an object_id for a BED file is `bed.0000120fe8c5334bb0ce759dfcf06c3b.bed_file`
 
 So, you can get information about this object like this:
 
-`GET` [https://api.bedbase.org/objects/bed.eaf9ee97241f300f1c7e76e1f945141f.bedfile](https://api.bedbase.org/objects/bed.eaf9ee97241f300f1c7e76e1f945141f.bedfile)
+`GET` [https://api.bedbase.org/v1/objects/bed.0000120fe8c5334bb0ce759dfcf06c3b.bed_file](https://api.bedbase.org/v1/objects/bed.0000120fe8c5334bb0ce759dfcf06c3b.bed_file)
 
 Or, you can get a URL to download the actual file with:
 
-`GET` [https://api.bedbase.org/objects/bed.eaf9ee97241f300f1c7e76e1f945141f.bedfile/access/http](https://api.bedbase.org/objects/bed.eaf9ee97241f300f1c7e76e1f945141f.bedfile/access/http)
+`GET` [https://api.bedbase.org/v1/objects/bed.0000120fe8c5334bb0ce759dfcf06c3b.bed_file/access/http](https://api.bedbase.org/v1/objects/bed.0000120fe8c5334bb0ce759dfcf06c3b.bed_file/access/http)
 
 
