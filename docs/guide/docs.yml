@@ -1,0 +1,6 @@
+site_name: BEDhost
+nav:
+  - BEDhost overview: README.md
+  - Building docker image: build_image.md
+  - Deploy API: deployment.md
+  - Changelog: changelog.md
