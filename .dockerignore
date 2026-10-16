@@ -6,3 +6,6 @@
 ui/node_modules
 ui/dist
 deployment/dev
+docs_jupyter
+local_cache
+*.h5
