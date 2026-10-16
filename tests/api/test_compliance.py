@@ -27,6 +27,14 @@ class TestServiceInfo:
         res = api_root.get("/v1/service-info")
         assert res.status_code == 200
 
+    def test_ready_returns_200(self, api_root):
+        res = api_root.get("/v1/ready")
+        assert res.status_code == 200
+
+    def test_head_on_get_route(self, api_root):
+        res = api_root.head("/v1/service-info")
+        assert res.status_code == 200
+
     def test_service_info_has_required_fields(self, api_root):
         """Service info should contain required GA4GH fields."""
         res = api_root.get("/v1/service-info")
@@ -115,6 +123,19 @@ class TestBedListEndpoints:
         for bed in data["results"]:
             if "genome_alias" in bed:
                 assert bed["genome_alias"] == "hg38"
+
+    def test_bed_list_after_pages_forward(self, api_root):
+        """after=<last id> returns only ids greater than it."""
+        first = api_root.get("/v1/bed/list?limit=1").json()["results"]
+        if not first:
+            pytest.skip("no beds")
+        res = api_root.get(f"/v1/bed/list?after={first[0]['id']}")
+        assert res.status_code == 200
+        assert all(b["id"] > first[0]["id"] for b in res.json()["results"])
+
+    def test_bed_list_offset_too_high_is_422(self, api_root):
+        res = api_root.get("/v1/bed/list?offset=10001")
+        assert res.status_code == 422
 
 
 @pytest.mark.require_service

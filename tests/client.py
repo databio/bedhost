@@ -4,7 +4,7 @@ Two implementations share the same call surface so a single test body
 can run either against a live HTTP server (``RequestsClient``) or
 in-process via FastAPI's ``TestClient`` (``TestClientAdapter``).
 
-Both ``.get`` / ``.post`` return a response object exposing
+``.get`` / ``.post`` / ``.head`` return a response object exposing
 ``.status_code``, ``.json()``, ``.text``, and ``.headers`` -- the subset
 used by the compliance suite.
 """
@@ -25,6 +25,11 @@ class RequestsClient:
         import requests
 
         return requests.post(f"{self.base_url}{path}", **kw)
+
+    def head(self, path, **kw):
+        import requests
+
+        return requests.head(f"{self.base_url}{path}", **kw)
 
 
 class TestClientAdapter:
@@ -48,3 +53,6 @@ class TestClientAdapter:
 
     def post(self, path, **kw):
         return self._client.post(path, **self._translate_kwargs(kw))
+
+    def head(self, path, **kw):
+        return self._client.head(path, **self._translate_kwargs(kw))
