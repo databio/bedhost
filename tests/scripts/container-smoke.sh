@@ -3,7 +3,7 @@
 #
 # Checks the things the ECS task definitions rely on: the image runs as UID
 # 10001, serves on port 8000, has writable cache/temp dirs, keeps the app code
-# read-only, and the app module imports. No database is needed.
+# read-only, the app module imports, and bigBedToBed runs. No database is needed.
 #
 # Usage: ./tests/scripts/container-smoke.sh <image>
 
@@ -32,5 +32,6 @@ check "cache and temp dirs are writable" run sh -c \
     'mkdir -p "$HF_HOME" "$FASTEMBED_CACHE_PATH" "$NUMBA_CACHE_DIR" && touch "$HF_HOME/w" "$FASTEMBED_CACHE_PATH/w" "$NUMBA_CACHE_DIR/w" /tmp/w'
 check "app code is read-only" run sh -c '! touch /app/bedhost/w'
 check "app module imports" run python -c "import bedhost.main"
+check "bigBedToBed is installed and runs" run sh -c 'bigBedToBed 2>&1 | grep -q "Convert from bigBed"'
 
 exit $FAILED
