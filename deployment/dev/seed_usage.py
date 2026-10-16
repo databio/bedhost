@@ -15,10 +15,9 @@ Run with the dev venv, from the bedhost repo:
 
 import datetime
 
+from bbconf.db_utils import Base, UsageFiles
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-
-from bbconf.db_utils import Base, UsageFiles
 
 DB_URL = "postgresql+psycopg://bedbase:bedbase@127.0.0.1:15443/bedbase"
 
