@@ -6,6 +6,9 @@ RUN apt-get update \
  && apt-get install -y --no-install-recommends gcc build-essential python3-dev libpq-dev git \
  && rm -rf /var/lib/apt/lists/*
 
+# UCSC bigBedToBed for the /v1/bed/{id}/regions route (needs only libc)
+ADD --chmod=755 https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
+
 ENV HNSWLIB_NO_NATIVE=1 \
     PYTHONDONTWRITEBYTECODE=1
 
