@@ -59,7 +59,11 @@ def list_bedsets(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedSetListResult:
     """
-    Returns a list of BEDset records in the database with optional filters and search.
+    To enumerate everything, download the monthly Parquet snapshot from
+    `/v1/exports` (the `bedsets` file).
+
+    Returns a list of BEDset records in the database with optional filters and
+    search. Results are ordered by id, so paging with `offset` is stable.
     """
     return bbagent.bedset.get_ids_list(query=query, limit=limit, offset=offset)
 
