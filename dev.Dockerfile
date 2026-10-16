@@ -17,13 +17,14 @@ RUN pip install --no-cache-dir --upgrade pip uv
 WORKDIR /app
 # Install deps before copying the full source so the dep layer caches
 COPY pyproject.toml /app/pyproject.toml
-RUN uv pip install torch --index-url https://download.pytorch.org/whl/cpu --system --no-cache-dir --compile-bytecode
 
 # Install dependencies only (from pyproject.toml), NOT bedhost itself: the app
 # runs from the /app source tree copied below (uvicorn bedhost.main:app), and
 # the version is read from bedhost/_version.py, so bedhost is intentionally not
 # installed as a distribution here.
-RUN uv pip install -r pyproject.toml --system --no-cache-dir --compile-bytecode
+# --torch-backend cpu: without it, torch resolves to the CUDA build and pulls
+# ~3 GB of nvidia-* libraries the server never uses.
+RUN uv pip install -r pyproject.toml --torch-backend cpu --system --no-cache-dir --compile-bytecode
 
 COPY . /app
 RUN python -m compileall -q /app/bedhost

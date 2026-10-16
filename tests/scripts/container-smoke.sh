@@ -33,5 +33,6 @@ check "cache and temp dirs are writable" run sh -c \
 check "app code is read-only" run sh -c '! touch /app/bedhost/w'
 check "app module imports" run python -c "import bedhost.main"
 check "bigBedToBed is installed and runs" run sh -c 'bigBedToBed 2>&1 | grep -q "Convert from bigBed"'
+check "no CUDA libraries (CPU-only torch)" run sh -c '! pip list 2>/dev/null | grep -qi "^nvidia-"'
 
 exit $FAILED
