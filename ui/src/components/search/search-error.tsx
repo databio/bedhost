@@ -18,7 +18,7 @@ export const SearchError = (props: SearchErrorProps) => {
       <Row className='h-50'>
         <Col sm={12} md={12}>
           <div className='d-flex flex-column align-items-center justify-content-center h-100'>
-            <h2 className='text-primary'>{convertStatusCodeToMessage(errorCode)}</h2>
+            <h2 className='text-primary'>{errorCode === 413 ? 'File too large' : convertStatusCodeToMessage(errorCode)}</h2>
             {error.message && (
               <Fragment>
                 <label className='fw-bold'>{error.name}</label>

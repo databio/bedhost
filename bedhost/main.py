@@ -20,6 +20,7 @@ from cachetools import TTLCache
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -34,13 +35,14 @@ from .helpers import (
     init_model_usage,
     upload_usage,
 )
+from .uploads import upload_size_guard
 
 # This module is the application entry point (uvicorn loads `bedhost.main:app`),
 # so it is where logging gets configured. Don't move this into `__init__.py`.
-logmuse.init_logger(PKG_NAME)
-
-logging.getLogger("bbconf").setLevel(logging.DEBUG)
-logging.getLogger("geniml").setLevel(logging.DEBUG)
+LOG_LEVEL = os.environ.get("BEDHOST_LOG_LEVEL", "INFO").upper()
+logmuse.init_logger(PKG_NAME, level=LOG_LEVEL)
+for name in ("bbconf", "geniml"):
+    logging.getLogger(name).setLevel(LOG_LEVEL)
 
 tags_metadata = [
     {
@@ -109,21 +111,36 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         _LOGGER.info("Initializing reference genome validator...")
         app.state.ref_validator = ReferenceValidator()
 
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(
-        upload_usage,
-        "interval",
-        hours=USAGE_SAVE_HOURS,
-        args=(app.state.bbagent, app.state.usage_data),
-    )
-    scheduler.start()
-    app.state.scheduler = scheduler
+    # Read-only guard: when BEDHOST_DISABLE_USAGE_SCHEDULER is truthy, do NOT
+    # start the hourly usage-flush job (which writes to the DB). Default (unset)
+    # keeps the scheduler ON so normal/prod deployments are unaffected.
+    if os.environ.get("BEDHOST_DISABLE_USAGE_SCHEDULER", "").lower() not in (
+        "1",
+        "true",
+        "yes",
+    ):
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(
+            upload_usage,
+            "interval",
+            hours=USAGE_SAVE_HOURS,
+            args=(app.state.bbagent, app.state.usage_data),
+        )
+        scheduler.start()
+        app.state.scheduler = scheduler
+    else:
+        app.state.scheduler = None
+        _LOGGER.info(
+            "BEDHOST_DISABLE_USAGE_SCHEDULER set; usage flush scheduler NOT "
+            "started (read-only mode)."
+        )
 
     try:
         _LOGGER.info("Starting app ...")
         yield
     finally:
-        app.state.scheduler.shutdown(wait=False)
+        if app.state.scheduler is not None:
+            app.state.scheduler.shutdown(wait=False)
 
 
 app = FastAPI(
@@ -143,6 +160,10 @@ origins = [
     "https://bedbase.org",
     "*",  # allow cross-origin resource sharing, since this is a public API
 ]
+
+# Registered before CORSMiddleware so CORS runs outside it and its 411/413
+# responses still carry CORS headers for browser clients.
+app.middleware("http")(upload_size_guard)
 
 app.add_middleware(
     CORSMiddleware,
@@ -222,6 +243,29 @@ async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
 # from app.state at request time, so attaching at module import is safe
 # regardless of lifespan ordering.
 attach_routers(app)
+
+
+def _answer_head_wherever_we_answer_get(routes) -> None:
+    """
+    Starlette's plain `Route` adds HEAD alongside GET automatically; FastAPI's
+    `APIRoute` does not, so uptime monitors that send HEAD (UptimeRobot's basic
+    monitor, for one) get a 405. Adding the method makes Starlette run the GET
+    handler and drop the body.
+
+    FastAPI 0.141 stopped flattening included routers into `app.routes` and
+    keeps a wrapper object holding the original router instead, so recurse
+    through those as well. Must run before the first request: the wrapper
+    caches an effective view of its routes on first match.
+    """
+    for route in routes:
+        if isinstance(route, APIRoute) and "GET" in route.methods:
+            route.methods.add("HEAD")
+        included = getattr(route, "original_router", None)
+        if included is not None:
+            _answer_head_wherever_we_answer_get(included.routes)
+
+
+_answer_head_wherever_we_answer_get(app.routes)
 
 
 def main() -> None:

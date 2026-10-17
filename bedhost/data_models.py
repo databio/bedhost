@@ -1,7 +1,10 @@
 from enum import Enum
+from typing import Annotated
 
 from fastapi import Path
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, StringConstraints
+
+from .const import MAX_CHROM_ENTRIES, MAX_CHROM_NAME_LENGTH
 
 RemoteClassEnum = Enum(
     "RemoteClassEnum",
@@ -83,5 +86,16 @@ class CreateBEDsetRequest(BaseModel):
     registry_path: str
 
 
+ChromName = Annotated[
+    str, StringConstraints(min_length=1, max_length=MAX_CHROM_NAME_LENGTH)
+]
+ChromLength = Annotated[int, Field(ge=0)]
+
+
 class ChromLengthUploadModel(BaseModel):
-    bed_file: dict[str, int]
+    bed_file: dict[ChromName, ChromLength] = Field(
+        ...,
+        min_length=1,
+        max_length=MAX_CHROM_ENTRIES,
+        description=f"Map of chromosome name to length (1-{MAX_CHROM_ENTRIES} entries, lengths >= 0)",
+    )

@@ -1,4 +1,6 @@
+import datetime
 from platform import python_version
+from typing import Literal
 
 from bbconf import __version__ as bbconf_version
 from bbconf.bbagent import BedBaseAgent
@@ -7,14 +9,17 @@ from bbconf.models.base_models import (
     BedSnapshotListResult,
     FileStats,
     StatsReturn,
+    UsageResponse,
     UsageStats,
 )
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
+from sqlalchemy import text
 
+from .. import _LOGGER
 from .._version import __version__ as bedhost_version
-from ..const import EXPORTS_URL_BASE
+from ..const import EXPORTS_URL_BASE, MAX_LIST_LIMIT
 from ..data_models import (
     BaseListResponse,
     ComponentVersions,
@@ -34,6 +39,24 @@ from ..helpers import (
 router = APIRouter(prefix="/v1", tags=["base"])
 
 packages_versions = {}
+
+
+@router.get("/ready", include_in_schema=False)
+def readiness(bbagent: BedBaseAgent = Depends(get_bbagent)):
+    """
+    Readiness probe. Takes a connection out of the SQLAlchemy pool and runs
+    ``SELECT 1``. It has to go through the pool, because the pool is what
+    wedges when the database host reboots without closing its sockets; a
+    check that opens its own connection would report healthy while every
+    real request timed out.
+    """
+    try:
+        with bbagent.config.db_engine.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as e:
+        _LOGGER.warning(f"Readiness check failed: {e}")
+        raise HTTPException(status_code=503, detail="database unavailable")
+    return {"status": "ok"}
 
 
 @router.get(
@@ -128,9 +151,12 @@ async def get_assays_list(
 def get_bed_exports(
     bbagent: BedBaseAgent = Depends(get_bbagent),
     limit: int = Query(
-        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
     ),
-    offset: int = 0,
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
 ) -> BedSnapshotListResult:
     """
     Return the index of bulk metadata export artifacts published to S3, newest
@@ -161,9 +187,12 @@ def get_analysis_files(
     genome: str | None = Query(None, description="Filter by genome/assembly"),
     tag: str | None = Query(None, description="Filter by a single tag"),
     limit: int = Query(
-        1000, ge=1, le=10000, description="Limit (1-10000), default 1000"
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
     ),
-    offset: int = 0,
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
 ) -> AnalysisFileListResult:
     """
     Return the index of standalone analysis files (openSignalMatrix, models,
@@ -238,3 +267,37 @@ async def redirect_to_download(
 ):
     download_url = f"{EXPORTS_URL_BASE}{file_path}"
     return RedirectResponse(url=download_url)
+
+
+@router.get(
+    "/usage",
+    summary="Get per-key usage counts for one event type, optionally by date range",
+    response_model=UsageResponse,
+)
+def get_usage(
+    type: Literal["files", "bed_meta", "bedset_meta", "bed_search", "bedset_search"],
+    date_from: datetime.datetime | None = None,
+    date_to: datetime.datetime | None = None,
+    limit: int = Query(
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """
+    Returns per-key usage counts for a single event type
+    (files | bed_meta | bedset_meta | bed_search | bedset_search), grouped by key
+    and summed over the time-bucketed rows whose window overlaps the requested
+    [date_from, date_to] range. Both date bounds are optional; limit/offset
+    paginate the keys by count (default limit 1000, max 10000).
+    """
+    return bbagent.get_usage(
+        event_type=type,
+        date_from=date_from,
+        date_to=date_to,
+        limit=limit,
+        offset=offset,
+    )

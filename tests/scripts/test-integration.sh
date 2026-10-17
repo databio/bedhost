@@ -9,6 +9,14 @@
 # Usage: ./tests/scripts/test-integration.sh [pytest args]
 # Example: ./tests/scripts/test-integration.sh -v -k "test_service_info"
 #
+# ML models are off by default. To also exercise text search (downloads
+# HuggingFace models on first use, needs a few GB of RAM):
+#   BEDHOST_INIT_ML=true ./tests/scripts/test-integration.sh
+# If torch fails with a CUDA error (GPU too old for the installed build),
+# force CPU with CUDA_VISIBLE_DEVICES= in front of that command.
+#
+# The /regions test also needs UCSC bigBedToBed on PATH (it skips otherwise).
+#
 # For manual service control (debugging):
 #   ./tests/scripts/services.sh start
 #   RUN_INTEGRATION_TESTS=true pytest tests/integration/
@@ -87,7 +95,7 @@ SERVICES_STARTED=true
 export RUN_INTEGRATION_TESTS=true
 export TEST_DB_URL="postgresql+psycopg://testuser:testpass@localhost:${BEDHOST_TEST_DB_PORT}/bedbase_test"
 export TEST_QDRANT_URL="http://localhost:${BEDHOST_TEST_QDRANT_PORT}"
-export BEDHOST_INIT_ML=false
+export BEDHOST_INIT_ML="${BEDHOST_INIT_ML:-false}"
 
 # Run integration tests
 echo ""

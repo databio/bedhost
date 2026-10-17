@@ -75,7 +75,7 @@ export const RefGenomeModal = (props: Props) => {
           )
           .map((genome) => (
             <Link
-              to={`https://ui.refgenie.org/genomes/${genome.genome_digest}`}
+              to={`https://refgenie.org/genomes/${genome.genome_digest}`}
               key={genome.compared_genome}
               className='text-decoration-none'
               target='_blank'

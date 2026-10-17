@@ -1,6 +1,9 @@
 import datetime
 import inspect
 import os
+import subprocess
+import tempfile
+import threading
 from collections.abc import Callable
 from functools import wraps
 from typing import Literal
@@ -44,6 +47,72 @@ def serve_file(
         msg = f"File not found on server: {path}"
         _LOGGER.warning(msg)
         raise FileNotFoundError(msg)
+
+
+class RegionOutputTooLarge(Exception):
+    """bigBedToBed produced more output than the allowed ceiling."""
+
+
+def run_bigbed_to_bed(cmd: list[str], timeout: int, max_bytes: int) -> str:
+    """Run bigBedToBed, wait for it, return only the first 3 BED columns.
+
+    Output is read line by line and trimmed as it arrives, so memory is bounded
+    by ``max_bytes`` rather than by the size of the bigBed file.
+
+    Args:
+        cmd: Full argv for the ``bigBedToBed`` invocation (no shell).
+        timeout: Wall-clock timeout in seconds.
+        max_bytes: Ceiling on the trimmed output size.
+
+    Returns:
+        The first three tab-separated columns of each output line,
+        newline-terminated. Empty string if there is no output.
+
+    Raises:
+        FileNotFoundError: If the binary is missing.
+        RegionOutputTooLarge: If the output exceeds ``max_bytes``. The child is
+            killed before this is raised.
+        subprocess.TimeoutExpired: If the process exceeds ``timeout``. The
+            child is killed before this is raised.
+        subprocess.CalledProcessError: If the process exits non-zero.
+    """
+    timed_out = threading.Event()
+    rows: list[str] = []
+    total = 0
+    # stderr goes to a file so a chatty child can never block on a full pipe.
+    with (
+        tempfile.TemporaryFile() as err,
+        subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=err, text=True) as proc,
+    ):
+
+        def _kill_on_timeout():
+            timed_out.set()
+            proc.kill()
+
+        timer = threading.Timer(timeout, _kill_on_timeout)
+        timer.start()
+        try:
+            for line in proc.stdout:
+                row = "\t".join(line.rstrip("\n").split("\t", 3)[:3]) + "\n"
+                total += len(row)
+                if total > max_bytes:
+                    proc.kill()
+                    raise RegionOutputTooLarge(
+                        f"bigBedToBed output exceeded {max_bytes} bytes"
+                    )
+                rows.append(row)
+            proc.wait()
+        finally:
+            timer.cancel()
+
+        if timed_out.is_set():
+            raise subprocess.TimeoutExpired(cmd, timeout)
+        if proc.returncode != 0:
+            err.seek(0)
+            raise subprocess.CalledProcessError(
+                proc.returncode, cmd, stderr=err.read().decode(errors="replace")
+            )
+    return "".join(rows)
 
 
 def build_exports_url(file_path: str) -> str:
@@ -152,8 +221,8 @@ def count_requests(
             else:
                 function_result = await run_in_threadpool(func, *args, **kwargs)
             if "test_request" in kwargs and kwargs["test_request"]:
-                _LOGGER.info(
-                    f"Test request was executed. For '{event}' event with: {args}, {kwargs}. No results saved."
+                _LOGGER.debug(
+                    f"Test request executed for '{event}' event. No results saved."
                 )
                 return function_result
             request = kwargs.get("request")

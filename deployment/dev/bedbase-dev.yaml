@@ -1,0 +1,38 @@
+# Local dev bbconf config for bedhost.
+#
+# Points at the local Docker Postgres (deployment/dev/docker-compose.yml).
+# Qdrant and S3 sections are intentionally OMITTED: with no `qdrant` section,
+# BedBaseConfig fails to build a qdrant client during construction, which the
+# constructor catches and uses to set init_ml=False -- so no ML models are
+# loaded and no live qdrant/s3 connection is needed. This keeps the dev env
+# lightweight and sufficient for the read-only /v1/usage endpoint.
+#
+# Credentials are interpolated from the environment (see deployment/dev/dev.env).
+database:
+  host: $BEDBASE_PG_HOST
+  port: $BEDBASE_PG_PORT
+  user: $BEDBASE_PG_USER
+  password: $BEDBASE_PG_PASSWORD
+  database: bedbase
+  dialect: postgresql
+  driver: psycopg
+  run_migrations: true
+server:
+  host: 127.0.0.1
+  port: 8104
+path: {}
+# Needed to build file download links (/v1/bed/{id}/metadata/files, DRS).
+# Copied from deployment/config/api.bedbase.org.yaml.
+access_methods:
+  http:
+    type: "https"
+    description: HTTP compatible path
+    prefix: https://api.bedbase.org/v1/files/
+  s3:
+    type: "s3"
+    description: S3 compatible path
+    prefix: s3://data2.bedbase.org/
+  local:
+    type: "https"
+    description: How to serve local files.
+    prefix: /static/

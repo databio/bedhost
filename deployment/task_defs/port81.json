@@ -66,7 +66,7 @@
       "hostname": null,
       "extraHosts": null,
       "pseudoTerminal": null,
-      "user": null,
+      "user": "10001:10001",
       "readonlyRootFilesystem": null,
       "dockerLabels": null,
       "systemControls": null,
