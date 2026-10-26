@@ -1,9 +1,10 @@
 FROM python:3.13-slim
 LABEL authors="Oleksandr Khoroshevskyi, Nathan Sheffield"
 
-# gcc/build-essential/python3-dev: hnswlib build (geniml); libpq-dev: postgres; git: git deps
+# gcc/build-essential/python3-dev: hnswlib build (geniml); libpq-dev: postgres; git: git deps;
+# libjemalloc2: allocator preloaded below (less memory growth than glibc malloc)
 RUN apt-get update \
- && apt-get install -y --no-install-recommends gcc build-essential python3-dev libpq-dev git \
+ && apt-get install -y --no-install-recommends gcc build-essential python3-dev libpq-dev git libjemalloc2 \
  && rm -rf /var/lib/apt/lists/*
 
 # UCSC bigBedToBed for the /v1/bed/{id}/regions route (needs only libc)
@@ -34,7 +35,8 @@ RUN useradd --system --uid 10001 --user-group --create-home --home-dir /home/bed
 ENV HOME=/home/bedhost \
     HF_HOME=/home/bedhost/.cache/huggingface \
     FASTEMBED_CACHE_PATH=/home/bedhost/.cache/fastembed \
-    NUMBA_CACHE_DIR=/home/bedhost/.cache/numba
+    NUMBA_CACHE_DIR=/home/bedhost/.cache/numba \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 USER bedhost
 
 EXPOSE 8000
