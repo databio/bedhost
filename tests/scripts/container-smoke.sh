@@ -3,7 +3,8 @@
 #
 # Checks the things the ECS task definitions rely on: the image runs as UID
 # 10001, serves on port 8000, has writable cache/temp dirs, keeps the app code
-# read-only, the app module imports, and bigBedToBed runs. No database is needed.
+# read-only, the app module imports, bigBedToBed runs, and jemalloc is
+# preloaded. No database is needed.
 #
 # Usage: ./tests/scripts/container-smoke.sh <image>
 
@@ -33,6 +34,8 @@ check "cache and temp dirs are writable" run sh -c \
 check "app code is read-only" run sh -c '! touch /app/bedhost/w'
 check "app module imports" run python -c "import bedhost.main"
 check "bigBedToBed is installed and runs" run sh -c 'bigBedToBed 2>&1 | grep -q "Convert from bigBed"'
+check "jemalloc is preloaded" run python -c \
+    "import sys; sys.exit('libjemalloc' not in open('/proc/self/maps').read())"
 check "no CUDA libraries (CPU-only torch)" run sh -c '! pip list 2>/dev/null | grep -qi "^nvidia-"'
 
 exit $FAILED
