@@ -22,19 +22,17 @@ COPY pyproject.toml /app/pyproject.toml
 # Install dependencies only (from pyproject.toml), NOT bedhost itself: the app
 # runs from the /app source tree copied below (uvicorn bedhost.main:app), and
 # the version is read from bedhost/_version.py, so bedhost is intentionally not
-# installed as a distribution here.
-# --torch-backend cpu: without it, torch resolves to the CUDA build and pulls
-# ~3 GB of nvidia-* libraries the server never uses.
-RUN uv pip install -r pyproject.toml --torch-backend cpu --system --no-cache-dir --compile-bytecode
+# installed as a distribution here. The image gets embeddings from embedding
+# servers, so it has no torch, fastembed, or sentence-transformers.
+RUN uv pip install -r pyproject.toml --system --no-cache-dir --compile-bytecode
 
 COPY . /app
 RUN python -m compileall -q /app/bedhost
 
 # Unprivileged runtime user. /app and site-packages stay root-owned (read-only to the app).
 RUN useradd --system --uid 10001 --user-group --create-home --home-dir /home/bedhost --shell /usr/sbin/nologin bedhost
+# NUMBA_CACHE_DIR: the UMAP projection (umap-learn) compiles numba code on first use
 ENV HOME=/home/bedhost \
-    HF_HOME=/home/bedhost/.cache/huggingface \
-    FASTEMBED_CACHE_PATH=/home/bedhost/.cache/fastembed \
     NUMBA_CACHE_DIR=/home/bedhost/.cache/numba \
     LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 USER bedhost

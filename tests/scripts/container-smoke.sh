@@ -30,12 +30,13 @@ check "runs as UID 10001" test "$(run id -u)" = "10001"
 check "CMD serves on port 8000" \
     sh -c "docker inspect -f '{{json .Config.Cmd}}' '$IMAGE' | grep -q '\"8000\"'"
 check "cache and temp dirs are writable" run sh -c \
-    'mkdir -p "$HF_HOME" "$FASTEMBED_CACHE_PATH" "$NUMBA_CACHE_DIR" && touch "$HF_HOME/w" "$FASTEMBED_CACHE_PATH/w" "$NUMBA_CACHE_DIR/w" /tmp/w'
+    'mkdir -p "$NUMBA_CACHE_DIR" && touch "$NUMBA_CACHE_DIR/w" /tmp/w'
 check "app code is read-only" run sh -c '! touch /app/bedhost/w'
 check "app module imports" run python -c "import bedhost.main"
 check "bigBedToBed is installed and runs" run sh -c 'bigBedToBed 2>&1 | grep -q "Convert from bigBed"'
 check "jemalloc is preloaded" run python -c \
     "import sys; sys.exit('libjemalloc' not in open('/proc/self/maps').read())"
-check "no CUDA libraries (CPU-only torch)" run sh -c '! pip list 2>/dev/null | grep -qi "^nvidia-"'
+check "no torch, sentence-transformers, fastembed installed" run sh -c '! pip list 2>/dev/null | grep -qiE "^(torch|sentence-transformers|fastembed) "'
+check "app import loads no ML libraries" run python -c "import sys, bedhost.main; sys.exit(bool({'torch','fastembed','sentence_transformers','transformers'} & set(sys.modules)))"
 
 exit $FAILED

@@ -31,9 +31,8 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
 dependencies = [
-    "bbconf>=0.16.0",
+    "bbconf>=0.17.0",
     "fastapi>=0.103.0",
-    "sentence_transformers>=5.0",
     "logmuse>=0.3.1",
     "markdown",
     "requests",
@@ -44,7 +43,7 @@ dependencies = [
     "python-multipart>=0.0.9",
     "APScheduler>=3.11.0",
     "cachetools>=4.2.4",
-    "bedboss>=0.12.0",
+    "bedboss>=0.13.0",
     "Pillow>=10.0.0",
 ]
 
@@ -55,6 +54,10 @@ Homepage = "https://github.com/databio/bedhost"
 bedhost = "bedhost.__main__:main"
 
 [project.optional-dependencies]
+# run the embedding models in-process instead of calling embedding servers
+local = [
+    "bbconf[local]>=0.17.0",
+]
 test = [
     "pytest",
     "httpx",
