@@ -572,7 +572,7 @@ async def get_track_hub_bed(
     Point the UCSC Genome Browser at this endpoint with
     ``hgTracks?db=<genome>&hubUrl=<this url>``.
     """
-    metadata = bbagent.bed.get(bed_id)  # 404s via BEDFileNotFoundError handler if unknown
+    bbagent.bed.get(bed_id)  # 404s via BEDFileNotFoundError handler if unknown
 
     hub_txt = (
         f"hub \t BEDBASE_{bed_id}\n"
