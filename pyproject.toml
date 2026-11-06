@@ -53,11 +53,14 @@ Homepage = "https://github.com/databio/bedhost"
 
 [project.scripts]
 bedhost = "bedhost.__main__:main"
+bedhost-mcp = "bedhost.mcp.stdio:main"
 
 [project.optional-dependencies]
+mcp = ["mcp[cli]>=2.2.0"]
 test = [
     "pytest",
     "httpx",
+    "mcp[cli]>=2.2.0",
 ]
 
 [build-system]
