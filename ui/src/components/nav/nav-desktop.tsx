@@ -1,32 +1,24 @@
 import { Dropdown } from 'react-bootstrap';
 
 import { useBedCart } from '../../contexts/bedcart-context';
+import { NAV_LINKS, linkTarget } from './nav-links';
 
-const API_BASE = import.meta.env.VITE_API_BASE || '';
+const topLinks = NAV_LINKS.filter((link) => link.topLevel);
+const moreLinks = NAV_LINKS.filter((link) => !link.topLevel);
 
 export const NavDesktop = () => {
   const { cart } = useBedCart();
 
   return (
     <ul className='mb-1 ms-auto d-flex flex-row align-items-center gap-2 list-none mx-5'>
-      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
-        <a className='nav-link' href='/search'>
-          <i className='bi bi-search me-1 text-base' />
-          Search
-        </a>
-      </li>
-      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
-        <a className='nav-link' href='/analyze'>
-          <i className='bi bi-body-text me-1 text-base' />
-          Analyzer
-        </a>
-      </li>
-      <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
-        <a className='nav-link' href='/umap'>
-          <i className='bi bi-diagram-3 me-1 text-base' />
-          Visualization
-        </a>
-      </li>
+      {topLinks.map((link) => (
+        <li key={link.label} className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
+          <a className='nav-link' href={link.href} {...linkTarget(link)}>
+            <i className={`bi ${link.icon} me-1 text-base`} />
+            {link.label}
+          </a>
+        </li>
+      ))}
 
       <li className='link-primary mx-2 my-0 nav-item fs-6 pt-1'>
         <Dropdown align='end'>
@@ -39,30 +31,12 @@ export const NavDesktop = () => {
             More
           </Dropdown.Toggle>
           <Dropdown.Menu className='border border-light-subtle shadow'>
-            <Dropdown.Item href='/downloads'>
-              <i className='bi bi-download me-2' />
-              Downloads
-            </Dropdown.Item>
-            <Dropdown.Item href='/files'>
-              <i className='bi bi-file-earmark-binary me-2' />
-              Analysis files
-            </Dropdown.Item>
-            <Dropdown.Item href='/metrics'>
-              <i className='bi bi-bar-chart me-2' />
-              Metrics
-            </Dropdown.Item>
-            <Dropdown.Item href='https://github.com/databio/bedhost' target='_blank' rel='noreferrer noopener'>
-              <i className='bi bi-github me-2' />
-              GitHub
-            </Dropdown.Item>
-            <Dropdown.Item href='https://docs.bedbase.org/bedbase/' target='_blank' rel='noreferrer noopener'>
-              <i className='bi bi-file-earmark-text me-2' />
-              Docs
-            </Dropdown.Item>
-            <Dropdown.Item href={`${API_BASE}`} target='_blank' rel='noreferrer noopener'>
-              <i className='bi bi-hdd-stack me-2' />
-              API
-            </Dropdown.Item>
+            {moreLinks.map((link) => (
+              <Dropdown.Item key={link.label} href={link.href} {...linkTarget(link)}>
+                <i className={`bi ${link.icon} me-2`} />
+                {link.label}
+              </Dropdown.Item>
+            ))}
           </Dropdown.Menu>
         </Dropdown>
       </li>
