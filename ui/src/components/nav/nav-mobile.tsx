@@ -1,5 +1,7 @@
 import { Dropdown } from 'react-bootstrap';
 
+import { NAV_LINKS, linkTarget } from './nav-links';
+
 export const MobileNav = () => {
   return (
     <Dropdown className='me-3'>
@@ -7,39 +9,12 @@ export const MobileNav = () => {
         <i className='bi bi-list fs-4' />
       </Dropdown.Toggle>
       <Dropdown.Menu className='border border-light-subtle shadow'>
-        <Dropdown.Item href='https://github.com/databio/bedhost'>
-          <i className='bi bi-github me-2' />
-          GitHub
-        </Dropdown.Item>
-        <Dropdown.Item href='/search'>
-          <i className='bi bi-search me-2' />
-          Search
-        </Dropdown.Item>
-        <Dropdown.Item href='/umap'>
-          <i className='bi bi-diagram-3 me-2' />
-          Visualization
-        </Dropdown.Item>
-        <Dropdown.Item href='/analyze'>
-          <i className='bi bi-body-text me-2' />
-          Analyzer
-        </Dropdown.Item>
-        <Dropdown.Item href='/downloads'>
-          <i className='bi bi-download me-2' />
-          Downloads
-        </Dropdown.Item>
-        <Dropdown.Item href='/files'>
-          <i className='bi bi-file-earmark-binary me-2' />
-          Analysis files
-        </Dropdown.Item>
-
-        <Dropdown.Item href='https://docs.bedbase.org/bedbase/'>
-          <i className='bi bi-info-circle me-2' />
-          Docs
-        </Dropdown.Item>
-        <Dropdown.Item href='/metrics'>
-          <i className='bi bi-bar-chart me-2' />
-          Metrics
-        </Dropdown.Item>
+        {NAV_LINKS.map((link) => (
+          <Dropdown.Item key={link.label} href={link.href} {...linkTarget(link)}>
+            <i className={`bi ${link.icon} me-2`} />
+            {link.label}
+          </Dropdown.Item>
+        ))}
         <Dropdown.Item href='/cart'>
           <i className='bi bi-cart-fill me-2' />
           Cart
