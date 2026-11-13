@@ -38,6 +38,19 @@ from .helpers import (
 )
 from .uploads import upload_size_guard
 
+# The MCP server ships in the optional `mcp` extra. When it's installed we mount it
+# over Streamable HTTP at /mcp (wired in the lifespan); when absent the REST API runs
+# unchanged. The import also pulls the shared tool set so MCP and REST use one agent.
+try:
+    from mcp.server.transport_security import TransportSecuritySettings
+
+    from .mcp.tools import mcp as mcp_server
+    from .mcp.tools import set_backend as mcp_set_backend
+
+    _MCP_AVAILABLE = True
+except ImportError:
+    _MCP_AVAILABLE = False
+
 # This module is the application entry point (uvicorn loads `bedhost.main:app`),
 # so it is where logging gets configured. Don't move this into `__init__.py`.
 LOG_LEVEL = os.environ.get("BEDHOST_LOG_LEVEL", "INFO").upper()
@@ -136,9 +149,36 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
             "started (read-only mode)."
         )
 
+    # Mount the MCP server over Streamable HTTP at /mcp, sharing the ONE agent built
+    # above (set_backend before any request can run a tool, so the MCP tools never
+    # build a second BedBaseAgent / DB connection).
+    app.state.mcp_session_manager = None
+    if _MCP_AVAILABLE:
+        _LOGGER.info("Mounting MCP server at /mcp ...")
+        mcp_set_backend(app.state.bbagent, serves_downloads=True)
+        mcp_app = mcp_server.streamable_http_app(
+            # api.bedbase.org is a public host behind a TLS-terminating proxy; the
+            # default DNS-rebinding Host-header guard would 421 it. Disable it here
+            # (keep it on for any loopback-only local HTTP server).
+            transport_security=TransportSecuritySettings(
+                enable_dns_rebinding_protection=False
+            ),
+        )
+        app.state.mcp_session_manager = mcp_server.session_manager
+        # Add the routes directly (mounting the sub-app would serve it at /mcp/mcp).
+        app.router.routes.extend(mcp_app.routes)
+    else:
+        _LOGGER.info("MCP extra not installed; /mcp not mounted.")
+
     try:
         _LOGGER.info("Starting app ...")
-        yield
+        # The Streamable HTTP session manager's task group must run for the life of
+        # the app, or every /mcp request fails with "Task group is not initialized".
+        if app.state.mcp_session_manager is not None:
+            async with app.state.mcp_session_manager.run():
+                yield
+        else:
+            yield
     finally:
         if app.state.scheduler is not None:
             app.state.scheduler.shutdown(wait=False)

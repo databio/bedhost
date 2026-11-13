@@ -1,6 +1,7 @@
 site_name: BEDhost
 nav:
   - BEDhost overview: README.md
+  - MCP server: mcp.md
   - Building docker image: build_image.md
   - Deploy API: deployment.md
   - Changelog: changelog.md
