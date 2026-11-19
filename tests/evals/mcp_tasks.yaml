@@ -402,7 +402,8 @@ tasks:
     checks:
       - called: [search_bed]
       - not_called: [get_regions]
-      - max_calls: 4
+      # Haiku often tries 3-4 searches plus list_genomes before saying no.
+      - max_calls: 6
       - judge:
           - The final answer says BEDbase has no axolotl or limb regeneration files.
           - The final answer does not present any file as axolotl or limb regeneration data.
