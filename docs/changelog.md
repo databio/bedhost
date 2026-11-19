@@ -2,6 +2,16 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [0.16.0] - Unreleased
+
+### Added
+- MCP server, so chatbots and agents can use BEDbase: 11 read-only tools to search and read BED files and BEDsets, list genomes, assays, and exports, and read regions. It is served at `/mcp` (Streamable HTTP) when the `mcp` extra is installed, and over stdio by the `bedhost-mcp` command (set `BEDBASE_CONFIG`).
+
+### Changed
+- `/v1/bed/search/text` answers exact BED ids and GEO/ENCODE accessions even when ML models are off. Only free-text queries return 503 then.
+- `/v1/bed/search/text` with an exact BED id: the first page is the file followed by `limit - 1` similar files (before: `limit + 1` rows), and later pages continue the similar files (before: only the file again).
+- `/v1/bed/search/text` with an accession honors `limit` and `offset` (before: every matching file at once).
+
 ## [0.15.0] - 2026-10-26
 
 ### Changed
