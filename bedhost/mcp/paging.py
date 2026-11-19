@@ -4,12 +4,12 @@ Opaque, query-bound token paging for the MCP list/search tools.
 A page token encodes the next offset (or a keyset cursor) *plus a hash of the
 tool name and its filters*, so a token issued for one query is refused by a
 different query instead of silently paging the wrong list. Decode failures come
-back as ToolError, which the chatbot reads and recovers from.
+back as a ToolError, which the chatbot reads and recovers from.
 
-This module is domain-independent: it is the skill's reference paging module,
-lightly adapted to also carry an optional keyset cursor (used by list_bed's
-``after=`` paging). Tokens are not secrets — they only guard against accidental
-cross-query reuse, not tampering — so a plain base64(JSON) envelope is enough.
+This module knows nothing about BEDbase. Besides an offset, a token can carry a
+keyset cursor (the last id returned), which list_bed uses so deep pages stay
+fast. Tokens are not secrets — they only guard against accidental cross-query
+reuse, not tampering — so a plain base64(JSON) envelope is enough.
 """
 
 import base64

@@ -17,7 +17,7 @@ def test_all_tools_registered():
     assert len(names) == 15
 
 
-# --- id handling & error hints (Rules 7/8) ---------------------------------- #
+# --- id handling and error hints -------------------------------------------- #
 def test_bad_bed_id_is_rejected_with_shape_hint(backend_ml):
     with pytest.raises(ToolError, match="32-character"):
         tools.get_bed("not-a-digest")
@@ -33,7 +33,7 @@ def test_unknown_bedset_id_hints_at_search(backend_ml):
         tools.get_bedset("nope")
 
 
-# --- unknown arguments refused, not dropped (Step 5) ------------------------ #
+# --- unknown arguments refused, not dropped -------------------------------- #
 def test_unknown_argument_is_refused_and_suggested(backend_ml):
     async def call():
         return await tools.mcp.call_tool("search_bed", {"query": "x", "genom": "hg38"})
@@ -94,7 +94,7 @@ def test_get_bed_files_returns_bed_files(backend_ml):
     assert files.bed_file.path == "files/x.bed.gz"
 
 
-# --- v2 caching -------------------------------------------------------------- #
+# --- caching ----------------------------------------------------------------- #
 def test_list_genomes_is_cached(backend_ml):
     calls = {"n": 0}
     original = backend_ml.get_list_genomes

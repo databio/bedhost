@@ -121,7 +121,7 @@ def _cached(key, producer):
 
 
 # --------------------------------------------------------------------------- #
-# Server + instructions (short; the usual path, the id rule, do-what-results-say) #
+# Server + instructions: the usual call order, the id format, and paging.        #
 # --------------------------------------------------------------------------- #
 INSTRUCTIONS = """\
 BEDbase is a catalog of genomic interval datasets (BED files) and curated
@@ -164,8 +164,8 @@ mcp = _StrictMCP("bedbase", version=bedhost_version, instructions=INSTRUCTIONS)
 
 
 # --------------------------------------------------------------------------- #
-# Registration decorator: record params + turn expected failures into ToolError  #
-# whose hint is a safe, literal next command (never one that restarts the flow). #
+# Registration decorator: record params and turn expected failures into a       #
+# ToolError whose hint names the exact call that fixes the problem.             #
 # --------------------------------------------------------------------------- #
 _HINTS: tuple[tuple[type[Exception], str], ...] = (
     (
@@ -242,7 +242,7 @@ def _offset_page(rows, page_size, offset, fh, total, hint=None):
 
 
 # =========================================================================== #
-# v1 — search & inspect                                                        #
+# Search and inspect                                                           #
 # =========================================================================== #
 _ACCESSION_PREFIXES = ("gsm", "gse", "encff", "encsr", "geo:", "encode:")
 
@@ -447,7 +447,7 @@ def get_bedset(id: str):
 
 
 # =========================================================================== #
-# v2 — browse, ground, bulk (the first four are cached; see _cached)           #
+# Browse, filter values, and bulk exports (the first four are cached).         #
 # =========================================================================== #
 @_tool
 def list_bed(
@@ -619,9 +619,8 @@ def get_regions(
 
 
 # --------------------------------------------------------------------------- #
-# Region subprocess runner — ported from bedhost.helpers.run_bigbed_to_bed so   #
-# the MCP package stays free of the fastapi-importing helpers module. Keep in    #
-# sync with the REST twin.                                                       #
+# Region subprocess runner: a copy of bedhost.helpers.run_bigbed_to_bed, kept   #
+# here because helpers imports fastapi. Change both together.                    #
 # --------------------------------------------------------------------------- #
 class _RegionOutputTooLarge(Exception):
     """bigBedToBed produced more output than the allowed ceiling."""

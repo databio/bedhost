@@ -1,7 +1,7 @@
 """
 Wire models for the MCP tools.
 
-The design rule (per @khoroshevskyi): **reuse the existing bbconf pydantic models
+Design rule: **reuse the existing bbconf pydantic models
 as tool return types; add a new model only where none fits.** The only new type
 here is the paging envelope, because bbconf exposes ``count``/``limit``/``offset``
 and the MCP tools return an *opaque, query-bound* token instead (see paging.py).
@@ -41,8 +41,8 @@ class Pagination(BaseModel):
 class ToolPage(BaseModel, Generic[T]):
     """A page of reused bbconf row models plus the paging block and an optional hint.
 
-    ``hint`` carries next-step guidance (Rule 2) or empty-result guidance (Rule 7):
-    an empty page with a useful hint beats an error.
+    ``hint`` tells the chatbot what to call next, or what to try when a page is
+    empty. An empty page with a useful hint is better than an error.
     """
 
     rows: list[T]

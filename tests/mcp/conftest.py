@@ -1,7 +1,8 @@
 """Fixtures for the MCP tool tests.
 
-These tests exercise the chatbot-proofing contract (strict args, query-bound
-paging tokens, error-hint text, graceful degradation, model reuse) using a fake
+These tests check the behaviors a chatbot relies on (unknown args refused,
+query-bound paging tokens, error hints, graceful degradation, bbconf model reuse)
+using a fake
 in-memory BedBaseAgent, so they need no Postgres/Qdrant and run in CI with only
 the `mcp` extra installed.
 """
