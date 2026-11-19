@@ -39,10 +39,13 @@ from bedhost._version import __version__ as bedhost_version
 from bedhost.const import BIGBED_TIMEOUT_SECONDS, MAX_REGIONS_OUTPUT_BYTES
 from bedhost.core import (
     BaseListResponse,
+    MLUnavailable,
     RegionOutputTooLarge,
+    SearchKind,
     build_exports_url,
     run_bigbed_to_bed,
 )
+from bedhost.core import search_bed as core_search_bed
 
 from .paging import clamp, decode, encode, filters_hash
 from .schemas import Pagination, ToolPage
@@ -239,9 +242,6 @@ def _offset_page(rows, page_size, offset, fh, total, hint=None):
 # =========================================================================== #
 # Search and inspect                                                           #
 # =========================================================================== #
-_ACCESSION_PREFIXES = ("gsm", "gse", "encff", "encsr", "geo:", "encode:")
-
-
 @_tool
 def search_bed(
     query: str,
@@ -267,45 +267,11 @@ def search_bed(
     page_size = clamp(page_size)
     fh = filters_hash("search_bed", query=query, genome=genome, assay=assay)
     offset, _ = decode(token, fh)
-    agent = backend()
-
-    spaceless = query.replace(" ", "")
-
-    # Fast path 1: an exact 32-char BED id.
-    if len(spaceless) == 32 and spaceless == query:
-        try:
-            meta = agent.bed.get(query)
-        except BEDFileNotFoundError:
-            meta = None
-        if meta is not None:
-            row = QdrantSearchResult(id=query, payload={}, score=1.0, metadata=meta)
-            return _offset_page(
-                [row] if offset == 0 else [],
-                page_size,
-                offset,
-                fh,
-                total=1,
-                hint=f'Exact id match. get_bed_neighbours(id="{query}") for similar files.',
-            )
-
-    # Fast path 2: a GEO/ENCODE accession.
-    low = spaceless.lower()
-    if any(low.startswith(p) for p in _ACCESSION_PREFIXES):
-        acc = low.replace("geo:", "").replace("encode:", "")
-        source, accession = None, None
-        if acc.startswith(("gsm", "gse")):
-            source, accession = "geo", acc
-        elif acc.startswith(("encff", "encsr")):
-            source, accession = "encode", acc.upper()
-        if source:
-            result = agent.bed.search_external_file(source=source, accession=accession)
-            if result.count:
-                return _offset_page(
-                    result.results, page_size, offset, fh, total=result.count
-                )
-
-    # Semantic/hybrid search needs the dense encoder; degrade gracefully if disabled.
-    if getattr(agent.config, "dense_encoder", None) is None:
+    try:
+        outcome = core_search_bed(
+            backend(), query, genome=genome, assay=assay, limit=page_size, offset=offset
+        )
+    except MLUnavailable:
         return _offset_page(
             [],
             page_size,
@@ -318,16 +284,11 @@ def search_bed(
                 "list_bed(genome=...), or run with BEDHOST_INIT_ML=true."
             ),
         )
-
-    result = agent.bed.hybrid_search(
-        query,
-        genome_alias=genome or "",
-        assay=assay or "",
-        limit=page_size,
-        offset=offset,
-    )
+    result = outcome.result
     hint = None
-    if not result.results and offset == 0:
+    if outcome.kind is SearchKind.EXACT_ID and offset == 0:
+        hint = f'Exact id match first, then similar files. get_bed(id="{query}") for its record.'
+    elif not result.results and offset == 0:
         hint = (
             "No matches. Search is semantic — try a tissue, assay, or cell-line term, "
             "or a GEO/ENCODE accession."

@@ -16,7 +16,6 @@ from bbconf.models.bed_models import (
     BedMetadataAll,
     BedPlots,
     BedStatsModel,
-    QdrantSearchResult,
     RefGenValidModel,
     RefGenValidReturnModel,
     TokenizedBedResponse,
@@ -36,9 +35,11 @@ from ..const import (
 )
 from ..core import (
     BaseListResponse,
+    MLUnavailable,
     RegionOutputTooLarge,
     build_exports_url,
     run_bigbed_to_bed,
+    search_bed,
 )
 from ..data_models import (
     CROM_NUMBERS,
@@ -675,130 +676,18 @@ def text_to_bed_search(
     _LOGGER.info(
         f"Searching for: '{query}' with limit='{limit}' and offset='{offset}' and genome='{genome}' and assay='{assay}'"
     )
-
-    # Hybrid search depends on the dense encoder, which isn't loaded when
-    # bbconf is initialized with ``init_ml=False`` (CI / BEDHOST_INIT_ML=false).
-    # Return 503 up-front rather than a 500 AttributeError from deep in bbconf.
-    if getattr(bbagent.config, "dense_encoder", None) is None:
+    try:
+        return search_bed(
+            bbagent, query, genome=genome, assay=assay, limit=limit, offset=offset
+        ).result
+    except MLUnavailable:
+        # Only free-text queries need the dense encoder, which isn't loaded when
+        # bbconf runs with ``init_ml=False`` (CI / BEDHOST_INIT_ML=false). Exact
+        # ids and GEO/ENCODE accessions still work then.
         raise HTTPException(
             status_code=503,
             detail="Text search unavailable (ML models disabled)",
         )
-
-    spaceless_query = query.replace(" ", "")
-    if len(spaceless_query) == 32 and spaceless_query == query:
-        try:
-            result = QdrantSearchResult(
-                id=query,
-                payload={},
-                score=1.0,
-                metadata=bbagent.bed.get(query),
-            )
-            if result.metadata is None:
-                raise BEDFileNotFoundError(f"Bed file with id {query} not found")
-
-            try:
-                similar_results = bbagent.bed.get_neighbours(
-                    query, limit=limit, offset=offset
-                )
-                if similar_results.results and offset == 0:
-                    similar_results.results.insert(0, result)
-                    return similar_results
-                else:
-                    raise BEDFileNotFoundError("Similar beds not found")
-            except Exception as _:
-                similar_results = BedListSearchResult(
-                    count=1,
-                    limit=100,
-                    offset=0,
-                    results=[result],
-                )
-
-            return similar_results
-        except Exception as _:
-            pass
-
-    spaceless_query_lower = spaceless_query.lower()
-    if any(
-        [
-            spaceless_query_lower.startswith("gsm"),
-            spaceless_query_lower.startswith("encff"),
-            spaceless_query_lower.startswith("encsr"),
-            spaceless_query_lower.startswith("gse"),
-            spaceless_query_lower.startswith("geo:"),
-            spaceless_query_lower.startswith("encode:"),
-        ]
-    ):
-        _LOGGER.info("Searching for GSM or ENCODE accession")
-
-        spaceless_query_lower = spaceless_query_lower.replace("geo:", "").replace(
-            "encode:", ""
-        )
-
-        if spaceless_query_lower.startswith("gsm") or spaceless_query_lower.startswith(
-            "gse"
-        ):
-            result = bbagent.bed.search_external_file(
-                source="geo", accession=spaceless_query_lower
-            )
-            if result.count != 0:
-                return result
-
-        elif spaceless_query_lower.startswith(
-            "encsr"
-        ) or spaceless_query_lower.startswith("encff"):
-            result = bbagent.bed.search_external_file(
-                source="encode", accession=spaceless_query_lower.upper()
-            )
-            if result.count != 0:
-                return result
-
-    # # Basic semantic search
-    # results = bbagent.bed.semantic_search(
-    #     query,
-    #     genome_alias=genome,
-    #     assay=assay,
-    #     limit=limit,
-    #     offset=offset,
-    # )
-
-    # # Hybrid search
-    results = bbagent.bed.hybrid_search(
-        query,
-        genome_alias=genome,
-        assay=assay,
-        limit=limit,
-        offset=offset,
-    )
-    return results
-
-    # # # Bi-vec search
-    #
-    # # This is disabled for now, as it is sql search mix, which we don't want to mix
-    # # results_sql = bbagent.bed.sql_search(
-    # #     query, limit=round(limit / 2, 0), offset=round(offset / 2, 0)
-    # # )
-    # #
-    # # if results_sql.count > results_sql.offset:
-    # #     qdrant_offset = offset - results_sql.offset
-    # # else:
-    # #     qdrant_offset = offset - results_sql.count
-    # # results_qdr = bbagent.bed.text_to_bed_search(
-    # #     query, limit=limit, offset=qdrant_offset - 1 if qdrant_offset > 0 else 0
-    # # )
-    # # results = BedListSearchResult(
-    # #     count=results_qdr.count,
-    # #     limit=limit,
-    # #     offset=offset,
-    # # )
-    # # print("results:", results_qdr)
-    # #
-    # # raise HTTPException(status_code=404, detail="No records found")
-    #
-    #
-    # results_qdr = bbagent.bed.text_to_bed_search(
-    #     query, limit=limit, offset=offset
-    # )
 
 
 @router.get(

@@ -77,9 +77,8 @@ def test_ml_disabled_returns_empty_page_with_hint(backend_no_ml):
 def test_exact_id_fastpath_needs_no_ml(backend_no_ml):
     # A 32-char id resolves even with ML disabled.
     page = tools.search_bed(VALID_BED_ID)
-    assert len(page.rows) == 1
     assert page.rows[0].id == VALID_BED_ID
-    assert "neighbours" in page.hint
+    assert "Exact id match" in page.hint
 
 
 # --- detail tools return unwrapped bbconf models ---------------------------- #
