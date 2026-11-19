@@ -76,9 +76,14 @@ def decode(token: str | None, fh: str) -> tuple[int, str | None]:
             "bad_token", "This token is not one this server issued.", hint
         ) from None
     if p.get("h") != fh:
+        # Say which rows it was for: a chatbot told only "different query"
+        # tends to give up and ask the user for the original arguments.
         raise tool_error(
             "bad_token",
-            "This token belongs to a different query or filters.",
-            hint,
+            "This token was issued for a different query, filters, or server "
+            f"session, so it can't be used here. It asked for rows {offset + 1} on.",
+            f"Call again with the same arguments and no token, then pass each "
+            f"page's pagination.next_page_token back until you reach row "
+            f"{offset + 1}.",
         )
     return offset, p.get("a")

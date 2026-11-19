@@ -67,8 +67,10 @@ from .paging import (
     filters_hash,
 )
 from .schemas import (
+    MEMBERS_SHOWN,
     BedFull,
     BedHit,
+    BedSetRow,
     BedSetSummary,
     BedSummary,
     Pagination,
@@ -173,17 +175,41 @@ READ = ToolAnnotations(readOnlyHint=True, openWorldHint=False)
 _PARAMS: dict[str, tuple[str, ...]] = {}
 
 
-class _StrictMCP(MCPServer):
-    """Three changes to the SDK's tool calls.
+def _drop_patterns(schema):
+    """Remove every ``pattern`` from an output schema.
 
-    1. Refuse arguments a tool doesn't declare (the SDK silently drops them).
-    2. Keep error text pure JSON. The SDK prefixes a tool's error with
+    bbconf validates bed_compliance with a Python-only regex (a possessive
+    ``?+``). JavaScript clients such as Claude Code compile output schemas and
+    reject the whole tool ("Invalid regular expression: nothing to repeat"),
+    so get_bed failed on every call there. Output patterns only help a client
+    check our own output, so dropping them loses nothing.
+    """
+    if isinstance(schema, dict):
+        return {k: _drop_patterns(v) for k, v in schema.items() if k != "pattern"}
+    if isinstance(schema, list):
+        return [_drop_patterns(v) for v in schema]
+    return schema
+
+
+class _StrictMCP(MCPServer):
+    """Four changes to the SDK's tools.
+
+    1. Drop regex patterns from output schemas (see _drop_patterns).
+    2. Refuse arguments a tool doesn't declare (the SDK silently drops them).
+    3. Keep error text pure JSON. The SDK prefixes a tool's error with
        "Error executing tool <name>: ", which breaks parsing, and reports a
        wrong argument type as free text; both come back as coded errors.
-    3. Write the text block as compact JSON without null fields. The SDK
+    4. Write the text block as compact JSON without null fields. The SDK
        pretty-prints the full model, which costs a chatbot 30-50% more tokens
        for the same data. structuredContent is left as the SDK built it.
     """
+
+    async def list_tools(self):
+        tools = await super().list_tools()
+        for tool in tools:
+            if tool.output_schema:
+                tool.output_schema = _drop_patterns(tool.output_schema)
+        return tools
 
     async def call_tool(self, name, arguments, context=None):
         params = _PARAMS.get(name)
@@ -552,7 +578,7 @@ def search_bedset(
     query: str | None = None,
     page_size: int = SEARCH_PAGE_DEFAULT,
     token: str | None = None,
-) -> ToolPage[BedSetMetadata]:
+) -> ToolPage[BedSetRow]:
     """
     Search BEDbase BEDsets (curated collections of BED files) by words in their
     name or description, or list them all when query is omitted. About 0.1K
@@ -567,7 +593,7 @@ def search_bedset(
     fh = filters_hash("search_bedset", query=query)
     offset, _ = decode(token, fh)
     result = backend().bedset.get_ids_list(query=query, limit=page_size, offset=offset)
-    rows = result.results
+    rows = [BedSetRow.from_metadata(r) for r in result.results]
     what = f"BEDsets matching '{query}'" if query else "BEDsets"
     summary = (
         f"{what}: {_span(offset, len(rows))} of {result.count}."
@@ -591,11 +617,11 @@ def get_bedset(
     id: str, view: Literal["record", "full"] = "record"
 ) -> BedSetSummary | BedSetMetadata:
     """
-    Get one BEDbase BEDset: description, aggregate statistics, and member BED
-    ids. The default record (~0.2-0.3K tokens) lists the first 20 member ids and
-    bed_ids_total. view="full" lists every member id; for large sets that is
-    over 100K tokens (see full_record.approx_tokens first). Next: get_bed(id) on
-    a member id.
+    Get one BEDbase BEDset: description, aggregate statistics, and members.
+    The default record (~0.3-0.6K tokens) names the first 20 members (id and
+    name) and gives members_total. view="full" lists every member id, but no
+    names; for large sets that is over 100K tokens (see
+    full_record.approx_tokens first). Next: get_bed(id) on a member.
 
     Args:
         id: The BEDset id (a short slug) from search_bedset, or its
@@ -603,8 +629,17 @@ def get_bedset(
         view: "record" (default) or "full".
     """
     bedset_id = _id_from(id, "bedset")
-    full = backend().bedset.get(bedset_id, full=True)
-    return full if view == "full" else BedSetSummary.from_full(full)
+    agent = backend()
+    full = agent.bedset.get(bedset_id, full=True)
+    if view == "full":
+        return full
+    names = {}
+    for bed_id in (full.bed_ids or [])[:MEMBERS_SHOWN]:
+        try:
+            names[bed_id] = agent.bed.get(bed_id).name
+        except BEDFileNotFoundError:
+            continue  # a stale member; still listed, without a name
+    return BedSetSummary.from_full(full, names)
 
 
 # =========================================================================== #
@@ -750,8 +785,8 @@ def get_regions(
     Read the intervals of one BEDbase BED file on a chromosome, optionally
     within a range, as BED text (chrom, start, end per line). At most ~20K
     tokens (about 4,000 regions); a bigger answer is a too_large error, so pass
-    start and end for dense files. Needs the file's bigBed (see get_bed's
-    downloads.bigbed_file).
+    start and end for dense files. For a whole chromosome or file, give the
+    user get_bed's downloads.bed_file link instead. Needs the file's bigBed.
 
     Args:
         id: The 32-character BED id, or its https://bedbase.org/bed/<id> URL.
@@ -785,7 +820,9 @@ def get_regions(
         raise tool_error(
             "too_large",
             f"More than {MCP_REGIONS_MAX_BYTES // 1000} KB of regions in that range.",
-            "Call again with a narrower start and end.",
+            f'For the whole file, get_bed(id="{bed_id}") has its download link '
+            "(downloads.bed_file); to read here, call again with a narrower start "
+            "and end.",
         ) from None
     except FileNotFoundError:
         raise tool_error(

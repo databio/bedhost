@@ -173,6 +173,8 @@ class _FakeBed:
 
 
 class _FakeBedset:
+    extra_member = None  # a member id for set0, which is otherwise empty
+
     def get_ids_list(self, query=None, limit=10, offset=0):
         all_rows = [
             BedSetMetadata(id=f"set{i}", name=f"Set {i}", md5sum="m") for i in range(3)
@@ -186,7 +188,12 @@ class _FakeBedset:
 
     def get(self, identifier, full=False):
         if identifier == "set0":
-            return BedSetMetadata(id="set0", name="Set 0", md5sum="m", bed_ids=[])
+            return BedSetMetadata(
+                id="set0",
+                name="Set 0",
+                md5sum="m",
+                bed_ids=[self.extra_member] if self.extra_member else [],
+            )
         if identifier == BIG_BEDSET_ID:
             return BedSetMetadata(
                 id=BIG_BEDSET_ID,

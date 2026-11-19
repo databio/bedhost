@@ -14,14 +14,16 @@ their size suits a chatbot, and add a new model only where none fits. New here:
   links, bedset memberships, and the size of what ``view="full"`` would return.
 - ``BedFull``: bbconf ``BedMetadataAll`` plus reference-genome validation, for
   ``get_bed(view="full")``.
-- ``BedSetSummary``: the default ``get_bedset`` record. Like bbconf
-  ``BedSetMetadata``, but with the member id list capped, since large BEDsets
-  list tens of thousands of files.
+- ``BedSetRow``: one ``search_bedset`` row, without bbconf's empty member list.
+- ``BedSetSummary``: the default ``get_bedset`` record: statistics and the
+  first members by id and name. bbconf ``BedSetMetadata`` lists every member
+  id, and large BEDsets have tens of thousands.
 
 Everything else is an unwrapped bbconf model, or bedhost.core.BaseListResponse
 for list_genomes/list_assays.
 """
 
+import datetime
 import json
 from typing import Generic, TypeVar
 
@@ -30,7 +32,7 @@ from bbconf.models.bed_models import (
     BedMetadataBasic,
     RefGenValidReturnModel,
 )
-from bbconf.models.bedset_models import BedSetMetadata
+from bbconf.models.bedset_models import BedSetMetadata, BedSetStats
 from pydantic import BaseModel, Field
 
 from bedhost.core import SearchKind
@@ -220,28 +222,61 @@ class BedFull(BedMetadataAll):
     )
 
 
-BED_IDS_SHOWN = 20
+MEMBERS_SHOWN = 20
 
 
-class BedSetSummary(BedSetMetadata):
-    """The default get_bedset record: bed_ids holds at most the first few members."""
+class BedSetRow(BaseModel):
+    """One search_bedset row: what a chatbot needs to pick a BEDset."""
 
-    bed_ids_total: int = 0
-    full_record: SizeInfo | None = Field(None, description='get_bedset(view="full")')
+    id: str = Field(description="BEDset id; pass it to get_bedset")
+    name: str
+    description: str | None = None
+    bedfile_count: int | None = None
+    author: str | None = None
+    source: str | None = None
+    submission_date: datetime.datetime | None = None
 
     @classmethod
-    def from_full(cls, full: BedSetMetadata) -> "BedSetSummary":
-        ids = full.bed_ids or []
-        # Copy the set fields only: several bbconf fields default to None but
-        # refuse an explicit None, so passing every field would fail validation.
-        fields = {
-            k: v
-            for k in BedSetMetadata.model_fields
-            if k != "bed_ids" and (v := getattr(full, k)) is not None
-        }
+    def from_metadata(cls, meta: BedSetMetadata) -> "BedSetRow":
         return cls(
-            **fields,
-            bed_ids=ids[:BED_IDS_SHOWN],
-            bed_ids_total=len(ids),
+            id=meta.id,
+            name=meta.name,
+            description=_clean(meta.description),
+            bedfile_count=meta.bedfile_count,
+            author=_clean(meta.author),
+            source=_clean(meta.source),
+            submission_date=meta.submission_date,
+        )
+
+
+class BedSetMember(BaseModel):
+    id: str
+    name: str | None = None
+
+
+class BedSetSummary(BedSetRow):
+    """The default get_bedset record: statistics plus the first few members, named."""
+
+    statistics: BedSetStats | None = None
+    members: list[BedSetMember] = Field(
+        description=f"The first {MEMBERS_SHOWN} member BED files"
+    )
+    members_total: int
+    full_record: SizeInfo = Field(
+        description='get_bedset(view="full"): every member id, plots'
+    )
+
+    @classmethod
+    def from_full(
+        cls, full: BedSetMetadata, names: dict[str, str | None]
+    ) -> "BedSetSummary":
+        ids = full.bed_ids or []
+        return cls(
+            **dict(BedSetRow.from_metadata(full)),
+            statistics=full.statistics,
+            members=[
+                BedSetMember(id=i, name=names.get(i)) for i in ids[:MEMBERS_SHOWN]
+            ],
+            members_total=len(ids),
             full_record=SizeInfo(approx_tokens=approx_tokens(full)),
         )

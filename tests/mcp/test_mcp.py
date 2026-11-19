@@ -239,6 +239,21 @@ def test_token_is_bound_to_the_query(backend_ml):
     assert tools.search_bed("liver", page_size=1, token=tok).pagination.page_size == 1
 
 
+def test_foreign_token_says_which_rows_it_wanted(backend_ml):
+    tok = tools.search_bed("liver", page_size=2).pagination.next_page_token
+    with pytest.raises(ToolError) as ei:
+        tools.search_bed("brain", token=tok)
+    body = _error(ei)
+    assert "rows 3 on" in body["message"]
+    assert "next_page_token" in body["hint"] and "row 3" in body["hint"]
+
+
+def test_no_output_schema_has_a_regex_pattern():
+    # bbconf's bed_compliance regex is Python-only and breaks JS clients.
+    for t in asyncio.run(tools.mcp.list_tools()):
+        assert '"pattern"' not in json.dumps(t.output_schema or {}), t.name
+
+
 def test_garbage_token_is_bad_token(backend_ml):
     with pytest.raises(ToolError) as ei:
         tools.search_bed("liver", token="@@not-base64@@")
@@ -281,13 +296,25 @@ def test_get_bed_full_size_is_declared_in_record(backend_ml):
     assert declared == actual
 
 
-def test_get_bedset_default_caps_member_ids(backend_ml):
+def test_get_bedset_default_names_the_first_members(backend_ml):
     rec = tools.get_bedset(BIG_BEDSET_ID)
     assert isinstance(rec, BedSetSummary)
-    assert len(rec.bed_ids) == 20
-    assert rec.bed_ids_total == BIG_BEDSET_SIZE
+    assert len(rec.members) == 20
+    assert rec.members_total == BIG_BEDSET_SIZE
     full = tools.get_bedset(BIG_BEDSET_ID, view="full")
     assert len(full.bed_ids) == BIG_BEDSET_SIZE
+
+
+def test_get_bedset_members_carry_names(backend_ml):
+    backend_ml.bedset.extra_member = VALID_BED_ID
+    rec = tools.get_bedset("set0")
+    assert [(m.id, m.name) for m in rec.members] == [(VALID_BED_ID, "A")]
+
+
+def test_search_bedset_rows_have_no_empty_member_list(backend_ml):
+    row = tools.search_bedset().rows[0]
+    assert "bed_ids" not in row.model_dump()
+    assert row.bedfile_count is None or row.bedfile_count >= 0
 
 
 # --- the text block a chatbot reads ----------------------------------------- #
@@ -382,3 +409,15 @@ def test_get_regions_failures_have_codes(backend_ml, monkeypatch, exc, code):
     with pytest.raises(ToolError) as ei:
         tools.get_regions(VALID_BED_ID, "chr1")
     assert _error(ei)["error"] == code
+
+
+def test_too_large_regions_point_to_the_download(backend_ml, monkeypatch):
+    backend_ml.bed.bigbed = True
+
+    def fail(*args):
+        raise RegionOutputTooLarge("big")
+
+    monkeypatch.setattr(tools, "run_bigbed_to_bed", fail)
+    with pytest.raises(ToolError) as ei:
+        tools.get_regions(VALID_BED_ID, "chr1")
+    assert f'get_bed(id="{VALID_BED_ID}")' in _error(ei)["hint"]
