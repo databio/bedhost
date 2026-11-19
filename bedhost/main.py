@@ -155,7 +155,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     app.state.mcp_session_manager = None
     if _MCP_AVAILABLE:
         _LOGGER.info("Mounting MCP server at /mcp ...")
-        mcp_set_backend(app.state.bbagent, serves_downloads=True)
+        mcp_set_backend(app.state.bbagent)
         mcp_app = mcp_server.streamable_http_app(
             # api.bedbase.org is a public host behind a TLS-terminating proxy; the
             # default DNS-rebinding Host-header guard would 421 it. Disable it here

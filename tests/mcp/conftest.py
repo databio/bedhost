@@ -18,7 +18,6 @@ def _reset_backend():
 
     yield
     tools._backend = None
-    tools._serves_downloads = False
     if tools._cache is not None:
         tools._cache.clear()
 

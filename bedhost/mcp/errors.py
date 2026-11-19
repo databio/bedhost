@@ -18,6 +18,7 @@ ERROR_CODES = (
     "too_large",  # the answer is over the size cap; narrow the request
     "timeout",  # the work took too long; narrow the request
     "bad_token",  # the paging token is not ours or belongs to another query
+    "internal",  # a server bug or bad stored record; not the caller's fault
 )
 
 

@@ -27,6 +27,8 @@ Every tool failure is a ToolError whose text is compact JSON,
 - ``too_large``: the answer is over the size cap; narrow the request.
 - ``timeout``: the work took too long; narrow the request.
 - ``bad_token``: the paging token is not ours or belongs to another query.
+- ``internal``: the server failed (a bug or a stored record it cannot read);
+  the message carries no detail and retrying will not help.
 
 There is exactly ONE bbconf BedBaseAgent per process: in HTTP mode the FastAPI
 app injects its own app.state.bbagent via set_backend(); in stdio mode backend()

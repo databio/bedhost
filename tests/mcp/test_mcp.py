@@ -158,6 +158,73 @@ def test_wrong_argument_type_is_invalid_input(backend_ml):
     assert "page_size" in body["message"]
 
 
+def test_unknown_argument_without_close_match_has_no_hint(backend_ml):
+    with pytest.raises(ToolError) as ei:
+        _call("list_genomes", {"zzz": 1})
+    body = _error(ei)
+    assert body["error"] == "invalid_input" and body["hint"] is None
+    assert body["valid"] == []
+
+
+def test_sdk_still_drops_unknown_arguments(backend_ml):
+    # Why _StrictMCP checks argument names itself: the SDK ignores extras. If
+    # this fails, the SDK now refuses them and the guard can go.
+    from mcp.server.mcpserver import MCPServer
+
+    result = asyncio.run(
+        MCPServer.call_tool(tools.mcp, "search_bed", {"query": "x", "genom": "hg38"})
+    )
+    assert not result.is_error
+
+
+def test_bad_stored_record_is_internal_not_invalid_input(backend_ml, monkeypatch):
+    # A pydantic error inside a tool is the server's fault, not the caller's.
+    from pydantic import BaseModel
+
+    class Strict(BaseModel):
+        n: int
+
+    def broken(*a, **k):
+        Strict(n="not a number")
+
+    monkeypatch.setattr(backend_ml.bed, "get", broken)
+    with pytest.raises(ToolError) as ei:
+        _call("get_bed", {"id": VALID_BED_ID})
+    body = _error(ei)
+    assert body["error"] == "internal"
+    assert "not a number" not in str(ei.value) and "Traceback" not in str(ei.value)
+
+
+def test_crash_is_internal_without_detail(backend_ml, monkeypatch):
+    def boom(*a, **k):
+        raise RuntimeError("secret detail")
+
+    monkeypatch.setattr(backend_ml, "get_list_genomes", boom)
+    with pytest.raises(ToolError) as ei:
+        _call("list_genomes", {})
+    assert _error(ei)["error"] == "internal"
+    assert "secret" not in str(ei.value)
+
+
+def test_dropped_row_does_not_end_paging(backend_ml):
+    # A hit without metadata is dropped, but the backend page was full, so
+    # there may be more: the token must still be there.
+    real = backend_ml.bed._search_page
+
+    def with_hole(limit, offset):
+        page = real(limit, offset)
+        page.results[0].metadata = None
+        return page
+
+    backend_ml.bed._search_page = with_hole
+    page = tools.search_bed("liver", page_size=2)
+    assert len(page.rows) == 1
+    assert page.pagination.next_page_token is not None
+    page = tools.get_bed_neighbours(VALID_BED_ID, page_size=2)
+    assert len(page.rows) == 1
+    assert page.pagination.next_page_token is not None
+
+
 # --- search: rows, summary, paging, degradation ------------------------------ #
 def test_search_returns_trimmed_rows_and_pages(backend_ml):
     page = tools.search_bed("liver", page_size=2)

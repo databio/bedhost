@@ -10,6 +10,7 @@ bedhost.core, the pure bedhost.const, the MCP SDK, and the stdlib.
 tests/mcp/test_layering.py enforces it.
 """
 
+import difflib
 import functools
 import inspect
 import os
@@ -83,17 +84,16 @@ from .schemas import (
 # Backend: exactly ONE bbconf BedBaseAgent per process (see package docstring). #
 # --------------------------------------------------------------------------- #
 _backend = None
-_serves_downloads = False
 
 
-def set_backend(agent, *, serves_downloads=False) -> None:
+def set_backend(agent) -> None:
     """Inject the agent the process already has (HTTP mode: app.state.bbagent).
 
     Idempotent; call once at startup, before any tool can run, so backend() never
     lazily builds a second agent.
     """
-    global _backend, _serves_downloads
-    _backend, _serves_downloads = agent, serves_downloads
+    global _backend
+    _backend = agent
 
 
 def _init_ml_from_env() -> bool:
@@ -195,10 +195,12 @@ class _StrictMCP(MCPServer):
     """Four changes to the SDK's tools.
 
     1. Drop regex patterns from output schemas (see _drop_patterns).
-    2. Refuse arguments a tool doesn't declare (the SDK silently drops them).
+    2. Refuse arguments a tool doesn't declare (the SDK silently drops them;
+       tests/mcp/test_mcp.py checks that it still does).
     3. Keep error text pure JSON. The SDK prefixes a tool's error with
-       "Error executing tool <name>: ", which breaks parsing, and reports a
-       wrong argument type as free text; both come back as coded errors.
+       "Error executing tool <name>: ", reports a wrong argument type as free
+       text, and a crash as bare "Error executing tool <name>"; all three come
+       back as coded errors (a crash as "internal", with no detail).
     4. Write the text block as compact JSON without null fields. The SDK
        pretty-prints the full model, which costs a chatbot 30-50% more tokens
        for the same data. structuredContent is left as the SDK built it.
@@ -214,8 +216,6 @@ class _StrictMCP(MCPServer):
     async def call_tool(self, name, arguments, context=None):
         params = _PARAMS.get(name)
         if params is not None and (unknown := sorted(set(arguments) - set(params))):
-            import difflib
-
             hint = None
             for a in unknown:
                 if close := difflib.get_close_matches(a, params, n=1):
@@ -229,13 +229,22 @@ class _StrictMCP(MCPServer):
             )
         try:
             result = await super().call_tool(name, arguments, context)
-        except UnexpectedToolError:
-            raise
+        except UnexpectedToolError as exc:
+            # The SDK logs nothing for a crash it hands back to us, so log the
+            # traceback here; the chatbot gets only the code.
+            _LOGGER.error(f"mcp tool={name} crashed", exc_info=exc.__cause__)
+            raise tool_error(
+                "internal",
+                f"{name} failed inside the server.",
+                "Not a problem with the arguments; retrying will not help.",
+            ) from None
         except ToolError as exc:
             cause = exc.__cause__
             if isinstance(cause, ToolError) and error_code(cause):
                 raise cause from None
             if isinstance(cause, ValidationError):
+                # Only argument validation reaches here as a ToolError; a
+                # ValidationError inside a tool is an UnexpectedToolError.
                 problems = "; ".join(
                     f"{'.'.join(map(str, e['loc']))}: {e['msg']}"
                     for e in cause.errors()
@@ -306,6 +315,12 @@ def _tool(fn):
             outcome = "error=not_found"
             hint = next((h for t, h in _NOT_FOUND_HINTS if isinstance(e, t)), None)
             raise tool_error("not_found", str(e), hint) from e
+        except ValidationError:
+            # A pydantic ValidationError is a ValueError, but here it means a
+            # stored record didn't fit our models, not a bad argument. Let it
+            # crash; call_tool reports it as "internal".
+            outcome = "error=internal"
+            raise
         except (BedBaseConfError, ValueError) as e:
             outcome = "error=invalid_input"
             raise tool_error("invalid_input", str(e)) from e
@@ -368,9 +383,16 @@ def _page(
     total=None,
     hint=None,
     search_mode=None,
+    fetched=None,
 ):
-    """Build a ToolPage for offset-paged results."""
-    next_token = encode(offset + page_size, fh) if len(rows) == page_size else None
+    """Build a ToolPage for offset-paged results.
+
+    ``fetched`` is how many rows the backend returned before any were dropped
+    (default len(rows)); a full backend page means there may be more, even when
+    a row was dropped from this one.
+    """
+    full = (len(rows) if fetched is None else fetched) == page_size
+    next_token = encode(offset + page_size, fh) if full else None
     return ToolPage(
         summary=summary,
         search_mode=search_mode,
@@ -497,6 +519,7 @@ def search_bed(
         total=total,
         hint=hint,
         search_mode=outcome.kind,
+        fetched=len(outcome.result.results or []),
     )
 
 
@@ -570,6 +593,7 @@ def get_bed_neighbours(
         offset,
         fh,
         hint=_next_get_bed(rows),
+        fetched=len(result.results or []),
     )
 
 
