@@ -1,99 +1,330 @@
 """MCP tool behavior tests — asserting on the text and shapes a chatbot sees."""
 
 import asyncio
+import json
+import logging
+import subprocess
 
 import pytest
-from bbconf.models.bed_models import QdrantSearchResult
 from mcp.server.mcpserver.exceptions import ToolError
 
+from bedhost.core import RegionOutputTooLarge
 from bedhost.mcp import tools
+from bedhost.mcp.errors import ERROR_CODES
+from bedhost.mcp.schemas import BedFull, BedHit, BedSetSummary, BedSummary, compact_json
+from tests.fakes import (
+    BIG_BEDSET_ID,
+    BIG_BEDSET_SIZE,
+    GSM_WITH_HITS,
+    VALID_BED_ID,
+)
 
-from .conftest import VALID_BED_ID
+TOOLS = {
+    "search_bed",
+    "get_bed",
+    "get_bed_neighbours",
+    "search_bedset",
+    "get_bedset",
+    "list_bed",
+    "list_genomes",
+    "list_assays",
+    "get_platform_stats",
+    "list_exports",
+    "get_regions",
+}
+REMOVED = (
+    "get_bed_stats",
+    "get_bed_files",
+    "get_bed_classification",
+    "get_reference_validation",
+)
 
 
-def test_all_tools_registered():
-    names = {t.name for t in asyncio.run(tools.mcp.list_tools())}
-    assert "search_bed" in names
-    assert len(names) == 15
+def _list_tools():
+    return asyncio.run(tools.mcp.list_tools())
 
 
-# --- id handling and error hints -------------------------------------------- #
-def test_bad_bed_id_is_rejected_with_shape_hint(backend_ml):
-    with pytest.raises(ToolError, match="32-character"):
+def _call(name, args):
+    return asyncio.run(tools.mcp.call_tool(name, args))
+
+
+def _error(excinfo) -> dict:
+    """Parse a coded tool error and check its stable shape."""
+    body = json.loads(str(excinfo.value))
+    assert {"error", "message", "hint"} <= set(body)
+    assert body["error"] in ERROR_CODES
+    return body
+
+
+# --- catalog: names, annotations, schemas, descriptions --------------------- #
+def test_tool_catalog():
+    assert {t.name for t in _list_tools()} == TOOLS
+
+
+def test_every_tool_is_annotated_read_only():
+    for t in _list_tools():
+        assert t.annotations is not None, t.name
+        assert t.annotations.read_only_hint is True, t.name
+        assert t.annotations.open_world_hint is False, t.name
+
+
+def test_every_tool_has_a_real_output_schema():
+    for t in _list_tools():
+        schema = t.output_schema or {}
+        assert schema.get("properties"), f"{t.name} has an empty outputSchema"
+
+
+def test_descriptions_name_the_domain_and_no_removed_tool():
+    for t in _list_tools():
+        first_sentence = t.description.strip().split(". ")[0]
+        assert "BEDbase" in first_sentence, t.name
+        for gone in REMOVED:
+            assert gone not in t.description, (t.name, gone)
+    for gone in REMOVED:
+        assert gone not in tools.INSTRUCTIONS
+
+
+# --- ids, URLs, and coded errors -------------------------------------------- #
+def test_bad_bed_id_is_invalid_input_with_search_hint(backend_ml):
+    with pytest.raises(ToolError) as ei:
         tools.get_bed("not-a-digest")
+    body = _error(ei)
+    assert body["error"] == "invalid_input"
+    assert "search_bed" in body["hint"]
 
 
-def test_unknown_bed_id_hints_at_search(backend_ml):
-    with pytest.raises(ToolError, match=r"No BED with that id.*search_bed"):
+def test_unknown_bed_id_is_not_found_with_search_hint(backend_ml):
+    with pytest.raises(ToolError) as ei:
         tools.get_bed("b" * 32)
+    body = _error(ei)
+    assert body["error"] == "not_found"
+    assert "search_bed" in body["hint"]
 
 
-def test_unknown_bedset_id_hints_at_search(backend_ml):
-    with pytest.raises(ToolError, match="search_bedset"):
+def test_unknown_bedset_id_is_not_found_with_search_hint(backend_ml):
+    with pytest.raises(ToolError) as ei:
         tools.get_bedset("nope")
+    body = _error(ei)
+    assert body["error"] == "not_found"
+    assert "search_bedset" in body["hint"]
 
 
-# --- unknown arguments refused, not dropped -------------------------------- #
-def test_unknown_argument_is_refused_and_suggested(backend_ml):
-    async def call():
-        return await tools.mcp.call_tool("search_bed", {"query": "x", "genom": "hg38"})
+@pytest.mark.parametrize(
+    "url",
+    [
+        f"https://bedbase.org/bed/{VALID_BED_ID}",
+        f"http://bedbase.org/bed/{VALID_BED_ID}/",
+        f"https://www.bedbase.org/bed/{VALID_BED_ID}?tab=stats",
+        f"  https://bedbase.org/bed/{VALID_BED_ID}#plots ",
+    ],
+)
+def test_bedbase_url_is_accepted_as_bed_id(backend_ml, url):
+    assert tools.get_bed(url).id == VALID_BED_ID
 
-    with pytest.raises(ToolError, match=r"has no argument 'genom'.*genome"):
-        asyncio.run(call())
+
+def test_bedbase_url_is_accepted_as_bedset_id(backend_ml):
+    assert tools.get_bedset("https://bedbase.org/bedset/set0/").id == "set0"
 
 
-# --- search: rows reuse bbconf models, paging, degradation ------------------ #
-def test_search_returns_bbconf_rows_and_pages(backend_ml):
+def test_bedset_url_passed_to_get_bed_points_to_get_bedset(backend_ml):
+    with pytest.raises(ToolError) as ei:
+        tools.get_bed("https://bedbase.org/bedset/set0")
+    body = _error(ei)
+    assert body["error"] == "invalid_input"
+    assert body["hint"] == 'get_bedset(id="set0")'
+
+
+def test_unknown_argument_is_refused_with_valid_list(backend_ml):
+    with pytest.raises(ToolError) as ei:
+        _call("search_bed", {"query": "x", "genom": "hg38"})
+    body = _error(ei)
+    assert body["error"] == "invalid_input"
+    assert "genome" in body["valid"]
+    assert "'genome'" in body["hint"]
+
+
+def test_error_text_through_the_server_is_pure_json(backend_ml):
+    # The SDK prefixes a tool's own error text; the server strips it again.
+    with pytest.raises(ToolError) as ei:
+        _call("get_bed", {"id": "b" * 32})
+    assert _error(ei)["error"] == "not_found"
+
+
+def test_wrong_argument_type_is_invalid_input(backend_ml):
+    with pytest.raises(ToolError) as ei:
+        _call("search_bed", {"query": "liver", "page_size": "lots"})
+    body = _error(ei)
+    assert body["error"] == "invalid_input"
+    assert "page_size" in body["message"]
+
+
+# --- search: rows, summary, paging, degradation ------------------------------ #
+def test_search_returns_trimmed_rows_and_pages(backend_ml):
     page = tools.search_bed("liver", page_size=2)
     assert page.pagination.page_size == 2
-    assert page.rows and all(isinstance(r, QdrantSearchResult) for r in page.rows)
+    assert page.rows and all(isinstance(r, BedHit) for r in page.rows)
+    assert page.rows[0].assay == "ATAC-seq"
+    assert page.rows[0].cell_line is None  # bbconf's "" is reported as absent
     assert page.pagination.next_page_token is not None  # 5 rows, page 2 -> more
+    assert page.pagination.limit_applied is None
 
 
-def test_page_size_is_clamped(backend_ml):
-    assert tools.search_bed("liver", page_size=9999).pagination.page_size == 100
+def test_search_default_page_size_is_10(backend_ml):
+    assert tools.search_bed("liver").pagination.page_size == 10
+
+
+def test_search_page_size_is_clamped_and_reported(backend_ml):
+    page = tools.search_bed("liver", page_size=9999)
+    assert page.pagination.page_size == 50
+    assert page.pagination.limit_applied == 50
+
+
+def test_list_page_size_is_clamped_and_reported(backend_ml):
+    page = tools.list_bed(page_size=500)
+    assert page.pagination.page_size == 100
+    assert page.pagination.limit_applied == 100
+    assert tools.list_bed().pagination.page_size == 20
+
+
+def test_semantic_summary_says_what_ran(backend_ml):
+    page = tools.search_bed("liver", genome="hg38", page_size=2)
+    assert page.search_mode == "semantic"
+    assert page.summary.startswith("Semantic search for 'liver' genome=hg38: rows 1-2")
+    assert page.pagination.total is None  # bbconf's count is the catalog size
+
+
+def test_semantic_no_matches_hints_at_other_queries(backend_ml):
+    page = tools.search_bed("nothing matches")
+    assert page.rows == []
+    assert "no matches" in page.summary
+    assert "accession" in page.hint
+
+
+def test_exact_id_summary_and_neighbours(backend_ml):
+    page = tools.search_bed(VALID_BED_ID, page_size=3)
+    assert page.search_mode == "exact_id"
+    assert page.rows[0].id == VALID_BED_ID
+    assert page.summary == "Exact id match, followed by 2 similar files."
+
+
+def test_exact_id_needs_no_ml(backend_no_ml):
+    page = tools.search_bed(VALID_BED_ID)
+    assert [r.id for r in page.rows] == [VALID_BED_ID]
+    assert page.summary == "Exact id match, followed by 0 similar files."
+
+
+def test_accession_summary(backend_no_ml):
+    page = tools.search_bed(GSM_WITH_HITS.upper())
+    assert page.search_mode == "accession"
+    assert page.summary == (
+        f"Accession {GSM_WITH_HITS.upper()}: rows 1-3 of 3 matching files."
+    )
+    assert page.pagination.total == 3
+
+
+def test_ml_disabled_returns_empty_page_saying_so(backend_no_ml):
+    page = tools.search_bed("liver")
+    assert page.rows == []
+    assert "nothing was searched" in page.summary
+    assert "accession" in page.hint
 
 
 def test_token_is_bound_to_the_query(backend_ml):
     tok = tools.search_bed("liver", page_size=1).pagination.next_page_token
     assert tok
-    with pytest.raises(ToolError, match="does not match this query"):
+    with pytest.raises(ToolError) as ei:
         tools.search_bed("brain", token=tok)
+    assert _error(ei)["error"] == "bad_token"
     # same query + its own token is accepted
     assert tools.search_bed("liver", page_size=1, token=tok).pagination.page_size == 1
 
 
-def test_garbage_token_is_rejected(backend_ml):
-    with pytest.raises(ToolError, match="not one this server issued"):
+def test_garbage_token_is_bad_token(backend_ml):
+    with pytest.raises(ToolError) as ei:
         tools.search_bed("liver", token="@@not-base64@@")
+    assert _error(ei)["error"] == "bad_token"
 
 
-def test_ml_disabled_returns_empty_page_with_hint(backend_no_ml):
-    page = tools.search_bed("liver")
-    assert page.rows == []
-    assert page.hint and "BEDHOST_INIT_ML" in page.hint
+def test_neighbours_with_ml_off_is_unavailable(backend_no_ml):
+    with pytest.raises(ToolError) as ei:
+        tools.get_bed_neighbours(VALID_BED_ID)
+    body = _error(ei)
+    assert body["error"] == "unavailable"
+    assert "search_bed" in body["hint"]
 
 
-def test_exact_id_fastpath_needs_no_ml(backend_no_ml):
-    # A 32-char id resolves even with ML disabled.
-    page = tools.search_bed(VALID_BED_ID)
-    assert page.rows[0].id == VALID_BED_ID
-    assert "Exact id match" in page.hint
-
-
-# --- detail tools return unwrapped bbconf models ---------------------------- #
-def test_get_bed_returns_full_record(backend_ml):
+# --- get_bed: trimmed record by default, full on request -------------------- #
+def test_get_bed_default_is_trimmed_record(backend_ml):
     bed = tools.get_bed(VALID_BED_ID)
-    assert bed.id == VALID_BED_ID
-    assert bed.name == "A"
+    assert isinstance(bed, BedSummary)
+    assert bed.number_of_regions == 100
+    assert bed.downloads["bed_file"].startswith("https://")
+    assert bed.sizes.bed_file.bytes == 1000
+    assert bed.sizes.full_record.approx_tokens > 0
+    assert bed.bedsets == ["set0", "set1", "set2", "set3", "set4"]
+    assert bed.bedsets_total == 7
+    assert len(compact_json(bed.model_dump(mode="json"))) < 8000
 
 
-def test_get_bed_files_returns_bed_files(backend_ml):
-    files = tools.get_bed_files(VALID_BED_ID)
-    assert files.bed_file.path == "files/x.bed.gz"
+def test_get_bed_full_has_stats_files_and_reference_fit(backend_ml):
+    bed = tools.get_bed(VALID_BED_ID, view="full")
+    assert isinstance(bed, BedFull)
+    assert bed.stats.gc_content == 0.5
+    assert bed.files.bed_file.path == "files/x.bed.gz"
+    assert bed.reference_validation.compared_genome[0].tier_ranking == 1
 
 
-# --- caching ----------------------------------------------------------------- #
+def test_get_bed_full_size_is_declared_in_record(backend_ml):
+    declared = tools.get_bed(VALID_BED_ID).sizes.full_record.approx_tokens
+    full = tools.get_bed(VALID_BED_ID, view="full")
+    actual = len(compact_json(full.model_dump(mode="json"))) // 4
+    assert declared == actual
+
+
+def test_get_bedset_default_caps_member_ids(backend_ml):
+    rec = tools.get_bedset(BIG_BEDSET_ID)
+    assert isinstance(rec, BedSetSummary)
+    assert len(rec.bed_ids) == 20
+    assert rec.bed_ids_total == BIG_BEDSET_SIZE
+    full = tools.get_bedset(BIG_BEDSET_ID, view="full")
+    assert len(full.bed_ids) == BIG_BEDSET_SIZE
+
+
+# --- the text block a chatbot reads ----------------------------------------- #
+def test_text_block_is_compact_json_without_nulls(backend_ml):
+    res = _call("search_bed", {"query": "liver"})
+    text = res.content[0].text
+    assert "\n" not in text and '": ' not in text and "null" not in text
+    data = json.loads(text)
+    assert data["summary"].startswith("Semantic search")
+    assert res.structured_content["summary"] == data["summary"]
+
+
+def test_union_return_text_block_is_the_record(backend_ml):
+    res = _call("get_bed", {"id": VALID_BED_ID})
+    assert json.loads(res.content[0].text)["id"] == VALID_BED_ID
+
+
+def test_regions_text_block_is_raw_bed_text(backend_ml, monkeypatch):
+    backend_ml.bed.bigbed = True
+    monkeypatch.setattr(tools, "run_bigbed_to_bed", lambda *a: "chr1\t1\t2\n")
+    res = _call("get_regions", {"id": VALID_BED_ID, "chrom": "chr1"})
+    assert res.content[0].text == "chr1\t1\t2\n"
+
+
+# --- per-call logging --------------------------------------------------------- #
+def test_each_call_is_logged(backend_ml, caplog):
+    with caplog.at_level(logging.INFO, logger="bedhost"):
+        tools.search_bed("liver " * 50, page_size=2)
+        with pytest.raises(ToolError):
+            tools.get_bed("short")
+    lines = [r.getMessage() for r in caplog.records if "mcp tool=" in r.getMessage()]
+    assert "mcp tool=search_bed" in lines[0] and "rows=2" in lines[0]
+    assert len(lines[0]) < 250  # the long query is cut to 100 characters
+    assert "mcp tool=get_bed" in lines[1] and "error=invalid_input" in lines[1]
+
+
+# --- caching of the whole-catalog tools ------------------------------------- #
 def test_list_genomes_is_cached(backend_ml):
     calls = {"n": 0}
     original = backend_ml.get_list_genomes
@@ -114,15 +345,40 @@ def test_list_exports_rewrites_urls(backend_ml):
     page = tools.list_exports()
     assert page.rows[0].file_path.startswith("https://")
     assert page.rows[0].file_path.endswith("exports/meta.parquet")
+    assert page.summary.startswith("Export snapshots")
 
 
-# --- region query guard ------------------------------------------------------ #
+# --- region queries ------------------------------------------------------------ #
 def test_get_regions_rejects_inverted_range(backend_ml):
-    with pytest.raises(ToolError, match="greater than start"):
+    with pytest.raises(ToolError) as ei:
         tools.get_regions(VALID_BED_ID, "chr1", start=100, end=50)
+    assert _error(ei)["error"] == "invalid_input"
 
 
-def test_get_regions_without_bigbed_is_clear(backend_ml):
-    # The fake's get_files returns no bigbed_file.
-    with pytest.raises(ToolError, match="no bigBed artifact"):
+def test_get_regions_without_bigbed_is_unavailable(backend_ml):
+    with pytest.raises(ToolError) as ei:
         tools.get_regions(VALID_BED_ID, "chr1")
+    body = _error(ei)
+    assert body["error"] == "unavailable"
+    assert "get_bed" in body["hint"]
+
+
+@pytest.mark.parametrize(
+    "exc, code",
+    [
+        (RegionOutputTooLarge("big"), "too_large"),
+        (subprocess.TimeoutExpired("bigBedToBed", 1), "timeout"),
+        (FileNotFoundError("bigBedToBed"), "unavailable"),
+        (subprocess.CalledProcessError(1, "bigBedToBed"), "unavailable"),
+    ],
+)
+def test_get_regions_failures_have_codes(backend_ml, monkeypatch, exc, code):
+    backend_ml.bed.bigbed = True
+
+    def fail(*args):
+        raise exc
+
+    monkeypatch.setattr(tools, "run_bigbed_to_bed", fail)
+    with pytest.raises(ToolError) as ei:
+        tools.get_regions(VALID_BED_ID, "chr1")
+    assert _error(ei)["error"] == code

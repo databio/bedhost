@@ -1,12 +1,14 @@
-"""Enforce the layering contract: bedhost/mcp and bedhost/core.py must not import the web stack.
+"""Enforce the layering contract: bedhost/mcp and bedhost/core.py must not
+import the web stack.
 
 Checks: a static ast scan of the MCP package's import statements, a static scan
 that bedhost/core.py imports only the stdlib, pydantic, bbconf, and
 bedhost.const, and a runtime check (in a clean subprocess) that importing the
 tools or core does not pull fastapi or the server wiring in transitively. The
-MCP package may import bedhost.core; that is how it shares logic with REST. starlette is intentionally *not* forbidden —
-the MCP SDK's Streamable HTTP transport is built on it, so importing the SDK
-unavoidably imports starlette; the contract is about bedhost's own web layer.
+MCP package may import bedhost.core; that is how it shares logic with REST.
+starlette is intentionally *not* forbidden: the MCP SDK's Streamable HTTP
+transport is built on it, so importing the SDK unavoidably imports starlette;
+the contract is about bedhost's own web layer.
 """
 
 import ast
