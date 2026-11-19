@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""A stand-in for UCSC bigBedToBed, for the chatbot evals (tests/evals).
+
+Called as the real one is: bigBedToBed -chrom=C [-start=S] [-end=E] <url> stdout.
+It writes deterministic narrowPeak-like rows for the file named in <url>, using
+the per-file specs in $BEDHOST_FAKE_REGIONS (written by serve_fixture.py).
+"""
+
+import json
+import os
+import random
+import re
+import sys
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from fixture_regions import CHROM_SIZES  # noqa: E402
+
+
+def main(argv):
+    opts = dict(re.match(r"-(\w+)=(.*)", a).groups() for a in argv if a.startswith("-"))
+    url = next(a for a in argv if not a.startswith("-") and a != "stdout")
+    bed_id = os.path.basename(url).split(".")[0]
+    specs = json.load(open(os.environ["BEDHOST_FAKE_REGIONS"]))
+    spec = specs.get(bed_id)
+    if spec is None:
+        print(f"Couldn't open {url}", file=sys.stderr)
+        return 255
+    chrom = opts.get("chrom")
+    sizes = CHROM_SIZES[spec["genome"]]
+    if chrom not in sizes:
+        return 0  # the real tool prints nothing for an unknown chromosome
+    lo, hi = int(opts.get("start", 0)), int(opts.get("end", sizes[chrom]))
+    count = round(spec["n"] * sizes[chrom] / sum(sizes.values()))
+    rng = random.Random(f"{bed_id}:{chrom}")
+    rows = []
+    for _ in range(count):
+        s = rng.randrange(0, sizes[chrom] - 5000)
+        w = max(50, int(rng.gauss(spec["width"], spec["width"] / 4)))
+        rows.append((s, s + w))
+    rows += [(s, e) for c, s, e in spec["planted"] if c == chrom]
+    rows.sort()
+    out = sys.stdout
+    for i, (s, e) in enumerate(rows):
+        if s < hi and e > lo:
+            sig = rng.uniform(5, 120)
+            out.write(f"{chrom}\t{s}\t{e}\tpeak{i}\t{int(sig * 8)}\t.\t{sig:.2f}\t-1\t{sig / 3:.3f}\t{(e - s) // 2}\n")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
