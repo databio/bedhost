@@ -454,7 +454,7 @@ def test_get_regions_without_bigbed_is_unavailable(backend_ml):
         tools.get_regions(VALID_BED_ID, "chr1")
     body = _error(ei)
     assert body["error"] == "unavailable"
-    assert "get_bed" in body["hint"]
+    assert "https://api.bedbase.org/v1/files/files/x.bed.gz" in body["hint"]
 
 
 @pytest.mark.parametrize(
@@ -487,4 +487,6 @@ def test_too_large_regions_point_to_the_download(backend_ml, monkeypatch):
     monkeypatch.setattr(tools, "run_bigbed_to_bed", fail)
     with pytest.raises(ToolError) as ei:
         tools.get_regions(VALID_BED_ID, "chr1")
-    assert f'get_bed(id="{VALID_BED_ID}")' in _error(ei)["hint"]
+    # The link itself, the same one get_bed gives, so no extra call is needed.
+    link = tools.get_bed(VALID_BED_ID).downloads["bed_file"]
+    assert link in _error(ei)["hint"]

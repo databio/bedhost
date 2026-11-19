@@ -78,6 +78,7 @@ from .schemas import (
     ToolPage,
     approx_tokens,
     compact_json,
+    http_url,
 )
 
 # --------------------------------------------------------------------------- #
@@ -822,12 +823,22 @@ def get_regions(
     if start is not None and end is not None and end <= start:
         raise tool_error("invalid_input", "end must be greater than start.")
 
-    bigbed = backend().bed.get_files(bed_id).bigbed_file
+    files = backend().bed.get_files(bed_id)
+    # Every failure below points at the whole file. Giving the link itself, not
+    # the get_bed call that has it, matters: after too_large, Haiku named
+    # "the link from get_bed" in 3 of 5 runs without ever fetching it.
+    link = http_url(files.bed_file) if files.bed_file else None
+    whole_file = (
+        f"The whole file downloads from {link}"
+        if link
+        else f'get_bed(id="{bed_id}") has the download link for the whole file'
+    )
+    bigbed = files.bigbed_file
     if not bigbed:
         raise tool_error(
             "unavailable",
             "This BED file has no bigBed, so its regions can't be queried.",
-            f'get_bed(id="{bed_id}") has the download link for the whole file.',
+            f"{whole_file}.",
         )
     path = build_exports_url(bigbed.path)
 
@@ -844,15 +855,14 @@ def get_regions(
         raise tool_error(
             "too_large",
             f"More than {MCP_REGIONS_MAX_BYTES // 1000} KB of regions in that range.",
-            f'For the whole file, get_bed(id="{bed_id}") has its download link '
-            "(downloads.bed_file); to read here, call again with a narrower start "
-            "and end.",
+            f"Too many to list in a chat: give the user the file. {whole_file}. "
+            "To read part of it here, call again with a narrower start and end.",
         ) from None
     except FileNotFoundError:
         raise tool_error(
             "unavailable",
             "Region queries are off on this server (bigBedToBed is not installed).",
-            f'get_bed(id="{bed_id}") has the download link for the whole file.',
+            f"{whole_file}.",
         ) from None
     except subprocess.TimeoutExpired:
         raise tool_error(
@@ -864,5 +874,5 @@ def get_regions(
         raise tool_error(
             "unavailable",
             "Reading the bigBed file failed.",
-            f'get_bed(id="{bed_id}") has the download link for the whole file.',
+            f"{whole_file}.",
         ) from None

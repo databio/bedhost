@@ -157,7 +157,7 @@ def approx_tokens(model: BaseModel) -> int:
     return len(compact_json(model.model_dump(mode="json")).encode()) // 4
 
 
-def _http_url(file) -> str | None:
+def http_url(file) -> str | None:
     for method in file.access_methods or []:
         if method.type == "http" and method.access_url:
             return method.access_url.url
@@ -192,7 +192,7 @@ class BedSummary(BedBrief):
             f = getattr(files, key, None) if files else None
             if f is None:
                 continue
-            if url := _http_url(f):
+            if url := http_url(f):
                 downloads[key] = url
             sizes[key] = SizeInfo(bytes=f.size)
         bedsets = full.bedsets or []
