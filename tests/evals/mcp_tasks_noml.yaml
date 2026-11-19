@@ -1,13 +1,13 @@
 # The same server and data as mcp_tasks.yaml, run as a server with its ML
 # models off (BEDHOST_INIT_ML=false): free-text search and similar-file search
 # are unavailable, while ids and GEO/ENCODE accessions still work.
-#   agentxp run tests/evals/mcp_tasks_noml.yaml --driver claude --runs 1
+#   uvx --from git+https://github.com/databio/agentxp@v0.1.2 agentxp run tests/evals/mcp_tasks_noml.yaml --driver claude --runs 1
 version: 1
 surface: mcp
 
 server:
   name: bedbase
-  start: "${BEDHOST_PYTHON:-python} tests/evals/serve_fixture.py --no-ml --port {port}"
+  start: "${BEDHOST_PYTHON:-uv run --no-project python} tests/evals/serve_fixture.py --no-ml --port {port}"
   ready_timeout_s: 90
 
 defaults: {max_turns: 10, timeout_s: 240, runs: 3, max_usd_per_run: 0.5}

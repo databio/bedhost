@@ -46,6 +46,20 @@ from bbconf.models.bedset_models import BedSetListResult, BedSetMetadata, BedSet
 from bbconf.models.drs_models import AccessMethod, AccessURL
 from fixture_regions import CHROM_SIZES
 
+
+def _cluster(chrom: str, start: int, end: int, seed: str) -> list[tuple]:
+    """Irregular, non-overlapping sites about every 250 bp (a regular grid
+    reads as a corrupt file to a chatbot)."""
+    rng = random.Random(seed)
+    sites, pos = [], start + rng.randrange(0, 200)
+    while True:
+        width = rng.randrange(80, 160)
+        if pos + width > end:
+            return sites
+        sites.append((chrom, pos, pos + width))
+        pos += width + rng.randrange(30, 230)
+
+
 HUMAN = {"species_name": "Homo sapiens", "species_id": "9606"}
 MOUSE = {"species_name": "Mus musculus", "species_id": "10090"}
 FLY = {"species_name": "Drosophila melanogaster", "species_id": "7227"}
@@ -284,6 +298,10 @@ RECORDS: dict[str, dict] = {
         n=182407,
         width=215,
         bigbed=True,
+        # A dense cluster over the MHC (chr6:29.5-30.5 Mb): from the region
+        # count a 1 Mb window looks like ~60 sites, but this one holds ~4,000,
+        # so reading it hits the get_regions size cap (regions-too-large).
+        planted=_cluster("chr6", 29_500_000, 30_500_000, seed="k562-mhc"),
     ),
     # --- ENCODE GM12878 ---------------------------------------------------- #
     "gm12878_ctcf": dict(
