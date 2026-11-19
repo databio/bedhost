@@ -19,7 +19,7 @@ Everything else a tool returns is an unwrapped bbconf model:
   get_bedset         -> bbconf BedSetMetadata
   get_bed_classification      -> bbconf BedClassification
   get_reference_validation    -> bbconf RefGenValidReturnModel
-  list_genomes/list_assays    -> bedhost BaseListResponse
+  list_genomes/list_assays    -> bedhost.core.BaseListResponse
   get_platform_stats          -> bbconf StatsReturn
 """
 
@@ -48,15 +48,3 @@ class ToolPage(BaseModel, Generic[T]):
     rows: list[T]
     pagination: Pagination
     hint: str | None = None
-
-
-class NameList(BaseModel):
-    """A simple named list — the genomes or assays present in BEDbase.
-
-    A local model rather than bedhost.data_models.BaseListResponse: that module
-    imports fastapi, and the MCP package stays free of the web stack (see
-    tests/mcp/test_layering.py).
-    """
-
-    count: int
-    results: list[str]

@@ -13,7 +13,6 @@ import functools
 import inspect
 import os
 import subprocess
-import tempfile
 import threading
 
 # The MCP SDK ships only in the `mcp` extra; make its absence a clear message.
@@ -37,14 +36,16 @@ from bbconf.exceptions import (
 from bbconf.models.bed_models import QdrantSearchResult
 
 from bedhost._version import __version__ as bedhost_version
-from bedhost.const import (
-    BIGBED_TIMEOUT_SECONDS,
-    EXPORTS_URL_BASE,
-    MAX_REGIONS_OUTPUT_BYTES,
+from bedhost.const import BIGBED_TIMEOUT_SECONDS, MAX_REGIONS_OUTPUT_BYTES
+from bedhost.core import (
+    BaseListResponse,
+    RegionOutputTooLarge,
+    build_exports_url,
+    run_bigbed_to_bed,
 )
 
 from .paging import clamp, decode, encode, filters_hash
-from .schemas import NameList, Pagination, ToolPage
+from .schemas import Pagination, ToolPage
 
 # --------------------------------------------------------------------------- #
 # Backend: exactly ONE bbconf BedBaseAgent per process (see package docstring). #
@@ -221,12 +222,6 @@ def _require_bed_id(bed_id: str) -> str:
             "list_bed, not a name."
         )
     return cleaned
-
-
-def _build_exports_url(file_path: str) -> str:
-    """Absolute HTTPS CDN URL for an S3 key (mirror of bedhost.helpers.build_exports_url,
-    reimplemented here so the MCP package stays free of the fastapi-importing helpers)."""
-    return f"{EXPORTS_URL_BASE.rstrip('/')}/{file_path.lstrip('/')}"
 
 
 def _offset_page(rows, page_size, offset, fh, total, hint=None):
@@ -496,19 +491,23 @@ def list_bed(
 
 
 @_tool
-def list_genomes() -> NameList:
+def list_genomes() -> BaseListResponse:
     """List the genome assemblies present in BEDbase (valid values for the genome=
     filter on search_bed and list_bed)."""
     genomes = _cached("list_genomes", backend().get_list_genomes)
-    return NameList(count=len(genomes), results=genomes)
+    return BaseListResponse(
+        count=len(genomes), limit=len(genomes), offset=0, results=genomes
+    )
 
 
 @_tool
-def list_assays() -> NameList:
+def list_assays() -> BaseListResponse:
     """List the assay types present in BEDbase (valid values for the assay= filter
     on search_bed)."""
     assays = _cached("list_assays", backend().get_list_assays)
-    return NameList(count=len(assays), results=assays)
+    return BaseListResponse(
+        count=len(assays), limit=len(assays), offset=0, results=assays
+    )
 
 
 @_tool
@@ -531,7 +530,7 @@ def list_exports(page_size: int = 20, token: str | None = None) -> ToolPage:
     offset, _ = decode(token, fh)
     result = backend().snapshot.list(limit=page_size, offset=offset)
     rows = [
-        row.model_copy(update={"file_path": _build_exports_url(row.file_path)})
+        row.model_copy(update={"file_path": build_exports_url(row.file_path)})
         for row in result.results
     ]
     return _offset_page(
@@ -590,7 +589,7 @@ def get_regions(
         raise ToolError(
             "This BED has no bigBed artifact, so region queries aren't available for it."
         )
-    path = _build_exports_url(bigbed.path)
+    path = build_exports_url(bigbed.path)
 
     cmd = ["bigBedToBed", f"-chrom={chrom}"]
     if start is not None:
@@ -600,8 +599,8 @@ def get_regions(
     cmd.extend([path, "stdout"])
 
     try:
-        return _run_bigbed_to_bed(cmd, BIGBED_TIMEOUT_SECONDS, MAX_REGIONS_OUTPUT_BYTES)
-    except _RegionOutputTooLarge:
+        return run_bigbed_to_bed(cmd, BIGBED_TIMEOUT_SECONDS, MAX_REGIONS_OUTPUT_BYTES)
+    except RegionOutputTooLarge:
         raise ToolError(
             f"Too many regions in that range (over "
             f"{MAX_REGIONS_OUTPUT_BYTES // (1024 * 1024)} MB). Narrow it with start and end."
@@ -616,50 +615,3 @@ def get_regions(
         ) from None
     except subprocess.CalledProcessError:
         raise ToolError("Failed to query the bigBed file.") from None
-
-
-# --------------------------------------------------------------------------- #
-# Region subprocess runner: a copy of bedhost.helpers.run_bigbed_to_bed, kept   #
-# here because helpers imports fastapi. Change both together.                    #
-# --------------------------------------------------------------------------- #
-class _RegionOutputTooLarge(Exception):
-    """bigBedToBed produced more output than the allowed ceiling."""
-
-
-def _run_bigbed_to_bed(cmd: list[str], timeout: int, max_bytes: int) -> str:
-    timed_out = threading.Event()
-    rows: list[str] = []
-    total = 0
-    with (
-        tempfile.TemporaryFile() as err,
-        subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=err, text=True) as proc,
-    ):
-
-        def _kill_on_timeout():
-            timed_out.set()
-            proc.kill()
-
-        timer = threading.Timer(timeout, _kill_on_timeout)
-        timer.start()
-        try:
-            for line in proc.stdout:
-                row = "\t".join(line.rstrip("\n").split("\t", 3)[:3]) + "\n"
-                total += len(row)
-                if total > max_bytes:
-                    proc.kill()
-                    raise _RegionOutputTooLarge(
-                        f"bigBedToBed output exceeded {max_bytes} bytes"
-                    )
-                rows.append(row)
-            proc.wait()
-        finally:
-            timer.cancel()
-
-        if timed_out.is_set():
-            raise subprocess.TimeoutExpired(cmd, timeout)
-        if proc.returncode != 0:
-            err.seek(0)
-            raise subprocess.CalledProcessError(
-                proc.returncode, cmd, stderr=err.read().decode(errors="replace")
-            )
-    return "".join(rows)

@@ -75,13 +75,6 @@ class ServiceInfoResponse(BaseModel):
     embedding_models: EmbeddingModels
 
 
-class BaseListResponse(BaseModel):
-    count: int
-    limit: int
-    offset: int
-    results: list
-
-
 class CreateBEDsetRequest(BaseModel):
     registry_path: str
 
