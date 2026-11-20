@@ -1,0 +1,48 @@
+# The same server and data as mcp_tasks.yaml, run as a server with its ML
+# models off (BEDHOST_INIT_ML=false): free-text search and similar-file search
+# are unavailable, while ids and GEO/ENCODE accessions still work.
+#   uvx --from git+https://github.com/databio/agentxp@v0.1.2 agentxp run tests/evals/mcp_tasks_noml.yaml --driver claude --runs 1
+version: 1
+surface: mcp
+
+server:
+  name: bedbase
+  start: "${BEDHOST_PYTHON:-uv run --no-project python} tests/evals/serve_fixture.py --no-ml --port {port}"
+  ready_timeout_s: 90
+
+defaults: {max_turns: 10, timeout_s: 240, runs: 3, max_usd_per_run: 0.5}
+
+families:
+  - {id: accession, share: 1.0, source: guess, name: "Look up a GEO/ENCODE accession"}
+
+tasks:
+  - id: accession-without-ml
+    family: accession
+    prompt: What files does BEDbase have for GEO sample GSM5404596?
+    expect: DKO liver rep 1 (mm10 ATAC-seq).
+    golden:
+      - {tool: search_bed, args: {query: GSM5404596}}
+    checks:
+      - answer_has: [DKO liver rep 1]
+      - max_calls: 3
+
+  - id: text-search-off
+    gate: true
+    prompt: Find me H3K4me3 ChIP-seq files from mouse liver.
+    expect: Says text search is off on this server; may find the file by browsing mm10, but invents nothing.
+    checks:
+      - judge:
+          - The final answer either says free-text search is unavailable, or names only files that appear in the tool results.
+          - The final answer does not describe any file that is absent from the tool results.
+
+  - id: similar-off
+    gate: true
+    prompt: "Find files similar to https://bedbase.org/bed/{{vars.liver_donor1}}"
+    expect: Says similar-file search is not available on this server; lists no made-up neighbours.
+    checks:
+      - tool_error: {tool: get_bed_neighbours, code: unavailable}
+      # A second line, "does not present any files as similar", flipped
+      # between two near-identical answers that offered the file's BEDset
+      # siblings as a fallback, so it was dropped.
+      - judge:
+          - The final answer says finding similar files is not available on this server right now.

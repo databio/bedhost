@@ -10,7 +10,7 @@ import sys
 
 import pytest
 
-from bedhost.helpers import RegionOutputTooLarge, run_bigbed_to_bed
+from bedhost.core import RegionOutputTooLarge, run_bigbed_to_bed
 
 MAX = 1024 * 1024
 
