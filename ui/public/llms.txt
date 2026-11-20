@@ -1,0 +1,14 @@
+# BEDbase
+
+> BEDbase is a catalog of genomic region datasets (BED files) and curated collections of them (BEDsets). Search by text, by BED file id, or by GEO/ENCODE accession, or upload a BED file to find similar ones. Then read a file's metadata and statistics, read its regions, or download it. The web UI is https://bedbase.org; the API is https://api.bedbase.org/v1.
+
+- [SKILL.md](https://bedbase.org/SKILL.md): how to search BEDbase and get BED files with the HTTP API, step by step
+- [MCP server](https://api.bedbase.org/mcp): Streamable HTTP, read-only tools to search and read BED files and BEDsets
+- [OpenAPI schema](https://api.bedbase.org/v1/openapi.json): every HTTP endpoint
+- [Text search as JSON](https://api.bedbase.org/v1/bed/search/text?query=CTCF%20ChIP-seq%20K562&genome=hg38&limit=5): the page bedbase.org/bed/{id} has its data at https://api.bedbase.org/v1/bed/{id}/metadata?full=true
+
+## Docs
+
+- [Connect an AI assistant](https://docs.bedbase.org/bedhost/mcp/): setting up the MCP server
+- [BEDbase documentation](https://docs.bedbase.org/)
+- [geniml](https://pypi.org/project/geniml/) (Python), [gtars](https://crates.io/crates/gtars) (Rust), and [bedbaser](https://github.com/waldronlab/bedbaser) (R): clients that download and cache BED files

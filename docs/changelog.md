@@ -6,6 +6,7 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 
 ### Added
 - MCP server, so chatbots and agents can use BEDbase: 11 read-only tools to search and read BED files and BEDsets, list genomes, assays, and exports, and read regions. It is served at `/mcp` (Streamable HTTP) when the `mcp` extra is installed, and over stdio by the `bedhost-mcp` command (set `BEDBASE_CONFIG`).
+- A "Use BEDbase with AI" section on the home page, with the MCP connect command and a starter prompt. New files for AI agents: bedbase.org/llms.txt and bedbase.org/SKILL.md (the API on one page), plus an MCP setup page in the docs.
 - A Genome Browser button on BED file pages that have a bigBed file opens the file in the UCSC Genome Browser, through new track hub endpoints (`/v1/bed/{bed_id}/track_hub`).
 - A Metrics link in the desktop navigation menu.
 - `POST /v1/bed/batch`: metadata for up to 1000 BED files in one request.
