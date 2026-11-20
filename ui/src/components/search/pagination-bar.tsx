@@ -1,104 +1,68 @@
 type Props = {
-  total: number;
   offset: number;
   limit: number;
   setOffset: (offset: number) => void;
+  // Whether a next page likely exists (i.e. the current page came back full).
+  // We paginate forward without a real total, so this drives the "next" controls.
+  hasMore: boolean;
 };
 
 export const PaginationBar = (props: Props) => {
-  const { total, limit, offset, setOffset } = props;
+  const { limit, offset, setOffset, hasMore } = props;
 
-  const prevPrevPage = Math.floor((offset - limit - limit) / limit);
-  const prevPage = Math.floor((offset - limit) / limit);
   const currentPage = Math.floor(offset / limit);
-  const nextPage = Math.floor((offset + limit) / limit);
-  const nextNextPage = Math.floor((offset + limit + limit) / limit);
-  const lastPage = Math.ceil(total / limit);
+  const goToPage = (page: number) => setOffset(Math.max(0, page) * limit);
 
   return (
     <div className='row'>
       <div className='d-flex flex-row align-items-center justify-content-center gap-1'>
         <button
           className='btn btn-sm btn-outline-primary border-0 text-dark'
-          onClick={() => {
-            setOffset(Math.max(0, offset - limit));
-          }}
+          onClick={() => goToPage(currentPage - 1)}
           disabled={offset === 0}
         >
           <i className='bi bi-arrow-left' />
         </button>
-        {prevPrevPage >= 0 && (
+        {currentPage - 2 >= 0 && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
-            onClick={() => {
-              setOffset(offset - limit - limit);
-            }}
+            onClick={() => goToPage(currentPage - 2)}
           >
-            {prevPrevPage + 1}
+            {currentPage - 1}
           </button>
         )}
-        {prevPage >= 0 && (
+        {currentPage - 1 >= 0 && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
-            onClick={() => {
-              setOffset(offset - limit);
-            }}
+            onClick={() => goToPage(currentPage - 1)}
           >
-            {prevPage + 1}
+            {currentPage}
           </button>
         )}
-        <button
-          className='btn btn-sm btn-outline-primary border-0 text-dark fw-bold'
-          // disabled={offset === 0}
-        >
-          {currentPage + 1}
-        </button>
-        {nextPage < lastPage && (
+        <button className='btn btn-sm btn-outline-primary border-0 text-dark fw-bold'>{currentPage + 1}</button>
+        {hasMore && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
-            onClick={() => {
-              setOffset(offset + limit);
-            }}
+            onClick={() => goToPage(currentPage + 1)}
           >
-            {nextPage + 1}
+            {currentPage + 2}
           </button>
         )}
-        {nextNextPage < lastPage && (
+        {hasMore && (
           <button
             className='btn btn-sm btn-outline-primary border-0 text-muted'
-            onClick={() => {
-              setOffset(offset + limit + limit);
-            }}
+            onClick={() => goToPage(currentPage + 2)}
           >
-            {nextNextPage + 1}
+            {currentPage + 3}
           </button>
         )}
-        {/* {(currentPage < lastPage) && (
-          <>
-            <i className='bi bi-three-dots text-sm' />
-            <button
-              className='btn btn-sm btn-outline-primary border-0 text-dark'
-              onClick={() => {
-                setOffset(Math.ceil(total / limit) * limit);
-              }}
-              disabled={total < limit || offset === Math.floor(total / limit) * limit}
-            >
-              {lastPage + 1}
-            </button>
-          </>
-        )} */}
         <button
           className='btn btn-sm btn-outline-primary border-0 text-dark'
-          onClick={() => {
-            setOffset((Math.ceil(total / limit) - 1) * limit);
-          }}
-          disabled={offset + limit >= total}
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={!hasMore}
         >
           <i className='bi bi-arrow-right' />
         </button>
-      </div>
-      <div className='text-center mt-1 text-xs text-muted'>
-        Viewing results {offset + 1} - {Math.min(offset + limit, total)} of {total} results
       </div>
     </div>
   );

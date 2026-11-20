@@ -1,0 +1,44 @@
+# Changelog
+
+This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
+
+## [Unreleased]
+
+### Added
+- A Genome Browser button on BED file pages that have a bigBed file opens the file in the UCSC Genome Browser, through new track hub endpoints (`/v1/bed/{bed_id}/track_hub`).
+- A Metrics link in the desktop navigation menu.
+
+### Changed
+- The text embedding models (dense and sparse) can come from embedding servers instead of being loaded in-process, through bbconf's `embedding_server:` config block. The production configs use servers for both, read from AWS SSM (`EMBEDDING_DENSE_URL`, `EMBEDDING_SPARSE_URL`, `EMBEDDING_API_KEY`). The region model still runs in-process.
+- Requires bbconf 0.17.0. The new `local` extra installs the text models for running everything in-process.
+- `environment/production.env` reads the embedding server settings from the lab `pass` store, like the other settings.
+
+### Fixed
+- An embedding server that is down or rejects a request now returns 503 instead of 500.
+
+## [0.15.0] - 2026-10-26
+
+### Changed
+- The Docker image preloads jemalloc as the memory allocator. In a replay of 240k production requests it kept memory flat (270 MB lower than glibc malloc at the end) with the same latency and errors.
+
+## [0.14.0] - 2026-10-16
+
+### Added
+- `GET /v1/usage`: public per-key usage counts (bed/bedset views, file downloads, searches) for an optional date range, with paging.
+- `GET /v1/ready` readiness probe, and `HEAD` on every `GET` route.
+- `after=<last id>` keyset paging on `/v1/bed/list`.
+- `BEDHOST_LOG_LEVEL` (default `INFO`) sets the log level; `BEDHOST_DISABLE_USAGE_SCHEDULER` turns off the background usage flush.
+- The Docker image includes UCSC `bigBedToBed`, so `/v1/bed/{id}/regions/{chr}` works.
+
+### Changed
+- **Breaking:** the container runs as non-root user `10001` and serves on port 8000.
+- **Breaking:** input limits. `/v1/bed/list` `offset` is capped at 10000 and `count` is `null` after the first page; list `limit` is capped; search and neighbour `limit` is capped at 100; offsets must be `>= 0`; `/regions` `start`/`end` are integers with `end > start`.
+- **Breaking:** uploads must send `Content-Length` (411 otherwise). Files over the size limit return 413, including gzip files that decompress past 200 MB; corrupt gzip returns 415; too many regions returns 413.
+- Upload and ML routes return 503 when ML models are off.
+- `/regions` output is streamed with a 20 MB cap (413) and a timeout (504).
+- Deploys build the base image from the checkout and run a container smoke test before pushing.
+- Requires bbconf 0.16.0.
+
+### Security
+- Uploads are saved safely with size caps checked while streaming.
+- bbconf and geniml no longer log at DEBUG level in production.

@@ -1,38 +1,45 @@
 FROM python:3.13-slim
 LABEL authors="Oleksandr Khoroshevskyi, Nathan Sheffield"
 
-RUN apt-get update
-RUN apt-get install -y gcc
-RUN apt-get install -y libpq-dev
-RUN apt-get install -y --no-install-recommends git
+# gcc/build-essential/python3-dev: hnswlib build (geniml); libpq-dev: postgres; git: git deps;
+# libjemalloc2: allocator preloaded below (less memory growth than glibc malloc)
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends gcc build-essential python3-dev libpq-dev git libjemalloc2 \
+ && rm -rf /var/lib/apt/lists/*
 
-# RUN apt-get update -y && \
-#     apt-get install -y libpq-dev && \  # for postgres backend
-#     apt-get install -y gcc && \
-#     apt-get install -y wget && \
-#     apt-get install -y libcurl4 && \
-# cpp compiler required for hsnwlib
+# UCSC bigBedToBed for the /v1/bed/{id}/regions route (needs only libc)
+ADD --chmod=755 https://hgdownload.soe.ucsc.edu/admin/exe/linux.x86_64/bigBedToBed /usr/local/bin/bigBedToBed
 
-EXPOSE 80
-EXPOSE 6333
+ENV HNSWLIB_NO_NATIVE=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+RUN pip install --no-cache-dir --upgrade pip uv
 
 WORKDIR /app
+# Install deps before copying the full source so the dep layer caches
+COPY pyproject.toml /app/pyproject.toml
+
+# Install dependencies only (from pyproject.toml), NOT bedhost itself: the app
+# runs from the /app source tree copied below (uvicorn bedhost.main:app), and
+# the version is read from bedhost/_version.py, so bedhost is intentionally not
+# installed as a distribution here. Text embeddings come from embedding
+# servers; the region model still runs in-process, so the image has torch.
+# --torch-backend cpu: without it, torch resolves to the CUDA build and pulls
+# ~3 GB of nvidia-* libraries the server never uses.
+RUN uv pip install -r pyproject.toml --torch-backend cpu --system --no-cache-dir --compile-bytecode
+
 COPY . /app
+RUN python -m compileall -q /app/bedhost
 
-RUN python -m pip install --upgrade pip
+# Unprivileged runtime user. /app and site-packages stay root-owned (read-only to the app).
+RUN useradd --system --uid 10001 --user-group --create-home --home-dir /home/bedhost --shell /usr/sbin/nologin bedhost
+# HF_HOME: the region model downloads from Hugging Face on first use.
+# NUMBA_CACHE_DIR: the UMAP projection (umap-learn) compiles numba code on first use
+ENV HOME=/home/bedhost \
+    HF_HOME=/home/bedhost/.cache/huggingface \
+    NUMBA_CACHE_DIR=/home/bedhost/.cache/numba \
+    LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+USER bedhost
 
-# Need this command due to geniml dependency on hnswlib
-ENV HNSWLIB_NO_NATIVE=1
-RUN apt-get install -y python3-dev
-RUN apt-get install -y build-essential
-
-RUN pip install uv
-
-# Install CPU-only pytorch, eliminating huge nvidia dependencies
-#pip install torch==2.3.1+cpu -f https://download.pytorch.org/whl/torch_stable.html
-RUN uv pip install torch --index-url https://download.pytorch.org/whl/cpu --system
-# RUN uv pip install https://github.com/pepkit/pipestat/archive/refs/heads/dev.zip --system
-
-RUN uv pip install -r requirements/requirements-all.txt --no-cache-dir --system
-
-CMD ["uvicorn", "bedhost.main:app", "--host", "0.0.0.0", "--port", "80"]
+EXPOSE 8000
+CMD ["uvicorn", "bedhost.main:app", "--host", "0.0.0.0", "--port", "8000"]

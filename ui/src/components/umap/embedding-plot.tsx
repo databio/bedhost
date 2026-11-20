@@ -3,7 +3,7 @@ import { useEffect, useState, useRef, useMemo, forwardRef, useImperativeHandle }
 import toast from 'react-hot-toast';
 import * as vg from '@uwdata/vgplot';
 
-import { tableau20 } from '../../utils';
+import { categoryPalette } from '../../utils';
 import { AtlasTooltip } from './atlas-tooltip';
 import { useMosaicCoordinator } from '../../contexts/mosaic-coordinator-context';
 
@@ -116,11 +116,11 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
     const bedData: any = await coordinator.query(
       `SELECT
         x, y,
-        cell_line_category, assay_category,
+        cell_line_category, assay_category, cell_type_category,
         ${colorGrouping} as category,
         name as text,
         id as identifier,
-        {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+        {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
        FROM data
        WHERE id = '${bedId}'`,
       { type: 'json' },
@@ -146,11 +146,11 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         const customPoint: any = await coordinator.query(
           `SELECT
             x, y,
-            cell_line_category, assay_category,
+            cell_line_category, assay_category, cell_type_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
             FROM data
             WHERE id = 'custom_point'`,
           { type: 'json' },
@@ -207,9 +207,10 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         x, y,
         cell_line_category,
         assay_category,
+        cell_type_category,
         name as text,
         id as identifier,
-        {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+        {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
        FROM data
        WHERE ${colorGrouping} = '${category}'${persistentClause}`,
       { type: 'json' },
@@ -300,11 +301,11 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
       result = (await coordinator.query(
         `SELECT
           x, y,
-          cell_line_category, assay_category,
+          cell_line_category, assay_category, cell_type_category,
           ${colorGrouping} as category,
           name as text,
           id as identifier,
-          {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+          {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
           FROM data
           WHERE x >= ${value.xMin} AND x <= ${value.xMax} AND y >= ${value.yMin} AND y <= ${value.yMax}${filterClause}`,
         { type: 'json' },
@@ -337,11 +338,11 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         result = (await coordinator.query(
           `SELECT
             x, y,
-            cell_line_category, assay_category,
+            cell_line_category, assay_category, cell_type_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
             FROM data
             WHERE id IN (${filteredIds})${filterClause}`,
           { type: 'json' },
@@ -428,11 +429,11 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
         const currentBed: any = await coordinator.query(
           `SELECT
             x, y,
-            cell_line_category, assay_category,
+            cell_line_category, assay_category, cell_type_category,
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
            FROM data
            WHERE id IN ('${idsToQuery.join("','")}')`,
           { type: 'json' },
@@ -506,8 +507,8 @@ export const EmbeddingPlot = forwardRef<EmbeddingPlotRef, Props>((props, ref) =>
                 identifier='id'
                 text='name'
                 category={colorGrouping}
-                categoryColors={tableau20}
-                additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
+                categoryColors={categoryPalette}
+                additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line', 'Cell Type': 'cell_type' }}
                 height={height || embeddingHeight}
                 width={containerWidth}
                 config={{

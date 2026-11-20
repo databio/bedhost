@@ -118,7 +118,7 @@ export const Home = () => {
 
           <div className="my-4"></div>
           <motion.div
-            className='d-flex flex-row gap-4 justify-content-center mb-5 pb-2 text-muted'
+            className='d-flex flex-wrap gap-2 gap-md-4 justify-content-center mb-5 pb-2 text-muted'
             initial={{opacity: 0}}
             animate={{opacity: 1}}
             transition={{duration: 0.6, delay: 0.4}}
@@ -126,15 +126,15 @@ export const Home = () => {
           <span>
             <strong className='text-primary'>{(bedbaseStats?.bedfiles_number || 0).toLocaleString()}</strong> BED files
           </span>
-            <span>•</span>
+            <span className='d-none d-md-inline'>•</span>
             <span>
             <strong className='text-success'>{(bedbaseStats?.bedsets_number || 0).toLocaleString()}</strong> BEDsets
           </span>
-            <span>•</span>
+            <span className='d-none d-md-inline'>•</span>
             <span>
             <strong className='text-info'>{(bedbaseStats?.genomes_number || 0).toLocaleString()}</strong> genomes
           </span>
-            <span>•</span>
+            <span className='d-none d-md-inline'>•</span>
             <a
               className='text-muted link-underline link-offset-1 link-underline-opacity-0 link-underline-opacity-75-hover'
               href={`/metrics`}

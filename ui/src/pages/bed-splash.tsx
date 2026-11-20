@@ -354,7 +354,7 @@ export const BedSplash = () => {
                         name: bedset.name || '',
                         description: bedset.description || '',
                         md5sum: '',
-                        bed_ids: [],
+                        bedfile_count: bedset.bedfile_count,
                       })),
                     }}
                   />
@@ -369,7 +369,7 @@ export const BedSplash = () => {
                         name: bedset.name || '',
                         description: bedset.description || '',
                         md5sum: '',
-                        bed_ids: [],
+                        bedfile_count: bedset.bedfile_count,
                       })),
                     }}
                     showBEDCount={true}

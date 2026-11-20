@@ -1,22 +1,25 @@
-try:
-    from typing import Annotated, Any, Dict, List, Optional
-except ImportError:
-    from typing_extensions import Annotated
-    from typing import Dict, Optional, List, Any
-
+import datetime
 from platform import python_version
+from typing import Literal
 
-try:
-    from bbconf import __version__ as bbconf_version
-except ImportError:
-    from importlib.metadata import version
-
-    bbconf_version = version("bbconf")
-from bbconf.models.base_models import StatsReturn, FileStats, UsageStats
-from fastapi import APIRouter, Request
+from bbconf import __version__ as bbconf_version
+from bbconf.bbagent import BedBaseAgent
+from bbconf.models.base_models import (
+    AnalysisFileListResult,
+    BedSnapshotListResult,
+    FileStats,
+    StatsReturn,
+    UsageResponse,
+    UsageStats,
+)
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi.responses import RedirectResponse
 from geniml import __version__ as geniml_version
+from sqlalchemy import text
 
+from .. import _LOGGER
 from .._version import __version__ as bedhost_version
+from ..const import EXPORTS_URL_BASE, MAX_LIST_LIMIT
 from ..data_models import (
     BaseListResponse,
     ComponentVersions,
@@ -25,14 +28,35 @@ from ..data_models import (
     ServiceInfoResponse,
     Type,
 )
-from ..dependencies import fetch_detailed_stats
-from ..helpers import get_openapi_version, count_requests, test_query_parameter
-from ..main import app, bbagent, usage_data
+from ..dependencies import fetch_detailed_stats, get_bbagent
+from ..helpers import (
+    build_exports_url,
+    count_requests,
+    get_openapi_version,
+    test_query_parameter,
+)
 
 router = APIRouter(prefix="/v1", tags=["base"])
-from fastapi.responses import RedirectResponse
 
 packages_versions = {}
+
+
+@router.get("/ready", include_in_schema=False)
+def readiness(bbagent: BedBaseAgent = Depends(get_bbagent)):
+    """
+    Readiness probe. Takes a connection out of the SQLAlchemy pool and runs
+    ``SELECT 1``. It has to go through the pool, because the pool is what
+    wedges when the database host reboots without closing its sockets; a
+    check that opens its own connection would report healthy while every
+    real request timed out.
+    """
+    try:
+        with bbagent.config.db_engine.engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+    except Exception as e:
+        _LOGGER.warning(f"Readiness check failed: {e}")
+        raise HTTPException(status_code=503, detail="database unavailable")
+    return {"status": "ok"}
 
 
 @router.get(
@@ -40,7 +64,9 @@ packages_versions = {}
     summary="Get summary statistics for BEDbase platform",
     response_model=StatsReturn,
 )
-async def get_bedbase_db_stats():
+def get_bedbase_db_stats(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> StatsReturn:
     """
     Returns statistics
     """
@@ -52,13 +78,15 @@ async def get_bedbase_db_stats():
     summary="Get detailed statistics for BEDbase platform, including number of files for each genome",
     response_model=FileStats,
 )
-async def get_detailed_stats(
+def get_detailed_stats(
+    request: Request,
     concise: bool = False,
-):
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> FileStats:
     """
     Returns detailed statistics
     """
-    return fetch_detailed_stats(concise=concise)
+    return fetch_detailed_stats(request, bbagent=bbagent, concise=concise)
 
 
 @router.get(
@@ -66,7 +94,9 @@ async def get_detailed_stats(
     summary="Get detailed usage statistics for BEDbase platform",
     response_model=UsageStats,
 )
-async def get_detailed_usage():
+def get_detailed_usage(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> UsageStats:
     """
     Returns detailed usage statistics
     """
@@ -78,9 +108,11 @@ async def get_detailed_usage():
     summary="Get available genomes",
     response_model=BaseListResponse,
 )
-async def get_bedbase_db_stats():
+async def get_genomes_list(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BaseListResponse:
     """
-    Returns statistics
+    Returns available genomes
     """
     genomes = bbagent.get_list_genomes()
     return BaseListResponse(
@@ -96,9 +128,11 @@ async def get_bedbase_db_stats():
     summary="Get available assays",
     response_model=BaseListResponse,
 )
-async def get_bedbase_db_stats():
+async def get_assays_list(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BaseListResponse:
     """
-    Returns statistics
+    Returns available assays
     """
     genomes = bbagent.get_list_assays()
     return BaseListResponse(
@@ -110,9 +144,86 @@ async def get_bedbase_db_stats():
 
 
 @router.get(
+    "/exports",
+    summary="Index of published bulk metadata exports (newest first)",
+    response_model=BedSnapshotListResult,
+)
+def get_bed_exports(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+    limit: int = Query(
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
+) -> BedSnapshotListResult:
+    """
+    Return the index of bulk metadata export artifacts published to S3, newest
+    first. ``file_path`` is rewritten to the absolute HTTPS CDN URL. Consumers
+    should resolve the current snapshot through this endpoint rather than
+    constructing or hardcoding a filename, since artifacts are dated and
+    immutable.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    result = bbagent.snapshot.list(limit=limit, offset=offset)
+    result.results = [
+        row.model_copy(update={"file_path": build_exports_url(row.file_path)})
+        for row in result.results
+    ]
+    return result
+
+
+@router.get(
+    "/files",
+    summary="Index of standalone analysis files (newest first)",
+    response_model=AnalysisFileListResult,
+)
+def get_analysis_files(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+    file_type: str | None = Query(None, description="Filter by file type"),
+    genome: str | None = Query(None, description="Filter by genome/assembly"),
+    tag: str | None = Query(None, description="Filter by a single tag"),
+    limit: int = Query(
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
+) -> AnalysisFileListResult:
+    """
+    Return the index of standalone analysis files (openSignalMatrix, models,
+    other analysis inputs) stored in S3, newest first. These files are global;
+    they are not tied to any bed file or bedset. ``file_path`` is rewritten to
+    the absolute HTTPS CDN URL.
+
+    Declared ``def`` (not ``async def``) so the blocking database query runs in a
+    threadpool instead of stalling the event loop.
+    """
+    result = bbagent.analysis_files.list(
+        file_type=file_type,
+        genome=genome,
+        tag=tag,
+        limit=limit,
+        offset=offset,
+    )
+    result.results = [
+        row.model_copy(update={"file_path": build_exports_url(row.file_path)})
+        for row in result.results
+    ]
+    return result
+
+
+@router.get(
     "/service-info", summary="GA4GH service info", response_model=ServiceInfoResponse
 )
-async def service_info():
+async def service_info(
+    request: Request,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> ServiceInfoResponse:
     """
     Returns information about this service, such as versions, name, etc.
     """
@@ -121,7 +232,7 @@ async def service_info():
         bbconf_version=bbconf_version,
         geniml_version=geniml_version,
         python_version=python_version(),
-        openapi_version=get_openapi_version(app),
+        openapi_version=get_openapi_version(request.app),
     )
 
     return ServiceInfoResponse(
@@ -148,9 +259,45 @@ async def service_info():
 
 
 @router.get("/files/{file_path:path}")
-@count_requests(usage_data, event="files")
+@count_requests(event="files")
 async def redirect_to_download(
-    file_path: str, request: Request, test_request: bool = test_query_parameter
+    file_path: str,
+    request: Request,
+    test_request: bool = test_query_parameter,
 ):
-    download_url = f"https://data2.bedbase.org/{file_path}"
+    download_url = f"{EXPORTS_URL_BASE}{file_path}"
     return RedirectResponse(url=download_url)
+
+
+@router.get(
+    "/usage",
+    summary="Get per-key usage counts for one event type, optionally by date range",
+    response_model=UsageResponse,
+)
+def get_usage(
+    type: Literal["files", "bed_meta", "bedset_meta", "bed_search", "bedset_search"],
+    date_from: datetime.datetime | None = None,
+    date_to: datetime.datetime | None = None,
+    limit: int = Query(
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """
+    Returns per-key usage counts for a single event type
+    (files | bed_meta | bedset_meta | bed_search | bedset_search), grouped by key
+    and summed over the time-bucketed rows whose window overlaps the requested
+    [date_from, date_to] range. Both date bounds are optional; limit/offset
+    paginate the keys by count (default limit 1000, max 10000).
+    """
+    return bbagent.get_usage(
+        event_type=type,
+        date_from=date_from,
+        date_to=date_to,
+        limit=limit,
+        offset=offset,
+    )

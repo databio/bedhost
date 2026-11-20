@@ -22,7 +22,6 @@ type Props = {
 export const Text2Bed = (props: Props) => {
   const { searchTerm, genome, assay, limit, offset, setOffset, layout, triggerSearch } = props;
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [resultsCount, setResultsCount] = useState(0);
   const [queryTerm, setQueryTerm] = useState(searchTerm);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -44,7 +43,6 @@ export const Text2Bed = (props: Props) => {
   useEffect(() => {
     if (results?.results) {
       setHasLoaded(true);
-      setResultsCount(results.count);
     }
   }, [results?.results]);
 
@@ -105,7 +103,12 @@ export const Text2Bed = (props: Props) => {
                     </div>
                     <div className='row'>
                       <div className='col-12'>
-                        <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
+                        <PaginationBar
+                          limit={limit}
+                          offset={offset}
+                          setOffset={setOffset}
+                          hasMore={(results?.results?.length ?? 0) >= limit}
+                        />
                       </div>
                     </div>
                   </>

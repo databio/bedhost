@@ -12,5 +12,7 @@ export const useStats = () => {
       const { data } = await api.get<BEDBASEStatistics>('/stats');
       return data;
     },
+    staleTime: 24 * 60 * 60 * 1000, // Consider data fresh for a day
+    gcTime: 24 * 60 * 60 * 1000,
   });
 };

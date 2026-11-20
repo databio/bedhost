@@ -389,7 +389,7 @@ export const EmbeddingContainer = forwardRef<EmbeddingContainerRef, Props>((prop
                           genome: point.genome_alias || 'N/A',
                           tissue: point.annotation?.tissue || 'N/A',
                           cell_line: point.fields?.['Cell Line'] || 'N/A',
-                          cell_type: point.annotation?.cell_type || 'N/A',
+                          cell_type: point.fields?.['Cell Type'] || 'N/A',
                           description: point.fields?.Description || '',
                           assay: point.fields?.Assay || 'N/A',
                         }));

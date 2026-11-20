@@ -1,22 +1,22 @@
 import logging
 
+from bbconf.bbagent import BedBaseAgent
 from bbconf.exceptions import BedSetNotFoundError, BedSetTrackHubLimitError
 from bbconf.models.bedset_models import (
     BedSetBedFiles,
-    BedSetDistributions,
     BedSetListResult,
     BedSetMetadata,
     BedSetPlots,
     BedSetStats,
 )
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response
 from pephubclient.helpers import is_registry_path, unwrap_registry_path
-from fastapi import APIRouter, HTTPException, Request, Response
 
-from ..const import EXAMPLE_BEDSET, PKG_NAME
-from ..main import bbagent, usage_data
+from ..const import EXAMPLE_BEDSET, MAX_LIST_LIMIT, PKG_NAME
 from ..data_models import CreateBEDsetRequest
-from ..utils import zip_pep
+from ..dependencies import get_bbagent
 from ..helpers import count_requests, test_query_parameter
+from ..utils import zip_pep
 
 router = APIRouter(prefix="/v1/bedset", tags=["bedset"])
 
@@ -29,7 +29,9 @@ _LOGGER = logging.getLogger(PKG_NAME)
     response_model=BedSetMetadata,
     response_model_by_alias=False,
 )
-async def get_example_bedset_record():
+async def get_example_bedset_record(
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSetMetadata:
     result = bbagent.bedset.get_ids_list(limit=1).results
     if result:
         return bbagent.bedset.get(result[0].id, full=True)
@@ -42,15 +44,26 @@ async def get_example_bedset_record():
     tags=["search"],
     response_model=BedSetListResult,
 )
-@count_requests(usage_data, event="bedset_search")
-async def list_bedsets(
-    query: str = None,
-    limit: int = 1000,
-    offset: int = 0,
+@count_requests(event="bedset_search")
+def list_bedsets(
+    request: Request,
+    query: str | None = None,
+    limit: int = Query(
+        1000,
+        ge=1,
+        le=MAX_LIST_LIMIT,
+        description=f"Limit (1-{MAX_LIST_LIMIT}), default 1000",
+    ),
+    offset: int = Query(0, ge=0, description="Offset (>= 0)"),
     test_request: bool = test_query_parameter,
-):
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSetListResult:
     """
-    Returns a list of BEDset records in the database with optional filters and search.
+    To enumerate everything, download the monthly Parquet snapshot from
+    `/v1/exports` (the `bedsets` file).
+
+    Returns a list of BEDset records in the database with optional filters and
+    search. Results are ordered by id, so paging with `offset` is stable.
     """
     return bbagent.bedset.get_ids_list(query=query, limit=limit, offset=offset)
 
@@ -62,12 +75,14 @@ async def list_bedsets(
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
     response_model_by_alias=False,
 )
-@count_requests(usage_data, event="bedset_meta")
-async def get_bedset_metadata(
+@count_requests(event="bedset_meta")
+def get_bedset_metadata(
+    request: Request,
     bedset_id: str,
     full: bool = True,
     test_request: bool = test_query_parameter,
-):
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSetMetadata:
     # TODO: fix error with not found
     try:
         return bbagent.bedset.get(bedset_id, full=full)
@@ -80,8 +95,9 @@ async def get_bedset_metadata(
     summary="Download PEP project for a single BEDset record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_pep(
+def get_bedset_pep(
     bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
     try:
         return zip_pep(bbagent.bedset.get_bedset_pep(bedset_id))
@@ -95,9 +111,10 @@ async def get_bedset_pep(
     summary="Get plots for single bedset record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_metadata(
+async def get_bedset_plots_handler(
     bedset_id: str,
-):
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSetPlots:
     """
     Returns metadata from selected columns for selected bedset
     """
@@ -110,35 +127,15 @@ async def get_bedset_metadata(
 @router.get(
     "/{bedset_id}/metadata/stats",
     response_model=BedSetStats,
-    summary="Get scalar stats (mean/sd) for a single BEDSET record",
-    description=f"Example\n bedset_id: {EXAMPLE_BEDSET}",
+    summary="Get stats for a single BEDSET record",
+    description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_stats(
+async def get_bedset_stats_handler(
     bedset_id: str,
-):
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSetStats:
     try:
         return bbagent.bedset.get_statistics(bedset_id)
-    except BedSetNotFoundError as _:
-        raise HTTPException(status_code=404, detail="No records found")
-
-
-@router.get(
-    "/{bedset_id}/metadata/distributions",
-    response_model=BedSetDistributions,
-    summary="Get distribution statistics for a single BEDSET record",
-    description=f"Example\n bedset_id: {EXAMPLE_BEDSET}",
-)
-async def get_bedset_distributions(
-    bedset_id: str,
-):
-    """Get aggregated distribution statistics from the JSONB column.
-
-    Returns full distribution data (histograms, KDEs, partitions, etc.)
-    computed across all member BED files. Falls back to wrapping old
-    scalar stats if distribution data is not yet available.
-    """
-    try:
-        return bbagent.bedset.get_distributions(bedset_id)
     except BedSetNotFoundError as _:
         raise HTTPException(status_code=404, detail="No records found")
 
@@ -149,15 +146,20 @@ async def get_bedset_distributions(
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
     response_model_by_alias=False,
 )
-async def get_bedfiles_in_bedset(
+def get_bedfiles_in_bedset(
     bedset_id: str,
-):
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSetBedFiles:
     return bbagent.bedset.get_bedset_bedfiles(bedset_id)
 
 
 @router.head("/{bedset_id}/track_hub")
 @router.get("/{bedset_id}/track_hub")
-async def get_track_hub_bedset(request: Request, bedset_id: str):
+async def get_track_hub_bedset(
+    request: Request,
+    bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Generate track hub files for the BED set
     """
@@ -194,7 +196,10 @@ async def get_genomes_file_bedset(request: Request, bedset_id: str):
 
 @router.head("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
 @router.get("/{bedset_id}/track_hub_trackDb_file", include_in_schema=False)
-async def get_trackDb_file_bedset(bedset_id: str):
+def get_trackDb_file_bedset(
+    bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Generate trackDb file for the BED set track hub
     """
@@ -222,7 +227,10 @@ async def get_trackDb_file_bedset(bedset_id: str):
     "/create",
     description="Create a new bedset by providing registry path to the PEPhub project",
 )
-async def create_bedset(bedset: CreateBEDsetRequest):
+def create_bedset(
+    bedset: CreateBEDsetRequest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
     """
     Create a new bedset
     """

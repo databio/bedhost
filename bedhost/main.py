@@ -1,28 +1,50 @@
+import logging
 import os
 import sys
-import datetime
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+from pathlib import Path
 
+import logmuse
 import markdown
 import uvicorn
+from apscheduler.schedulers.background import BackgroundScheduler
 from bbconf.exceptions import (
     BEDFileNotFoundError,
     BedSetNotFoundError,
+    EmbeddingServerError,
     MissingObjectError,
     MissingThumbnailError,
 )
 from bedboss.refgenome_validator.main import ReferenceValidator
-
-from fastapi import FastAPI, Request
+from cachetools import TTLCache
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
+from fastapi.routing import APIRoute
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
 from . import _LOGGER
 from ._version import __version__ as bedhost_version
 from .cli import build_parser
-from .const import PKG_NAME, STATIC_PATH, USAGE_SAVE_HOURS, USAGE_RECORD_DAYS
-from .helpers import attach_routers, configure, drs_response, init_model_usage
-from apscheduler.schedulers.background import BackgroundScheduler
+from .const import PKG_NAME, STATIC_PATH, USAGE_SAVE_HOURS
+from .helpers import (
+    attach_routers,
+    configure,
+    drs_response,
+    init_model_usage,
+    upload_usage,
+)
+from .uploads import upload_size_guard
+
+# This module is the application entry point (uvicorn loads `bedhost.main:app`),
+# so it is where logging gets configured. Don't move this into `__init__.py`.
+LOG_LEVEL = os.environ.get("BEDHOST_LOG_LEVEL", "INFO").upper()
+logmuse.init_logger(PKG_NAME, level=LOG_LEVEL)
+for name in ("bbconf", "geniml"):
+    logging.getLogger(name).setLevel(LOG_LEVEL)
 
 tags_metadata = [
     {
@@ -51,12 +73,91 @@ tags_metadata = [
     },
 ]
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """
+    Application lifespan handler.
+
+    Startup:
+      - Read BEDBASE_CONFIG from env (raise EnvironmentError if missing).
+      - Build the BedBaseAgent, UsageModel, and ReferenceValidator.
+      - Stash them on app.state for dependency injection.
+      - Start the BackgroundScheduler that periodically flushes usage data.
+
+    Shutdown:
+      - Stop the scheduler so it does not leak across reloads.
+    """
+    bbconf_file_path = os.environ.get("BEDBASE_CONFIG")
+    if not bbconf_file_path:
+        raise EnvironmentError(
+            "No BEDBASE_CONFIG found. Can't configure server. "
+            "Check documentation to create config file"
+        )
+
+    _LOGGER.info(f"Running {PKG_NAME} app...")
+    app.state.bbagent = configure(bbconf_file_path)
+    app.state.usage_data = init_model_usage()
+
+    app.state.detailed_stats: TTLCache = TTLCache(maxsize=2, ttl=14 * 24 * 60 * 60)
+
+    # Respect BEDHOST_INIT_ML for CI/smoke deployments that don't need the
+    # reference genome validator loaded. Default is to initialize it.
+    init_ml_env = os.environ.get("BEDHOST_INIT_ML", "true").lower()
+    if init_ml_env in ("0", "false", "no"):
+        _LOGGER.info(
+            "BEDHOST_INIT_ML=false; skipping ReferenceValidator initialization."
+        )
+        app.state.ref_validator = None
+    else:
+        _LOGGER.info("Initializing reference genome validator...")
+        app.state.ref_validator = ReferenceValidator()
+
+    # Read-only guard: when BEDHOST_DISABLE_USAGE_SCHEDULER is truthy, do NOT
+    # start the hourly usage-flush job (which writes to the DB). Default (unset)
+    # keeps the scheduler ON so normal/prod deployments are unaffected.
+    if os.environ.get("BEDHOST_DISABLE_USAGE_SCHEDULER", "").lower() not in (
+        "1",
+        "true",
+        "yes",
+    ):
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(
+            upload_usage,
+            "interval",
+            hours=USAGE_SAVE_HOURS,
+            args=(app.state.bbagent, app.state.usage_data),
+        )
+        scheduler.start()
+        app.state.scheduler = scheduler
+    else:
+        app.state.scheduler = None
+        _LOGGER.info(
+            "BEDHOST_DISABLE_USAGE_SCHEDULER set; usage flush scheduler NOT "
+            "started (read-only mode)."
+        )
+
+    try:
+        _LOGGER.info("Starting app ...")
+        yield
+    finally:
+        if app.state.scheduler is not None:
+            app.state.scheduler.shutdown(wait=False)
+
+
 app = FastAPI(
     title=PKG_NAME,
-    description="BED file/sets statistics and image server API",
+    description=(
+        "BED file/sets statistics and image server API\n\n"
+        "**HTTP methods:** Every `GET` endpoint also answers `HEAD` (identical "
+        "headers, no body) for health and existence checks. HEAD operations are "
+        "omitted from this reference to avoid duplicating every GET."
+    ),
     version=bedhost_version,
     docs_url="/v1/docs",
+    openapi_url="/v1/openapi.json",
     openapi_tags=tags_metadata,
+    lifespan=lifespan,
 )
 
 origins = [
@@ -67,6 +168,10 @@ origins = [
     "*",  # allow cross-origin resource sharing, since this is a public API
 ]
 
+# Registered before CORSMiddleware so CORS runs outside it and its 411/413
+# responses still carry CORS headers for browser clients.
+app.middleware("http")(upload_size_guard)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -75,7 +180,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-templates = Jinja2Templates(directory="bedhost/templates", autoescape=False)
+app.mount(
+    "/static",
+    StaticFiles(directory=str(Path(__file__).parent / "static")),
+    name="static",
+)
+
+templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
+templates.env.autoescape = False
 
 
 @app.get("/v1", summary="API intro page", tags=["home"])
@@ -97,17 +209,21 @@ async def changelog(request: Request):
 
 
 @app.get("/")
-def lending_page():
+def landing_page():
     return RedirectResponse(url="v1/")
 
 
-def render_markdown(filename: str, request: Request):
-    with open(os.path.join(STATIC_PATH, filename), "r", encoding="utf-8") as input_file:
-        text = input_file.read()
+def render_markdown(filename: str, request: Request) -> Response:
+    path = os.path.join(STATIC_PATH, filename)
+    try:
+        with open(path, "r", encoding="utf-8") as input_file:
+            text = input_file.read()
+    except FileNotFoundError:
+        # e.g. docs/changelog.md was removed from the repo in 2024 but the
+        # route is still registered. Return 404 rather than a 500.
+        raise HTTPException(status_code=404, detail=f"{filename} not found")
     content = markdown.markdown(text)
-    return templates.TemplateResponse(
-        "page.html", {"request": request, "content": content}
-    )
+    return templates.TemplateResponse(request, "page.html", {"content": content})
 
 
 @app.exception_handler(MissingThumbnailError)
@@ -126,11 +242,75 @@ async def exc_handler_BedSetNotFoundError(req: Request, exc: BedSetNotFoundError
 
 
 @app.exception_handler(MissingObjectError)
-async def exc_handler_BedSetNotFoundError(req: Request, exc: MissingObjectError):
+async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
     return drs_response(404, "Object not found.")
 
 
-def main():
+@app.exception_handler(EmbeddingServerError)
+async def exc_handler_EmbeddingServerError(req: Request, exc: EmbeddingServerError):
+    """An embedding server is down or rejected a request. The detail goes to the log only."""
+    _LOGGER.error(f"Embedding server error on {req.url.path}: {exc}")
+    return JSONResponse(
+        status_code=503, content={"detail": "Embedding service unavailable"}
+    )
+
+
+# Router endpoints use Depends() to resolve bbagent/usage_data/ref_validator
+# from app.state at request time, so attaching at module import is safe
+# regardless of lifespan ordering.
+attach_routers(app)
+
+
+def _answer_head_wherever_we_answer_get(routes) -> None:
+    """
+    Starlette's plain `Route` adds HEAD alongside GET automatically; FastAPI's
+    `APIRoute` does not, so uptime monitors that send HEAD (UptimeRobot's basic
+    monitor, for one) get a 405. Adding the method makes Starlette run the GET
+    handler and drop the body.
+
+    FastAPI 0.141 stopped flattening included routers into `app.routes` and
+    keeps a wrapper object holding the original router instead, so recurse
+    through those as well. Must run before the first request: the wrapper
+    caches an effective view of its routes on first match.
+    """
+    for route in routes:
+        if isinstance(route, APIRoute) and "GET" in route.methods:
+            route.methods.add("HEAD")
+        included = getattr(route, "original_router", None)
+        if included is not None:
+            _answer_head_wherever_we_answer_get(included.routes)
+
+
+_answer_head_wherever_we_answer_get(app.routes)
+
+
+def custom_openapi() -> dict:
+    """
+    `_answer_head_wherever_we_answer_get` adds HEAD to every GET route so uptime
+    monitors work. FastAPI's schema generator emits one operation per method, so
+    those HEAD ops otherwise appear on every path in the docs, mirroring GET with
+    no added information. Strip them here and document the convention once in the
+    app description instead.
+    """
+    if app.openapi_schema:
+        return app.openapi_schema
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+        tags=tags_metadata,
+    )
+    for path_item in schema.get("paths", {}).values():
+        path_item.pop("head", None)
+    app.openapi_schema = schema
+    return schema
+
+
+app.openapi = custom_openapi
+
+
+def main() -> None:
     parser = build_parser()
     args = parser.parse_args()
     if not args.command:
@@ -139,71 +319,19 @@ def main():
         sys.exit(1)
 
     if args.command == "serve":
-        _LOGGER.info(f"Running {PKG_NAME} app...")
         bbconf_file_path = args.config or os.environ.get("BEDBASE_CONFIG") or None
+        if bbconf_file_path:
+            os.environ["BEDBASE_CONFIG"] = bbconf_file_path
 
-        global bbagent
+        # Load config once just to pull host/port out. Lifespan will rebuild
+        # the agent in the uvicorn worker process.
         bbagent = configure(bbconf_file_path)
+        host = bbagent.config.config.server.host
+        port = bbagent.config.config.server.port
 
-        _LOGGER.info("Initializing reference genome validator...")
-        global ref_validator
-        ref_validator = ReferenceValidator()
-
-        attach_routers(app)
+        _LOGGER.info(f"Running {PKG_NAME} app on {host}:{port}...")
         uvicorn.run(
-            app,
-            host=bbagent.config.config.server.host,
-            port=bbagent.config.config.server.port,
-        )
-
-
-if __name__ != "__main__":
-    if os.environ.get("BEDBASE_CONFIG"):
-        import logging
-
-        _LOGGER.setLevel(logging.DEBUG)
-        _LOGGER.info(f"Running {PKG_NAME} app...")
-        bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        global bbagent
-        global usage_data
-        global ref_validator
-
-        bbagent = configure(
-            bbconf_file_path
-        )  # configure before attaching routers to avoid circular imports
-        usage_data = init_model_usage()
-
-        ref_validator = ReferenceValidator()
-
-        scheduler = BackgroundScheduler()
-
-        def upload_usage():
-            """
-            Upload usage data to the database and reset the usage data
-            """
-
-            _LOGGER.info("Running uploading of the usage")
-            usage_data.date_to = datetime.datetime.now() + datetime.timedelta(
-                days=USAGE_RECORD_DAYS
-            )
-            try:
-                bbagent.add_usage(usage_data)
-            except Exception as e:
-                _LOGGER.error(f"Error while uploading usage data: {e}")
-
-            usage_data.bed_meta = {}
-            usage_data.bedset_meta = {}
-            usage_data.bed_search = {}
-            usage_data.bedset_search = {}
-            usage_data.files = {}
-            usage_data.date_from = datetime.datetime.now()
-            usage_data.date_to = None
-
-        scheduler.add_job(upload_usage, "interval", hours=USAGE_SAVE_HOURS)
-        scheduler.start()
-
-        attach_routers(app)
-    else:
-        raise EnvironmentError(
-            "No BEDBASE_CONFIG found. Can't configure server. Check documentation to create config file"
+            "bedhost.main:app",
+            host=host,
+            port=port,
         )

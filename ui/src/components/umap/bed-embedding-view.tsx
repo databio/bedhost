@@ -2,7 +2,7 @@ import { EmbeddingViewMosaic } from 'embedding-atlas/react';
 import { useEffect, useState, useRef, useMemo } from 'react';
 import * as vg from '@uwdata/vgplot';
 
-import { isPointInPolygon, tableau20 } from '../../utils';
+import { isPointInPolygon, categoryPalette, MAX_CATEGORIES } from '../../utils';
 import { useBedCart } from '../../contexts/bedcart-context';
 import { components } from '../../../bedbase-types';
 import { AtlasTooltip } from './atlas-tooltip';
@@ -47,10 +47,10 @@ export const BEDEmbeddingView = (props: Props) => {
   const [pinGrouping, setPinGrouping] = useState<string>(colorGrouping);
 
   const categoryColors = useMemo(() => {
-    const colors = [...tableau20, '#cccccc'];
+    const colors = [...categoryPalette, '#cccccc'];
     if (legendItems) {
       legendItems.forEach((item: any) => {
-        if (item.name === 'UNKNOWN' && item.category < 20) {
+        if (item.name === 'UNKNOWN' && item.category < MAX_CATEGORIES) {
           colors[item.category] = '#cccccc';
         }
       });
@@ -118,7 +118,7 @@ export const BEDEmbeddingView = (props: Props) => {
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
             FROM data
             WHERE id = 'custom_point'`,
           { type: 'json' },
@@ -243,7 +243,7 @@ export const BEDEmbeddingView = (props: Props) => {
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
            FROM data
            WHERE id IN (${missingNeighborIds.map((id) => `'${id}'`).join(',')})`,
             { type: 'json' },
@@ -286,7 +286,7 @@ export const BEDEmbeddingView = (props: Props) => {
           ${colorGrouping} as category,
           name as text,
           id as identifier,
-          {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+          {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
          FROM data
          WHERE x >= ${value.xMin} AND x <= ${value.xMax} AND y >= ${value.yMin} AND y <= ${value.yMax}${filterClause}`,
         { type: 'json' },
@@ -322,7 +322,7 @@ export const BEDEmbeddingView = (props: Props) => {
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
            FROM data
            WHERE id IN (${filteredIds})${filterClause}`,
           { type: 'json' },
@@ -349,7 +349,7 @@ export const BEDEmbeddingView = (props: Props) => {
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
            FROM data
            WHERE id IN (${missingNeighborIds.map((id) => `'${id}'`).join(',')})`,
           { type: 'json' },
@@ -365,8 +365,8 @@ export const BEDEmbeddingView = (props: Props) => {
     const fieldName = colorGrouping.replace('_category', '');
     const query = `
       SELECT
-        CASE WHEN ${colorGrouping} < 20 THEN ${fieldName} ELSE 'Other' END as name,
-        CASE WHEN ${colorGrouping} < 20 THEN ${colorGrouping} ELSE 20 END as category,
+        CASE WHEN ${colorGrouping} < ${MAX_CATEGORIES} THEN ${fieldName} ELSE 'Other' END as name,
+        CASE WHEN ${colorGrouping} < ${MAX_CATEGORIES} THEN ${colorGrouping} ELSE ${MAX_CATEGORIES} END as category,
         COUNT(*) as count
       FROM data
       GROUP BY 1, 2
@@ -448,7 +448,7 @@ export const BEDEmbeddingView = (props: Props) => {
             ${colorGrouping} as category,
             name as text,
             id as identifier,
-            {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+            {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
            FROM data
            WHERE id = '${bedId}'`,
           { type: 'json' },
@@ -464,7 +464,7 @@ export const BEDEmbeddingView = (props: Props) => {
               ${colorGrouping} as category,
               name as text,
               id as identifier,
-              {'Description': description, 'Assay': assay, 'Cell Line': cell_line} as fields
+              {'Description': description, 'Assay': assay, 'Cell Line': cell_line, 'Cell Type': cell_type} as fields
              FROM data
              WHERE id IN (${neighborIDs.map((id) => `'${id}'`).join(',')})`,
             { type: 'json' },
@@ -528,7 +528,7 @@ export const BEDEmbeddingView = (props: Props) => {
                         genome: point.genome_alias || 'N/A',
                         tissue: point.annotation?.tissue || 'N/A',
                         cell_line: point.fields?.['Cell Line'] || 'N/A',
-                        cell_type: point.annotation?.cell_type || 'N/A',
+                        cell_type: point.fields?.['Cell Type'] || 'N/A',
                         description: point.fields?.Description || '',
                         assay: point.fields?.Assay || 'N/A',
                       }));
@@ -563,7 +563,7 @@ export const BEDEmbeddingView = (props: Props) => {
                     text='name'
                     category={colorGrouping}
                     categoryColors={categoryColors}
-                    additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line' }}
+                    additionalFields={{ Description: 'description', Assay: 'assay', 'Cell Line': 'cell_line', 'Cell Type': 'cell_type' }}
                     height={embeddingHeight}
                     width={containerWidth}
                     config={{
@@ -595,6 +595,7 @@ export const BEDEmbeddingView = (props: Props) => {
                       <th scope='col'>BED Name</th>
                       <th scope='col'>Assay</th>
                       <th scope='col'>Cell Line</th>
+                      <th scope='col'>Cell Type</th>
                       <th scope='col'>Description</th>
                       <th scope='col'></th>
                     </tr>
@@ -609,6 +610,7 @@ export const BEDEmbeddingView = (props: Props) => {
                         <td>{point.text}</td>
                         <td>{point.fields?.Assay}</td>
                         <td>{point.fields?.['Cell Line']}</td>
+                        <td>{point.fields?.['Cell Type']}</td>
                         <td>{point.fields?.Description}</td>
                         <td className='text-center' onClick={(e) => e.stopPropagation()}>
                           {point.identifier !== 'custom_point' && (
@@ -654,6 +656,19 @@ export const BEDEmbeddingView = (props: Props) => {
                   />
                   <label className='btn btn-outline-secondary' htmlFor={'color_legend_2'}>
                     Assay
+                  </label>
+                  <input
+                    type='radio'
+                    className='btn-check'
+                    name='color_legend'
+                    id='color_legend_3'
+                    value='cell_type_category'
+                    autoComplete='off'
+                    checked={colorGrouping === 'cell_type_category'}
+                    onChange={(e) => setColorGrouping(e.target.value)}
+                  />
+                  <label className='btn btn-outline-secondary' htmlFor={'color_legend_3'}>
+                    Cell Type
                   </label>
                 </div>
               </div>
@@ -706,7 +721,7 @@ export const BEDEmbeddingView = (props: Props) => {
                           key={item.category}
                         >
                           <td className='d-flex justify-content-between align-items-center' style={{ height: '30px' }}>
-                            <span>
+                            <span className='text-truncate' style={{ maxWidth: '200px' }} title={item.name}>
                               <i className='bi bi-square-fill me-3' style={{ color: item.name === 'UNKNOWN' ? '#cccccc' : categoryColors[item.category] }} />
                               {item.name}
                               {item.count != null && (

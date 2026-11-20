@@ -22,7 +22,6 @@ export const Bed2Bed = (props: Props) => {
   const { limit, offset, setOffset, layout, file, embeddingPlotRef } = props;
   const [containerHeight, setContainerHeight] = useState(660);
   const [hasLoaded, setHasLoaded] = useState(false);
-  const [resultsCount, setResultsCount] = useState(0);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -44,7 +43,6 @@ export const Bed2Bed = (props: Props) => {
   useEffect(() => {
     if (results?.results) {
       setHasLoaded(true);
-      setResultsCount(results.count);
     }
   }, [results?.results]);
 
@@ -139,7 +137,12 @@ export const Bed2Bed = (props: Props) => {
                 )}
                 <div className='row'>
                   <div className='col-12'>
-                    <PaginationBar limit={limit} offset={offset} setOffset={setOffset} total={resultsCount} />
+                    <PaginationBar
+                      limit={limit}
+                      offset={offset}
+                      setOffset={setOffset}
+                      hasMore={(results?.results?.length ?? 0) >= limit}
+                    />
                   </div>
                 </div>
               </>

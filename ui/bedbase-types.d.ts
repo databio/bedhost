@@ -1314,6 +1314,8 @@ export interface components {
       summary?: string;
       /** Bed Ids */
       bed_ids?: string[];
+      /** Bedfile Count */
+      bedfile_count?: number;
       /** Author */
       author?: string | null;
       /** Source */
@@ -1327,6 +1329,8 @@ export interface components {
       name?: string | null;
       /** Description */
       description?: string | null;
+      /** Bedfile Count */
+      bedfile_count?: number;
     };
     /** BedSetPlots */
     BedSetPlots: {

@@ -1,24 +1,35 @@
-import os
-from functools import wraps
-
-from typing import Literal
 import datetime
+import inspect
+import os
+import subprocess
+import tempfile
+import threading
+from collections.abc import Callable
+from functools import wraps
+from typing import Literal
+
 from bbconf.bbagent import BedBaseAgent
 from bbconf.models.base_models import UsageModel
-from starlette.responses import FileResponse, JSONResponse, RedirectResponse
-from fastapi import Query
+from fastapi import FastAPI, Query
+from fastapi.concurrency import run_in_threadpool
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 
 from . import _LOGGER
 from .exceptions import BedHostException
 
 
-def serve_file(path: str, remote: bool = None):
+def serve_file(
+    path: str, remote: bool | None = None
+) -> FileResponse | RedirectResponse:
     """
-    Serve a local or remote file
+    Serve a local or remote file.
 
-    :param str path: relative path to serve
-    :param bool remote: whether to redirect to a remote source or serve local
-    :exception FileNotFoundError: if file not found
+    Args:
+        path: Relative path to serve.
+        remote: Whether to redirect to a remote source or serve local.
+
+    Raises:
+        FileNotFoundError: If file not found.
     """
     remote = remote or True
     if remote:
@@ -38,12 +49,102 @@ def serve_file(path: str, remote: bool = None):
         raise FileNotFoundError(msg)
 
 
-def get_openapi_version(app):
-    """
-    Get the OpenAPI version from the OpenAPI description JSON
+class RegionOutputTooLarge(Exception):
+    """bigBedToBed produced more output than the allowed ceiling."""
 
-    :param fastapi.FastAPI app: app object
-    :return str: openAPI version in use
+
+def run_bigbed_to_bed(cmd: list[str], timeout: int, max_bytes: int) -> str:
+    """Run bigBedToBed, wait for it, return only the first 3 BED columns.
+
+    Output is read line by line and trimmed as it arrives, so memory is bounded
+    by ``max_bytes`` rather than by the size of the bigBed file.
+
+    Args:
+        cmd: Full argv for the ``bigBedToBed`` invocation (no shell).
+        timeout: Wall-clock timeout in seconds.
+        max_bytes: Ceiling on the trimmed output size.
+
+    Returns:
+        The first three tab-separated columns of each output line,
+        newline-terminated. Empty string if there is no output.
+
+    Raises:
+        FileNotFoundError: If the binary is missing.
+        RegionOutputTooLarge: If the output exceeds ``max_bytes``. The child is
+            killed before this is raised.
+        subprocess.TimeoutExpired: If the process exceeds ``timeout``. The
+            child is killed before this is raised.
+        subprocess.CalledProcessError: If the process exits non-zero.
+    """
+    timed_out = threading.Event()
+    rows: list[str] = []
+    total = 0
+    # stderr goes to a file so a chatty child can never block on a full pipe.
+    with (
+        tempfile.TemporaryFile() as err,
+        subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=err, text=True) as proc,
+    ):
+
+        def _kill_on_timeout():
+            timed_out.set()
+            proc.kill()
+
+        timer = threading.Timer(timeout, _kill_on_timeout)
+        timer.start()
+        try:
+            for line in proc.stdout:
+                row = "\t".join(line.rstrip("\n").split("\t", 3)[:3]) + "\n"
+                total += len(row)
+                if total > max_bytes:
+                    proc.kill()
+                    raise RegionOutputTooLarge(
+                        f"bigBedToBed output exceeded {max_bytes} bytes"
+                    )
+                rows.append(row)
+            proc.wait()
+        finally:
+            timer.cancel()
+
+        if timed_out.is_set():
+            raise subprocess.TimeoutExpired(cmd, timeout)
+        if proc.returncode != 0:
+            err.seek(0)
+            raise subprocess.CalledProcessError(
+                proc.returncode, cmd, stderr=err.read().decode(errors="replace")
+            )
+    return "".join(rows)
+
+
+def build_exports_url(file_path: str) -> str:
+    """
+    Build a public HTTPS CDN URL for an export / analysis-file S3 key.
+
+    Uses explicit string concatenation rather than ``os.path.join``: the latter
+    is a filesystem operation and, given an absolute ``file_path`` (leading
+    ``/``), silently discards the base URL entirely — dropping the scheme and
+    host. Stripping a trailing slash off the base and a leading slash off the
+    key guarantees exactly one separator and always preserves the host.
+
+    Args:
+        file_path: The S3 key (relative or absolute) of the artifact.
+
+    Returns:
+        The absolute ``https://data2.bedbase.org/...`` URL for the artifact.
+    """
+    from .const import EXPORTS_URL_BASE
+
+    return f"{EXPORTS_URL_BASE.rstrip('/')}/{file_path.lstrip('/')}"
+
+
+def get_openapi_version(app: FastAPI) -> str:
+    """
+    Get the OpenAPI version from the OpenAPI description JSON.
+
+    Args:
+        app: App object.
+
+    Returns:
+        OpenAPI version in use.
     """
     try:
         return app.openapi()["openapi"]
@@ -51,7 +152,7 @@ def get_openapi_version(app):
         return "3.0.2"
 
 
-def attach_routers(app):
+def attach_routers(app: FastAPI) -> FastAPI:
     _LOGGER.info("Mounting routers...")
 
     # importing routers here avoids circular imports
@@ -66,16 +167,21 @@ def attach_routers(app):
 
 
 def configure(bbconf_file_path: str) -> BedBaseAgent:
+    # Respect BEDHOST_INIT_ML for CI/smoke deployments that don't need the
+    # ML models (dense/sparse encoders, UMAP, region2vec) loaded. Default
+    # is to initialize them (unchanged behavior for production).
+    init_ml_env = os.environ.get("BEDHOST_INIT_ML", "true").lower()
+    init_ml = init_ml_env not in ("0", "false", "no")
     try:
         # bbconf_file_path = os.environ.get("BEDBASE_CONFIG") or None
-        _LOGGER.info(f"Loading config: '{bbconf_file_path}'")
-        bbc = BedBaseAgent(bbconf_file_path)
+        _LOGGER.info(f"Loading config: '{bbconf_file_path}' (init_ml={init_ml})")
+        bbc = BedBaseAgent(bbconf_file_path, init_ml=init_ml)
     except Exception as e:
         raise BedHostException(f"Bedbase config was not provided or is incorrect: {e}")
     return bbc
 
 
-def drs_response(status_code, msg):
+def drs_response(status_code: int, msg: str) -> JSONResponse:
     """Helper function to make quick DRS responses"""
     content = {"status_code": status_code, "msg": msg}
     return JSONResponse(status_code=status_code, content=content)
@@ -89,26 +195,43 @@ test_query_parameter = Query(
 
 
 def count_requests(
-    usage_data: UsageModel,
     event: Literal["bed_search", "bedset_search", "bed_meta", "bedset_meta", "files"],
-):
+) -> Callable:
     """
-    Decorator to count requests for different events
+    Decorator to count requests for different events.
 
-    :param UsageModel usage_data: usage data model
-    :param str event: event type
+    The wrapped endpoint must accept ``request: Request``; the usage data model
+    is read from ``request.app.state.usage_data`` per-request.
+
+    Args:
+        event: Event type.
     """
 
-    def decorator(func):
+    def decorator(func: Callable) -> Callable:
         @wraps(func)
         async def wrapper(*args, **kwargs):
 
-            function_result = await func(*args, **kwargs)
+            # The wrapper is always async (FastAPI sees it as the route handler),
+            # but the wrapped endpoint may be a plain ``def``. Plain ``def``
+            # endpoints must run in a worker thread so their blocking work does
+            # not stall the event loop; awaiting one directly would also raise a
+            # TypeError. Dispatch accordingly.
+            if inspect.iscoroutinefunction(func):
+                function_result = await func(*args, **kwargs)
+            else:
+                function_result = await run_in_threadpool(func, *args, **kwargs)
             if "test_request" in kwargs and kwargs["test_request"]:
-                _LOGGER.info(
-                    f"Test request was executed. For '{event}' event with: {args}, {kwargs}. No results saved."
+                _LOGGER.debug(
+                    f"Test request executed for '{event}' event. No results saved."
                 )
                 return function_result
+            request = kwargs.get("request")
+            if request is None:
+                raise RuntimeError(
+                    f"count_requests decorator requires the wrapped endpoint "
+                    f"'{func.__name__}' to accept a 'request: Request' parameter."
+                )
+            usage_data: UsageModel = request.app.state.usage_data
             if event == "files":
                 file_path = kwargs.get("file_path")
                 if "bed" in file_path or "bigbed" in file_path.lower():
@@ -117,17 +240,23 @@ def count_requests(
                     else:
                         usage_data.files[file_path] = 1
             elif event == "bed_search":
-                query = kwargs.get("query").strip()
-                if query in usage_data.bed_search:
-                    usage_data.bed_search[query] += 1
-                else:
-                    usage_data.bed_search[query] = 1
+                raw_query = kwargs.get("query")
+                # /v1/bedset/list accepts query=None; skip usage tracking in
+                # that case rather than crashing on ``None.strip()``.
+                if raw_query is not None:
+                    query = raw_query.strip()
+                    if query in usage_data.bed_search:
+                        usage_data.bed_search[query] += 1
+                    else:
+                        usage_data.bed_search[query] = 1
             elif event == "bedset_search":
-                query = kwargs.get("query").strip()
-                if query in usage_data.bedset_search:
-                    usage_data.bedset_search[query] += 1
-                else:
-                    usage_data.bedset_search[query] = 1
+                raw_query = kwargs.get("query")
+                if raw_query is not None:
+                    query = raw_query.strip()
+                    if query in usage_data.bedset_search:
+                        usage_data.bedset_search[query] += 1
+                    else:
+                        usage_data.bedset_search[query] = 1
             elif event == "bed_meta":
                 bed_id = kwargs.get("bed_id")
                 if bed_id in usage_data.bed_meta:
@@ -150,7 +279,7 @@ def count_requests(
     return decorator
 
 
-def init_model_usage():
+def init_model_usage() -> UsageModel:
     return UsageModel(
         bed_meta={},
         bedset_meta={},
@@ -159,3 +288,31 @@ def init_model_usage():
         files={},
         date_from=datetime.datetime.now(),
     )
+
+
+def upload_usage(bbagent: BedBaseAgent, usage_data: UsageModel) -> None:
+    """
+    Upload usage data to the database and reset the usage data in place.
+
+    Args:
+        bbagent: The bbconf agent used to persist usage records.
+        usage_data: The live usage model to flush and reset.
+    """
+    from .const import USAGE_RECORD_DAYS
+
+    _LOGGER.info("Running uploading of the usage")
+    usage_data.date_to = datetime.datetime.now() + datetime.timedelta(
+        days=USAGE_RECORD_DAYS
+    )
+    try:
+        bbagent.add_usage(usage_data)
+    except Exception as e:
+        _LOGGER.error(f"Error while uploading usage data: {e}")
+
+    usage_data.bed_meta = {}
+    usage_data.bedset_meta = {}
+    usage_data.bed_search = {}
+    usage_data.bedset_search = {}
+    usage_data.files = {}
+    usage_data.date_from = datetime.datetime.now()
+    usage_data.date_to = None
