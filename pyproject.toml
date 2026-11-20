@@ -83,6 +83,10 @@ path = "bedhost/_version.py"
 [tool.hatch.build.targets.wheel]
 packages = ["bedhost"]
 
+# Keep the website (ui/), deployment files, and docs out of the PyPI sdist.
+[tool.hatch.build.targets.sdist]
+include = ["/bedhost", "/tests", "/README.md", "/LICENSE.txt"]
+
 [tool.pytest.ini_options]
 addopts = "-rfE"
 testpaths = ["tests"]
