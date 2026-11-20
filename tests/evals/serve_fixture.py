@@ -49,7 +49,13 @@ def main() -> None:
         return
 
     # Python's default SIGTERM skips cleanup; exiting runs the with-block's.
-    signal.signal(signal.SIGTERM, lambda *_: sys.exit(0))
+    # agentxp signals the process group and `uv run` forwards the signal too,
+    # so a second SIGTERM can land mid-cleanup: ignore any after the first.
+    def stop(*_):
+        signal.signal(signal.SIGTERM, signal.SIG_IGN)
+        sys.exit(0)
+
+    signal.signal(signal.SIGTERM, stop)
     with tempfile.TemporaryDirectory(prefix="bedhost-evals-") as tmp:
         serve(agent, args.port, os.path.join(tmp, "regions.json"))
 
