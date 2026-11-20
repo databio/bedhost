@@ -28,6 +28,10 @@ The endpoints are divided into 3 groups:
 
 Therefore, to get information and statistics about BED or BEDset records, or what is contained in the database, look through the `/bed` and `/bedset` endpoints. But if you need to write a tool that gets the actual underlying files, then you'll need to use the `/objects` endpoints. The type of identifiers used in each case differ.
 
+### HTTP methods
+
+Every `GET` endpoint also answers `HEAD` requests. A `HEAD` request returns the same status and headers as the corresponding `GET` but no response body, which is useful for health checks and for testing whether a record or object exists without downloading it. To keep the reference readable, the HEAD operations are not listed separately in the [OpenAPI documentation](https://api.bedbase.org/v1/docs) — assume `HEAD` is available wherever `GET` is.
+
 ## Record identifiers vs. object identifiers
 
 Each record has an identifier. For example, `0000120fe8c5334bb0ce759dfcf06c3b` is a BED identifier. You can use this identifier for the metadata endpoints. To download files, you'll need something slightly different -- you need an *object identifier*. This is because each BED record includes multiple files, such as the original BED file, the BigBed file, analysis plots, and so on. To download a file, you will construct what we call the `object_id`, which identifies the specific file.

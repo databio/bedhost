@@ -12,6 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from bbconf.exceptions import (
     BEDFileNotFoundError,
     BedSetNotFoundError,
+    EmbeddingServerError,
     MissingObjectError,
     MissingThumbnailError,
 )
@@ -19,7 +20,8 @@ from bedboss.refgenome_validator.main import ReferenceValidator
 from cachetools import TTLCache
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.openapi.utils import get_openapi
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -145,7 +147,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 
 app = FastAPI(
     title=PKG_NAME,
-    description="BED file/sets statistics and image server API",
+    description=(
+        "BED file/sets statistics and image server API\n\n"
+        "**HTTP methods:** Every `GET` endpoint also answers `HEAD` (identical "
+        "headers, no body) for health and existence checks. HEAD operations are "
+        "omitted from this reference to avoid duplicating every GET."
+    ),
     version=bedhost_version,
     docs_url="/v1/docs",
     openapi_url="/v1/openapi.json",
@@ -239,6 +246,15 @@ async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
     return drs_response(404, "Object not found.")
 
 
+@app.exception_handler(EmbeddingServerError)
+async def exc_handler_EmbeddingServerError(req: Request, exc: EmbeddingServerError):
+    """An embedding server is down or rejected a request. The detail goes to the log only."""
+    _LOGGER.error(f"Embedding server error on {req.url.path}: {exc}")
+    return JSONResponse(
+        status_code=503, content={"detail": "Embedding service unavailable"}
+    )
+
+
 # Router endpoints use Depends() to resolve bbagent/usage_data/ref_validator
 # from app.state at request time, so attaching at module import is safe
 # regardless of lifespan ordering.
@@ -266,6 +282,32 @@ def _answer_head_wherever_we_answer_get(routes) -> None:
 
 
 _answer_head_wherever_we_answer_get(app.routes)
+
+
+def custom_openapi() -> dict:
+    """
+    `_answer_head_wherever_we_answer_get` adds HEAD to every GET route so uptime
+    monitors work. FastAPI's schema generator emits one operation per method, so
+    those HEAD ops otherwise appear on every path in the docs, mirroring GET with
+    no added information. Strip them here and document the convention once in the
+    app description instead.
+    """
+    if app.openapi_schema:
+        return app.openapi_schema
+    schema = get_openapi(
+        title=app.title,
+        version=app.version,
+        description=app.description,
+        routes=app.routes,
+        tags=tags_metadata,
+    )
+    for path_item in schema.get("paths", {}).values():
+        path_item.pop("head", None)
+    app.openapi_schema = schema
+    return schema
+
+
+app.openapi = custom_openapi
 
 
 def main() -> None:

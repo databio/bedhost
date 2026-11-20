@@ -30,6 +30,7 @@ from .. import _LOGGER
 from ..const import (
     BIGBED_TIMEOUT_SECONDS,
     EXAMPLE_BED,
+    MAX_BATCH_IDS,
     MAX_LIST_LIMIT,
     MAX_REGIONS_OUTPUT_BYTES,
     MAX_SEARCH_LIMIT,
@@ -37,8 +38,10 @@ from ..const import (
 from ..data_models import (
     CROM_NUMBERS,
     BaseListResponse,
+    BatchBedRequest,
     BedDigest,
     ChromLengthUploadModel,
+    CollectionStatsRequest,
 )
 from ..dependencies import get_bbagent, get_ref_validator
 from ..helpers import (
@@ -65,6 +68,20 @@ def _require_ml(bbagent: BedBaseAgent, *attrs: str) -> None:
             status_code=503,
             detail="This endpoint is unavailable (ML models disabled)",
         )
+
+
+def _force_https(url: object) -> str:
+    """Upgrade a generated hub URL to https.
+
+    UCSC refuses to load track-hub resources over plain http when the hub is
+    opened from an https page. Behind the TLS-terminating proxy ``request.url_for``
+    yields an ``http://`` URL, so we rewrite the scheme; an already-https URL is
+    left untouched (unlike a naive ``replace('http', 'https')``).
+    """
+    text = str(url)
+    if text.startswith("http://"):
+        return "https://" + text[len("http://") :]
+    return text
 
 
 @router.get(
@@ -249,15 +266,53 @@ async def get_bed_files(
 )
 async def get_bed_stats(
     bed_id: str = BedDigest,
+    distributions: bool = Query(
+        False,
+        description="Also return the file's distribution arrays (a large blob).",
+    ),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedStatsModel:
     try:
-        return bbagent.bed.get_stats(bed_id)
+        return bbagent.bed.get_stats(bed_id, distributions=distributions)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
             detail="BED stats not found",
         )
+
+
+@router.post(
+    "/batch",
+    summary="Get metadata for multiple BED records",
+)
+async def get_bed_batch(
+    request: BatchBedRequest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """Retrieve metadata for up to 1000 BED files in a single request."""
+    if len(request.ids) > MAX_BATCH_IDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too many IDs. Maximum is {MAX_BATCH_IDS}.",
+        )
+    return bbagent.bed.get_batch(request.ids, full=True, distributions=False)
+
+
+@router.post(
+    "/collection/stats",
+    summary="Compute collection statistics from a list of BED IDs",
+)
+async def get_collection_stats(
+    request: CollectionStatsRequest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """Aggregate distribution statistics across up to 1000 BED files on the fly."""
+    if len(request.ids) > MAX_BATCH_IDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too many IDs. Maximum is {MAX_BATCH_IDS}.",
+        )
+    return bbagent.bed.aggregate_distributions(request.ids)
 
 
 @router.get(
@@ -540,6 +595,93 @@ def get_regions_for_bedfile(
             f"returncode={e.returncode}, stderr={e.stderr}"
         )
         raise HTTPException(status_code=502, detail="Failed to query bigBed file.")
+
+
+@router.head("/{bed_id}/track_hub", include_in_schema=False)
+@router.get(
+    "/{bed_id}/track_hub",
+    summary="Generate a UCSC track hub for a single BED file",
+)
+async def get_track_hub_bed(
+    request: Request,
+    bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """
+    Generate the UCSC hub.txt for a single BED file.
+
+    Point the UCSC Genome Browser at this endpoint with
+    ``hgTracks?db=<genome>&hubUrl=<this url>``.
+    """
+    bbagent.bed.get(bed_id)  # 404s via BEDFileNotFoundError handler if unknown
+
+    hub_txt = (
+        f"hub \t BEDBASE_{bed_id}\n"
+        f"shortLabel \t BEDBASE_{bed_id}\n"
+        f"longLabel\t BEDBASE {bed_id} signal track\n"
+        f"genomesFile\t {_force_https(request.url_for('get_genomes_file_bed', bed_id=bed_id))}\n"
+        "email\t bnt4me@virginia.edu\n"
+        f"descriptionUrl\t https://bedbase.org/bed/{bed_id}"
+    )
+
+    return Response(hub_txt, media_type="text/plain")
+
+
+@router.head("/{bed_id}/track_hub_genome_file", include_in_schema=False)
+@router.get("/{bed_id}/track_hub_genome_file", include_in_schema=False)
+async def get_genomes_file_bed(
+    request: Request,
+    bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """
+    Generate the genomes file for a single BED file track hub.
+    """
+    metadata = bbagent.bed.get(bed_id)
+    genome = metadata.genome_alias or "hg38"
+
+    genome_txt = (
+        f"genome\t {genome}\n"
+        f"trackDb\t {_force_https(request.url_for('get_trackDb_file_bed', bed_id=bed_id))}"
+    )
+
+    return Response(genome_txt, media_type="text/plain")
+
+
+@router.head("/{bed_id}/track_hub_trackDb_file", include_in_schema=False)
+@router.get("/{bed_id}/track_hub_trackDb_file", include_in_schema=False)
+def get_trackDb_file_bed(
+    bed_id: str = BedDigest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """
+    Generate the trackDb file (a single track) for a BED file track hub.
+    """
+    bigbed_file = bbagent.bed.get_files(bed_id).bigbed_file
+
+    if not bigbed_file:
+        raise HTTPException(
+            status_code=404,
+            detail="No bigBed file for this BED; cannot build a genome browser track.",
+        )
+
+    metadata = bbagent.bed.get(bed_id)
+    name = metadata.name or bed_id
+    # Use the direct storage URL rather than the /v1/files/ redirect: UCSC fetches
+    # the bigBed over range requests, and the direct CDN URL avoids depending on
+    # redirect-following (mirrors the region-query endpoint above).
+    bigbed_url = build_exports_url(bigbed_file.path)
+
+    trackDb_txt = (
+        f"track\t {name}\n"
+        "type\t bigBed\n"
+        f"bigDataUrl\t {bigbed_url}\n"
+        f"shortLabel\t {name}\n"
+        f"longLabel\t {metadata.description or name}\n"
+        "visibility\t full\n\n"
+    )
+
+    return Response(trackDb_txt, media_type="text/plain")
 
 
 @router.get(

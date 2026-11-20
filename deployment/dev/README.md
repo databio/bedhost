@@ -1,7 +1,11 @@
 # Local dev environment
 
-Runs bedhost against a throwaway local Postgres, with ML, Qdrant, and S3 turned off.
+Runs bedhost against a throwaway local Postgres, with embeddings, Qdrant, and S3 turned off.
 Commands assume a venv at the repo root (`.venv`) with bedhost and bbconf installed.
+
+To also run search locally, add `qdrant:` and `path:` sections to the config, and
+either install the models (`uv pip install -e ".[local]" --torch-backend cpu`) or
+add an `embedding_server:` block; see the main README.
 
 1. Start Postgres (host port 15443), from this directory:
 

@@ -9,7 +9,8 @@
 # Usage: ./tests/scripts/test-integration.sh [pytest args]
 # Example: ./tests/scripts/test-integration.sh -v -k "test_service_info"
 #
-# ML models are off by default. To also exercise text search (downloads
+# Embeddings are off by default. To also exercise text search with in-process
+# models (needs `uv pip install -e ".[local]" --torch-backend cpu`; downloads
 # HuggingFace models on first use, needs a few GB of RAM):
 #   BEDHOST_INIT_ML=true ./tests/scripts/test-integration.sh
 # If torch fails with a CUDA error (GPU too old for the installed build),
