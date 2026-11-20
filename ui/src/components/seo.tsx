@@ -21,7 +21,7 @@ export const SEO: FC<Props> = ({ title, description, image }) => {
       <meta name='description' content={pageDescription} />
       <meta name='author' content='databio' />
       {/* favicon */}
-      <link rel='icon' type='image/svg+xml' href='/favicon.ico' />
+      <link rel='icon' type='image/x-icon' href='/favicon.ico' />
 
       {/*  open graph */}
       <meta property='og:type' content={pageType} />

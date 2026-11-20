@@ -69,7 +69,7 @@ function getFonts(): Promise<Font[]> {
 }
 
 // ---------------------------------------------------------------------------
-// Logo — the real BEDbase wordmark (public/bedbase_logo.svg), fetched once via the
+// Logo — the real BEDbase lockup (public/bedbase_logo.svg), fetched once via the
 // ASSETS binding, recolored for each background, embedded as an SVG data URI.
 // ---------------------------------------------------------------------------
 let logoCache: { white: string; teal: string } | null = null;
@@ -87,8 +87,9 @@ async function getLogos(env: Env, origin: string): Promise<{ white: string; teal
   logoCache = svg
     ? {
         teal: uri(svg),
-        // the wordmark is #008080 (+ one #000000); recolor every fill to white for the teal header
-        white: uri(svg.replace(/#008080/gi, '#ffffff').replace(/#000000/gi, '#ffffff')),
+        // the lockup is navy #0D3B66 + teal #008080 (+ orange #F08A3C in the mark);
+        // recolor navy and teal to white for the teal header, keep the orange accent
+        white: uri(svg.replace(/#0d3b66/gi, '#ffffff').replace(/#008080/gi, '#ffffff')),
       }
     : { white: '', teal: '' };
   return logoCache;
@@ -149,11 +150,11 @@ function infoCard(label: string, value: string): string {
     </div>`;
 }
 
-// Real BEDbase wordmark (public/bedbase_logo.svg, ~4.645:1). `logo` is a data URI;
+// Real BEDbase lockup (public/bedbase_logo.svg, mark + wordmark, ~4.89:1). `logo` is a data URI;
 // falls back to a text wordmark if the asset could not be loaded.
 function header(logo: string): string {
   const brand = logo
-    ? `<img src="${logo}" width="195" height="42" />`
+    ? `<img src="${logo}" width="205" height="42" />`
     : `<div style="display:flex;color:${WHITE};font-size:40px;font-weight:700;letter-spacing:-0.5px;">BEDbase</div>`;
   return `<div style="display:flex;align-items:center;justify-content:space-between;height:112px;padding:0 60px;background:linear-gradient(135deg, ${TEAL} 0%, ${TEAL_DARK} 100%);">
       ${brand}
@@ -351,7 +352,7 @@ async function renderBedSetCard(meta: BedSetMetadata, id: string, logos: Logos):
 
 async function renderHomeCard(logos: Logos): Promise<Response> {
   const logo = logos.teal
-    ? `<img src="${logos.teal}" width="470" height="101" />`
+    ? `<img src="${logos.teal}" width="494" height="101" />`
     : `<div style="display:flex;color:${TEAL};font-size:104px;font-weight:700;letter-spacing:-2px;">BEDbase</div>`;
   const html = `<div style="display:flex;flex-direction:column;width:${OG_W}px;height:${OG_H}px;background:${BG};font-family:Inter;">
       <div style="display:flex;flex-direction:column;flex:1;align-items:center;justify-content:center;padding:40px 80px;">
