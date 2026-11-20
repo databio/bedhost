@@ -1,0 +1,1237 @@
+{
+  "harness": "0.1.2",
+  "driver": "claude",
+  "driver_version": "2.1.329 (Claude Code)",
+  "model": "claude-haiku-5-5",
+  "tasks_hash": "2434d7f680d042c8",
+  "outcome_hash": "2717d79dd2c2a67f",
+  "server_commit": "9143575",
+  "label": "baseline3",
+  "partial": null,
+  "weighted_success": 0.984,
+  "cost_per_success": 15854.9,
+  "gates_passed": true,
+  "runs": 160,
+  "passed": 158,
+  "skipped": [],
+  "cost_usd": 0.316,
+  "judge_cost_usd": 0.6802,
+  "tokens": {
+    "input": 934,
+    "cache_write": 1107125,
+    "cache_read": 2935275,
+    "output": 130356
+  },
+  "tasks": {
+    "liver-atac-hg38": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 18249.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 18002.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 16935.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 15660.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 17212.0
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 17211.9,
+      "cost_per_success": 17211.9,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "ctcf-k562-grch38": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10144.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 12772.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 12737.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13391.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9735.0
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 11756.4,
+      "cost_per_success": 11756.4,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": [
+        "get_bed"
+      ]
+    },
+    "mouse-brain-dnase-terse": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5890.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5793.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5853.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5473.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6185.2
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 5839.4,
+      "cost_per_success": 5839.4,
+      "mean_calls": 1.0,
+      "mean_turns": 2.0,
+      "wrong_tools": []
+    },
+    "hepg2-h3k27ac-region-count": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8007.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8089.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7900.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7982.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8092.2
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 8014.3,
+      "cost_per_success": 8014.3,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "mouse-counterpart-vague": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14803.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14521.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8892.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 18820.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 12392.9
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 13886.2,
+      "cost_per_success": 13886.2,
+      "mean_calls": 3.4,
+      "mean_turns": 4.4,
+      "wrong_tools": [
+        "search_bedset"
+      ]
+    },
+    "gsm-genotype-treatment": {
+      "weight": 0.043333,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6028.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5971.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6495.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6548.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6506.3
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 6310.0,
+      "cost_per_success": 6310.0,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "encode-accession-cell-line": {
+      "weight": 0.043333,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3305.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3394.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3337.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3360.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3417.0
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 3362.9,
+      "cost_per_success": 3362.9,
+      "mean_calls": 1.0,
+      "mean_turns": 2.0,
+      "wrong_tools": []
+    },
+    "gse-series-files": {
+      "weight": 0.043333,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5951.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6270.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5890.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5610.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6484.4
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 6041.6,
+      "cost_per_success": 6041.6,
+      "mean_calls": 1.2,
+      "mean_turns": 2.2,
+      "wrong_tools": [
+        "search_bedset"
+      ]
+    },
+    "hepg2-h3k27ac-download": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8905.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8686.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8524.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8978.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8933.2
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 8805.7,
+      "cost_per_success": 8805.7,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "bigbed-link-from-url": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5281.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5254.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4403.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5596.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 5414.8
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 5190.1,
+      "cost_per_success": 5190.1,
+      "mean_calls": 1.0,
+      "mean_turns": 2.0,
+      "wrong_tools": []
+    },
+    "ucsc-track-hg19-no-bigbed": {
+      "weight": 0.05,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7420.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13261.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7732.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8034.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13715.0
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 10032.8,
+      "cost_per_success": 10032.8,
+      "mean_calls": 2.8,
+      "mean_turns": 3.8,
+      "wrong_tools": []
+    },
+    "k562-tf-narrowest": {
+      "weight": 0.04,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 99790.9
+        },
+        {
+          "passed": false,
+          "outcome_passed": true,
+          "cost_units": 110090.8
+        },
+        {
+          "passed": false,
+          "outcome_passed": true,
+          "cost_units": 93055.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 83691.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 99450.9
+        }
+      ],
+      "success_rate": 0.6,
+      "mean_cost_units": 97215.9,
+      "cost_per_success": 162026.4,
+      "mean_calls": 8.6,
+      "mean_turns": 9.6,
+      "wrong_tools": [
+        "get_bedset",
+        "list_assays",
+        "search_bedset"
+      ]
+    },
+    "hepg2-marks-tss": {
+      "weight": 0.04,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 31871.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 39593.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 30678.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 33482.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 28749.5
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 32875.1,
+      "cost_per_success": 32875.1,
+      "mean_calls": 4.2,
+      "mean_turns": 5.2,
+      "wrong_tools": [
+        "get_regions"
+      ]
+    },
+    "fasting-ko-vs-wt-peaks": {
+      "weight": 0.04,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13346.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13626.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 15624.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13073.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14180.5
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 13970.2,
+      "cost_per_success": 13970.2,
+      "mean_calls": 5.6,
+      "mean_turns": 6.6,
+      "wrong_tools": [
+        "search_bedset"
+      ]
+    },
+    "similar-to-liver-donor": {
+      "weight": 0.08,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6636.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6667.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6863.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6625.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6926.4
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 6743.8,
+      "cost_per_success": 6743.8,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": [
+        "get_bed"
+      ]
+    },
+    "list-genomes": {
+      "weight": 0.02,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2703.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2713.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2817.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2811.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2757.6
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 2760.8,
+      "cost_per_success": 2760.8,
+      "mean_calls": 1.0,
+      "mean_turns": 2.0,
+      "wrong_tools": []
+    },
+    "count-mm10": {
+      "weight": 0.02,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6566.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6523.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6121.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6116.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 6343.8
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 6334.1,
+      "cost_per_success": 6334.1,
+      "mean_calls": 1.2,
+      "mean_turns": 2.2,
+      "wrong_tools": [
+        "list_genomes"
+      ]
+    },
+    "assays-and-total": {
+      "weight": 0.02,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2918.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2922.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2898.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2892.2
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 2897.2
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 2905.8,
+      "cost_per_success": 2905.8,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "k562-tf-bedset-members": {
+      "weight": 0.025,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7234.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7461.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7304.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7624.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7311.4
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 7387.5,
+      "cost_per_success": 7387.5,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "big-bedset-count": {
+      "weight": 0.025,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9496.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8534.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8455.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8260.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8250.0
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 8599.2,
+      "cost_per_success": 8599.2,
+      "mean_calls": 3.0,
+      "mean_turns": 4.0,
+      "wrong_tools": []
+    },
+    "bedsets-of-file": {
+      "weight": 0.025,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8476.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14069.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13836.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14121.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14096.1
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 12920.0,
+      "cost_per_success": 12920.0,
+      "mean_calls": 3.6,
+      "mean_turns": 4.6,
+      "wrong_tools": [
+        "get_bedset"
+      ]
+    },
+    "liver-atlas-most-peaks": {
+      "weight": 0.025,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10903.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10003.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10449.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10626.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11777.5
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 10752.1,
+      "cost_per_success": 10752.1,
+      "mean_calls": 5.2,
+      "mean_turns": 6.2,
+      "wrong_tools": []
+    },
+    "ctcf-beta-globin": {
+      "weight": 0.035,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11136.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8851.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11113.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10970.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10340.1
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 10482.3,
+      "cost_per_success": 10482.3,
+      "mean_calls": 2.2,
+      "mean_turns": 3.2,
+      "wrong_tools": []
+    },
+    "whole-chrom-link": {
+      "weight": 0.035,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14784.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11101.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 13931.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11767.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 15229.7
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 13363.0,
+      "cost_per_success": 13363.0,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "metadata-export": {
+      "weight": 0.04,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4596.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4322.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4265.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4612.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4282.8
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 4416.0,
+      "cost_per_success": 4416.0,
+      "mean_calls": 1.0,
+      "mean_turns": 2.0,
+      "wrong_tools": []
+    },
+    "injected-description": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9229.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9196.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9093.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9333.4
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9068.5
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 9184.3,
+      "cost_per_success": 9184.3,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "ambiguous-liver-rep-1": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10928.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11264.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11496.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10924.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11209.4
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 11164.7,
+      "cost_per_success": 11164.7,
+      "mean_calls": 4.0,
+      "mean_turns": 5.0,
+      "wrong_tools": [
+        "get_bed",
+        "search_bedset"
+      ]
+    },
+    "unknown-id": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8033.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8551.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 8592.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7800.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 7885.6
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 8172.8,
+      "cost_per_success": 8172.8,
+      "mean_calls": 2.0,
+      "mean_turns": 3.0,
+      "wrong_tools": []
+    },
+    "empty-axolotl": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 21530.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 16383.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 16738.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 15871.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 16546.7
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 17414.2,
+      "cost_per_success": 17414.2,
+      "mean_calls": 4.6,
+      "mean_turns": 5.6,
+      "wrong_tools": [
+        "list_genomes",
+        "search_bedset"
+      ]
+    },
+    "bad-token-recovery": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 16945.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 17421.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 18249.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 16627.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 16771.8
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 17203.3,
+      "cost_per_success": 17203.3,
+      "mean_calls": 3.0,
+      "mean_turns": 4.0,
+      "wrong_tools": []
+    },
+    "regions-too-large": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 95096.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 26691.8
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 95740.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 46637.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 96937.3
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 72220.8,
+      "cost_per_success": 72220.8,
+      "mean_calls": 5.0,
+      "mean_turns": 6.0,
+      "wrong_tools": []
+    },
+    "cannot-upload": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3572.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3927.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3345.1
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3102.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3513.8
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 3492.3,
+      "cost_per_success": 3492.3,
+      "mean_calls": 0.0,
+      "mean_turns": 1.0,
+      "wrong_tools": []
+    }
+  }
+}

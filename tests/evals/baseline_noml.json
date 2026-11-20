@@ -1,0 +1,163 @@
+{
+  "harness": "0.1.2",
+  "driver": "claude",
+  "driver_version": "2.1.329 (Claude Code)",
+  "model": "claude-haiku-5-5",
+  "tasks_hash": "d52d5a9988489f52",
+  "outcome_hash": "ebf232c3e013836f",
+  "server_commit": "685598b",
+  "label": "baseline2-noml",
+  "partial": null,
+  "weighted_success": 1.0,
+  "cost_per_success": 3944.1,
+  "gates_passed": true,
+  "runs": 20,
+  "passed": 20,
+  "skipped": [],
+  "cost_usd": 0.0212,
+  "judge_cost_usd": 0.3873,
+  "tokens": {
+    "input": 136,
+    "cache_write": 49865,
+    "cache_read": 348952,
+    "output": 15490
+  },
+  "tasks": {
+    "accession-without-ml": {
+      "weight": 1.0,
+      "gate": false,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3836.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4124.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3802.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4021.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3924.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 4007.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3992.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3999.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3916.0
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 3817.3
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 3944.1,
+      "cost_per_success": 3944.1,
+      "mean_calls": 1.0,
+      "mean_turns": 2.0,
+      "wrong_tools": []
+    },
+    "text-search-off": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 17428.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 19543.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 15060.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 14613.7
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 11043.4
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 15538.0,
+      "cost_per_success": 15538.0,
+      "mean_calls": 6.8,
+      "mean_turns": 7.8,
+      "wrong_tools": []
+    },
+    "similar-off": {
+      "weight": 0.0,
+      "gate": true,
+      "runs": [
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 9869.3
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 12623.6
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 12438.9
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 10026.5
+        },
+        {
+          "passed": true,
+          "outcome_passed": true,
+          "cost_units": 12723.0
+        }
+      ],
+      "success_rate": 1.0,
+      "mean_cost_units": 11536.3,
+      "cost_per_success": 11536.3,
+      "mean_calls": 4.6,
+      "mean_turns": 5.6,
+      "wrong_tools": []
+    }
+  }
+}

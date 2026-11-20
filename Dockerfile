@@ -26,7 +26,8 @@ COPY pyproject.toml /app/pyproject.toml
 # servers; the region model still runs in-process, so the image has torch.
 # --torch-backend cpu: without it, torch resolves to the CUDA build and pulls
 # ~3 GB of nvidia-* libraries the server never uses.
-RUN uv pip install -r pyproject.toml --torch-backend cpu --system --no-cache-dir --compile-bytecode
+# --extra mcp: serve the MCP server at /mcp.
+RUN uv pip install -r pyproject.toml --extra mcp --torch-backend cpu --system --no-cache-dir --compile-bytecode
 
 COPY . /app
 RUN python -m compileall -q /app/bedhost

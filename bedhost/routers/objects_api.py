@@ -7,8 +7,9 @@ from bbconf.models.base_models import AnalysisFileResult, BedSnapshotResult
 from bbconf.models.drs_models import AccessMethod, AccessURL, DRSModel
 from fastapi import APIRouter, Depends, HTTPException, Request
 
+from ..core import build_exports_url
 from ..dependencies import get_bbagent
-from ..helpers import build_exports_url, serve_file
+from ..helpers import serve_file
 
 router = APIRouter(prefix="/v1/objects", tags=["objects"])
 
