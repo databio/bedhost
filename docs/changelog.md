@@ -7,6 +7,10 @@ This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.htm
 ### Added
 - A Genome Browser button on BED file pages that have a bigBed file opens the file in the UCSC Genome Browser, through new track hub endpoints (`/v1/bed/{bed_id}/track_hub`).
 - A Metrics link in the desktop navigation menu.
+- `POST /v1/bed/batch`: metadata for up to 1000 BED files in one request.
+- `POST /v1/bed/collection/stats`: distribution statistics aggregated across up to 1000 BED files.
+- `GET /v1/bedset/{bedset_id}/metadata/distributions`: a bedset's aggregated distribution statistics.
+- `GET /v1/bed/{bed_id}/metadata/stats?distributions=true` also returns the file's distribution arrays (off by default).
 
 ### Changed
 - The text embedding models (dense and sparse) can come from embedding servers instead of being loaded in-process, through bbconf's `embedding_server:` config block. The production configs use servers for both, read from AWS SSM (`EMBEDDING_DENSE_URL`, `EMBEDDING_SPARSE_URL`, `EMBEDDING_API_KEY`). The region model still runs in-process.
