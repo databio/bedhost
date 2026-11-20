@@ -29,18 +29,20 @@ BEDBASE_CONFIG=deployment/config/api.bedbase.org.yaml uvicorn bedhost.main:app -
 ## Embeddings
 
 Search, `/v1/bed/embed`, and `/v1/bed/umap` need embedding models. By default
-bbconf loads them in-process, which needs `uv pip install -e ".[local]" --torch-backend cpu`.
+bbconf loads them all in-process, which needs `uv pip install -e ".[local]" --torch-backend cpu`.
 The production configs instead set bbconf's `embedding_server:` block (see the
-bbconf README), so the Docker image has no torch, fastembed, or
-sentence-transformers. The servers come from these environment variables, which
-production reads from AWS SSM:
+bbconf README), so the two text models (dense and sparse) come from embedding
+servers and are not loaded by bedhost. The region model (`path.region2vec`) still
+runs in-process, so the Docker image keeps CPU-only torch. The servers come from
+these environment variables, which production reads from AWS SSM:
 
 | Variable | Config key |
 |---|---|
 | `EMBEDDING_DENSE_URL` | `embedding_server.text_url` |
 | `EMBEDDING_SPARSE_URL` | `embedding_server.sparse_url` |
-| `EMBEDDING_REGION_URL` | `embedding_server.region_url` |
 | `EMBEDDING_API_KEY` | `embedding_server.api_key` |
+
+To move the region model to a server too, add `embedding_server.region_url`.
 
 If a server is down, bedhost still starts and the routes that need it return 503.
 

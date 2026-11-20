@@ -32,6 +32,8 @@ classifiers = [
 ]
 dependencies = [
     "bbconf>=0.17.0",
+    # the region model (path.region2vec) still runs in-process
+    "geniml[ml]>=0.9.0",
     "fastapi>=0.103.0",
     "logmuse>=0.3.1",
     "markdown",
@@ -43,7 +45,7 @@ dependencies = [
     "python-multipart>=0.0.9",
     "APScheduler>=3.11.0",
     "cachetools>=4.2.4",
-    "bedboss>=0.13.0",
+    "bedboss>=0.12.0",
     "Pillow>=10.0.0",
 ]
 

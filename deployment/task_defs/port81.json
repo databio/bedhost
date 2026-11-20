@@ -57,10 +57,6 @@
           "name": "EMBEDDING_SPARSE_URL"
         }, 
         {
-          "valueFrom": "arn:aws:ssm:us-east-1:235728444054:parameter/yeti/bedhost/EMBEDDING_REGION_URL",
-          "name": "EMBEDDING_REGION_URL"
-        }, 
-        {
           "valueFrom": "arn:aws:ssm:us-east-1:235728444054:parameter/yeti/bedhost/EMBEDDING_API_KEY",
           "name": "EMBEDDING_API_KEY"
         }

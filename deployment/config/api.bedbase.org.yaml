@@ -4,10 +4,11 @@ path:
   region2vec: databio/r2v-encode-hg38
   umap_model: "https://huggingface.co/databio/bedbase-umap/resolve/main/hg38_umap_umap_model_3_13.joblib"
   sparse_model: "prithivida/Splade_PP_en_v2"
+# Text models (dense and sparse) come from embedding servers. The region
+# model (path.region2vec) still runs in-process.
 embedding_server:
   text_url: $EMBEDDING_DENSE_URL
   sparse_url: $EMBEDDING_SPARSE_URL
-  region_url: $EMBEDDING_REGION_URL
   api_key: $EMBEDDING_API_KEY
 database:
   host: $POSTGRES_HOST
@@ -20,6 +21,7 @@ qdrant:
   port: 6333
   api_key: $QDRANT_API_KEY
   file_collection: bedbase
+  text_collection: bed_text
   hybrid_collection: bedbase_sparse_collection
 server:
   host: 0.0.0.0

@@ -10,6 +10,7 @@ qdrant:
   host: http://localhost
   port: {QDRANT_PORT}
   file_collection: bedbase_test
+  text_collection: bed_text_test
   hybrid_collection: bedbase_query_search_test
 server:
   host: 0.0.0.0
