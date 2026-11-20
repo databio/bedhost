@@ -206,6 +206,21 @@ def test_crash_is_internal_without_detail(backend_ml, monkeypatch):
     assert "secret" not in str(ei.value)
 
 
+def test_embedding_server_down_is_unavailable_without_detail(backend_ml, monkeypatch):
+    # bbconf's EmbeddingServerError is a BedBaseConfError, but it is the
+    # server's problem, not a bad argument.
+    from bbconf.exceptions import EmbeddingServerError
+
+    def down(*a, **k):
+        raise EmbeddingServerError("http://secret-host:8000 refused")
+
+    monkeypatch.setattr(backend_ml.bed, "hybrid_search", down)
+    with pytest.raises(ToolError) as ei:
+        _call("search_bed", {"query": "CTCF in K562"})
+    assert _error(ei)["error"] == "unavailable"
+    assert "secret" not in str(ei.value)
+
+
 def test_dropped_row_does_not_end_paging(backend_ml):
     # A hit without metadata is dropped, but the backend page was full, so
     # there may be more: the token must still be there.

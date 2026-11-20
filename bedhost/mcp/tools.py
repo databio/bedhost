@@ -36,6 +36,7 @@ from bbconf.exceptions import (
     BedBaseConfError,
     BEDFileNotFoundError,
     BedSetNotFoundError,
+    EmbeddingServerError,
     SnapshotNotFoundError,
     TokenizeFileNotExistError,
 )
@@ -322,6 +323,17 @@ def _tool(fn):
             # crash; call_tool reports it as "internal".
             outcome = "error=internal"
             raise
+        except EmbeddingServerError as e:
+            # The embedding server is down or refused us: not the caller's
+            # fault. The detail goes to the log only, as in the REST API.
+            outcome = "error=unavailable"
+            _LOGGER.error(f"mcp tool={fn.__name__} embedding server error: {e}")
+            raise tool_error(
+                "unavailable",
+                "The text search service is unavailable right now.",
+                "Try again later, or query by a GEO/ENCODE accession or a "
+                "32-character BED id, which need no text search.",
+            ) from e
         except (BedBaseConfError, ValueError) as e:
             outcome = "error=invalid_input"
             raise tool_error("invalid_input", str(e)) from e
