@@ -24,6 +24,9 @@ MAX_FILE_SIZE: int = 1024 * 1024 * 20
 # Decompressed size cap for gzip uploads, so a small gzip cannot expand without bound.
 MAX_UNCOMPRESSED_SIZE: int = 1024 * 1024 * 200
 MAX_REGION_NUMBER: int = 5000000
+MAX_BATCH_IDS: int = (
+    1000  # /bed/batch and /bed/collection/stats (bbconf's get_batch limit)
+)
 MIN_REGION_WIDTH: int = 10
 # Chunk size used when copying an uploaded file to disk.
 UPLOAD_CHUNK_SIZE: int = 1024 * 1024

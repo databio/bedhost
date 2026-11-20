@@ -4,6 +4,7 @@ from bbconf.bbagent import BedBaseAgent
 from bbconf.exceptions import BedSetNotFoundError, BedSetTrackHubLimitError
 from bbconf.models.bedset_models import (
     BedSetBedFiles,
+    BedSetDistributions,
     BedSetListResult,
     BedSetMetadata,
     BedSetPlots,
@@ -136,6 +137,23 @@ async def get_bedset_stats_handler(
 ) -> BedSetStats:
     try:
         return bbagent.bedset.get_statistics(bedset_id)
+    except BedSetNotFoundError as _:
+        raise HTTPException(status_code=404, detail="No records found")
+
+
+@router.get(
+    "/{bedset_id}/metadata/distributions",
+    response_model=BedSetDistributions,
+    summary="Get distribution statistics for a single BEDSET record",
+    description=f"Example\n bedset_id: {EXAMPLE_BEDSET}",
+)
+async def get_bedset_distributions(
+    bedset_id: str,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+) -> BedSetDistributions:
+    """Distribution statistics aggregated across the bedset's BED files."""
+    try:
+        return bbagent.bedset.get_distributions(bedset_id)
     except BedSetNotFoundError as _:
         raise HTTPException(status_code=404, detail="No records found")
 

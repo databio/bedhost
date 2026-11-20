@@ -29,6 +29,7 @@ from .. import _LOGGER
 from ..const import (
     BIGBED_TIMEOUT_SECONDS,
     EXAMPLE_BED,
+    MAX_BATCH_IDS,
     MAX_LIST_LIMIT,
     MAX_REGIONS_OUTPUT_BYTES,
     MAX_SEARCH_LIMIT,
@@ -43,8 +44,10 @@ from ..core import (
 )
 from ..data_models import (
     CROM_NUMBERS,
+    BatchBedRequest,
     BedDigest,
     ChromLengthUploadModel,
+    CollectionStatsRequest,
 )
 from ..dependencies import get_bbagent, get_ref_validator
 from ..helpers import count_requests, test_query_parameter
@@ -263,15 +266,53 @@ async def get_bed_files(
 )
 async def get_bed_stats(
     bed_id: str = BedDigest,
+    distributions: bool = Query(
+        False,
+        description="Also return the file's distribution arrays (a large blob).",
+    ),
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedStatsModel:
     try:
-        return bbagent.bed.get_stats(bed_id)
+        return bbagent.bed.get_stats(bed_id, distributions=distributions)
     except BEDFileNotFoundError as _:
         raise HTTPException(
             status_code=404,
             detail="BED stats not found",
         )
+
+
+@router.post(
+    "/batch",
+    summary="Get metadata for multiple BED records",
+)
+async def get_bed_batch(
+    request: BatchBedRequest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """Retrieve metadata for up to 1000 BED files in a single request."""
+    if len(request.ids) > MAX_BATCH_IDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too many IDs. Maximum is {MAX_BATCH_IDS}.",
+        )
+    return bbagent.bed.get_batch(request.ids, full=True, distributions=False)
+
+
+@router.post(
+    "/collection/stats",
+    summary="Compute collection statistics from a list of BED IDs",
+)
+async def get_collection_stats(
+    request: CollectionStatsRequest,
+    bbagent: BedBaseAgent = Depends(get_bbagent),
+):
+    """Aggregate distribution statistics across up to 1000 BED files on the fly."""
+    if len(request.ids) > MAX_BATCH_IDS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too many IDs. Maximum is {MAX_BATCH_IDS}.",
+        )
+    return bbagent.bed.aggregate_distributions(request.ids)
 
 
 @router.get(
