@@ -2,7 +2,7 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
-## [Unreleased]
+## [0.16.0] - 2026-11-20
 
 ### Added
 - A Genome Browser button on BED file pages that have a bigBed file opens the file in the UCSC Genome Browser, through new track hub endpoints (`/v1/bed/{bed_id}/track_hub`).
