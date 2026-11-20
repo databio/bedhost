@@ -13,12 +13,24 @@ import {useExampleBedSet} from '../queries/useExampleBedSet';
 import {useStats} from '../queries/useStats.ts';
 import {motion} from 'framer-motion';
 
+// The API base ends in /v1; the MCP server is at the API root.
+const API_ROOT = (import.meta.env.VITE_API_BASE || 'https://api.bedbase.org/v1').replace(/\/v1\/?$/, '');
+const MCP_COMMAND = `claude mcp add --transport http bedbase ${API_ROOT}/mcp`;
+const SKILL_PROMPT = `Read ${window.location.origin}/SKILL.md, then find CTCF ChIP-seq BED files in K562 on hg38.`;
+const AI_DOCS_URL = 'https://docs.bedbase.org/bedhost/mcp/';
 
 export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchTermSmall, setSearchTermSmall] = useState('Kidney cancer in humans');
   const [copied, setCopied] = useState(false);
+  const [aiCopied, setAiCopied] = useState<'' | 'mcp' | 'prompt'>('');
   const [searchType, setSearchType] = useState('t2b');
+
+  const copyAi = (which: 'mcp' | 'prompt', text: string) => {
+    navigator.clipboard.writeText(text);
+    setAiCopied(which);
+    setTimeout(() => setAiCopied(''), 2000);
+  };
 
   const navigate = useNavigate();
 
@@ -285,6 +297,38 @@ export const Home = () => {
                 The BED Analyzer generates key statistics, summary tables, and visualizations,
                 giving you an immediate overview of region counts, lengths, genome coverage,
                 and other essential properties.
+              </p>
+            </Col>
+          </Row>
+
+          <Row className="w-100 align-items-center py-4">
+            <Col xs={12} md={6} className="mb-4 mb-md-0">
+              <h3 className="fw-bold">Use BEDbase with AI</h3>
+              <p className="text-balance pe-md-4">
+                Connect BEDbase to an AI assistant such as Claude, ChatGPT, or Cursor, then ask it in plain
+                language to find BED files, compare them, and read their regions. The BEDbase MCP server
+                gives the assistant read-only tools, so it can look things up but cannot change anything.
+              </p>
+            </Col>
+            <Col xs={12} md={6} className="ps-md-4">
+              <p className="mb-2 text-muted">Connect the MCP server (Claude Code):</p>
+              <div className="border border-2 border-dark p-2 rounded d-flex align-items-center gap-2 bg-white">
+                <code className="flex-grow-1 text-break text-dark">{MCP_COMMAND}</code>
+                <button onClick={() => copyAi('mcp', MCP_COMMAND)} className="btn btn-outline-primary btn-sm">
+                  {aiCopied === 'mcp' ? 'Copied!' : 'Copy'}
+                </button>
+              </div>
+              <p className="mt-3 mb-0">
+                Or give any assistant{' '}
+                {/* Plain <a>: SKILL.md is a static file, not an app route. */}
+                <a href="/SKILL.md">SKILL.md</a>, the BEDbase API on one page.
+              </p>
+              <p className="mt-1 mb-0">
+                <button onClick={() => copyAi('prompt', SKILL_PROMPT)} className="btn btn-link p-0 align-baseline">
+                  {aiCopied === 'prompt' ? 'Copied!' : 'Copy a starter prompt'}
+                </button>
+                <span className="mx-2 text-muted">·</span>
+                <a href={AI_DOCS_URL}>Setup for other assistants</a>
               </p>
             </Col>
           </Row>
