@@ -58,7 +58,7 @@ export const Home = () => {
             animate={{opacity: 1, y: 0}}
             transition={{duration: 0.6}}
           >
-            BEDbase
+            <img src="/bedbase_logo.svg" alt="BEDbase" style={{width: 'min(470px, 90vw)', height: 'auto'}} />
           </motion.h1>
           <motion.h3
             className="text-secondary text-3xl mt-2 mb-3"
@@ -66,7 +66,7 @@ export const Home = () => {
             animate={{opacity: 1, y: 0}}
             transition={{duration: 0.6, delay: 0.1}}
           >
-            Find, analyze, and understand genomic region data - all in one place
+            Find, analyze, and understand genomic region data
           </motion.h3>
 
           <div className="my-2"></div>
