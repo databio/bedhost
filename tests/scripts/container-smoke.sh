@@ -33,6 +33,7 @@ check "cache and temp dirs are writable" run sh -c \
     'mkdir -p "$HF_HOME" "$NUMBA_CACHE_DIR" && touch "$HF_HOME/w" "$NUMBA_CACHE_DIR/w" /tmp/w'
 check "app code is read-only" run sh -c '! touch /app/bedhost/w'
 check "app module imports" run python -c "import bedhost.main"
+check "MCP server is installed (/mcp mounts)" run python -c "import bedhost.main as m, sys; sys.exit(not m._MCP_AVAILABLE)"
 check "bigBedToBed is installed and runs" run sh -c 'bigBedToBed 2>&1 | grep -q "Convert from bigBed"'
 check "jemalloc is preloaded" run python -c \
     "import sys; sys.exit('libjemalloc' not in open('/proc/self/maps').read())"
