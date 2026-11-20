@@ -2,6 +2,20 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [Unreleased]
+
+### Added
+- A Genome Browser button on BED file pages that have a bigBed file opens the file in the UCSC Genome Browser, through new track hub endpoints (`/v1/bed/{bed_id}/track_hub`).
+- A Metrics link in the desktop navigation menu.
+
+### Changed
+- The text embedding models (dense and sparse) can come from embedding servers instead of being loaded in-process, through bbconf's `embedding_server:` config block. The production configs use servers for both, read from AWS SSM (`EMBEDDING_DENSE_URL`, `EMBEDDING_SPARSE_URL`, `EMBEDDING_API_KEY`). The region model still runs in-process.
+- Requires bbconf 0.17.0. The new `local` extra installs the text models for running everything in-process.
+- `environment/production.env` reads the embedding server settings from the lab `pass` store, like the other settings.
+
+### Fixed
+- An embedding server that is down or rejects a request now returns 503 instead of 500.
+
 ## [0.15.0] - 2026-10-26
 
 ### Changed

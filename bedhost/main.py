@@ -12,6 +12,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from bbconf.exceptions import (
     BEDFileNotFoundError,
     BedSetNotFoundError,
+    EmbeddingServerError,
     MissingObjectError,
     MissingThumbnailError,
 )
@@ -20,7 +21,7 @@ from cachetools import TTLCache
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
-from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.routing import APIRoute
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -243,6 +244,15 @@ async def exc_handler_BedSetNotFoundError(req: Request, exc: BedSetNotFoundError
 @app.exception_handler(MissingObjectError)
 async def exc_handler_MissingObjectError(req: Request, exc: MissingObjectError):
     return drs_response(404, "Object not found.")
+
+
+@app.exception_handler(EmbeddingServerError)
+async def exc_handler_EmbeddingServerError(req: Request, exc: EmbeddingServerError):
+    """An embedding server is down or rejected a request. The detail goes to the log only."""
+    _LOGGER.error(f"Embedding server error on {req.url.path}: {exc}")
+    return JSONResponse(
+        status_code=503, content={"detail": "Embedding service unavailable"}
+    )
 
 
 # Router endpoints use Depends() to resolve bbagent/usage_data/ref_validator
