@@ -75,6 +75,18 @@ export const BedSplashHeader = (props: Props) => {
               Analyze
             </button>
           </a>
+          {metadata.files?.bigbed_file && (
+            <a
+              href={`https://genome.ucsc.edu/cgi-bin/hgTracks?db=${metadata.genome_alias}&hubUrl=${API_BASE}/bed/${record_identifier}/track_hub`}
+              target='_blank'
+              rel='noreferrer'
+            >
+              <button className='btn btn-outline-primary btn-sm text-nowrap'>
+                <i className='bi bi-distribute-vertical me-1' />
+                Genome Browser
+              </button>
+            </a>
+          )}
           <a href={`${API_BASE}/bed/${record_identifier}/metadata?full=true`}>
             <button className='btn btn-outline-primary btn-sm text-nowrap'>
               <i className='bi bi-info-circle me-1' />
