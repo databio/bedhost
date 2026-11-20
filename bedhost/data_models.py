@@ -99,3 +99,11 @@ class ChromLengthUploadModel(BaseModel):
         max_length=MAX_CHROM_ENTRIES,
         description=f"Map of chromosome name to length (1-{MAX_CHROM_ENTRIES} entries, lengths >= 0)",
     )
+
+
+class BatchBedRequest(BaseModel):
+    ids: list[str]
+
+
+class CollectionStatsRequest(BaseModel):
+    ids: list[str]

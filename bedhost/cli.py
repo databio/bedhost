@@ -6,8 +6,6 @@ from . import PKG_NAME
 from ._version import __version__
 from .const import CFG_ENV_VARS
 
-CFG_ENV_VARS = ["BEDBASE_CONFIG"]
-
 
 def build_parser() -> argparse.ArgumentParser:
     """
