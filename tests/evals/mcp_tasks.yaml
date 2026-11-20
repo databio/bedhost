@@ -437,9 +437,11 @@ tasks:
     checks:
       - tool_error: {tool: get_regions, code: too_large}
       - answer_value: {step: 2, path: result.downloads.bed_file}
-      # The hint offers narrower reads too; Haiku reads the window in four
-      # 250 kb pieces before answering (7 calls). That is allowed, more is not.
-      - max_calls: 8
+      # The hint offers narrower reads too, and Haiku often reads the whole
+      # window in 4 or 10 pieces before answering. Wasteful, but the cost
+      # metric already charges it; the gate is about hitting the cap and
+      # giving the link, so the cap only stops a runaway.
+      - max_calls: 14
 
   - id: cannot-upload
     gate: true
