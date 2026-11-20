@@ -43,6 +43,7 @@ these environment variables, which production reads from AWS SSM:
 | `EMBEDDING_API_KEY` | `embedding_server.api_key` |
 
 To move the region model to a server too, add `embedding_server.region_url`.
+For local runs, `source environment/production.env` sets all three from the lab's `pass` store.
 
 If a server is down, bedhost still starts and the routes that need it return 503.
 
