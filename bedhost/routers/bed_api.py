@@ -188,39 +188,6 @@ def get_bed_metadata(
 
 
 @router.get(
-    "/{bed_id}/og-image",
-    summary="Get Open Graph preview image for a BED record",
-    response_class=Response,
-    responses={200: {"content": {"image/png": {}}}},
-    description=f"Returns a 1200x630 PNG card with stats for link previews. Example bed_id: {EXAMPLE_BED}",
-)
-def get_bed_og_image(
-    bed_id: str = BedDigest,
-    bbagent: BedBaseAgent = Depends(get_bbagent),
-):
-    from ..og_image import generate_bed_og_image
-
-    try:
-        meta = bbagent.bed.get(bed_id, full=True)
-    except BEDFileNotFoundError:
-        raise HTTPException(status_code=404)
-
-    stats = meta.stats
-    png = generate_bed_og_image(
-        bed_id=bed_id,
-        genome=getattr(meta, "genome_alias", None),
-        bed_compliance=getattr(meta, "bed_compliance", None),
-        number_of_regions=getattr(stats, "number_of_regions", None) if stats else None,
-        mean_region_width=getattr(stats, "mean_region_width", None) if stats else None,
-    )
-    return Response(
-        content=png,
-        media_type="image/png",
-        headers={"Cache-Control": "public, max-age=86400"},
-    )
-
-
-@router.get(
     "/{bed_id}/metadata/plots",
     summary="Get plots for a single BED record",
     response_model=BedPlots,
