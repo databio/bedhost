@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Layout } from '../components/layout.tsx';
 
 import { useStats } from '../queries/useStats.ts';
@@ -14,6 +15,12 @@ import { GeoStatistics } from '../components/metrics/geo-statistics.tsx';
 import { UsageStatistics } from '../components/metrics/usage-statistics.tsx';
 
 type MetricsView = 'file' | 'geo' | 'usage';
+
+// The active tab is driven by the `?view=` query param so the URL reflects which
+// panel you're on (shareable / bookmarkable). Unknown values fall back to 'file'.
+const METRICS_VIEWS: MetricsView[] = ['file', 'geo', 'usage'];
+const parseMetricsView = (value: string | null): MetricsView =>
+  value && (METRICS_VIEWS as string[]).includes(value) ? (value as MetricsView) : 'file';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 export const PRIMARY_COLOR = 'rgba(0, 128, 128,0.6)';
@@ -31,7 +38,13 @@ interface MetricModalProps {
 }
 
 export const Metrics = () => {
-  const [metricsView, setMetricsView] = useState<MetricsView>('file');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const metricsView = parseMetricsView(searchParams.get('view'));
+  const setMetricsView = (view: MetricsView) => {
+    const next = new URLSearchParams(searchParams);
+    next.set('view', view);
+    setSearchParams(next);
+  };
   const [showMetricModal, setShowMetricModal] = useState(false);
   const [metricModalTitle, setMetricModalTitle] = useState('');
   const [metricModalType, setMetricModalType] = useState<MetricPlotType>('bar');
@@ -105,11 +118,13 @@ export const Metrics = () => {
       <div className='container-fluid'>
         <div className='row'>
           <div className='col-12'>
-            <div className='d-flex align-items-center justify-content-between'>
+            <div className='d-flex flex-column flex-md-row align-items-center justify-content-md-between gap-2'>
+              {/* Invisible spacer to keep the selector centered on md+; hidden on mobile. */}
               <button
-                className='btn btn-outline-primary btn-sm opacity-0'
+                className='btn btn-outline-primary btn-sm opacity-0 d-none d-md-inline-block'
                 disabled
-                onClick={() => setEndpointsModalShow(true)}
+                aria-hidden='true'
+                tabIndex={-1}
               >
                 <i className='bi bi-info-circle me-1' />
                 API

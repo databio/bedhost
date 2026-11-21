@@ -144,9 +144,9 @@ function statCard(label: string, value: string): string {
 
 // Like statCard but for short text values (assay, cell line, species …).
 function infoCard(label: string, value: string): string {
-  return `<div style="display:flex;flex-direction:column;justify-content:center;background:${WHITE};border:1px solid ${BORDER};border-radius:16px;padding:20px 26px;margin-right:20px;box-shadow:0 1px 2px rgba(16,24,40,0.06);">
-      <div style="display:flex;color:${MUTED};font-size:18px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">${sanitizeText(label)}</div>
-      <div style="display:flex;color:${INK};font-size:30px;font-weight:600;">${sanitizeText(truncate(value, 20))}</div>
+  return `<div style="display:flex;flex-direction:column;justify-content:center;background:${WHITE};border:1px solid ${BORDER};border-radius:14px;padding:13px 22px;margin-right:18px;box-shadow:0 1px 2px rgba(16,24,40,0.06);">
+      <div style="display:flex;color:${MUTED};font-size:16px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">${sanitizeText(label)}</div>
+      <div style="display:flex;color:${INK};font-size:26px;font-weight:600;">${sanitizeText(truncate(value, 20))}</div>
     </div>`;
 }
 

@@ -6,7 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#000" />
     <title>BEDbase.org</title>
+    <meta
+      name="description"
+      content="BEDbase is a unified platform to search, analyze, and download genomic region data — hundreds of thousands of BED files and curated BEDsets across hg38, hg19, mm10 and more. Free, open, API- and AI-accessible."
+    />
+    <meta
+      name="keywords"
+      content="BED files, genomic regions, ChIP-seq peaks, ATAC-seq, genome intervals, bioinformatics database, ENCODE, genomic data download"
+    />
+    <link rel="canonical" href="https://bedbase.org/" />
     <link rel="alternate" type="text/markdown" href="/llms.txt" title="BEDbase for AI agents" />
+
+    <!-- Ubuntu: matches the BEDbase logo wordmark -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@500;700&display=swap" />
 
     <!-- Default Open Graph tags (overridden by worker for /bed/:id and /bedset/:id) -->
     <meta property="og:type" content="website" />
@@ -26,6 +40,34 @@
     <meta name="twitter:description" content="BEDbase is a unified platform for aggregating, analyzing, and serving genomic region data." />
     <meta name="twitter:image" content="https://bedbase.org/og/home.png" />
     <meta name="twitter:image:alt" content="BEDbase - a unified platform for genomic region data" />
+
+    <!-- Structured data: lets Google show a sitelinks search box and build a knowledge entity -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "BEDbase",
+        "url": "https://bedbase.org/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://bedbase.org/search?q={query}",
+          "query-input": "required name=query"
+        }
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "BEDbase",
+        "url": "https://bedbase.org/",
+        "logo": "https://bedbase.org/bedbase_logo.svg",
+        "sameAs": [
+          "https://github.com/databio/bedhost",
+          "https://x.com/shefflab"
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
