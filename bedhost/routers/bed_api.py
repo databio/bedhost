@@ -634,17 +634,24 @@ def get_trackDb_file_bed(
 
     metadata = bbagent.bed.get(bed_id)
     name = metadata.name or bed_id
+    # longLabel is the text UCSC draws *over* the track, so lead with the name (the
+    # identifier users recognize) and append the description only when it's actually
+    # present -- BEDbase descriptions are frequently empty or None.
+    description = (metadata.description or "").strip()
+    long_label = f"{name}: {description}" if description else name
     # Use the direct storage URL rather than the /v1/files/ redirect: UCSC fetches
     # the bigBed over range requests, and the direct CDN URL avoids depending on
     # redirect-following (mirrors the region-query endpoint above).
     bigbed_url = build_exports_url(bigbed_file.path)
 
     trackDb_txt = (
-        f"track\t {name}\n"
+        # `track` is UCSC's symbolic track id: it must be unique and space-free, so
+        # use bed_id rather than the (possibly multi-word) name.
+        f"track\t {bed_id}\n"
         "type\t bigBed\n"
         f"bigDataUrl\t {bigbed_url}\n"
         f"shortLabel\t {name}\n"
-        f"longLabel\t {metadata.description or name}\n"
+        f"longLabel\t {long_label}\n"
         "visibility\t full\n\n"
     )
 
