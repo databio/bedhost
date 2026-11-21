@@ -164,3 +164,72 @@ export const BBCONF_SNIPPETS = [
     raw: CLIENT_RUST_CODE_RAW,
   },
 ];
+
+// The API base ends in /v1; the MCP server is at the API root.
+const MCP_API_ROOT = (import.meta.env.VITE_API_BASE || 'https://api.bedbase.org/v1').replace(/\/v1\/?$/, '');
+export const MCP_URL = `${MCP_API_ROOT}/mcp`;
+
+// Setup instructions for connecting the BEDbase MCP server to different AI assistants.
+export const MCP_CLAUDE_CODE_RAW = `claude mcp add --transport http bedbase ${MCP_URL}`;
+export const MCP_CLAUDE_CODE_MD = `
+\`\`\`bash
+claude mcp add --transport http bedbase ${MCP_URL}
+\`\`\`
+`;
+
+export const MCP_CLAUDE_DESKTOP_RAW = `{
+  "mcpServers": {
+    "bedbase": {
+      "command": "npx",
+      "args": ["mcp-remote", "${MCP_URL}"]
+    }
+  }
+}`;
+export const MCP_CLAUDE_DESKTOP_MD = `
+\`\`\`json
+${MCP_CLAUDE_DESKTOP_RAW}
+\`\`\`
+`;
+
+export const MCP_CURSOR_RAW = `{
+  "mcpServers": {
+    "bedbase": {
+      "url": "${MCP_URL}"
+    }
+  }
+}`;
+export const MCP_CURSOR_MD = `
+\`\`\`json
+${MCP_CURSOR_RAW}
+\`\`\`
+`;
+
+export const MCP_CODEX_RAW = `codex mcp add bedbase --url ${MCP_URL}`;
+export const MCP_CODEX_MD = `
+\`\`\`bash
+codex mcp add bedbase --url ${MCP_URL}
+\`\`\`
+`;
+
+export const AI_SNIPPETS = [
+  {
+    language: 'Claude Code',
+    code: MCP_CLAUDE_CODE_MD,
+    raw: MCP_CLAUDE_CODE_RAW,
+  },
+  {
+    language: 'Claude Desktop',
+    code: MCP_CLAUDE_DESKTOP_MD,
+    raw: MCP_CLAUDE_DESKTOP_RAW,
+  },
+  {
+    language: 'Cursor',
+    code: MCP_CURSOR_MD,
+    raw: MCP_CURSOR_RAW,
+  },
+  {
+    language: 'Codex',
+    code: MCP_CODEX_MD,
+    raw: MCP_CODEX_RAW,
+  },
+];

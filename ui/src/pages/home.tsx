@@ -6,16 +6,13 @@ import {Col, Image, Nav, Row, Tab} from 'react-bootstrap';
 import Markdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 // import { CODE_SNIPPETS } from '../const';
-import {BBCONF_SNIPPETS} from '../const';
+import {BBCONF_SNIPPETS, AI_SNIPPETS} from '../const';
 // import { useExampleBed } from '../queries/useExampleBed';
 import toast from 'react-hot-toast';
 import {useExampleBedSet} from '../queries/useExampleBedSet';
 import {useStats} from '../queries/useStats.ts';
 import {motion} from 'framer-motion';
 
-// The API base ends in /v1; the MCP server is at the API root.
-const API_ROOT = (import.meta.env.VITE_API_BASE || 'https://api.bedbase.org/v1').replace(/\/v1\/?$/, '');
-const MCP_COMMAND = `claude mcp add --transport http bedbase ${API_ROOT}/mcp`;
 const SKILL_PROMPT = `Read ${window.location.origin}/SKILL.md, then find CTCF ChIP-seq BED files in K562 on hg38.`;
 const AI_DOCS_URL = 'https://docs.bedbase.org/bedhost/mcp/';
 
@@ -23,10 +20,10 @@ export const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchTermSmall, setSearchTermSmall] = useState('Kidney cancer in humans');
   const [copied, setCopied] = useState(false);
-  const [aiCopied, setAiCopied] = useState<'' | 'mcp' | 'prompt'>('');
+  const [aiCopied, setAiCopied] = useState<'' | 'snippet' | 'prompt'>('');
   const [searchType, setSearchType] = useState('t2b');
 
-  const copyAi = (which: 'mcp' | 'prompt', text: string) => {
+  const copyAi = (which: 'snippet' | 'prompt', text: string) => {
     navigator.clipboard.writeText(text);
     setAiCopied(which);
     setTimeout(() => setAiCopied(''), 2000);
@@ -53,12 +50,14 @@ export const Home = () => {
       <div className="d-flex flex-column w-100 align-items-center p-2">
         <div className="d-flex flex-column justify-content-center text-center" style={{minHeight: '80vh'}}>
           <motion.h1
-            className="fw-bolder text-primary text-6xl mb-4"
+            className="fw-bolder text-6xl mb-4"
+            style={{fontFamily: "Ubuntu, 'Ubuntu Sans', 'Segoe UI', sans-serif"}}
             initial={{opacity: 0, y: 20}}
             animate={{opacity: 1, y: 0}}
             transition={{duration: 0.6}}
           >
-            <img src="/bedbase_logo.svg" alt="BEDbase" style={{width: 'min(470px, 90vw)', height: 'auto'}} />
+            <span style={{color: '#0d3b66'}}>BED</span>
+            <span style={{color: '#008080'}}>base</span>
           </motion.h1>
           <motion.h3
             className="text-secondary text-3xl mt-2 mb-3"
@@ -185,9 +184,9 @@ export const Home = () => {
             </Col>
             <Col xs={12} md={6} className="d-flex flex-column align-items-center justify-content-center h-100 ps-md-4">
               <div
-                className="border border-2 border-dark p-2 rounded w-100 position-relative landing-code-snippet-container">
+                className="border border-2 border-dark rounded w-100 position-relative landing-code-snippet-container overflow-hidden">
                 <Tab.Container id="code-snippets-client" defaultActiveKey={BBCONF_SNIPPETS[0].language}>
-                  <div className="d-flex flex-row align-items-center text-sm">
+                  <div className="d-flex flex-row align-items-center text-sm px-2 py-2 landing-code-snippet-tabbar">
                     <Nav variant="pills" className="flex-row">
                       {BBCONF_SNIPPETS.map((snippet) => (
                         <Nav.Item key={snippet.language}>
@@ -198,7 +197,7 @@ export const Home = () => {
                       ))}
                     </Nav>
                   </div>
-                  <Tab.Content className="w-100 h-100">
+                  <Tab.Content className="w-100 h-100 p-2">
                     {BBCONF_SNIPPETS.map((snippet) => (
                       <Tab.Pane key={snippet.language} eventKey={snippet.language}>
                         <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
@@ -309,26 +308,53 @@ export const Home = () => {
                 language to find BED files, compare them, and read their regions. The BEDbase MCP server
                 gives the assistant read-only tools, so it can look things up but cannot change anything.
               </p>
+              <p className="mt-3 mb-0">
+                Begin with a{' '}
+                <button onClick={() => copyAi('prompt', SKILL_PROMPT)} className="btn btn-link p-0 align-baseline">
+                  {aiCopied === 'prompt' ? 'Copied!' : 'starter prompt'}
+                </button>
+                <span className="mx-2 text-muted">·</span>
+                <a href={AI_DOCS_URL}>AI assistant docs</a>
+              </p>
             </Col>
             <Col xs={12} md={6} className="ps-md-4">
-              <p className="mb-2 text-muted">Connect the MCP server (Claude Code):</p>
-              <div className="border border-2 border-dark p-2 rounded d-flex align-items-center gap-2 bg-white">
-                <code className="flex-grow-1 text-break text-dark">{MCP_COMMAND}</code>
-                <button onClick={() => copyAi('mcp', MCP_COMMAND)} className="btn btn-outline-primary btn-sm">
-                  {aiCopied === 'mcp' ? 'Copied!' : 'Copy'}
-                </button>
+              <div
+                className="border border-2 border-dark rounded w-100 position-relative landing-code-snippet-container overflow-hidden">
+                <Tab.Container id="mcp-snippets" defaultActiveKey={AI_SNIPPETS[0].language}>
+                  <div className="d-flex flex-row align-items-center text-sm px-2 py-2 landing-code-snippet-tabbar">
+                    <Nav variant="pills" className="flex-row">
+                      {AI_SNIPPETS.map((snippet) => (
+                        <Nav.Item key={snippet.language}>
+                          <Nav.Link className="py-1 px-2 mx-1" eventKey={snippet.language}>
+                            {snippet.language}
+                          </Nav.Link>
+                        </Nav.Item>
+                      ))}
+                    </Nav>
+                  </div>
+                  <Tab.Content className="w-100 h-100 p-2">
+                    {AI_SNIPPETS.map((snippet) => (
+                      <Tab.Pane key={snippet.language} eventKey={snippet.language}>
+                        <Markdown className="h-100 mt-3" rehypePlugins={[rehypeHighlight]}>
+                          {snippet.code}
+                        </Markdown>
+                        <div className="position-absolute top-0 end-0 me-2">
+                          <button
+                            onClick={() => copyAi('snippet', snippet.raw)}
+                            className="btn btn-outline-primary btn-sm mt-2"
+                          >
+                            {aiCopied === 'snippet' ? 'Copied!' : 'Copy'}
+                          </button>
+                        </div>
+                      </Tab.Pane>
+                    ))}
+                  </Tab.Content>
+                </Tab.Container>
               </div>
               <p className="mt-3 mb-0">
                 Or give any assistant{' '}
                 {/* Plain <a>: SKILL.md is a static file, not an app route. */}
                 <a href="/SKILL.md">SKILL.md</a>, the BEDbase API on one page.
-              </p>
-              <p className="mt-1 mb-0">
-                <button onClick={() => copyAi('prompt', SKILL_PROMPT)} className="btn btn-link p-0 align-baseline">
-                  {aiCopied === 'prompt' ? 'Copied!' : 'Copy a starter prompt'}
-                </button>
-                <span className="mx-2 text-muted">·</span>
-                <a href={AI_DOCS_URL}>Setup for other assistants</a>
               </p>
             </Col>
           </Row>
