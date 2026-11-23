@@ -159,7 +159,7 @@ def get_analysis_file_drs_object_metadata(
     summary="Get DRS object metadata",
     response_model=DRSModel,
 )
-async def get_drs_object_metadata(
+def get_drs_object_metadata(
     object_id: str,
     req: Request,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -179,7 +179,7 @@ async def get_drs_object_metadata(
     summary="Get URL where you can retrieve files",
     response_model=str,
 )
-async def get_object_bytes_url(
+def get_object_bytes_url(
     object_id: str,
     access_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -201,7 +201,7 @@ async def get_object_bytes_url(
     summary="Download actual file",
     response_model=bytes,
 )
-async def get_object_bytes(
+def get_object_bytes(
     object_id: str,
     access_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -222,7 +222,7 @@ async def get_object_bytes(
     summary="Download thumbnail file",
     response_model=bytes,
 )
-async def get_object_thumbnail(
+def get_object_thumbnail(
     object_id: str,
     access_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),

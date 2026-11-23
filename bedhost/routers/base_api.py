@@ -107,7 +107,7 @@ def get_detailed_usage(
     summary="Get available genomes",
     response_model=BaseListResponse,
 )
-async def get_genomes_list(
+def get_genomes_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BaseListResponse:
     """
@@ -127,7 +127,7 @@ async def get_genomes_list(
     summary="Get available assays",
     response_model=BaseListResponse,
 )
-async def get_assays_list(
+def get_assays_list(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BaseListResponse:
     """
@@ -219,7 +219,7 @@ def get_analysis_files(
 @router.get(
     "/service-info", summary="GA4GH service info", response_model=ServiceInfoResponse
 )
-async def service_info(
+def service_info(
     request: Request,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> ServiceInfoResponse:
@@ -259,7 +259,7 @@ async def service_info(
 
 @router.get("/files/{file_path:path}")
 @count_requests(event="files")
-async def redirect_to_download(
+def redirect_to_download(
     file_path: str,
     request: Request,
     test_request: bool = test_query_parameter,

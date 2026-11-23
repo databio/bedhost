@@ -31,6 +31,7 @@ const OG_BED = (id: string) => `${SITE_URL}/og/bed/${id}.png`;
 const OG_BEDSET = (id: string) => `${SITE_URL}/og/bedset/${id}.png`;
 
 const CARD_CACHE_CONTROL = 'public, max-age=86400, s-maxage=604800';
+const NO_STORE = 'no-store';
 
 // Brand tokens (mirrors ui/src/custom.scss)
 const TEAL = '#008080';
@@ -48,7 +49,8 @@ interface Env {
 
 // ---------------------------------------------------------------------------
 // Fonts — loaded once per isolate and reused (the generated PNG is also
-// edge-cached, so Google Fonts is hit rarely).
+// edge-cached, so Google Fonts is hit rarely). A failed load is not kept, so the
+// next request retries instead of every card failing until the isolate recycles.
 // ---------------------------------------------------------------------------
 type Font = { name: string; data: ArrayBuffer; weight: 400 | 600 | 700; style: 'normal' };
 let fontsPromise: Promise<Font[]> | null = null;
@@ -59,11 +61,16 @@ function getFonts(): Promise<Font[]> {
       loadGoogleFont({ family: 'Inter', weight: 400 }),
       loadGoogleFont({ family: 'Inter', weight: 600 }),
       loadGoogleFont({ family: 'Inter', weight: 700 }),
-    ]).then(([regular, semibold, bold]) => [
-      { name: 'Inter', data: regular, weight: 400, style: 'normal' },
-      { name: 'Inter', data: semibold, weight: 600, style: 'normal' },
-      { name: 'Inter', data: bold, weight: 700, style: 'normal' },
-    ]);
+    ])
+      .then(([regular, semibold, bold]): Font[] => [
+        { name: 'Inter', data: regular, weight: 400, style: 'normal' },
+        { name: 'Inter', data: semibold, weight: 600, style: 'normal' },
+        { name: 'Inter', data: bold, weight: 700, style: 'normal' },
+      ])
+      .catch((err) => {
+        fontsPromise = null;
+        throw err;
+      });
   }
   return fontsPromise;
 }
@@ -71,6 +78,7 @@ function getFonts(): Promise<Font[]> {
 // ---------------------------------------------------------------------------
 // Logo — the real BEDbase lockup (public/bedbase_logo.svg), fetched once via the
 // ASSETS binding, recolored for each background, embedded as an SVG data URI.
+// Only a successful load is kept; on failure the next request tries again.
 // ---------------------------------------------------------------------------
 let logoCache: { white: string; teal: string } | null = null;
 
@@ -79,19 +87,19 @@ async function getLogos(env: Env, origin: string): Promise<{ white: string; teal
   let svg = '';
   try {
     const res = await env.ASSETS.fetch(new URL('/bedbase_logo.svg', origin).toString());
-    if (res.ok) svg = await res.text();
+    // A missing asset comes back as the SPA's index.html with a 200, so check the type.
+    if (res.ok && res.headers.get('content-type')?.includes('svg')) svg = await res.text();
   } catch {
     /* fall through to text wordmark */
   }
+  if (!svg) return { white: '', teal: '' };
   const uri = (s: string) => `data:image/svg+xml,${encodeURIComponent(s)}`;
-  logoCache = svg
-    ? {
-        teal: uri(svg),
-        // the lockup is navy #0D3B66 + teal #008080 (+ orange #F08A3C in the mark);
-        // recolor navy and teal to white for the teal header, keep the orange accent
-        white: uri(svg.replace(/#0d3b66/gi, '#ffffff').replace(/#008080/gi, '#ffffff')),
-      }
-    : { white: '', teal: '' };
+  logoCache = {
+    teal: uri(svg),
+    // the lockup is navy #0D3B66 + teal #008080 (+ orange #F08A3C in the mark);
+    // recolor navy and teal to white for the teal header, keep the orange accent
+    white: uri(svg.replace(/#0d3b66/gi, '#ffffff').replace(/#008080/gi, '#ffffff')),
+  };
   return logoCache;
 }
 
@@ -247,13 +255,20 @@ interface BedSetMetadata {
   statistics?: { mean?: BedStats | null } | null;
 }
 
-async function fetchJson<T>(url: string): Promise<T | null> {
+// 'missing' is a firm answer about this id, so a fallback card for it may be cached.
+// 'error' means the API is down or failing, so a fallback card must not be cached
+// under the record's URL (it would hide the real card for days).
+type Fetched<T> = { kind: 'ok'; data: T } | { kind: 'missing' } | { kind: 'error' };
+
+async function fetchJson<T>(url: string): Promise<Fetched<T>> {
   try {
     const res = await fetch(url);
-    if (!res.ok) return null;
-    return (await res.json()) as T;
+    // 422: the id is not even a valid digest, which is just as permanent as a 404
+    if (res.status === 404 || res.status === 422) return { kind: 'missing' };
+    if (!res.ok) return { kind: 'error' };
+    return { kind: 'ok', data: (await res.json()) as T };
   } catch {
-    return null;
+    return { kind: 'error' };
   }
 }
 
@@ -290,11 +305,14 @@ async function image(html: string): Promise<Response> {
     height: OG_H,
     fonts: await getFonts(),
   });
+  // ImageResponse draws the PNG lazily inside its body stream; read it all here so a
+  // drawing failure throws now, where handleOgImage can catch it.
+  const png = await rendered.arrayBuffer();
   // Replace ImageResponse's default `immutable, max-age=1yr` with our own TTL so
   // cards refresh when metadata changes (set() overwrites, avoiding a duplicate header).
   const headers = new Headers(rendered.headers);
   headers.set('cache-control', CARD_CACHE_CONTROL);
-  return new Response(rendered.body, { status: rendered.status, headers });
+  return new Response(png, { status: rendered.status, headers });
 }
 
 // Biological context from the lightweight annotation (no stats fetch needed).
@@ -373,29 +391,53 @@ async function handleOgImage(
   env: Env,
   ctx: ExecutionContext,
 ): Promise<Response> {
+  const bed = url.pathname.match(/^\/og\/bed\/([^/]+)\.png$/);
+  const bedset = url.pathname.match(/^\/og\/bedset\/([^/]+)\.png$/);
+  if (url.pathname !== '/og/home.png' && !bed && !bedset) {
+    return new Response('Not found', { status: 404 });
+  }
+
   const cache = caches.default;
   const cacheKey = new Request(url.toString());
   const cached = await cache.match(cacheKey);
   if (cached) return cached;
 
-  const logos = await getLogos(env, url.origin);
-  let resp: Response | null = null;
-
-  if (url.pathname === '/og/home.png') {
-    resp = await renderHomeCard(logos);
-  } else {
-    const bed = url.pathname.match(/^\/og\/bed\/([^/]+)\.png$/);
-    const bedset = url.pathname.match(/^\/og\/bedset\/([^/]+)\.png$/);
+  let resp: Response;
+  // Stopgap cards (API failing, or logo asset missing) are served but never cached.
+  let cacheable: boolean;
+  try {
+    const logos = await getLogos(env, url.origin);
+    cacheable = logos.teal !== '';
     if (bed) {
       const meta = await fetchBedMeta(bed[1]);
-      resp = meta ? await renderBedCard(meta, bed[1], logos) : await renderHomeCard(logos);
+      if (meta.kind === 'error') cacheable = false;
+      resp =
+        meta.kind === 'ok'
+          ? await renderBedCard(meta.data, bed[1], logos)
+          : await renderHomeCard(logos);
     } else if (bedset) {
       const meta = await fetchBedSetMeta(bedset[1]);
-      resp = meta ? await renderBedSetCard(meta, bedset[1], logos) : await renderHomeCard(logos);
+      if (meta.kind === 'error') cacheable = false;
+      resp =
+        meta.kind === 'ok'
+          ? await renderBedSetCard(meta.data, bedset[1], logos)
+          : await renderHomeCard(logos);
+    } else {
+      resp = await renderHomeCard(logos);
     }
+  } catch (err) {
+    console.error('OG image render failed', err);
+    return new Response('OG image unavailable', {
+      status: 503,
+      headers: { 'cache-control': NO_STORE },
+    });
   }
 
-  if (!resp) return new Response('Not found', { status: 404 });
+  if (!cacheable) {
+    const headers = new Headers(resp.headers);
+    headers.set('cache-control', NO_STORE);
+    return new Response(resp.body, { status: resp.status, headers });
+  }
   ctx.waitUntil(cache.put(cacheKey, resp.clone()));
   return resp;
 }
@@ -478,8 +520,9 @@ export default {
     const bedMatch = url.pathname.match(/^\/bed\/([^/]+)\/?$/);
     if (bedMatch) {
       const id = bedMatch[1];
-      const meta = await fetchBedMeta(id);
-      if (meta) {
+      const fetched = await fetchBedMeta(id);
+      if (fetched.kind === 'ok') {
+        const meta = fetched.data;
         return htmlResponse(
           buildOgHtml({
             title: meta.name ? `${meta.name} | BEDbase` : `BED ${id.slice(0, 8)}… | BEDbase`,
@@ -495,8 +538,9 @@ export default {
     const bedsetMatch = url.pathname.match(/^\/bedset\/([^/]+)\/?$/);
     if (bedsetMatch) {
       const id = bedsetMatch[1];
-      const meta = await fetchBedSetMeta(id);
-      if (meta) {
+      const fetched = await fetchBedSetMeta(id);
+      if (fetched.kind === 'ok') {
+        const meta = fetched.data;
         return htmlResponse(
           buildOgHtml({
             title: `${meta.name} | BEDbase`,

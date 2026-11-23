@@ -84,13 +84,24 @@ def _force_https(url: object) -> str:
     return text
 
 
+def _trackdb_value(text: str, limit: int) -> str:
+    """Make free text safe as one UCSC trackDb value.
+
+    Name and description come from submitters. A newline would inject trackDb
+    settings, a blank line would end the stanza, and a trailing backslash would
+    continue the line. UCSC caps shortLabel at 17 chars and longLabel at 76.
+    """
+    clean = " ".join(str(text).split())[:limit]
+    return clean.rstrip("\\ ").lstrip()
+
+
 @router.get(
     "/example",
     summary="Get example BED record metadata",
     response_model=BedMetadataAll,
     response_model_by_alias=False,
 )
-async def get_example_bed_record(
+def get_example_bed_record(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedMetadataAll:
     """
@@ -193,7 +204,7 @@ def get_bed_metadata(
     response_model=BedPlots,
     description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_plots(
+def get_bed_plots(
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedPlots:
@@ -212,7 +223,7 @@ async def get_bed_plots(
     response_model=BedFiles,
     description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_files(
+def get_bed_files(
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedFiles:
@@ -231,7 +242,7 @@ async def get_bed_files(
     response_model=BedStatsModel,
     description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_stats(
+def get_bed_stats(
     bed_id: str = BedDigest,
     distributions: bool = Query(
         False,
@@ -252,7 +263,7 @@ async def get_bed_stats(
     "/batch",
     summary="Get metadata for multiple BED records",
 )
-async def get_bed_batch(
+def get_bed_batch(
     request: BatchBedRequest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -269,7 +280,7 @@ async def get_bed_batch(
     "/collection/stats",
     summary="Compute collection statistics from a list of BED IDs",
 )
-async def get_collection_stats(
+def get_collection_stats(
     request: CollectionStatsRequest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ):
@@ -289,7 +300,7 @@ async def get_collection_stats(
     response_model_by_alias=False,
     description=f"Example\n bed_id: {EXAMPLE_BED}",
 )
-async def get_bed_classification(
+def get_bed_classification(
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedClassification:
@@ -358,7 +369,7 @@ def get_bed_neighbours(
     summary="Get embeddings for a single BED record",
     response_model=BedEmbeddingResult,
 )
-async def get_bed_embedding(
+def get_bed_embedding(
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedEmbeddingResult:
@@ -569,7 +580,7 @@ def get_regions_for_bedfile(
     "/{bed_id}/track_hub",
     summary="Generate a UCSC track hub for a single BED file",
 )
-async def get_track_hub_bed(
+def get_track_hub_bed(
     request: Request,
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -596,7 +607,7 @@ async def get_track_hub_bed(
 
 @router.head("/{bed_id}/track_hub_genome_file", include_in_schema=False)
 @router.get("/{bed_id}/track_hub_genome_file", include_in_schema=False)
-async def get_genomes_file_bed(
+def get_genomes_file_bed(
     request: Request,
     bed_id: str = BedDigest,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -633,26 +644,27 @@ def get_trackDb_file_bed(
         )
 
     metadata = bbagent.bed.get(bed_id)
-    name = metadata.name or bed_id
+    name = _trackdb_value(metadata.name or "", 17) or bed_id[:17]
     # longLabel is the text UCSC draws *over* the track, so lead with the name (the
     # identifier users recognize) and append the description only when it's actually
     # present -- BEDbase descriptions are frequently empty or None.
+    full_name = metadata.name or bed_id
     description = (metadata.description or "").strip()
-    long_label = f"{name}: {description}" if description else name
+    long_label = f"{full_name}: {description}" if description else full_name
     # Use the direct storage URL rather than the /v1/files/ redirect: UCSC fetches
     # the bigBed over range requests, and the direct CDN URL avoids depending on
     # redirect-following (mirrors the region-query endpoint above).
     bigbed_url = build_exports_url(bigbed_file.path)
 
     trackDb_txt = (
-        # `track` is UCSC's symbolic track id: it must be unique and space-free, so
-        # use bed_id rather than the (possibly multi-word) name.
-        f"track\t {bed_id}\n"
-        "type\t bigBed\n"
-        f"bigDataUrl\t {bigbed_url}\n"
-        f"shortLabel\t {name}\n"
-        f"longLabel\t {long_label}\n"
-        "visibility\t full\n\n"
+        # `track` must start with a letter and use only [A-Za-z0-9_-]; a BED id is
+        # hex and often starts with a digit, so prefix it.
+        f"track\tbedbase_{bed_id}\n"
+        "type\tbigBed\n"
+        f"bigDataUrl\t{bigbed_url}\n"
+        f"shortLabel\t{name}\n"
+        f"longLabel\t{_trackdb_value(long_label, 76) or bed_id}\n"
+        "visibility\tfull\n\n"
     )
 
     return Response(trackDb_txt, media_type="text/plain")
@@ -712,7 +724,7 @@ def text_to_bed_search(
     response_model=BedListSearchResult,
     response_model_by_alias=False,
 )
-async def exact_search(
+def exact_search(
     query: str,
     genome: str | None = None,
     assay: str | None = None,
@@ -763,7 +775,7 @@ def bed_to_bed_search(
     summary="Get tokenized of bed file",
     response_model=TokenizedBedResponse,
 )
-async def get_tokens(
+def get_tokens(
     bed_id: str,
     universe_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -787,7 +799,7 @@ async def get_tokens(
     summary="Get link to tokenized bed file",
     response_model=TokenizedPathResponse,
 )
-async def get_tokens_info(
+def get_tokens_info(
     bed_id: str,
     universe_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -811,7 +823,7 @@ async def get_tokens_info(
     summary="Get reference genome validation results",
     response_model=RefGenValidReturnModel,
 )
-async def get_ref_gen_results(
+def get_ref_gen_results(
     bed_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> RefGenValidReturnModel:

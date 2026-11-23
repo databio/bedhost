@@ -73,15 +73,17 @@ class _FakeBed:
         self.rows = [_row(i) for i in range(5)]
         self.neighbours_empty = False
         self.bigbed = False
+        self.name = "A"
+        self.description = "liver ATAC peaks"
 
     def get(self, identifier, full=False):
         if identifier != VALID_BED_ID:
             raise BEDFileNotFoundError(identifier)
         meta = BedMetadataAll(
             id=VALID_BED_ID,
-            name="A",
+            name=self.name,
             genome_alias="hg38",
-            description="liver ATAC peaks",
+            description=self.description,
             annotation=StandardMeta(assay="ATAC-seq", global_sample_id=["geo:gsm1"]),
         )
         if full:

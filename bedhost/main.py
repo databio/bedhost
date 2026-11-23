@@ -231,7 +231,7 @@ templates.env.autoescape = False
 
 
 @app.get("/v1", summary="API intro page", tags=["home"])
-async def index(request: Request):
+def index(request: Request):
     """
     Display the index UI page
     """
@@ -244,7 +244,7 @@ async def index(request: Request):
     response_class=HTMLResponse,
     tags=["home"],
 )
-async def changelog(request: Request):
+def changelog(request: Request):
     return render_markdown("changelog.md", request)
 
 

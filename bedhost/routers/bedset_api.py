@@ -30,7 +30,7 @@ _LOGGER = logging.getLogger(PKG_NAME)
     response_model=BedSetMetadata,
     response_model_by_alias=False,
 )
-async def get_example_bedset_record(
+def get_example_bedset_record(
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedSetMetadata:
     result = bbagent.bedset.get_ids_list(limit=1).results
@@ -112,7 +112,7 @@ def get_bedset_pep(
     summary="Get plots for single bedset record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_plots_handler(
+def get_bedset_plots_handler(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedSetPlots:
@@ -131,7 +131,7 @@ async def get_bedset_plots_handler(
     summary="Get stats for a single BEDSET record",
     description=f"Example\n bed_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_stats_handler(
+def get_bedset_stats_handler(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedSetStats:
@@ -147,7 +147,7 @@ async def get_bedset_stats_handler(
     summary="Get distribution statistics for a single BEDSET record",
     description=f"Example\n bedset_id: {EXAMPLE_BEDSET}",
 )
-async def get_bedset_distributions(
+def get_bedset_distributions(
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
 ) -> BedSetDistributions:
@@ -173,7 +173,7 @@ def get_bedfiles_in_bedset(
 
 @router.head("/{bedset_id}/track_hub")
 @router.get("/{bedset_id}/track_hub")
-async def get_track_hub_bedset(
+def get_track_hub_bedset(
     request: Request,
     bedset_id: str,
     bbagent: BedBaseAgent = Depends(get_bbagent),
@@ -198,7 +198,7 @@ async def get_track_hub_bedset(
 
 @router.head("/{bedset_id}/track_hub_genome_file", include_in_schema=False)
 @router.get("/{bedset_id}/track_hub_genome_file", include_in_schema=False)
-async def get_genomes_file_bedset(request: Request, bedset_id: str):
+def get_genomes_file_bedset(request: Request, bedset_id: str):
     """
     Generate genomes file for the BED set track hub
     """
