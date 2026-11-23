@@ -29,6 +29,7 @@ from bbconf.models.base_models import (
     StatsReturn,
 )
 from bbconf.models.bed_models import (
+    BedBatchResult,
     BedFiles,
     BedListResult,
     BedListSearchResult,
@@ -809,9 +810,9 @@ class _Rec:
         self.spec = spec
         self.id = bed_id(spec["name"])
         ann = {k: v for k, v in spec["ann"].items() if v is not None}
-        when = datetime.datetime(2025, 3, 1, tzinfo=datetime.UTC) + datetime.timedelta(
-            days=day
-        )
+        when = datetime.datetime(
+            2025, 3, 1, tzinfo=datetime.timezone.utc
+        ) + datetime.timedelta(days=day)
         self.basic = BedMetadataBasic(
             id=self.id,
             name=spec["name"],
@@ -986,6 +987,17 @@ class _Bed:
             ],
         )
 
+    def get_batch(self, identifiers, full=False, distributions=False):
+        # Like bbconf: one lookup, unknown ids are skipped.
+        rows = [
+            BedMetadataAll(**dict(self.a.by_id[i].basic))
+            for i in identifiers
+            if i in self.a.by_id
+        ]
+        return BedBatchResult(
+            count=len(rows), limit=len(identifiers), offset=0, results=rows
+        )
+
     def get_files(self, identifier):
         return self._rec(identifier).files
 
@@ -1137,7 +1149,7 @@ class _Bedset:
                 mean=BedStatsModel(**{f: m for f, (m, _) in pairs.items()}),
                 sd=BedStatsModel(**{f: sd for f, (_, sd) in pairs.items()}),
             )
-        when = datetime.datetime(2025, 4, 25, 1, 45, tzinfo=datetime.UTC)
+        when = datetime.datetime(2025, 4, 25, 1, 45, tzinfo=datetime.timezone.utc)
         return BedSetMetadata(
             id=sid,
             name=s["name"],
@@ -1188,17 +1200,17 @@ class _Snapshot:
         )
         for d, n, size in [
             (
-                datetime.datetime(2026, 11, 16, 3, 0, tzinfo=datetime.UTC),
+                datetime.datetime(2026, 11, 16, 3, 0, tzinfo=datetime.timezone.utc),
                 666174,
                 412_903_118,
             ),
             (
-                datetime.datetime(2026, 11, 9, 3, 0, tzinfo=datetime.UTC),
+                datetime.datetime(2026, 11, 9, 3, 0, tzinfo=datetime.timezone.utc),
                 665310,
                 412_355_902,
             ),
             (
-                datetime.datetime(2026, 11, 2, 3, 0, tzinfo=datetime.UTC),
+                datetime.datetime(2026, 11, 2, 3, 0, tzinfo=datetime.timezone.utc),
                 664942,
                 411_980_455,
             ),

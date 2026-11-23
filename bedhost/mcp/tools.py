@@ -86,6 +86,9 @@ from .schemas import (
 # Backend: exactly ONE bbconf BedBaseAgent per process (see package docstring). #
 # --------------------------------------------------------------------------- #
 _backend = None
+# stdio mode runs sync tools in worker threads and handles requests at the same
+# time, so two first calls could otherwise each build an agent.
+_backend_lock = threading.Lock()
 
 
 def set_backend(agent) -> None:
@@ -110,17 +113,21 @@ def backend():
     this returns that instance and never builds a second connection.
     """
     global _backend
-    if _backend is None:
-        from bbconf.bbagent import BedBaseAgent
+    if _backend is not None:
+        return _backend
+    with _backend_lock:
+        if _backend is None:
+            from bbconf.bbagent import BedBaseAgent
 
-        cfg = os.environ.get("BEDBASE_CONFIG")
-        if not cfg:
-            raise tool_error(
-                "unavailable",
-                "This server has no BEDbase database configured.",
-                "Set BEDBASE_CONFIG to a bedbase config file and restart the server.",
-            )
-        _backend = BedBaseAgent(cfg, init_ml=_init_ml_from_env())
+            cfg = os.environ.get("BEDBASE_CONFIG")
+            if not cfg:
+                raise tool_error(
+                    "unavailable",
+                    "This server has no BEDbase database configured.",
+                    "Set BEDBASE_CONFIG to a bedbase config file and restart the "
+                    "server.",
+                )
+            _backend = BedBaseAgent(cfg, init_ml=_init_ml_from_env())
     return _backend
 
 
@@ -462,8 +469,10 @@ def search_bed(
 
     Args:
         query: Free text ("ATAC-seq peaks in liver"), a GEO/ENCODE accession, or a BED id.
-        genome: Optional genome filter, e.g. "hg38". list_genomes() shows valid values.
-        assay: Optional assay filter, e.g. "ATAC-seq". list_assays() shows valid values.
+        genome: Optional genome filter, e.g. "hg38". list_genomes() shows valid
+            values. Ignored when query is a BED id.
+        assay: Optional assay filter, e.g. "ATAC-seq". list_assays() shows valid
+            values. Ignored when query is a BED id.
         page_size: Rows per page, default 10, at most 50.
         token: pagination.next_page_token from a previous call for the same query.
     """
@@ -492,6 +501,8 @@ def search_bed(
 
     rows = _hits(outcome.result)
     total = None
+    where = "".join(f" {k}={v}" for k, v in (("genome", genome), ("assay", assay)) if v)
+    hint = _next_get_bed(rows)
     if outcome.kind is SearchKind.EXACT_ID:
         similar = len(rows) - 1 if offset == 0 else len(rows)
         summary = (
@@ -499,25 +510,31 @@ def search_bed(
             if offset == 0
             else f"Files similar to {query}: {_span(offset - 1, len(rows))}."
         )
+        if where:
+            summary = summary[:-1] + " (filters ignored for an exact id)."
     elif outcome.kind is SearchKind.ACCESSION:
         total = outcome.result.count
-        summary = (
-            f"Accession {query}: {_span(offset, len(rows))} of {total} matching files."
-        )
+        if total == 0 and outcome.filtered_out:
+            summary = (
+                f"Accession {query} matched {outcome.filtered_out} files, but none "
+                f"with{where}."
+            )
+            hint = f'search_bed(query="{query}") without the genome/assay filter.'
+        else:
+            summary = (
+                f"Accession {query}{where}: {_span(offset, len(rows))} of {total} "
+                "matching files."
+            )
     else:
         # bbconf's count for semantic search is the catalog size, not a hit
         # count (every file gets a score), so it is not reported as a total.
-        where = "".join(
-            f" {k}={v}" for k, v in (("genome", genome), ("assay", assay)) if v
-        )
         summary = (
             f"Semantic search for '{query}'{where}: {_span(offset, len(rows))}, "
             "ranked by similarity."
             if rows
             else f"Semantic search for '{query}'{where}: no matches."
         )
-    hint = _next_get_bed(rows)
-    if not rows and offset == 0:
+    if not rows and offset == 0 and outcome.kind is not SearchKind.ACCESSION:
         hint = (
             "Try a tissue, assay, or cell-line term, drop the genome/assay filter, "
             "or query by a GEO/ENCODE accession."
@@ -670,13 +687,11 @@ def get_bedset(
     full = agent.bedset.get(bedset_id, full=True)
     if view == "full":
         return full
-    names = {}
-    for bed_id in (full.bed_ids or [])[:MEMBERS_SHOWN]:
-        try:
-            names[bed_id] = agent.bed.get(bed_id).name
-        except BEDFileNotFoundError:
-            continue  # a stale member; still listed, without a name
-    return BedSetSummary.from_full(full, names)
+    # One query for the shown members' names. get_batch skips ids it can't
+    # find, so a stale member is still listed, just without a name.
+    shown = (full.bed_ids or [])[:MEMBERS_SHOWN]
+    found = agent.bed.get_batch(shown).results if shown else []
+    return BedSetSummary.from_full(full, {r.id: r.name for r in found})
 
 
 # =========================================================================== #
@@ -705,19 +720,26 @@ def list_bed(
         "list_bed", genome=genome, bed_compliance=bed_compliance, page_size=page_size
     )
     offset, after = decode(token, fh)
+    if offset != 0:
+        # list_bed only issues keyset tokens (offset 0). A token with an offset
+        # was built by hand, and a large one would make Postgres scan and drop
+        # that many rows.
+        raise tool_error(
+            "bad_token",
+            "This token is not one this server issued.",
+            "Call again with the same arguments and no token to get the first page.",
+        )
 
     def produce():
         return backend().bed.get_ids_list(
             limit=page_size,
-            offset=offset,
+            offset=0,
             genome=genome,
             bed_compliance=bed_compliance,
             after=after,
         )
 
-    result = _cached(
-        ("list_bed", genome, bed_compliance, page_size, offset, after), produce
-    )
+    result = _cached(("list_bed", genome, bed_compliance, page_size, after), produce)
     rows = [BedHit.from_metadata(r) for r in result.results]
     # Keyset paging: the next page continues after the last id we returned.
     next_token = encode(0, fh, after=rows[-1].id) if len(rows) == page_size else None
@@ -832,6 +854,10 @@ def get_regions(
         end: Optional end of the range (must be > start).
     """
     bed_id = _require_bed_id(id)
+    if (start is not None and start < 0) or (end is not None and end < 0):
+        raise tool_error(
+            "invalid_input", "start and end must be 0 or more (0-based coordinates)."
+        )
     if start is not None and end is not None and end <= start:
         raise tool_error("invalid_input", "end must be greater than start.")
 

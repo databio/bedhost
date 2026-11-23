@@ -304,6 +304,22 @@ def test_accession_summary(backend_no_ml):
     assert page.pagination.total == 3
 
 
+def test_accession_filtered_to_nothing_says_why(backend_no_ml):
+    page = tools.search_bed(GSM_WITH_HITS.upper(), genome="mm10")
+    assert page.search_mode == "accession"
+    assert page.rows == []
+    assert page.summary == (
+        f"Accession {GSM_WITH_HITS.upper()} matched 3 files, but none with genome=mm10."
+    )
+    assert "without the genome/assay filter" in page.hint
+
+
+def test_exact_id_summary_notes_ignored_filters(backend_ml):
+    page = tools.search_bed(VALID_BED_ID, genome="mm10", page_size=3)
+    assert page.rows[0].id == VALID_BED_ID
+    assert page.summary.endswith("(filters ignored for an exact id).")
+
+
 def test_ml_disabled_returns_empty_page_saying_so(backend_no_ml):
     page = tools.search_bed("liver")
     assert page.rows == []
@@ -340,6 +356,50 @@ def test_garbage_token_is_bad_token(backend_ml):
     with pytest.raises(ToolError) as ei:
         tools.search_bed("liver", token="@@not-base64@@")
     assert _error(ei)["error"] == "bad_token"
+
+
+def test_list_bed_refuses_a_hand_built_offset_token(backend_ml, monkeypatch):
+    # list_bed only issues keyset tokens; a big offset would be a slow DB scan.
+    from bedhost.mcp import paging
+
+    first = tools.list_bed(page_size=2)
+    second = tools.list_bed(page_size=2, token=first.pagination.next_page_token)
+    assert {r.id for r in first.rows}.isdisjoint({r.id for r in second.rows})
+
+    def no_query(*a, **k):
+        raise AssertionError("a forged token must not reach the database")
+
+    monkeypatch.setattr(backend_ml.bed, "get_ids_list", no_query)
+    fh = paging.filters_hash("list_bed", genome=None, bed_compliance=None, page_size=20)
+    with pytest.raises(ToolError) as ei:
+        tools.list_bed(token=paging.encode(20000, fh))
+    assert _error(ei)["error"] == "bad_token"
+
+
+def test_backend_is_built_once_under_concurrent_first_calls(monkeypatch):
+    # stdio mode runs tools in threads; parallel first calls must share one agent.
+    import threading
+    import time
+    from concurrent.futures import ThreadPoolExecutor
+
+    import bbconf.bbagent
+
+    built = []
+    lock = threading.Lock()
+
+    class SlowAgent:
+        def __init__(self, cfg, init_ml=True):
+            time.sleep(0.2)
+            with lock:
+                built.append(self)
+
+    monkeypatch.setattr(bbconf.bbagent, "BedBaseAgent", SlowAgent)
+    monkeypatch.setenv("BEDBASE_CONFIG", "unused.yaml")
+    tools._backend = None
+    with ThreadPoolExecutor(8) as pool:
+        got = list(pool.map(lambda _: tools.backend(), range(8)))
+    assert len(built) == 1
+    assert all(a is built[0] for a in got)
 
 
 def test_neighbours_with_ml_off_is_unavailable(backend_no_ml):
@@ -379,10 +439,16 @@ def test_get_bed_full_size_is_declared_in_record(backend_ml):
 
 
 def test_get_bedset_default_names_the_first_members(backend_ml):
+    missing = f"{7:032d}"  # a stale member the database no longer has
+    backend_ml.bed.batch_missing = {missing}
     rec = tools.get_bedset(BIG_BEDSET_ID)
     assert isinstance(rec, BedSetSummary)
     assert len(rec.members) == 20
     assert rec.members_total == BIG_BEDSET_SIZE
+    assert len(backend_ml.bed.batch_calls) == 1  # one query, not one per member
+    names = {m.id: m.name for m in rec.members}
+    assert names[missing] is None
+    assert names[f"{8:032d}"] == "bed8"
     full = tools.get_bedset(BIG_BEDSET_ID, view="full")
     assert len(full.bed_ids) == BIG_BEDSET_SIZE
 
@@ -461,6 +527,19 @@ def test_list_exports_rewrites_urls(backend_ml):
 def test_get_regions_rejects_inverted_range(backend_ml):
     with pytest.raises(ToolError) as ei:
         tools.get_regions(VALID_BED_ID, "chr1", start=100, end=50)
+    assert _error(ei)["error"] == "invalid_input"
+
+
+@pytest.mark.parametrize("start, end", [(-1, None), (None, -1), (-5, 10)])
+def test_get_regions_rejects_negative_coordinates(backend_ml, monkeypatch, start, end):
+    backend_ml.bed.bigbed = True
+
+    def never(*a):
+        raise AssertionError("bigBedToBed must not run with a negative coordinate")
+
+    monkeypatch.setattr(tools, "run_bigbed_to_bed", never)
+    with pytest.raises(ToolError) as ei:
+        tools.get_regions(VALID_BED_ID, "chr1", start=start, end=end)
     assert _error(ei)["error"] == "invalid_input"
 
 

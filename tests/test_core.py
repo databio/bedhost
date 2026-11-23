@@ -1,6 +1,7 @@
 """Tests for bedhost.core.search_bed, the BED text search shared by REST and MCP."""
 
 import pytest
+from bbconf.models.bed_models import BedMetadataBasic, StandardMeta
 
 from bedhost.core import MLUnavailable, SearchKind, search_bed
 from tests.fakes import GSM_WITH_HITS, VALID_BED_ID, FakeAgent
@@ -34,6 +35,28 @@ def test_exact_id_without_neighbours_returns_just_the_file():
     assert [r.id for r in out.result.results] == [VALID_BED_ID]
 
 
+@pytest.mark.parametrize(
+    "limit, offset, setup, rows, count",
+    [
+        (1, 0, None, 1, 5),  # just the file; count still the neighbour count
+        (3, 10, None, 0, 5),  # past the last neighbour: empty, same count
+        (3, 0, "neighbours_fail", 1, 1),  # lookup failed: just the file
+    ],
+)
+def test_exact_id_count_does_not_depend_on_the_page(limit, offset, setup, rows, count):
+    # FakeAgent ranks 5 neighbours and reports a catalog of 5, like bbconf.
+    agent = FakeAgent()
+    if setup:
+        setattr(agent.bed, setup, True)
+    res = search_bed(agent, VALID_BED_ID, limit=limit, offset=offset).result
+    assert (len(res.results), res.count) == (rows, count)
+
+
+def test_exact_id_count_is_1_without_vector_index():
+    res = search_bed(FakeAgent(ml=False), VALID_BED_ID, limit=1).result
+    assert (len(res.results), res.count) == (1, 1)
+
+
 def test_exact_id_works_with_ml_off():
     out = search_bed(FakeAgent(ml=False), VALID_BED_ID)
     assert out.kind is SearchKind.EXACT_ID
@@ -58,6 +81,55 @@ def test_accession_hits_are_returned_and_paged():
     assert len(out.result.results) == 2
     rest = search_bed(FakeAgent(), GSM_WITH_HITS, limit=2, offset=2).result
     assert len(rest.results) == 1
+
+
+def _mixed_accession_agent():
+    """An accession whose 3 files span two genomes and two assays."""
+    agent = FakeAgent()
+
+    def row(i, genome, assay):
+        return BedMetadataBasic(
+            id=f"{i:032d}",
+            name=f"bed{i}",
+            genome_alias=genome,
+            annotation=StandardMeta(assay=assay),
+        )
+
+    agent.bed.external_rows = [
+        row(0, "hg38", "ATAC-seq"),
+        row(1, "hg19", "ATAC-seq"),
+        row(2, "hg38", "ChIP-seq"),
+    ]
+
+    def no_semantic(*a, **k):
+        raise AssertionError("an accession hit must not fall through to semantic")
+
+    agent.bed.hybrid_search = no_semantic
+    return agent
+
+
+@pytest.mark.parametrize(
+    "genome, assay, ids, filtered_out",
+    [
+        ("hg38", None, [0, 2], 1),
+        ("hg38", "ATAC-seq", [0], 2),
+        (None, "ChIP-seq", [2], 2),
+        ("mm10", None, [], 3),  # nothing left: still an accession answer
+    ],
+)
+def test_accession_applies_genome_and_assay_filters(genome, assay, ids, filtered_out):
+    out = search_bed(
+        _mixed_accession_agent(), GSM_WITH_HITS, genome=genome, assay=assay
+    )
+    assert out.kind is SearchKind.ACCESSION
+    assert [r.id for r in out.result.results] == [f"{i:032d}" for i in ids]
+    assert out.result.count == len(ids)
+    assert out.filtered_out == filtered_out
+
+
+def test_exact_id_ignores_filters():
+    out = search_bed(FakeAgent(), VALID_BED_ID, genome="mm10", assay="ChIP-seq")
+    assert out.result.results[0].id == VALID_BED_ID
 
 
 def test_accession_works_with_ml_off():

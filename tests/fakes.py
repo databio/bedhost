@@ -15,6 +15,7 @@ from bbconf.models.base_models import (
     StatsReturn,
 )
 from bbconf.models.bed_models import (
+    BedBatchResult,
     BedClassification,
     BedFiles,
     BedListResult,
@@ -72,9 +73,13 @@ class _FakeBed:
         self.ml = ml
         self.rows = [_row(i) for i in range(5)]
         self.neighbours_empty = False
+        self.neighbours_fail = False
         self.bigbed = False
         self.name = "A"
         self.description = "liver ATAC peaks"
+        self.external_rows = None  # set to override search_external_file's hits
+        self.batch_calls = []  # the id lists get_batch was called with
+        self.batch_missing = set()  # ids get_batch can't find
 
     def get(self, identifier, full=False):
         if identifier != VALID_BED_ID:
@@ -93,6 +98,22 @@ class _FakeBed:
                 BedSetMinimal(id=f"set{i}", name=f"Set {i}") for i in range(7)
             ]
         return meta
+
+    def get_batch(self, identifiers, full=False, distributions=False):
+        # Like bbconf: one query, unknown ids are skipped. Besides VALID_BED_ID,
+        # an all-digit id (a BIG_BEDSET_ID member) exists as "bed<n>".
+        self.batch_calls.append(list(identifiers))
+        rows = []
+        for i in identifiers:
+            if i in self.batch_missing:
+                continue
+            if i == VALID_BED_ID:
+                rows.append(self.get(i))
+            elif i.isdigit():
+                rows.append(BedMetadataAll(id=i, name=f"bed{int(i)}"))
+        return BedBatchResult(
+            count=len(rows), limit=len(identifiers), offset=0, results=rows
+        )
 
     def get_stats(self, identifier):
         if identifier == VALID_BED_ID:
@@ -135,6 +156,8 @@ class _FakeBed:
         if not self.ml:
             # What bbconf does with no file-vector index loaded.
             raise AttributeError("'NoneType' object has no attribute 'qd_client'")
+        if self.neighbours_fail:
+            raise RuntimeError("qdrant down")
         if self.neighbours_empty:
             return BedListSearchResult(count=0, limit=limit, offset=offset, results=[])
         return self._search_page(limit, offset)
@@ -147,17 +170,21 @@ class _FakeBed:
 
     def search_external_file(self, source, accession):
         if (source, accession) == ("geo", GSM_WITH_HITS):
+            hits = self.external_rows or self.rows[:3]
             rows = [
                 QdrantSearchResult(id=r.id, payload={}, score=1.0, metadata=r)
-                for r in self.rows[:3]
+                for r in hits
             ]
-            return BedListSearchResult(count=3, limit=3, offset=0, results=rows)
+            return BedListSearchResult(
+                count=len(rows), limit=len(rows), offset=0, results=rows
+            )
         return BedListSearchResult(count=0, limit=10, offset=0, results=[])
 
     def get_ids_list(
         self, limit=100, offset=0, genome=None, bed_compliance=None, after=None
     ):
-        rows = self.rows[offset : offset + limit]
+        pool = [r for r in self.rows if after is None or r.id > after]
+        rows = pool[offset : offset + limit]
         return BedListResult(
             count=len(self.rows), limit=limit, offset=offset, results=rows
         )

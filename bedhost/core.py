@@ -136,6 +136,9 @@ class MLUnavailable(Exception):
 class BedSearchOutcome:
     kind: SearchKind
     result: BedListSearchResult
+    # ACCESSION only: files the accession matched that the genome/assay filters
+    # removed. Lets callers explain an empty page.
+    filtered_out: int = 0
 
 
 _ACCESSION_PREFIXES = ("gsm", "gse", "encff", "encsr", "geo:", "encode:")
@@ -158,36 +161,54 @@ def _exact_id_result(agent, bed_id: str, limit: int, offset: int):
     """The file itself first, then its nearest neighbours; None if no such file.
 
     The file takes slot 0, so a page at ``offset`` holds neighbours starting at
-    ``offset - 1``. If the neighbour lookup fails (for example the vector index
-    is not loaded), the result is just the file.
+    ``offset - 1``. If the vector index is not loaded or the neighbour lookup
+    fails, the result is just the file.
+
+    ``count`` does not depend on ``limit`` or ``offset``: when neighbours can be
+    ranked it is bbconf's neighbour count (the catalog size, the same number
+    /bed/{id}/neighbours reports); when they cannot, it is 1.
     """
     try:
         meta = agent.bed.get(bed_id)
     except BEDFileNotFoundError:
         return None
     hit = QdrantSearchResult(id=bed_id, payload={}, score=1.0, metadata=meta)
+    first = [hit] if offset == 0 else []
+
+    def result(count, rows):
+        return BedListSearchResult(
+            count=count, limit=limit, offset=offset, results=rows
+        )
+
+    if getattr(agent.config, "qdrant_file_backend", None) is None:
+        return result(1, first)
 
     n_limit = limit - 1 if offset == 0 else limit
+    if n_limit == 0:  # limit 1 at offset 0: the page is just the file
+        return result(agent.get_stats().bedfiles_number, first)
     n_offset = 0 if offset == 0 else offset - 1
     try:
-        neighbours = (
-            agent.bed.get_neighbours(bed_id, limit=n_limit, offset=n_offset)
-            if n_limit > 0
-            else None
-        )
+        neighbours = agent.bed.get_neighbours(bed_id, limit=n_limit, offset=n_offset)
     except Exception as e:  # the file exists; neighbours are a bonus
         _LOGGER.warning(f"Neighbour lookup failed for {bed_id}: {e}")
-        neighbours = None
+        return result(1, first)
+    # A page past the last neighbour is empty but the count stays the same.
+    return result(max(neighbours.count, 1), first + list(neighbours.results or []))
 
-    if neighbours is None or not neighbours.results:
-        rows = [hit] if offset == 0 else []
-        return BedListSearchResult(count=1, limit=limit, offset=offset, results=rows)
-    rows = neighbours.results
-    if offset == 0:
-        rows = [hit, *rows]
-    return BedListSearchResult(
-        count=neighbours.count, limit=limit, offset=offset, results=rows
-    )
+
+def _matches_filters(row, genome: str | None, assay: str | None) -> bool:
+    """True if a search row passes the genome/assay filters.
+
+    Same exact-match rule hybrid_search applies (genome_alias, annotation.assay).
+    """
+    meta = row.metadata
+    if meta is None:
+        return False
+    if genome and meta.genome_alias != genome:
+        return False
+    if assay and (meta.annotation is None or meta.annotation.assay != assay):
+        return False
+    return True
 
 
 def search_bed(
@@ -206,8 +227,10 @@ def search_bed(
     Args:
         agent: The bbconf BedBaseAgent.
         query: Free text, a GEO/ENCODE accession, or a 32-character BED id.
-        genome: Genome filter for semantic search (e.g. "hg38").
-        assay: Assay filter for semantic search (e.g. "ATAC-seq").
+        genome: Genome filter (e.g. "hg38") for accession and semantic search.
+            Ignored when query is a BED id: that file is always returned.
+        assay: Assay filter (e.g. "ATAC-seq") for accession and semantic
+            search. Ignored when query is a BED id.
         limit: Rows to return.
         offset: Rows to skip.
 
@@ -225,12 +248,22 @@ def search_bed(
         _LOGGER.info(f"Searching for {source} accession {accession}")
         found = agent.bed.search_external_file(source=source, accession=accession)
         if found.count:
-            rows = (found.results or [])[offset : offset + limit]
+            # A GEO series or ENCODE experiment can hold files from several
+            # genomes and assays. If the filters remove them all, the answer is
+            # still "this accession, nothing matching": semantic search on an
+            # accession string would only return noise.
+            kept = [
+                r for r in found.results or [] if _matches_filters(r, genome, assay)
+            ]
             return BedSearchOutcome(
                 SearchKind.ACCESSION,
                 BedListSearchResult(
-                    count=found.count, limit=limit, offset=offset, results=rows
+                    count=len(kept),
+                    limit=limit,
+                    offset=offset,
+                    results=kept[offset : offset + limit],
                 ),
+                filtered_out=len(found.results or []) - len(kept),
             )
 
     if getattr(agent.config, "dense_encoder", None) is None:

@@ -2,6 +2,13 @@
 
 This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html) and [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) format.
 
+## [0.16.1] - Unreleased
+
+### Fixed
+- Text search with a GEO/ENCODE accession now applies the `genome` and `assay` filters (before: they were ignored, so other genomes and assays came back). Exact BED id search still ignores them and returns the named file.
+- `/v1/bed/search/text` with an exact BED id reports the same `count` for every page (before: 1 or the catalog size, depending on `limit` and `offset`).
+- MCP: `get_regions` rejects negative `start`/`end` as invalid input, `list_bed` refuses hand-built page tokens, `get_bedset` looks up member names in one query, and the stdio server no longer opens two database connections when the first calls arrive together.
+
 ## [0.16.0] - 2026-11-20
 
 ### Added
